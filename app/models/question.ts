@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import type { ManyToMany } from '@adonisjs/lucid/types/relations'
 import Concept from './concept.js'
 
 type OptionKey = 'A' | 'B' | 'C' | 'D' | 'E'
@@ -62,8 +62,10 @@ export default class Question extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  @belongsTo(() => Concept)
-  declare concept: BelongsTo<typeof Concept>
+  @manyToMany(() => Concept, {
+    pivotTable: 'concept_question',
+  })
+  declare concepts: ManyToMany<typeof Concept>
 
   isMCQ(): this is { config: MCQConfig } {
     return this.type === 'mcq'

@@ -4,7 +4,7 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable('questions', (table) => {
       table.increments('id')
-      table.integer('concept_id').references('id').inTable('concepts').nullable()
+      table.string('slug', 255).notNullable().unique()
       table.enum('type', ['mcq', 'saq']).notNullable()
       table.text('question_text').notNullable()
       table.jsonb('config').notNullable() // For MCQ options, answers, explanations

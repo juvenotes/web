@@ -17,6 +17,8 @@ const RegisterController = () => import('#controllers/auth/register_controller')
 const ForgotPasswordController = () => import('#controllers/auth/forgot_password_controller')
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
+const IndexConceptsController = () => import('#controllers/concepts/index_controller')
+const IndexQuestionsController = () => import('#controllers/questions/index_controller')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
@@ -72,3 +74,15 @@ router
   .put('/settings/profile', [ProfileController, 'update'])
   .as('settings.profile.update')
   .use(middleware.auth())
+
+//* CONCEPTS -> VIEW
+router.get('/concepts', [IndexConceptsController, 'index'])
+router.get('/concepts/:slug', [IndexConceptsController, 'show'])
+
+//* QUESTIONS -> VIEW
+router
+  .group(() => {
+    router.get('/', [IndexQuestionsController, 'index'])
+    router.get('/:conceptSlug', [IndexQuestionsController, 'show'])
+  })
+  .prefix('/bank')
