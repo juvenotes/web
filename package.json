@@ -15,6 +15,7 @@
   },
   "imports": {
     "#utils/*": "./app/utils/*.js",
+    "#types/*": "./app/types/*.js",
     "#controllers/*": "./app/controllers/*.js",
     "#exceptions/*": "./app/exceptions/*.js",
     "#models/*": "./app/models/*.js",
@@ -70,6 +71,7 @@
     "@adonisjs/shield": "^8.1.1",
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/vite": "^3.0.0",
+    "@editorjs/editorjs": "^2.30.7",
     "@inertiajs/react": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.1",
     "@vinejs/vine": "^2.1.0",
