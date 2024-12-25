@@ -8,6 +8,13 @@ export default class RegisterController {
     return inertia.render('auth/register') //create this file @monari, inside pages
   }
 
+  /**
+   * Form fields:
+   * fullName: John Doe
+   * email: john@mail.com
+   * password: password
+   */
+
   async store({ request, response, auth, session }: HttpContext) {
     const data = await request.validateUsing(registerValidator)
     const user = await User.register(auth, data)

@@ -7,6 +7,12 @@ export default class LoginController {
     return inertia.render('auth/login') //create this file @monari
   }
 
+  /**
+   * Form fields:
+   * email: john@mail.com
+   * password: password
+   */
+
   async store({ request, response, auth, session }: HttpContext) {
     const data = await request.validateUsing(loginValidator)
     const user = await User.login(auth, data)

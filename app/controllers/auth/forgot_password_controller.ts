@@ -10,12 +10,26 @@ export default class ForgotPasswordsController {
     return inertia.render('auth/forgot_password/index', { isSent }) // create this file @monari
   }
 
+  /**
+   * Form fields:
+   * email: john@mail.com
+   */
+
   async send({ request, response, session }: HttpContext) {
     const { email } = await request.validateUsing(passwordResetSendValidator)
     await PasswordResetToken.send(email)
     session.flash(this.#sentSessionKey, true)
     return response.redirect().back()
   }
+
+  /**
+   * Validates the password reset token and update's the user's password
+   * @param encryptedValue encrypted password reset token value
+   * @param password user's new password
+   * @returns
+   * Form fields:
+   * encryptedValue: encrypted password reset token value
+   */
 
   async reset({ params, inertia }: HttpContext) {
     const { isValid, user } = await PasswordResetToken.verify(params.value)
