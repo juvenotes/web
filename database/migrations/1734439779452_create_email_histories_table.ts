@@ -10,8 +10,7 @@ export default class extends BaseSchema {
       table.string('email_old', 254).notNullable()
       table.string('email_new', 254).notNullable()
 
-      table.timestamp('created_at')
-      table.timestamp('updated_at')
+      table.timestamps(true, true)
     })
   }
 

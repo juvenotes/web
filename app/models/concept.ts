@@ -2,10 +2,14 @@ import { DateTime } from 'luxon'
 import { BaseModel, column, hasMany, belongsTo, manyToMany, computed } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import Question from './question.js'
+import User from './user.js'
 
 export default class Concept extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
+
+  @column()
+  declare userId: number
 
   @column()
   declare parentId: number | null
@@ -40,6 +44,9 @@ export default class Concept extends BaseModel {
   @hasMany(() => Concept, { foreignKey: 'parentId' })
   declare children: HasMany<typeof Concept>
 
+  @belongsTo(() => User)
+  declare role: BelongsTo<typeof User>
+
   @manyToMany(() => Concept, {
     pivotTable: 'related_concepts',
     pivotForeignKey: 'concept_id',
@@ -48,7 +55,7 @@ export default class Concept extends BaseModel {
   declare relatedConcepts: ManyToMany<typeof Concept>
 
   @manyToMany(() => Question, {
-    pivotTable: 'concept_question',
+    pivotTable: 'concept_questions',
   })
   declare questions: ManyToMany<typeof Question>
 

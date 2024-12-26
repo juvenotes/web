@@ -6,6 +6,7 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable('concepts', (table) => {
       table.increments('id')
+      table.integer('user_id').references('id').inTable('users').notNullable()
       table.integer('parent_id').references('id').inTable('concepts').nullable()
       table.string('title', 255).notNullable()
       table.string('slug', 255).notNullable().unique()
@@ -13,8 +14,7 @@ export default class extends BaseSchema {
       table.boolean('is_terminal').defaultTo(false)
       table.integer('level').notNullable()
       table.jsonb('metadata').defaultTo('{}')
-      table.timestamp('created_at')
-      table.timestamp('updated_at')
+      table.timestamps(true, true)
     })
 
     this.schema.createTable('related_concepts', (table) => {
