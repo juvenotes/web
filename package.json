@@ -15,6 +15,8 @@
   },
   "imports": {
     "#utils/*": "./app/utils/*.js",
+    "#constants/*": "./app/constants/*.js",
+    "#enums/*": "./app/enums/*.js",
     "#types/*": "./app/types/*.js",
     "#controllers/*": "./app/controllers/*.js",
     "#exceptions/*": "./app/exceptions/*.js",
@@ -62,6 +64,7 @@
   },
   "dependencies": {
     "@adonisjs/auth": "^9.2.3",
+    "@adonisjs/bouncer": "^3.1.4",
     "@adonisjs/core": "^6.14.1",
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/inertia": "^1.2.2",
@@ -75,6 +78,7 @@
     "@inertiajs/react": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.1",
     "@vinejs/vine": "^2.1.0",
+    "adonis-autoswagger": "^3.64.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "csv-parse": "^5.6.0",
