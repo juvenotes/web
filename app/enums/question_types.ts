@@ -1,6 +1,13 @@
-enum QuestionTypes {
+export enum QuestionType {
   MCQ = 'mcq',
   SAQ = 'saq',
 }
 
-export default QuestionTypes
+export enum DifficultyLevel {
+  EASY = 'easy',
+  MEDIUM = 'medium',
+  HARD = 'hard',
+}
+
+export type QuestionTypeKey = keyof typeof QuestionType
+export type DifficultyLevelKey = keyof typeof DifficultyLevel

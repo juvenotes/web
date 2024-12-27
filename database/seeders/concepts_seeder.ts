@@ -3,9 +3,18 @@ import { generateSlug } from '#utils/slug_generator'
 import db from '@adonisjs/lucid/services/db'
 import { parse } from 'csv-parse/sync'
 import fs from 'node:fs'
+import { ensureAdmin } from '#utils/ensure_admin'
 
 export default class ConceptSeeder extends BaseSeeder {
   async run() {
+    // Find admin user
+    const admin = await ensureAdmin()
+
+    if (!admin) {
+      throw new Error('Admin user must exist before seeding concepts')
+    }
+
+    // Read and parse CSV
     const csvContent = fs.readFileSync('database/seeders/syllabus.csv', 'utf-8')
     const records = parse(csvContent, {
       columns: false,
@@ -69,8 +78,9 @@ export default class ConceptSeeder extends BaseSeeder {
           level: depth,
           is_terminal: depth === currentMaxDepth,
           knowledge_block: knowledgeBlock,
+          user_id: admin.id, // Add user_id from admin
         })
-        .returning('id')
+        .returning(['id'])
 
       lastNodeAtLevel[depth] = Number(id)
     }

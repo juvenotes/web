@@ -1,60 +1,27 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
-import type { ManyToMany } from '@adonisjs/lucid/types/relations'
+import { BaseModel, belongsTo, column, computed, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
+import { QuestionType, DifficultyLevel } from '#enums/question_types'
 import Concept from './concept.js'
-
-type OptionKey = 'A' | 'B' | 'C' | 'D' | 'E'
-
-interface MCQConfig {
-  options: Record<OptionKey, string>
-  correct_answer: OptionKey
-  explanations: Record<OptionKey, string>
-}
-
-interface RubricPoint {
-  text: string
-  marks: number
-}
-
-interface RubricSection {
-  point: string
-  subpoints: RubricPoint[]
-}
-
-interface QuestionPart {
-  part_number: number
-  text: string
-  marks: number
-  rubric: RubricSection[]
-  model_answer: string
-  notes?: string
-}
-
-interface SAQConfig {
-  parts: QuestionPart[]
-  total_marks: number
-  pass_mark: number
-  time_allocation_minutes: number
-}
+import User from './user.js'
+import McqChoice from './mcq_choice.js'
+import SaqPart from './saq_part.js'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare conceptId: number | null
+  declare userId: number
 
   @column()
-  declare type: 'mcq' | 'saq'
+  declare type: QuestionType
 
   @column()
   declare questionText: string
 
   @column()
-  declare config: MCQConfig | SAQConfig
-
-  @column()
-  declare marks: number
+  declare difficultyLevel: DifficultyLevel
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -62,37 +29,36 @@ export default class Question extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
+
   @manyToMany(() => Concept, {
-    pivotTable: 'concept_question',
+    pivotTable: 'concept_questions',
   })
   declare concepts: ManyToMany<typeof Concept>
 
-  isMCQ(): this is { config: MCQConfig } {
-    return this.type === 'mcq'
+  @hasMany(() => McqChoice)
+  declare choices: HasMany<typeof McqChoice>
+
+  @hasMany(() => SaqPart)
+  declare parts: HasMany<typeof SaqPart>
+  slug: any
+
+  @computed()
+  get isMcq() {
+    return this.type === QuestionType.MCQ
   }
 
-  isSAQ(): this is { config: SAQConfig } {
-    return this.type === 'saq'
+  @computed()
+  get isSaq() {
+    return this.type === QuestionType.SAQ
   }
 
-  validateAnswer(answer: string): boolean {
-    if (this.isMCQ()) {
-      return answer === this.config.correct_answer
+  @computed()
+  get totalMarks() {
+    if (this.isSaq && this.parts) {
+      return this.parts.reduce((sum, part) => sum + part.marks, 0)
     }
-    return false
-  }
-
-  getExplanation(option: OptionKey): string | null {
-    if (this.isMCQ()) {
-      return this.config.explanations[option] || null
-    }
-    return null
-  }
-
-  getTotalMarks(): number {
-    if (this.isSAQ()) {
-      return this.config.total_marks
-    }
-    return this.marks
+    return 1 // MCQ questions worth 1 mark
   }
 }
