@@ -44,4 +44,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   MAILGUN_API_KEY: Env.schema.string(),
   MAILGUN_DOMAIN: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring ally package
+  |----------------------------------------------------------
+  */
+  GOOGLE_CLIENT_ID: Env.schema.string(),
+  GOOGLE_CLIENT_SECRET: Env.schema.string(),
 })

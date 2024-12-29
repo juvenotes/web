@@ -30,6 +30,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare roleId: number
 
   @column()
+  declare avatar_url: string | null
+
+  @column()
   declare fullName: string | null
 
   @column()
@@ -37,6 +40,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column({ serializeAs: null })
   declare password: string
+
+  @column()
+  declare providerId: string
+
+  @column()
+  declare provider: string
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
