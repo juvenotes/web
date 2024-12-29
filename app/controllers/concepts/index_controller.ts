@@ -22,8 +22,14 @@ export default class IndexController {
       .where('slug', params.slug)
       .preload('questions', (query) => {
         query
-          .select(['id', 'type', 'question_text', 'config', 'marks'])
-          .orderBy('created_at', 'desc')
+          .select(['id', 'type', 'question_text', 'difficulty_level', 'slug'])
+          .preload('choices', (choicesQuery) => {
+            choicesQuery.select(['id', 'question_id', 'choice_text', 'is_correct', 'explanation'])
+          })
+          .preload('parts', (partsQuery) => {
+            partsQuery.select(['id', 'question_id', 'part_text', 'expected_answer', 'marks'])
+          })
+          .orderBy('questions.created_at', 'desc')
       })
       .firstOrFail()
 
@@ -31,13 +37,16 @@ export default class IndexController {
       return response.json({
         concept: {
           ...concept.serialize(),
-          questions: concept.questions,
+          questions: concept.questions.map((q) => ({
+            ...q.serialize(),
+            choices: q.type === 'mcq' ? q.choices : undefined,
+            parts: q.type === 'saq' ? q.parts : undefined,
+          })),
           content: concept.knowledgeBlock,
         },
       })
     }
 
-    // For non-terminal nodes, don't include questions
     const children = await Concept.query()
       .where('parent_id', concept.id)
       .orderBy('level', 'asc')
