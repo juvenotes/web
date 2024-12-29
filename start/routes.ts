@@ -17,6 +17,7 @@ router.on('/').renderInertia('home')
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
+const GoogleSignupController = () => import('#controllers/auth/google_signup_controller')
 const ForgotPasswordController = () => import('#controllers/auth/forgot_password_controller')
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
@@ -125,3 +126,12 @@ router.get('/docs', async () => {
   // return AutoSwagger.default.scalar("/swagger"); to use Scalar instead
   // return AutoSwagger.default.rapidoc("/swagger", "view"); to use RapiDoc instead (pass "view" default, or "read" to change the render-style)
 })
+
+//* AUTH -> GOOGLE
+router
+  .group(() => {
+    router.get('/redirect', [GoogleSignupController, 'redirect'])
+    router.get('/callback', [GoogleSignupController, 'handleCallback'])
+  })
+  .prefix('/google')
+  .use(middleware.guest())
