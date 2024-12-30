@@ -10,7 +10,7 @@ export default {
   description: '', // use info instead
   tagIndex: 2,
   info: {
-    title: 'title',
+    title: 'Juvenotes Web',
     version: '1.0.0',
     description: '',
   },
