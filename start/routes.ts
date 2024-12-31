@@ -24,7 +24,7 @@ const AccountController = () => import('#controllers/settings/account_controller
 const IndexConceptsController = () => import('#controllers/concepts/index_controller')
 const ManageConceptsController = () => import('#controllers/manage/concepts_controller')
 const IndexQuestionsController = () => import('#controllers/questions/index_controller')
-// const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
+const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
@@ -88,10 +88,10 @@ router.get('/concepts/:slug', [IndexConceptsController, 'show'])
 //* QUESTIONS -> VIEW
 router
   .group(() => {
-    router.get('/', [IndexQuestionsController, 'index'])
+    // router.get('/', [IndexQuestionsController, 'index'])
     router.get('/:conceptSlug', [IndexQuestionsController, 'show'])
   })
-  .prefix('/bank')
+  .prefix('/vault')
 
 //* CONCEPTS -> MANAGE
 router
@@ -100,20 +100,20 @@ router
     router.post('/', [ManageConceptsController, 'store'])
     router.get('/:slug', [ManageConceptsController, 'show'])
     router.put('/:slug', [ManageConceptsController, 'update'])
-    // router.put('/:slug/content', [ManageConceptsController, 'updateContent'])
+    router.put('/:slug/content', [ManageConceptsController, 'updateContent'])
     router.delete('/:slug', [ManageConceptsController, 'destroy'])
   })
   .prefix('/manage/concepts')
 
 //* QUESTIONS -> MANAGE
-// router
-//   .group(() => {
-//     router.get('/', [ManageQuestionsController, 'index'])
-//     router.post('/', [ManageQuestionsController, 'store'])
-//     router.put('/:slug', [ManageQuestionsController, 'update'])
-//     router.delete('/:slug', [ManageQuestionsController, 'destroy'])
-//   })
-//   .prefix('/manage/questions')
+router
+  .group(() => {
+    router.get('/', [ManageQuestionsController, 'index'])
+    router.post('/', [ManageQuestionsController, 'store'])
+    router.put('/:slug', [ManageQuestionsController, 'update'])
+    router.delete('/:slug', [ManageQuestionsController, 'destroy'])
+  })
+  .prefix('/manage/questions')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
