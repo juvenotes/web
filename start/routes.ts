@@ -13,6 +13,7 @@ import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
 
 router.on('/').renderInertia('home')
+router.on('/learn').renderInertia('dashboard')
 
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
