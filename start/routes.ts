@@ -26,6 +26,8 @@ const IndexConceptsController = () => import('#controllers/concepts/index_contro
 const ManageConceptsController = () => import('#controllers/manage/concepts_controller')
 const IndexQuestionsController = () => import('#controllers/questions/index_controller')
 const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
+const IndexPapersController = () => import('#controllers/papers/index_controller')
+// const ManagePapersController = () => import('#controllers/manage/papers_controller')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
@@ -99,9 +101,9 @@ router
   .group(() => {
     router.get('/', [ManageConceptsController, 'index'])
     router.post('/', [ManageConceptsController, 'store'])
-    router.get('/:slug', [ManageConceptsController, 'show'])
-    router.put('/:slug', [ManageConceptsController, 'update'])
-    router.put('/:slug/content', [ManageConceptsController, 'updateContent'])
+    // router.get('/:slug', [ManageConceptsController, 'show'])
+    // router.put('/:slug', [ManageConceptsController, 'update'])
+    // router.put('/:slug/content', [ManageConceptsController, 'updateContent'])
     router.delete('/:slug', [ManageConceptsController, 'destroy'])
   })
   .prefix('/manage/concepts')
@@ -110,6 +112,7 @@ router
 router
   .group(() => {
     router.get('/', [ManageQuestionsController, 'index'])
+    router.get('/:slug', [ManageQuestionsController, 'show'])
     router.post('/', [ManageQuestionsController, 'store'])
     router.put('/:slug', [ManageQuestionsController, 'update'])
     router.delete('/:slug', [ManageQuestionsController, 'destroy'])
@@ -136,3 +139,22 @@ router
   })
   .prefix('/google')
   .use(middleware.guest())
+
+//* PAST PAPERS -> VIEW
+router.get('/papers', [IndexPapersController, 'index'])
+router.get('/papers/:slug', [IndexPapersController, 'show'])
+
+//* CONCEPTS -> MANAGE
+// router
+//   .group(() => {
+//     router.get('/', [ManagePapersController, 'index'])
+//     router.get('/:slug', [ManagePapersController, 'show'])
+//     // router.post('/', [ManagePapersController, 'store'])
+//     // router.put('/:slug', [ManagePapersController, 'update'])
+//     // router.delete('/:slug', [ManagePapersController, 'destroy'])
+//     router.get('/:slug/questions/new', [ManagePapersController, 'createQuestion'])
+//     router.post('/:slug/questions', [ManagePapersController, 'addQuestion'])
+//     router.get('/:slug/questions/:questionSlug/edit', [ManagePapersController, 'editQuestion'])
+//     router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
+//   })
+//   .prefix('/manage/papers')
