@@ -56,7 +56,7 @@ export default function Home() {
 
             <Button
               variant="default"
-              onClick={() => router.visit('/dashboard')}
+              onClick={() => router.visit('/login')}
               className="bg-[#55A9C4] text-white hover:bg-[#55A9C4]/90 text-primary-foreground"
             >
               Login
@@ -82,7 +82,7 @@ export default function Home() {
             </p>
             <Button
               className="bg-[#55A9C4] text-white px-6 py-2 text-lg font-medium rounded-lg shadow-lg hover:bg-[#55A9C4]/90"
-              onClick={() => router.visit('/dashboard')}
+              onClick={() => router.visit('/learn')}
             >
               START LEARNING NOW
             </Button>

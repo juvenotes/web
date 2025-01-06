@@ -16,6 +16,9 @@ function handleSubmit(e: FormEvent<HTMLFormElement>) {
     password: formData.get('password'),
   })
 }
+const handleGoogleLogin = () => {
+  router.visit('/auth/google/redirect')
+}
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -46,7 +49,12 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               <Button type="submit" className="w-full">
                 Login
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleGoogleLogin}
+                type="button"
+              >
                 Login with Google
               </Button>
             </div>
