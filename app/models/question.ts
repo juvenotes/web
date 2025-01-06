@@ -6,6 +6,7 @@ import Concept from './concept.js'
 import User from './user.js'
 import McqChoice from './mcq_choice.js'
 import SaqPart from './saq_part.js'
+import PastPaper from './past_paper.js'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })
@@ -43,6 +44,12 @@ export default class Question extends BaseModel {
   @hasMany(() => SaqPart)
   declare parts: HasMany<typeof SaqPart>
   slug: any
+
+  @column()
+  declare pastPaperId: number | null
+
+  @belongsTo(() => PastPaper)
+  declare pastPaper: BelongsTo<typeof PastPaper>
 
   @computed()
   get isMcq() {

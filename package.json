@@ -15,6 +15,7 @@
   },
   "imports": {
     "#utils/*": "./app/utils/*.js",
+    "#dtos/*": "./app/dtos/*.js",
     "#constants/*": "./app/constants/*.js",
     "#enums/*": "./app/enums/*.js",
     "#types/*": "./app/types/*.js",
@@ -84,8 +85,7 @@
     "@radix-ui/react-navigation-menu": "^1.2.3",
     "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.1",
-    "@radix-ui/react-toast": "^1.2.4",
-    "@radix-ui/react-tooltip": "^1.1.6",
+    "@tuyau/inertia": "^0.0.8",
     "@vinejs/vine": "^2.1.0",
     "adonis-autoswagger": "^3.64.0",
     "axios": "^1.7.9",
