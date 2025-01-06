@@ -13,7 +13,7 @@ import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
 
 router.on('/').renderInertia('home')
-router.on('/learn').renderInertia('dashboard')
+// router.on('/dashboard').renderInertia('dashboard')
 
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
@@ -26,6 +26,8 @@ const IndexConceptsController = () => import('#controllers/concepts/index_contro
 const ManageConceptsController = () => import('#controllers/manage/concepts_controller')
 const IndexQuestionsController = () => import('#controllers/questions/index_controller')
 const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
+const DashboardController = () => import('#controllers/dashboard/index_controller')
+const StudyTimeController = () => import('#controllers/study_time_controller/study_time_controller')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
@@ -136,3 +138,12 @@ router
   })
   .prefix('/google')
   .use(middleware.guest())
+
+//* DASHBOARD -> HOME
+router.get('/dashboard', [DashboardController, 'handle']).as('dashboard').use(middleware.auth())
+
+//* STUDY TIME
+router
+  .post('/api/study-time', [StudyTimeController, 'store'])
+  .as('study.time.store')
+  .use(middleware.auth())

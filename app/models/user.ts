@@ -47,6 +47,15 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare provider: string
 
+  @column()
+  declare total_study_time: number
+
+  @column()
+  declare streak_count: number
+
+  @column.dateTime()
+  declare last_login: DateTime
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

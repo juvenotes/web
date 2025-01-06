@@ -9,11 +9,11 @@ import {
   NavigationMenuContent,
   NavigationMenuList,
 } from '~/components/ui/navigation-menu'
-import { Twitter, Instagram, Facebook } from 'lucide-react'
+import { Twitter, Instagram, Linkedin } from 'lucide-react'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden flex flex-col">
       <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center px-4 container mx-auto justify-between">
           {/* Logo Area */}
@@ -22,7 +22,7 @@ export default function Home() {
               onClick={() => router.visit('/')}
               className="cursor-pointer hover:opacity-80 transition-opacity"
             >
-              <img src="/images/logo.png" alt="Logo" className="h-12 w-auto" />
+              <img src="/images/logo.png" alt="Logo" className="h-14 w-28" />
             </div>
           </div>
 
@@ -56,7 +56,7 @@ export default function Home() {
 
             <Button
               variant="default"
-              onClick={() => router.visit('/login')}
+              onClick={() => router.visit('/dashboard')}
               className="bg-[#55A9C4] text-white hover:bg-[#55A9C4]/90 text-primary-foreground"
             >
               Login
@@ -66,7 +66,7 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col w-full">
+      <main className="flex-1 flex flex-col w-full overflow-y-auto">
         {/* Hero Section */}
         <section className="bg-gray-50 py-8 flex-none">
           <div className="container mx-auto px-6 text-center">
@@ -82,7 +82,7 @@ export default function Home() {
             </p>
             <Button
               className="bg-[#55A9C4] text-white px-6 py-2 text-lg font-medium rounded-lg shadow-lg hover:bg-[#55A9C4]/90"
-              onClick={() => router.visit('/register')}
+              onClick={() => router.visit('/dashboard')}
             >
               START LEARNING NOW
             </Button>
@@ -204,7 +204,7 @@ export default function Home() {
             <div className="flex items-center gap-4">
               <img src="/images/logo.png" alt="Logo" className="h-12 w-auto" />
               <p className="text-sm text-muted-foreground">
-                © 2024 Juvenotes. All rights reserved.
+                © 2025 Juvenotes. All rights reserved.
               </p>
             </div>
 
@@ -219,7 +219,7 @@ export default function Home() {
                   <Instagram className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-[#55A9C4] hover:text-[#55A9C4]/80 transition-colors">
-                  <Facebook className="h-5 w-5" />
+                  <Linkedin className="h-5 w-5" />
                 </a>
               </div>
             </div>
