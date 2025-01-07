@@ -5,16 +5,29 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { router } from '@inertiajs/react'
 import { FormEvent } from 'react'
+import { Link } from '@inertiajs/react'
 
 function handleSubmit(e: FormEvent<HTMLFormElement>) {
   e.preventDefault()
 
   const formData = new FormData(e.currentTarget)
 
-  router.post('/register', {
-    fullname: formData.get('full name'),
+  const data = {
+    fullName: formData.get('fullName'),
     email: formData.get('email'),
     password: formData.get('password'),
+  }
+
+  console.log('Submitting registration data:', data)
+
+  router.post('/register', data, {
+    onSuccess: () => {
+      console.log('Registration successful', data)
+    },
+    onError: (errors) => {
+      console.log('Registration errors:', errors)
+    },
+    preserveScroll: true,
   })
 }
 
@@ -30,13 +43,13 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <label className=" font-semibold" htmlFor="full name">
+                <label className=" font-semibold" htmlFor="fullName">
                   Full Name
                 </label>
                 <input
-                  name="full name"
+                  name="fullName"
                   className="border p-2 rounded-md"
-                  id="full name"
+                  id="fullName"
                   type="text"
                   placeholder="John Doe"
                   required
@@ -67,9 +80,9 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{' '}
-              <a href="#" className="underline underline-offset-4">
-                Log in
-              </a>
+              <Link href="/login" className="underline underline-offset-4">
+                Login
+              </Link>
             </div>
           </form>
         </CardContent>

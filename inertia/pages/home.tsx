@@ -10,8 +10,16 @@ import {
   NavigationMenuList,
 } from '~/components/ui/navigation-menu'
 import { Twitter, Instagram, Linkedin } from 'lucide-react'
+import { Link } from '@inertiajs/react'
+import { usePage } from '@inertiajs/react'
+import type { SharedProps } from '@adonisjs/inertia/types'
+// import type UserDto from '#dtos/user'
+
 
 export default function Home() {
+  const user = usePage<SharedProps>()
+  console.log('Auth prop received:', user)
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden flex flex-col">
       <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -19,7 +27,7 @@ export default function Home() {
           {/* Logo Area */}
           <div className="flex items-center">
             <div
-              onClick={() => router.visit('/')}
+              onClick={() => router.get('/')}
               className="cursor-pointer hover:opacity-80 transition-opacity"
             >
               <img src="/images/logo.png" alt="Logo" className="h-14 w-28" />
@@ -54,13 +62,33 @@ export default function Home() {
 
             <ModeToggle />
 
-            <Button
-              variant="default"
-              onClick={() => router.visit('/login')}
-              className="bg-[#55A9C4] text-white hover:bg-[#55A9C4]/90 text-primary-foreground"
+            {user ? (
+              <Link
+                href="/logout"
+                method="post"
+                as="button"
+                className="inline-flex h-9 items-center justify-center rounded-md border border-input px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-accent hover:text-accent-foreground"
+              >
+                Logout
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                method="get"
+                as="button"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-[#55A9C4] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#55A9C4]/90"
+              >
+                Login
+              </Link>
+            )}
+            <Link
+              href="/logout"
+              method="post"
+              as="button"
+              className="inline-flex h-9 items-center justify-center rounded-md border border-input px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-accent hover:text-accent-foreground"
             >
-              Login
-            </Button>
+              Logout
+            </Link>
           </div>
         </div>
       </nav>
@@ -76,6 +104,11 @@ export default function Home() {
             </div>
 
             <h2 className="text-xl font-semibold text-[#55A9C4] mb-4">Study Smart, Excel Easy!</h2>
+            {/* {user && (
+              // <div className="text-[#55A9C4] font-medium mt-2">
+              //   Welcome back, {user.fullName}!
+              // </div>
+            )} */}
             <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
               Welcome to Juvenotes, your premier destination for a transformative medical education
               experience. 🚀 Here's why you should sign up:

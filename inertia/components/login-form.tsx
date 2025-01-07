@@ -5,10 +5,10 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { router } from '@inertiajs/react'
 import { FormEvent } from 'react'
+import { Link } from '@inertiajs/react'
 
 function handleSubmit(e: FormEvent<HTMLFormElement>) {
   e.preventDefault()
-
   const formData = new FormData(e.currentTarget)
 
   router.post('/login', {
@@ -17,7 +17,7 @@ function handleSubmit(e: FormEvent<HTMLFormElement>) {
   })
 }
 const handleGoogleLogin = () => {
-  router.visit('/auth/google/redirect')
+  router.get('/auth/google/redirect')
 }
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
@@ -60,9 +60,12 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{' '}
-              <a href="#" className="underline underline-offset-4">
+              <Link href="/register" className="underline underline-offset-4">
                 Sign up
-              </a>
+              </Link>
+              {/* <a href="" className="underline underline-offset-4">
+                Sign up
+              </a> */}
             </div>
           </form>
         </CardContent>

@@ -1,3 +1,4 @@
+import UserDto from '#dtos/user'
 import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 
@@ -11,7 +12,22 @@ const inertiaConfig = defineConfig({
    * Data that should be shared with all rendered pages
    */
   sharedData: {
-    errors: (ctx) => ctx.session?.flashMessages.get('errors'),
+    user: (ctx) => {
+      const user = ctx.auth.use('web').user
+      return user && new UserDto(user)
+    },
+    errors: (ctx) => {
+      const errors = ctx.session?.flashMessages.get('errors') ?? {}
+      return Object.keys(errors).reduce(
+        (obj, key) => ({
+          ...obj,
+          [key]: errors[key].join(', '),
+        }),
+        {}
+      )
+    },
+    exceptions: (ctx) => ctx.session.flashMessages.get('errorsBag') ?? {},
+    messages: (ctx) => ctx.session.flashMessages.all() ?? {},
   },
 
   /**
@@ -19,8 +35,8 @@ const inertiaConfig = defineConfig({
    */
   ssr: {
     enabled: true,
-    entrypoint: 'inertia/app/ssr.tsx'
-  }
+    entrypoint: 'inertia/app/ssr.tsx',
+  },
 })
 
 export default inertiaConfig

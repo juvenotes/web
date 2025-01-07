@@ -12,9 +12,7 @@ import { middleware } from './kernel.js'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
 
-router.on('/').renderInertia('home')
-// router.on('/dashboard').renderInertia('dashboard')
-
+const HomeController = () => import('#controllers/home_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
@@ -27,7 +25,11 @@ const ManageConceptsController = () => import('#controllers/manage/concepts_cont
 const IndexQuestionsController = () => import('#controllers/questions/index_controller')
 const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
 const IndexPapersController = () => import('#controllers/papers/index_controller')
+const DashboardController = () => import('#controllers/dashboard/index_controller')
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
+
+//* HOME
+router.get('/', [HomeController, 'index']).as('home')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
@@ -59,6 +61,9 @@ router
   .post('/forgot-password/reset', [ForgotPasswordController, 'update'])
   .as('auth.password.update')
   .use([middleware.guest()])
+
+//* DASHBOARD -> ACCOUNT
+router.get('learn', [DashboardController, 'handle']).as('learn').use([middleware.auth()])
 
 //* SETTINGS -> ACCOUNT
 router
