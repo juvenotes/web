@@ -16,7 +16,6 @@ export default class WebLogin {
     const user = await User.verifyCredentials(data.email, data.password)
 
     await this.ctx.auth.use('web').login(user, data.remember)
-    console.log('on the login controller user is', user)
 
     return user
   }

@@ -20,6 +20,7 @@ declare module 'vue' {
     FormMessage: typeof import('./inertia/components/ui/form/FormMessage.vue')['default']
     Input: typeof import('./inertia/components/ui/input/Input.vue')['default']
     Label: typeof import('./inertia/components/ui/label/Label.vue')['default']
+    MdxContent: typeof import('./inertia/components/MdxContent.vue')['default']
     Toast: typeof import('./inertia/components/ui/toast/Toast.vue')['default']
     ToastAction: typeof import('./inertia/components/ui/toast/ToastAction.vue')['default']
     ToastClose: typeof import('./inertia/components/ui/toast/ToastClose.vue')['default']

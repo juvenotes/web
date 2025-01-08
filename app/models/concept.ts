@@ -63,17 +63,18 @@ export default class Concept extends BaseModel {
   @hasMany(() => PastPaper)
   declare pastPapers: HasMany<typeof PastPaper>
 
-  public isRootLevel() {
-    return this.level === 0
-  }
-
   @computed()
-  get hasChildren() {
+  public get hasChildren(): boolean {
     return this.children?.length > 0
   }
 
   @computed()
-  get isRoot() {
+  public get isRoot(): boolean {
     return this.parentId === null
+  }
+
+  @computed()
+  public get isRootLevel(): boolean {
+    return this.level === 0
   }
 }

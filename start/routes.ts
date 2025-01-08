@@ -12,7 +12,7 @@ import { middleware } from './kernel.js'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
 
-// const HomeController = () => import('#controllers/home_controller')
+const HomeController = () => import('#controllers/home_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
@@ -21,15 +21,16 @@ const ForgotPasswordController = () => import('#controllers/auth/forgot_password
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
 const IndexConceptsController = () => import('#controllers/concepts/index_controller')
-const ManageConceptsController = () => import('#controllers/manage/concepts_controller')
+// const ManageConceptsController = () => import('#controllers/manage/concepts_controller')
 const IndexQuestionsController = () => import('#controllers/questions/index_controller')
-const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
+// const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
 const IndexPapersController = () => import('#controllers/papers/index_controller')
-const DashboardController = () => import('#controllers/dashboard/index_controller')
+const UserDashboardController = () => import('#controllers/dashboard/index_controller')
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
+const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 
 //* HOME
-// router.get('/', [HomeController, 'index']).as('home')
+router.get('/', [HomeController, 'index']).as('home')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
@@ -63,7 +64,7 @@ router
   .use([middleware.guest()])
 
 //* DASHBOARD -> ACCOUNT
-router.get('learn', [DashboardController, 'handle']).as('learn').use([middleware.auth()])
+router.get('learn', [UserDashboardController, 'handle']).as('learn').use([middleware.auth()])
 
 //* SETTINGS -> ACCOUNT
 router
@@ -101,28 +102,35 @@ router
   })
   .prefix('/vault')
 
-//* CONCEPTS -> MANAGE
+//* MANAGEMENT DASHBOARD - ADMIN
 router
   .group(() => {
-    router.get('/', [ManageConceptsController, 'index'])
-    router.post('/', [ManageConceptsController, 'store'])
-    // router.get('/:slug', [ManageConceptsController, 'show'])
-    // router.put('/:slug', [ManageConceptsController, 'update'])
-    // router.put('/:slug/content', [ManageConceptsController, 'updateContent'])
-    router.delete('/:slug', [ManageConceptsController, 'destroy'])
+    router.get('/', [ManagementDashboardController, 'index'])
   })
-  .prefix('/manage/concepts')
+  .prefix('/manage')
+
+//* CONCEPTS -> MANAGE
+// router
+//   .group(() => {
+//     router.get('/', [ManageConceptsController, 'index'])
+//     router.post('/', [ManageConceptsController, 'store'])
+//     // router.get('/:slug', [ManageConceptsController, 'show'])
+//     // router.put('/:slug', [ManageConceptsController, 'update'])
+//     // router.put('/:slug/content', [ManageConceptsController, 'updateContent'])
+//     router.delete('/:slug', [ManageConceptsController, 'destroy'])
+//   })
+//   .prefix('/manage/concepts')
 
 //* QUESTIONS -> MANAGE
-router
-  .group(() => {
-    router.get('/', [ManageQuestionsController, 'index'])
-    router.get('/:slug', [ManageQuestionsController, 'show'])
-    router.post('/', [ManageQuestionsController, 'store'])
-    router.put('/:slug', [ManageQuestionsController, 'update'])
-    router.delete('/:slug', [ManageQuestionsController, 'destroy'])
-  })
-  .prefix('/manage/questions')
+// router
+//   .group(() => {
+//     router.get('/', [ManageQuestionsController, 'index'])
+//     router.get('/:slug', [ManageQuestionsController, 'show'])
+//     router.post('/', [ManageQuestionsController, 'store'])
+//     router.put('/:slug', [ManageQuestionsController, 'update'])
+//     router.delete('/:slug', [ManageQuestionsController, 'destroy'])
+//   })
+//   .prefix('/manage/questions')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -149,7 +157,7 @@ router
 router.get('/papers', [IndexPapersController, 'index'])
 router.get('/papers/:slug', [IndexPapersController, 'show'])
 
-//* CONCEPTS -> MANAGE
+//* PAST PAPERS -> MANAGE
 // router
 //   .group(() => {
 //     router.get('/', [ManagePapersController, 'index'])
@@ -163,4 +171,3 @@ router.get('/papers/:slug', [IndexPapersController, 'show'])
 //     router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
 //   })
 //   .prefix('/manage/papers')
-router.on('/').renderInertia('home')

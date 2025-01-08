@@ -36,7 +36,6 @@ export default class GoogleSignupController {
       }
 
       const googleUser = await google.user()
-      // console.log(googleUser)
       const user = await User.firstOrCreate({
         email: googleUser.email,
         provider: 'google',
