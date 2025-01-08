@@ -12,7 +12,7 @@ import { middleware } from './kernel.js'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
 
-const HomeController = () => import('#controllers/home_controller')
+// const HomeController = () => import('#controllers/home_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
@@ -29,7 +29,7 @@ const DashboardController = () => import('#controllers/dashboard/index_controlle
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
 
 //* HOME
-router.get('/', [HomeController, 'index']).as('home')
+// router.get('/', [HomeController, 'index']).as('home')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
@@ -163,3 +163,4 @@ router.get('/papers/:slug', [IndexPapersController, 'show'])
 //     router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
 //   })
 //   .prefix('/manage/papers')
+router.on('/').renderInertia('home')

@@ -15,9 +15,9 @@ export default class UserDto extends BaseModelDto {
   declare provider: string
   declare total_study_time: number
   declare streak_count: number
-  declare last_login: string
-  declare createdAt: string
-  declare updatedAt: string | null
+  // declare last_login: string
+  // declare createdAt: string
+  // declare updatedAt: string | null
   declare role: RoleDto | null
   declare emailHistories: EmailHistoryDto[]
   declare passwordResetTokens: PasswordResetTokenDto[]
@@ -36,9 +36,9 @@ export default class UserDto extends BaseModelDto {
     this.provider = user.provider
     this.total_study_time = user.total_study_time
     this.streak_count = user.streak_count
-    this.last_login = user.last_login.toISO()!
-    this.createdAt = user.createdAt.toISO()!
-    this.updatedAt = user.updatedAt?.toISO()!
+    // this.last_login = user.last_login.toISO()!
+    // this.createdAt = user.createdAt.toISO()!
+    // this.updatedAt = user.updatedAt?.toISO()!
     this.role = user.role && new RoleDto(user.role)
     this.emailHistories = EmailHistoryDto.fromArray(user.emailHistories)
     this.passwordResetTokens = PasswordResetTokenDto.fromArray(user.passwordResetTokens)

@@ -10,20 +10,13 @@ export default class RegisterController {
 
   @inject()
   async store({ request, response, session }: HttpContext, webRegister: WebRegister) {
-    try {
-      console.log('Received registration data:', request.all()) // Debug incoming data
+    const data = await request.validateUsing(registerValidator)
 
-      const data = await request.validateUsing(registerValidator)
-      console.log('Validated data:', data) // Debug validated data
+    // register the user
+    await webRegister.handle({ data })
 
-      const { user } = await webRegister.handle({ data })
-      console.log('Created user:', user) // Debug created user
+    session.flash('success', 'Welcome to Juvenotes')
 
-      session.flash('success', 'Welcome to Juvenotes my friend')
-      return response.redirect().toRoute('/learn')
-    } catch (error) {
-      console.error('Registration error:', error) // Debug errors
-      throw error
-    }
+    return response.redirect().toRoute('/')
   }
 }

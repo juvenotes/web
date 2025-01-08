@@ -16,7 +16,7 @@ export default class WebRegister {
     const user = await User.create(data)
 
     await this.ctx.auth.use('web').login(user)
-    console.log('on the register controller user is', user)
+    // console.log('on the register controller user is', user)
     return { user }
   }
 }
