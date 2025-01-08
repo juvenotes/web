@@ -1,29 +1,22 @@
-import User from "#models/user";
-import { registerValidator } from "#validators/auth";
-import type { HttpContext } from "@adonisjs/core/http";
-import app from "@adonisjs/core/services/app";
+import WebRegister from '#actions/auth/http/web_register'
+import { registerValidator } from '#validators/auth'
+import { inject } from '@adonisjs/core'
+import type { HttpContext } from '@adonisjs/core/http'
 
 export default class RegisterController {
   async show({ inertia }: HttpContext) {
-    return inertia.render("auth/register"); //create this file @monari, inside pages
+    return inertia.render('auth/register')
   }
 
-  /**
-   * Form fields:
-   * fullName: John Doe
-   * email: john@mail.com
-   * password: password
-   */
+  @inject()
+  async store({ request, response, session }: HttpContext, webRegister: WebRegister) {
+    const data = await request.validateUsing(registerValidator)
 
-  async store({ request, response, auth, session }: HttpContext) {
-    const data = await request.validateUsing(registerValidator);
-    const user = await User.register(auth, data);
-    const baseMessage = `Welcome to ${app.appName}`;
+    // register the user
+    await webRegister.handle({ data })
 
-    session.flash(
-      "success",
-      user.fullName ? `${baseMessage}, ${user.fullName}` : baseMessage,
-    );
-    return response.redirect().toRoute("/");
+    session.flash('success', 'Welcome to Juvenotes')
+
+    return response.redirect().toRoute('/')
   }
 }

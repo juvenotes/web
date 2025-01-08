@@ -4,6 +4,7 @@
     "rootDir": "./",
     "outDir": "./build",
     "baseUrl": ".",
+    "strict": true,
     "paths": {
       "@/*": ["./inertia/*"]
     }

@@ -15,6 +15,8 @@ export default defineConfig({
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/mail/commands'),
     () => import('@adonisjs/bouncer/commands'),
+    () => import('@adocasts.com/dto/commands'),
+    () => import('@adocasts.com/actions/commands')
   ],
 
   /*
