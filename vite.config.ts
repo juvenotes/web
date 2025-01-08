@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import { getDirname } from '@adonisjs/core/helpers'
 import inertia from '@adonisjs/inertia/client'
-import react from '@vitejs/plugin-react'
 import adonisjs from '@adonisjs/vite/client'
 import mdx from '@mdx-js/rollup'
 import tailwind from 'tailwindcss'
@@ -19,7 +18,6 @@ export default defineConfig({
         /* jsxImportSource: …, otherOptions… */
       }),
     },
-    react(),
     adonisjs({ entrypoints: ['inertia/app/app.tsx'], reload: ['resources/views/**/*.edge'] }),
     inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.ts' } }),
     vue(),
