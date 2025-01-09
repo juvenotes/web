@@ -54,7 +54,7 @@ export default class ManageConceptsController {
     }
   }
 
-  async store({ request, auth, response }: HttpContext) {
+  async store({ request, auth, response, session }: HttpContext) {
     const data = await request.validateUsing(createConceptValidator)
 
     const concept = await Concept.create({
@@ -64,10 +64,11 @@ export default class ManageConceptsController {
       level: data.parentId ? 1 : 0,
     })
 
+    session.flash('success', `${concept.title} created successfuly`)
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
-  async update({ request, params, response }: HttpContext) {
+  async update({ request, params, response, session }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
     const data = await request.validateUsing(updateConceptValidator)
 
@@ -77,6 +78,7 @@ export default class ManageConceptsController {
       })
       .save()
 
+    session.flash('success', `${concept.title} updated successfuly`)
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
@@ -88,9 +90,11 @@ export default class ManageConceptsController {
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
-  async destroy({ params, response }: HttpContext) {
+  async destroy({ params, response, session }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
     await concept.delete()
+
+    session.flash('success', 'Concept deleted successfully')
     return response.redirect().toPath('/manage/concepts')
   }
 }

@@ -4,12 +4,8 @@ import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
 import { computed, ref, watchEffect } from 'vue'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import MdxContent from '~/components/MdxContent.vue'
 
 defineOptions({ layout: AdminLayout })
 
@@ -53,6 +49,10 @@ const handleDelete = () => {
 </script>
 
 <template>
+  <AppHead
+    :title="`Manage ${concept.title}`"
+    description="Manage a specific concept in Juvenotes"
+  />
   <div class="container mx-auto px-4 py-8">
     <nav class="flex items-center gap-2 mb-6 text-sm">
       <Link href="/manage/concepts">Concepts</Link>
@@ -96,11 +96,6 @@ const handleDelete = () => {
               </p>
             </div>
 
-            <!-- <div v-if="concept.isTerminal" class="space-y-2">
-              <Label>Content</Label>
-              <Textarea v-model="form.knowledgeBlock" rows="10" />
-            </div> -->
-
             <Button type="submit" :disabled="form.processing">
               {{ form.processing ? 'Saving...' : 'Save Changes' }}
             </Button>
@@ -109,7 +104,9 @@ const handleDelete = () => {
       </Dialog>
 
       <!-- Content -->
-      <div v-if="content" class="prose max-w-none" v-html="content" />
+      <div v-if="content">
+        <MdxContent :content="content" />
+      </div>
 
       <!-- Questions -->
       <div v-if="questions?.length" class="mt-8 space-y-8">
@@ -142,5 +139,6 @@ const handleDelete = () => {
         </div>
       </div>
     </div>
+
   </div>
 </template>
