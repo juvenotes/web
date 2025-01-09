@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-// import AdminLayout from '~/layouts/AdminLayout.vue'
+import AdminLayout from '~/layouts/AdminLayout.vue'
 import type StatsDto from '#dtos/stats'
 import { 
   BookOpen, 
@@ -11,7 +11,7 @@ import {
 import { computed } from 'vue'
 import { Button } from '~/components/ui/button'
 
-// defineOptions({ layout: AdminLayout })
+defineOptions({ layout: AdminLayout })
 
 type StatKey = keyof StatsDto
 
@@ -54,6 +54,7 @@ const quickLinks = [
 </script>
 
 <template>
+  <AppHead title="Admin Dashboard" description="Manage our content from here" />
   <div class="container mx-auto p-6">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold">Dashboard</h1>

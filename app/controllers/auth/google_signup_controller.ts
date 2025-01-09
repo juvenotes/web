@@ -8,9 +8,9 @@ export default class GoogleSignupController {
   }
 
   async handleCallback({ ally, auth, response, session }: HttpContext) {
-    try {
-      const google = ally.use('google')
+    const google = ally.use('google')
 
+    try {
       if (google.accessDenied()) {
         session.flash('message', {
           type: 'error',

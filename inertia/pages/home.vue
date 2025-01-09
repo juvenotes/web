@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
 import Toaster from '~/components/ui/toast/Toaster.vue'
 import UserDto from '#dtos/user'
 defineProps<{
@@ -10,7 +9,7 @@ defineProps<{
 
 <template>
 
-  <Head title="Juvenotes - Study Smart, Excel Easy" />
+  <AppHead title="Home" description="Welcome to Juvenotes" />
 
   <div class="min-h-screen bg-background">
 
