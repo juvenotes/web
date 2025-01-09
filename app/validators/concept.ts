@@ -27,8 +27,13 @@ export const createConceptValidator = vine.compile(
 export const updateConceptValidator = vine.compile(
   vine.object({
     title: vine.string().minLength(3).optional(),
-    knowledgeBlock: vine.string().optional(),
     isTerminal: vine.boolean().optional(),
     metadata: metadataSchema.optional(),
+  })
+)
+
+export const updateKnowledgeBlockValidator = vine.compile(
+  vine.object({
+    knowledgeBlock: vine.string().optional(),
   })
 )
