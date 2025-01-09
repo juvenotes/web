@@ -9,10 +9,6 @@ defineProps<{
 }>()
 
 const logoPath = '/images/logo.png'
-
-const handleLogout = () => {
-  $inertia.post(route('auth.logout'))
-}
 </script>
 
 <template>

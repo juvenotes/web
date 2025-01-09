@@ -61,11 +61,11 @@ export default class Question extends BaseModel {
     return this.type === QuestionType.SAQ
   }
 
-  @computed()
-  get totalMarks() {
-    if (this.isSaq && this.parts) {
-      return this.parts.reduce((sum, part) => sum + part.marks, 0)
-    }
-    return 1 // MCQ questions worth 1 mark
-  }
+  // @computed()
+  // get totalMarks() {
+  //   if (this.isSaq && this.parts) {
+  //     return this.parts.reduce((sum, part) => sum + part.marks, 0)
+  //   }
+  //   return 1
+  // }
 }

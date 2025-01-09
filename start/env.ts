@@ -18,6 +18,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   HOST: Env.schema.string({ format: 'host' }),
   LOG_LEVEL: Env.schema.string(),
   APP_URL: Env.schema.string(),
+  APP_DOMAIN: Env.schema.string(),
 
   /*
   |----------------------------------------------------------
@@ -41,7 +42,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   | Variables for configuring the mail package
   |----------------------------------------------------------
-<<<<<<< Updated upstream
   */
   MAILGUN_API_KEY: Env.schema.string(),
   MAILGUN_DOMAIN: Env.schema.string(),
