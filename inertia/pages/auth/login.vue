@@ -22,50 +22,99 @@ const form = useForm({
 </script>
 
 <template>
-    <AppHead title="Login" description="Login to your Juvenotes account" />
+    <div class="min-h-[80vh] flex items-center justify-center px-4">
+        <div class="w-full max-w-md">
+            <!-- Card Container -->
+            <div class="bg-card rounded-xl shadow-lg p-8 space-y-6">
+                <!-- Header -->
+                <div class="text-center space-y-2">
+                    <img src="/public/images/logo.png" alt="Juvenotes" class="h-12 mx-auto mb-4" />
+                    <h1 class="text-2xl font-semibold">Welcome back</h1>
+                    <p class="text-sm text-muted-foreground">
+                        New to Juvenotes? 
+                        <Link href="/register" class="text-primary hover:underline transition-all">
+                            Create an account
+                        </Link>
+                    </p>
+                </div>
 
-    <div class="flex flex-col space-y-2">
-        <h1 class="text-2xl font-semibold tracking-tight">Login</h1>
-        <p class="text-sm text-muted-foreground">
-            <Link href="/register">Need an account? Register</Link>
-        </p>
+                <!-- Alert -->
+                <Alert v-if="exceptions?.E_INVALID_CREDENTIALS" variant="destructive">
+                    <AlertCircle class="h-4 w-4" />
+                    <AlertDescription>{{ exceptions.E_INVALID_CREDENTIALS }}</AlertDescription>
+                </Alert>
+
+                <!-- Form -->
+                <form @submit.prevent="form.post('/login')" class="space-y-4">
+                    <div class="space-y-4">
+                        <!-- Email -->
+                        <div class="space-y-2">
+                            <Label for="email">Email</Label>
+                            <Input
+                                id="email"
+                                v-model="form.email"
+                                type="email"
+                                required
+                                placeholder="name@example.com"
+                                :class="{ 'border-destructive': form.errors.email }"
+                            />
+                            <p v-if="form.errors.email" class="text-sm text-destructive">
+                                {{ form.errors.email }}
+                            </p>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="space-y-2">
+                            <Label for="password">Password</Label>
+                            <Input
+                                id="password"
+                                v-model="form.password"
+                                type="password"
+                                required
+                                placeholder="••••••••"
+                                :class="{ 'border-destructive': form.errors.password }"
+                            />
+                            <p v-if="form.errors.password" class="text-sm text-destructive">
+                                {{ form.errors.password }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Remember & Forgot -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <Checkbox id="remember" v-model="form.remember" />
+                            <Label for="remember" class="text-sm">Remember me</Label>
+                        </div>
+                        <Link 
+                            href="/forgot-password"
+                            class="text-sm text-muted-foreground hover:text-primary transition-colors"
+                        >
+                            Forgot password?
+                        </Link>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <Button
+                        type="submit"
+                        class="w-full"
+                        size="lg"
+                        :disabled="form.processing"
+                    >
+                        <Loader v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
+                        {{ form.processing ? 'Signing in...' : 'Sign in' }}
+                    </Button>
+                </form>
+            </div>
+        </div>
     </div>
+</template>
 
-    <form @submit.prevent="form.post('/login')" class="grid gap-3">
-        <Alert v-if="exceptions.E_INVALID_CREDENTIALS" variant="destructive" class="mb-6">
-            <AlertCircle class="w-4 h-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{{ exceptions.E_INVALID_CREDENTIALS }}</AlertDescription>
-        </Alert>
-
-        <div class="grid gap-1">
-            <Label class="grid gap-1">
-                <span>Email</span>
-                <Input type="email" v-model="form.email" required />
-            </Label>
-            <div v-if="form.errors.email" class="text-red-500 text-sm">
-                {{ form.errors.email }}
-            </div>
-        </div>
-
-        <div class="grid gap-1">
-            <Label class="grid gap-1">
-                <span>Password</span>
-                <Input type="password" v-model="form.password" required />
-            </Label>
-            <div v-if="form.errors.password" class="text-red-500 text-sm">
-                {{ form.errors.password }}
-            </div>
-        </div>
-
-        <div class="flex items-center justify-between flex-wrap gap-4">
-            <div class="flex items-center gap-2">
-                <Checkbox v-model:checked="form.remember" />
-                <span>Remember me</span>
-            </div>
-            <Link href="/forgot-password" class="text-sm underline">Forgot Password</Link>
-        </div>
-
+<style scoped>
+.bg-card {
+    background: linear-gradient(to bottom right, rgb(255, 255, 255), rgb(251, 251, 251));
+}
+</style>
         <Button type="submit" :disabled="form.processing">
             <Loader v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
             Login

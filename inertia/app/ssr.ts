@@ -4,7 +4,7 @@ import { createSSRApp, h, type DefineComponent } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '~/layouts/AppLayout.vue'
 
-const appName = import.meta.env.VITE_APP_NAME || Juvenotes
+const appName = import.meta.env.VITE_APP_NAME || 'Juvenotes'
 
 export default function render(page: any) {
   return createInertiaApp({
