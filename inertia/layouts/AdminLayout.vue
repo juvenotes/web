@@ -70,6 +70,7 @@ const menuItems = [
       <main class="flex-1 p-6">
         <slot />
       </main>
+      <ToastManager :messages="messages" />
     </div>
   </div>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Toaster from '~/components/ui/toast/Toaster.vue'
 import UserDto from '#dtos/user'
 defineProps<{
   messages: Record<string, string | Record<string, string>>
@@ -25,5 +24,4 @@ defineProps<{
       </Button>
     </main>
   </div>
-  <Toaster :messages="messages" />
 </template>

@@ -43,16 +43,10 @@ const logoPath = '/images/logo.png'
       </div>
     </nav>
 
-    <!-- Messages -->
-    <div v-if="messages.success" class="container mx-auto px-4 mt-4">
-      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-        {{ messages.success }}
-      </div>
-    </div>
-
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
       <slot />
     </main>
+    <ToastManager :messages="messages" />
   </div>
 </template>
