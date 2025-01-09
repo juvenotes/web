@@ -9,10 +9,12 @@ export default class LoginController {
   }
 
   @inject()
-  async store({ request, response }: HttpContext, webLogin: WebLogin) {
+  async store({ request, response, session }: HttpContext, webLogin: WebLogin) {
     const data = await request.validateUsing(loginValidator)
 
     await webLogin.handle({ data })
+
+    session.flash('success', 'Welcome back to Juvenotes')
 
     return response.redirect().toPath('/')
   }

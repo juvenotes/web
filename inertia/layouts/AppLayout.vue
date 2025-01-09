@@ -10,10 +10,6 @@ defineProps<{
 }>()
 
 const logoPath = '/images/logo.png'
-
-const handleLogout = () => {
-  $inertia.post(route('auth.logout'))
-}
 </script>
 
 <template>
@@ -48,18 +44,10 @@ const handleLogout = () => {
       </div>
     </nav>
 
-    <!-- Messages -->
-    <div v-if="messages.success" class="container mx-auto px-4 mt-4">
-      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-        {{ messages.success }}
-      </div>
-    </div>
-
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
       <slot />
     </main>
-
     <footer class="border-t bg-background/95 w-full">
       <div class="container mx-auto py-3 px-4">
         <div class="flex justify-between items-center">
@@ -89,6 +77,6 @@ const handleLogout = () => {
         </div>
       </div>
     </footer>
-    
+    <ToastManager :messages="messages" />
   </div>
 </template>

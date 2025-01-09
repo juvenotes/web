@@ -8,9 +8,9 @@ export default class GoogleSignupController {
   }
 
   async handleCallback({ ally, auth, response, session }: HttpContext) {
-    try {
-      const google = ally.use('google')
+    const google = ally.use('google')
 
+    try {
       if (google.accessDenied()) {
         session.flash('message', {
           type: 'error',
@@ -36,7 +36,6 @@ export default class GoogleSignupController {
       }
 
       const googleUser = await google.user()
-      // console.log(googleUser)
       const user = await User.firstOrCreate({
         email: googleUser.email,
         provider: 'google',
