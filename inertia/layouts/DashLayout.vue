@@ -19,7 +19,6 @@ import {
   Clock,
   Flame
 } from 'lucide-vue-next'
-import { Card, CardContent } from '~/components/ui/card'
 import UserDto from '#dtos/user'
 
 defineProps<{
