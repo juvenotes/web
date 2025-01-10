@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
-import ConceptLayout from '~/layouts/ConceptLayout.vue'
+import AppLayout from '~/layouts/AppLayout.vue'
 
-defineOptions({ layout: ConceptLayout })
+defineOptions({ layout: AppLayout })
 
 interface Props {
   concepts: ConceptDto[]
