@@ -17,6 +17,6 @@ export default class RegisterController {
 
     session.flash('success', 'Welcome to Juvenotes')
 
-    return response.redirect().toRoute('auth.personalize.show')
+    return response.redirect().toRoute('/learn')
   }
 }
