@@ -26,6 +26,7 @@ const IndexQuestionsController = () => import('#controllers/questions/index_cont
 // const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
 const IndexPapersController = () => import('#controllers/papers/index_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
+const PersonalizationController = () => import('#controllers/personalization/index_controller')
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 
@@ -63,7 +64,17 @@ router
   .as('auth.password.update')
   .use([middleware.guest()])
 
-//* DASHBOARD -> ACCOUNT
+router
+  .get('/personalization', [PersonalizationController, 'show'])
+  .as('auth.personalize.show')
+  .use(middleware.auth())
+
+router
+  .post('/onboarding', [PersonalizationController, 'store'])
+  .as('auth.personalize.store')
+  .use(middleware.auth())
+
+//* USER DASHBOARD
 router.get('learn', [UserDashboardController, 'handle']).as('learn').use([middleware.auth()])
 
 //* SETTINGS -> ACCOUNT

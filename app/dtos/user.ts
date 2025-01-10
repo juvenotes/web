@@ -1,8 +1,13 @@
 import { BaseModelDto } from '@adocasts.com/dto/base'
 import User from '#models/user'
+import { CountryCode } from '#enums/countries'
 import RoleDto from '#dtos/role'
 import EmailHistoryDto from '#dtos/email_history'
 import PasswordResetTokenDto from '#dtos/password_reset_token'
+import ConceptDto from '#dtos/concept'
+import QuestionDto from '#dtos/question'
+import PastPaperDto from '#dtos/past_paper'
+import UserEducationEntryDto from '#dtos/user_education_entry'
 
 export default class UserDto extends BaseModelDto {
   declare id: number
@@ -16,11 +21,16 @@ export default class UserDto extends BaseModelDto {
   declare total_study_time: number
   declare streak_count: number
   // declare last_login: string
+  declare countryCode: CountryCode
   // declare createdAt: string
   // declare updatedAt: string | null
   declare role: RoleDto | null
   declare emailHistories: EmailHistoryDto[]
   declare passwordResetTokens: PasswordResetTokenDto[]
+  declare concepts: ConceptDto[]
+  declare questions: QuestionDto[]
+  declare pastPapers: PastPaperDto[]
+  declare userEducationEntries: UserEducationEntryDto[]
 
   constructor(user?: User) {
     super()
@@ -37,10 +47,15 @@ export default class UserDto extends BaseModelDto {
     this.total_study_time = user.total_study_time
     this.streak_count = user.streak_count
     // this.last_login = user.last_login.toISO()!
+    this.countryCode = user.countryCode
     // this.createdAt = user.createdAt.toISO()!
     // this.updatedAt = user.updatedAt?.toISO()!
     this.role = user.role && new RoleDto(user.role)
     this.emailHistories = EmailHistoryDto.fromArray(user.emailHistories)
     this.passwordResetTokens = PasswordResetTokenDto.fromArray(user.passwordResetTokens)
+    this.concepts = ConceptDto.fromArray(user.concepts)
+    this.questions = QuestionDto.fromArray(user.questions)
+    this.pastPapers = PastPaperDto.fromArray(user.pastPapers)
+    this.userEducationEntries = UserEducationEntryDto.fromArray(user.userEducationEntries)
   }
 }
