@@ -1,3 +1,4 @@
+import { Role } from '#enums/roles'
 import User from '#models/user'
 import { registerValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
@@ -13,7 +14,10 @@ export default class WebRegister {
   constructor(protected ctx: HttpContext) {}
 
   async handle({ data }: Params) {
-    const user = await User.create(data)
+    const user = await User.create({
+      ...data,
+      roleId: Role.USER,
+    })
 
     await this.ctx.auth.use('web').login(user)
     return { user }
