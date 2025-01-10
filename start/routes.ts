@@ -155,7 +155,7 @@ router
 
 //* PAST PAPERS -> VIEW
 router.get('/papers', [IndexPapersController, 'index'])
-router.get('/papers/:slug', [IndexPapersController, 'show'])
+// router.get('/papers/:slug', [IndexPapersController, 'show'])
 
 //* PAST PAPERS -> MANAGE
 // router

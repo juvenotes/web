@@ -1,4 +1,4 @@
-import { policies } from '#policies/main'
+// import { policies } from '#policies/main'
 import * as abilities from '#abilities/main'
 
 import { Bouncer } from '@adonisjs/bouncer'
@@ -17,9 +17,16 @@ export default class InitializeBouncerMiddleware {
      */
     ctx.bouncer = new Bouncer(
       () => ctx.auth.user || null,
-      abilities,
-      policies
+      abilities
+      // policies
     ).setContainerResolver(ctx.containerResolver)
+
+    /**
+     * Share bouncer helpers with Edge templates.
+     */
+    if ('view' in ctx) {
+      ctx.view.share(ctx.bouncer.edgeHelpers)
+    }
 
     return next()
   }
@@ -29,8 +36,8 @@ declare module '@adonisjs/core/http' {
   export interface HttpContext {
     bouncer: Bouncer<
       Exclude<HttpContext['auth']['user'], undefined>,
-      typeof abilities,
-      typeof policies
+      typeof abilities
+      // typeof policies
     >
   }
 }
