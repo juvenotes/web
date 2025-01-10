@@ -75,7 +75,7 @@ router
   .use(middleware.auth())
 
 //* USER DASHBOARD
-router.get('learn', [UserDashboardController, 'handle']).as('learn').use([middleware.auth()])
+router.get('learn', [UserDashboardController, 'handle']).as('learn').use(middleware.auth())
 
 //* SETTINGS -> ACCOUNT
 router
@@ -102,8 +102,8 @@ router
   .use(middleware.auth())
 
 //* CONCEPTS -> VIEW
-router.get('/concepts', [IndexConceptsController, 'index'])
-router.get('/concepts/:slug', [IndexConceptsController, 'show'])
+router.get('/concepts', [IndexConceptsController, 'index']).use(middleware.auth())
+router.get('/concepts/:slug', [IndexConceptsController, 'show']).use(middleware.auth())
 
 //* QUESTIONS -> VIEW
 router
@@ -112,6 +112,7 @@ router
     router.get('/:conceptSlug', [IndexQuestionsController, 'show'])
   })
   .prefix('/vault')
+  .use(middleware.auth())
 
 //* MANAGEMENT DASHBOARD - ADMIN
 router
@@ -119,6 +120,7 @@ router
     router.get('/', [ManagementDashboardController, 'index'])
   })
   .prefix('/manage')
+  .use(middleware.auth())
 
 // * CONCEPTS -> MANAGE
 router
@@ -131,6 +133,7 @@ router
     router.delete('/:slug', [ManageConceptsController, 'destroy'])
   })
   .prefix('/manage/concepts')
+  .use(middleware.auth())
 
 //* QUESTIONS -> MANAGE
 // router
@@ -165,7 +168,7 @@ router
   .use(middleware.guest())
 
 //* PAST PAPERS -> VIEW
-router.get('/papers', [IndexPapersController, 'index'])
+router.get('/papers', [IndexPapersController, 'index']).use(middleware.auth())
 // router.get('/papers/:slug', [IndexPapersController, 'show'])
 
 //* PAST PAPERS -> MANAGE
