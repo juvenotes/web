@@ -8,12 +8,14 @@ import {
 } from '#validators/concept'
 import QuestionDto from '#dtos/question'
 import { generateSlug } from '#utils/slug_generator'
+import ConceptPolicy from '#policies/concept_policy'
 
 export default class ManageConceptsController {
   /**
    * Show root level concepts
    */
-  async index({ inertia }: HttpContext) {
+  async index({ inertia, bouncer }: HttpContext) {
+    await bouncer.with('ConceptPolicy').authorize('view')
     const concepts = await Concept.query()
       .whereNull('parent_id')
       .orderBy('level', 'asc')
@@ -27,7 +29,8 @@ export default class ManageConceptsController {
   /**
    * Show single concept with its children
    */
-  async show({ params, inertia, response }: HttpContext) {
+  async show({ params, inertia, response, bouncer }: HttpContext) {
+    await bouncer.with('ConceptPolicy').authorize('view')
     try {
       const concept = await Concept.query()
         .where('slug', params.slug)
@@ -54,7 +57,10 @@ export default class ManageConceptsController {
     }
   }
 
-  async store({ request, auth, response, session }: HttpContext) {
+  async store({ request, auth, response, session, bouncer }: HttpContext) {
+    if (await bouncer.with(ConceptPolicy).denies('create')) {
+      return response.forbidden('You are not authorized to create concepts')
+    }
     const data = await request.validateUsing(createConceptValidator)
 
     const concept = await Concept.create({
@@ -68,8 +74,12 @@ export default class ManageConceptsController {
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
-  async update({ request, params, response, session }: HttpContext) {
+  async update({ request, params, response, session, bouncer }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
+
+    if (await bouncer.with(ConceptPolicy).denies('update', concept)) {
+      return response.forbidden('Not authorized to update this concept')
+    }
     const data = await request.validateUsing(updateConceptValidator)
 
     await concept
@@ -90,10 +100,14 @@ export default class ManageConceptsController {
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
-  async destroy({ params, response, session }: HttpContext) {
+  async destroy({ params, response, session, bouncer }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
-    await concept.delete()
 
+    if (await bouncer.with(ConceptPolicy).denies('delete', concept)) {
+      return response.forbidden('Not authorized to delete this concept')
+    }
+
+    await concept.delete()
     session.flash('success', 'Concept deleted successfully')
     return response.redirect().toPath('/manage/concepts')
   }
