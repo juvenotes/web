@@ -41,6 +41,7 @@ declare module 'vue' {
     SelectSeparator: typeof import('./inertia/components/ui/select/SelectSeparator.vue')['default']
     SelectTrigger: typeof import('./inertia/components/ui/select/SelectTrigger.vue')['default']
     SelectValue: typeof import('./inertia/components/ui/select/SelectValue.vue')['default']
+    Separator: typeof import('./inertia/components/ui/separator/Separator.vue')['default']
     Sonner: typeof import('./inertia/components/ui/sonner/Sonner.vue')['default']
     Toast: typeof import('./inertia/components/ui/toast/Toast.vue')['default']
     ToastAction: typeof import('./inertia/components/ui/toast/ToastAction.vue')['default']
