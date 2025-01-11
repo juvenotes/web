@@ -26,7 +26,7 @@ export default defineConfig({
    * Define how long to keep the session data alive without
    * any activity.
    */
-  age: '2M',
+  age: '12w',
 
   /**
    * Configuration for session cookie and the
