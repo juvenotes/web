@@ -1,0 +1,63 @@
+<script setup lang="ts">
+import { useForm } from '@inertiajs/vue3'
+import UserDto from '#dtos/user'
+import AppLayout from '~/layouts/AppLayout.vue'
+import { User } from 'lucide-vue-next'
+
+defineOptions({ layout: AppLayout })
+
+defineProps<{ user: UserDto }>()
+
+// Profile update form
+const form = useForm({
+  fullName: '',
+})
+
+// Form handler
+const updateProfile = () => {
+  form.put('/settings/profile', {
+    onSuccess: () => form.reset()
+  })
+}
+</script>
+
+<template>
+  <div class="max-w-3xl mx-auto space-y-8">
+    <!-- Page Header -->
+    <div class="flex items-center gap-2">
+      <User class="h-5 w-5" />
+      <h1 class="text-2xl font-semibold">Profile Settings</h1>
+    </div>
+
+    <!-- Profile Update Section -->
+    <div class="bg-white p-6 rounded-lg border space-y-4">
+      <div>
+        <h2 class="text-lg font-medium">Your Profile</h2>
+        <p class="text-sm text-muted-foreground">Update your profile information.</p>
+      </div>
+
+      <form @submit.prevent="updateProfile" class="space-y-4">
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Full Name</label>
+          <input
+            v-model="form.fullName"
+            type="text"
+            class="w-full p-2 rounded-md border"
+            required
+          />
+          <span v-if="form.errors.fullName" class="text-sm text-destructive">
+            {{ form.errors.fullName }}
+          </span>
+        </div>
+
+        <button
+          type="submit"
+          class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90"
+          :disabled="form.processing"
+        >
+          {{ form.processing ? 'Updating...' : 'Update Profile' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</template>

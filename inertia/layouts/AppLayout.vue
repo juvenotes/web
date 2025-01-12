@@ -13,7 +13,7 @@ const logoPath = '/images/logo.png'
 </script>
 
 <template>
-  <div class="min-h-screen bg-background">
+  <div class="min-h-screen flex flex-col bg-background">
     <!-- Navigation -->
     <nav class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div class="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -45,10 +45,12 @@ const logoPath = '/images/logo.png'
     </nav>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="flex-grow container mx-auto px-4 py-8">
       <slot />
     </main>
-    <footer class="border-t bg-background/95 w-full">
+
+    <!-- Footer -->
+    <footer class="border-t bg-background/95 w-full mt-auto">
       <div class="container mx-auto py-3 px-4">
         <div class="flex justify-between items-center">
           <!-- Company Info -->
@@ -77,6 +79,7 @@ const logoPath = '/images/logo.png'
         </div>
       </div>
     </footer>
+
     <ToastManager :messages="messages" />
   </div>
 </template>

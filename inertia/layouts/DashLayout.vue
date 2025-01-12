@@ -59,7 +59,7 @@ onUnmounted(() => {
             >
               <MenuIcon class="h-6 w-6" />
             </button>
-            <Link href="/dashboard">
+            <Link href="/learn">
               <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
             </Link>
           </div>
@@ -202,7 +202,7 @@ onUnmounted(() => {
           <div class="flex items-center gap-4">
             <img :src="logoPath" alt="Logo" class="h-8 w-auto" />
             <p class="text-sm text-muted-foreground">
-              © 2024 Juvenotes. All rights reserved.
+              © 2025 Juvenotes. All rights reserved.
             </p>
           </div>
 
