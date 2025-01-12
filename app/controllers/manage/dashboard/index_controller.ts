@@ -5,7 +5,8 @@ import PastPaper from '#models/past_paper'
 import StatsDto from '#dtos/stats'
 
 export default class ManagementDashboardController {
-  async index({ inertia }: HttpContext) {
+  async index({ inertia, bouncer }: HttpContext) {
+    await bouncer.with('AdminDashboardPolicy').authorize('view')
     const [concepts, questions, papers] = await Promise.all([
       Concept.query().count('* as total').first(),
       Question.query().count('* as total').first(),

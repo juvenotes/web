@@ -30,6 +30,6 @@ const logoPath = '/images/logo.png'
             </div>
         </div>
 
-        <Toaster :messages="messages" />
+        <ToastManager :messages="messages" />
     </div>
 </template>

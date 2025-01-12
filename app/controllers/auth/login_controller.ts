@@ -16,6 +16,6 @@ export default class LoginController {
 
     session.flash('success', 'Welcome back to Juvenotes')
 
-    return response.redirect().toPath('/')
+    return response.redirect().toPath('/learn')
   }
 }

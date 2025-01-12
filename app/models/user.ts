@@ -8,6 +8,11 @@ import EmailHistory from '#models/email_history'
 import Role from '#models/role'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import PasswordResetToken from './password_reset_token.js'
+import Concept from './concept.js'
+import Question from './question.js'
+import PastPaper from './past_paper.js'
+import UserEducationEntry from './user_education_entry.js'
+import { CountryCode } from '#enums/countries'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -49,6 +54,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column.dateTime()
   declare last_login: DateTime
 
+  @column()
+  declare countryCode: CountryCode
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -63,4 +71,16 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasMany(() => PasswordResetToken)
   declare passwordResetTokens: HasMany<typeof PasswordResetToken>
+
+  @hasMany(() => Concept)
+  declare concepts: HasMany<typeof Concept>
+
+  @hasMany(() => Question)
+  declare questions: HasMany<typeof Question>
+
+  @hasMany(() => PastPaper)
+  declare pastPapers: HasMany<typeof PastPaper>
+
+  @hasMany(() => UserEducationEntry)
+  declare userEducationEntries: HasMany<typeof UserEducationEntry>
 }

@@ -26,6 +26,7 @@ const IndexQuestionsController = () => import('#controllers/questions/index_cont
 // const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
 const IndexPapersController = () => import('#controllers/papers/index_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
+const PersonalizationController = () => import('#controllers/personalization/index_controller')
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 
@@ -63,8 +64,18 @@ router
   .as('auth.password.update')
   .use([middleware.guest()])
 
-//* DASHBOARD -> ACCOUNT
-router.get('learn', [UserDashboardController, 'handle']).as('learn').use([middleware.auth()])
+router
+  .get('/personalization', [PersonalizationController, 'show'])
+  .as('auth.personalize.show')
+  .use(middleware.auth())
+
+router
+  .post('/onboarding', [PersonalizationController, 'store'])
+  .as('auth.personalize.store')
+  .use(middleware.auth())
+
+//* USER DASHBOARD
+router.get('learn', [UserDashboardController, 'handle']).as('learn').use(middleware.auth())
 
 //* SETTINGS -> ACCOUNT
 router
@@ -91,8 +102,8 @@ router
   .use(middleware.auth())
 
 //* CONCEPTS -> VIEW
-router.get('/concepts', [IndexConceptsController, 'index'])
-router.get('/concepts/:slug', [IndexConceptsController, 'show'])
+router.get('/concepts', [IndexConceptsController, 'index']).use(middleware.auth())
+router.get('/concepts/:slug', [IndexConceptsController, 'show']).use(middleware.auth())
 
 //* QUESTIONS -> VIEW
 router
@@ -101,6 +112,7 @@ router
     router.get('/:conceptSlug', [IndexQuestionsController, 'show'])
   })
   .prefix('/vault')
+  .use(middleware.auth())
 
 //* MANAGEMENT DASHBOARD - ADMIN
 router
@@ -108,6 +120,7 @@ router
     router.get('/', [ManagementDashboardController, 'index'])
   })
   .prefix('/manage')
+  .use(middleware.auth())
 
 // * CONCEPTS -> MANAGE
 router
@@ -120,6 +133,7 @@ router
     router.delete('/:slug', [ManageConceptsController, 'destroy'])
   })
   .prefix('/manage/concepts')
+  .use(middleware.auth())
 
 //* QUESTIONS -> MANAGE
 // router
@@ -154,8 +168,8 @@ router
   .use(middleware.guest())
 
 //* PAST PAPERS -> VIEW
-router.get('/papers', [IndexPapersController, 'index'])
-router.get('/papers/:slug', [IndexPapersController, 'show'])
+router.get('/papers', [IndexPapersController, 'index']).use(middleware.auth())
+// router.get('/papers/:slug', [IndexPapersController, 'show'])
 
 //* PAST PAPERS -> MANAGE
 // router
