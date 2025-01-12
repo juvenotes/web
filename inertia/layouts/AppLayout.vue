@@ -50,35 +50,66 @@ const logoPath = '/images/logo.png'
     </main>
 
     <!-- Footer -->
-    <footer class="border-t bg-background/95 w-full mt-auto">
-      <div class="container mx-auto py-3 px-4">
-        <div class="flex justify-between items-center">
-          <!-- Company Info -->
-          <div class="flex items-center gap-4">
-            <img :src="logoPath" alt="Logo" class="h-12 w-auto" />
-            <p class="text-sm text-muted-foreground">
-              © 2025 Juvenotes. All rights reserved.
-            </p>
-          </div>
+    <footer class="w-screen border-t bg-background/95">
+  <div class="container mx-auto px-4 sm:px-6 py-6">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <!-- Company Info -->
+      <div class="flex items-center gap-4">
+        <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
+        <p class="text-sm text-muted-foreground">
+          © 2025 Juvenotes. All rights reserved.
+        </p>
+      </div>
 
-          <!-- Contact & Social -->
-          <div class="flex gap-4">
-            <h4 class="font-semibold">Contact Us:</h4>
-            <div class="flex gap-4">
-              <a href="#" class="text-[#55A9C4] hover:text-[#55A9C4]/80 transition-colors">
-                <Twitter class="h-5 w-5" />
-              </a>
-              <a href="#" class="text-[#55A9C4] hover:text-[#55A9C4]/80 transition-colors">
-                <Instagram class="h-5 w-5" />
-              </a>
-              <a href="#" class="text-[#55A9C4] hover:text-[#55A9C4]/80 transition-colors">
-                <Linkedin class="h-5 w-5" />
-              </a>
-            </div>
+      <!-- Links and Social -->
+      <div class="flex items-center gap-8">
+        <!-- Legal Links -->
+        <div class="flex items-center gap-6">
+          <Link 
+            href="/terms" 
+            class="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            Terms
+          </Link>
+          <Link 
+            href="/privacy" 
+            class="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            Privacy
+          </Link>
+        </div>
+
+        <!-- Social Links -->
+        <div class="flex items-center gap-3">
+          <span class="text-sm font-medium text-muted-foreground">Contact us:</span>
+          <div class="flex gap-2">
+            <a 
+              href="#" 
+              class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
+              aria-label="Twitter"
+            >
+              <Twitter class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform" />
+            </a>
+            <a 
+              href="#" 
+              class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
+              aria-label="Instagram"
+            >
+              <Instagram class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform" />
+            </a>
+            <a 
+              href="#" 
+              class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
+              aria-label="LinkedIn"
+            >
+              <Linkedin class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform" />
+            </a>
           </div>
         </div>
       </div>
-    </footer>
+    </div>
+  </div>
+</footer>
 
     <ToastManager :messages="messages" />
   </div>
