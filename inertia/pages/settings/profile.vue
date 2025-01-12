@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import UserDto from '#dtos/user'
 import AppLayout from '~/layouts/AppLayout.vue'
-import { User } from 'lucide-vue-next'
+import { User, ArrowLeft } from 'lucide-vue-next'
 
 defineOptions({ layout: AppLayout })
 
@@ -23,10 +23,22 @@ const updateProfile = () => {
 
 <template>
   <div class="max-w-3xl mx-auto space-y-8">
-    <!-- Page Header -->
-    <div class="flex items-center gap-2">
-      <User class="h-5 w-5" />
-      <h1 class="text-2xl font-semibold">Profile Settings</h1>
+    <!-- Header with Back Button -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-6">
+        <Link
+          href="/learn"
+          class="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft class="h-4 w-4" />
+          Back to Dashboard
+        </Link>
+
+        <div class="flex items-center gap-2">
+          <User class="h-5 w-5" />
+          <h1 class="text-2xl font-semibold">Profile Settings</h1>
+        </div>
+      </div>
     </div>
 
     <!-- Profile Update Section -->
