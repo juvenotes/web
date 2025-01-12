@@ -16,7 +16,7 @@ export default defineConfig({
     () => import('@adonisjs/mail/commands'),
     () => import('@adonisjs/bouncer/commands'),
     () => import('@adocasts.com/dto/commands'),
-    () => import('@adocasts.com/actions/commands')
+    () => import('@adocasts.com/actions/commands'),
   ],
 
   /*
