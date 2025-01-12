@@ -5,7 +5,7 @@
   "type": "module",
   "license": "UNLICENSED",
   "scripts": {
-    "start": "node bin/server.js",
+    "start": "NODE_DEBUG=adonisjs:shield node bin/server.js",
     "build": "node ace build",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
@@ -98,7 +98,6 @@
     "clsx": "^2.1.1",
     "csv-parse": "^5.6.0",
     "edge.js": "^6.2.0",
-    "lucide-react": "^0.469.0",
     "lucide-vue-next": "^0.469.0",
     "luxon": "^3.5.0",
     "next": "^15.1.3",
