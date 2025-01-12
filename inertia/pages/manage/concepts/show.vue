@@ -5,7 +5,11 @@ import type QuestionDto from '#dtos/question'
 import { computed, ref, watchEffect } from 'vue'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { AlertCircle } from 'lucide-vue-next'
 import MdxContent from '~/components/MdxContent.vue'
+import KnowledgeEditor from '~/components/KnowledgeEditor.vue'
+import pkg from 'lodash'
+const { debounce } = pkg
 
 defineOptions({ layout: AdminLayout })
 
@@ -29,14 +33,32 @@ const showEditDialog = ref(false)
 
 const form = useForm({
   title: props.concept.title,
-  knowledgeBlock: props.content || '',
   isTerminal: props.concept.isTerminal,
 })
+
+const contentForm = useForm({
+  knowledgeBlock: props.content || '',
+})
+
+const updateContent = debounce((value: string) => {
+  contentForm.knowledgeBlock = value
+}, 500)
 
 const handleSubmit = () => {
   form.put(`/manage/concepts/${props.concept.slug}`, {
     onSuccess: () => {
       showEditDialog.value = false
+    },
+    onError: (errors) => {
+      console.error('Form errors:', errors)
+    },
+  })
+}
+
+const handleContentSubmit = () => {
+  contentForm.put(`/manage/concepts/${props.concept.slug}/content`, {
+    onError: (errors) => {
+      console.error('Form errors:', errors)
     },
   })
 }
@@ -103,7 +125,30 @@ const handleDelete = () => {
         </DialogContent>
       </Dialog>
 
-      <!-- Content -->
+      <!-- Content Editor -->
+      <div v-if="content" class="space-y-4">
+        <h2 class="text-2xl font-bold">Content</h2>
+        <form @submit.prevent="handleContentSubmit" class="space-y-4">
+          <!-- Error Alert -->
+          <Alert v-if="contentForm.errors.knowledgeBlock" variant="destructive">
+            <AlertCircle class="h-4 w-4" />
+            <AlertDescription>
+              {{ contentForm.errors.knowledgeBlock }}
+            </AlertDescription>
+          </Alert>
+
+          <KnowledgeEditor
+            :modelValue="contentForm.knowledgeBlock"
+            @update:modelValue="updateContent"
+          />
+
+          <Button type="submit" :disabled="contentForm.processing">
+            {{ contentForm.processing ? 'Saving...' : 'Save Content' }}
+          </Button>
+        </form>
+      </div>
+
+      <!-- Content Display -->
       <div v-if="content">
         <MdxContent :content="content" />
       </div>
@@ -127,7 +172,6 @@ const handleDelete = () => {
             </div>
 
             <!-- SAQ Parts -->
-            <!-- SAQ Parts -->
             <div v-if="question.parts?.length" class="mt-4 space-y-4">
               <div v-for="part in question.parts" :key="part.id" class="border-l-2 pl-4">
                 <p class="font-medium">{{ part.partText }}</p>
@@ -139,6 +183,5 @@ const handleDelete = () => {
         </div>
       </div>
     </div>
-
   </div>
 </template>
