@@ -29,6 +29,9 @@ const UserDashboardController = () => import('#controllers/dashboard/index_contr
 const PersonalizationController = () => import('#controllers/personalization/index_controller')
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
+//terns and privacy
+const TermsController = () => import('#controllers/legal/terms_controller')
+const PrivacyController = () => import('#controllers/legal/privacy_controller')
 
 //* HOME
 router.get('/', [HomeController, 'index']).as('home')
@@ -170,6 +173,10 @@ router
 //* PAST PAPERS -> VIEW
 router.get('/papers', [IndexPapersController, 'index']).use(middleware.auth())
 // router.get('/papers/:slug', [IndexPapersController, 'show'])
+
+// LEGAL -> TERMS
+router.get('/terms', [TermsController, 'handle']).as('legal.terms')
+router.get('/privacy', [PrivacyController, 'handle']).as('legal.privacy')
 
 //* PAST PAPERS -> MANAGE
 // router
