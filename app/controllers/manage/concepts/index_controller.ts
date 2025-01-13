@@ -46,11 +46,14 @@ export default class ManageConceptsController {
         })
         .firstOrFail()
 
+      const content = concept.isTerminal ? concept.knowledgeBlock : null
+      console.log(typeof concept.knowledgeBlock)
+
       return inertia.render('manage/concepts/show', {
         concept: new ConceptDto(concept),
         children: concept.children ? ConceptDto.fromArray(concept.children) : [],
         questions: concept.questions ? QuestionDto.fromArray(concept.questions) : [],
-        content: concept.knowledgeBlock,
+        content,
       })
     } catch (error) {
       return response.redirect().toPath('/manage/concepts')
