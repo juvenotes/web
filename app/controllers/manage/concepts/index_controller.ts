@@ -46,11 +46,14 @@ export default class ManageConceptsController {
         })
         .firstOrFail()
 
+      const content = concept.isTerminal ? concept.knowledgeBlock : null
+      console.log(typeof concept.knowledgeBlock)
+
       return inertia.render('manage/concepts/show', {
         concept: new ConceptDto(concept),
         children: concept.children ? ConceptDto.fromArray(concept.children) : [],
         questions: concept.questions ? QuestionDto.fromArray(concept.questions) : [],
-        content: concept.knowledgeBlock,
+        content,
       })
     } catch (error) {
       return response.redirect().toPath('/manage/concepts')
@@ -92,11 +95,19 @@ export default class ManageConceptsController {
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
-  async updateContent({ request, params, response }: HttpContext) {
+  async updateContent({ request, params, response, bouncer }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
+    await bouncer.with('ConceptPolicy').authorize('update', concept)
+
     const { knowledgeBlock } = await request.validateUsing(updateKnowledgeBlockValidator)
 
-    await concept.merge({ knowledgeBlock }).save()
+    // Save markdown directly to database
+    await concept
+      .merge({
+        knowledgeBlock: knowledgeBlock || '',
+      })
+      .save()
+
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
