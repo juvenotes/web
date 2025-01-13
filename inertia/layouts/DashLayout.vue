@@ -257,5 +257,6 @@ onUnmounted(() => {
     </div>
   </div>
 </footer>
+    <ToastManager :messages="messages" />
   </div>
 </template>
