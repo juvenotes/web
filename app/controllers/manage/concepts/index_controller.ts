@@ -9,7 +9,6 @@ import {
 import QuestionDto from '#dtos/question'
 import { generateSlug } from '#utils/slug_generator'
 import ConceptPolicy from '#policies/concept_policy'
-import { jsonToMarkdown } from '#utils/json_to_markdown'
 
 export default class ManageConceptsController {
   /**
@@ -95,13 +94,16 @@ export default class ManageConceptsController {
 
   async updateContent({ request, params, response, bouncer }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
-
     await bouncer.with('ConceptPolicy').authorize('update', concept)
 
     const { knowledgeBlock } = await request.validateUsing(updateKnowledgeBlockValidator)
-    const markdown = jsonToMarkdown(knowledgeBlock)
 
-    await concept.merge({ knowledgeBlock: markdown }).save()
+    // Save markdown directly to database
+    await concept
+      .merge({
+        knowledgeBlock: knowledgeBlock || '',
+      })
+      .save()
 
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }

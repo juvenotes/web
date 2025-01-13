@@ -2,7 +2,9 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { watch } from 'vue'
+import { Markdown } from 'tiptap-markdown'
 import { Bold, Italic, Code, Heading1, Heading2, List, ListOrdered } from 'lucide-vue-next'
+import debounce from 'lodash/debounce'
 
 const props = defineProps<{
   modelValue: string
@@ -10,19 +12,35 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue'])
 
+const emitUpdate = debounce((markdown: string) => {
+  emit('update:modelValue', markdown)
+}, 500)
+
 const editor = useEditor({
   content: props.modelValue,
-  extensions: [StarterKit],
+  extensions: [
+    StarterKit,
+    Markdown.configure({
+      html: true,
+      tightLists: true,
+      bulletListMarker: '-',
+      // transformPastedText: true,
+    }),
+  ],
   onUpdate: ({ editor }) => {
-    emit('update:modelValue', editor.getJSON())
+    // Get markdown directly
+    const markdown = editor.storage.markdown.getMarkdown()
+    console.log(markdown)
+    emitUpdate(markdown)
   },
 })
 
+// Watch for external changes
 watch(
   () => props.modelValue,
-  (newValue) => {
-    if (editor.value && newValue !== editor.value.getHTML()) {
-      editor.value.commands.setContent(newValue)
+  (newContent) => {
+    if (editor.value && newContent !== editor.value.storage.markdown.getMarkdown()) {
+      editor.value.commands.setContent(newContent, false)
     }
   }
 )
@@ -49,6 +67,7 @@ watch(
         <Italic class="h-4 w-4" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         @click="editor?.chain().focus().toggleCode().run()"
@@ -57,6 +76,7 @@ watch(
         <Code class="h-4 w-4" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         @click="editor?.chain().focus().toggleHeading({ level: 1 }).run()"
@@ -65,6 +85,7 @@ watch(
         <Heading1 class="h-4 w-4" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
@@ -73,6 +94,7 @@ watch(
         <Heading2 class="h-4 w-4" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         @click="editor?.chain().focus().toggleBulletList().run()"
@@ -81,6 +103,7 @@ watch(
         <List class="h-4 w-4" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         @click="editor?.chain().focus().toggleOrderedList().run()"

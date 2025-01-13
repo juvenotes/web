@@ -8,8 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/u
 import { AlertCircle } from 'lucide-vue-next'
 import MdxContent from '~/components/MdxContent.vue'
 import KnowledgeEditor from '~/components/KnowledgeEditor.vue'
-import pkg from 'lodash'
-const { debounce } = pkg
+import { toast } from 'vue-sonner'
 
 defineOptions({ layout: AdminLayout })
 
@@ -40,9 +39,9 @@ const contentForm = useForm({
   knowledgeBlock: props.content || '',
 })
 
-const updateContent = debounce((value: string) => {
+const updateContent = (value: string) => {
   contentForm.knowledgeBlock = value
-}, 500)
+}
 
 const handleSubmit = () => {
   form.put(`/manage/concepts/${props.concept.slug}`, {
@@ -57,7 +56,12 @@ const handleSubmit = () => {
 
 const handleContentSubmit = () => {
   contentForm.put(`/manage/concepts/${props.concept.slug}/content`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      toast.success('Content updated successfully')
+    },
     onError: (errors) => {
+      toast.error('Failed to update content')
       console.error('Form errors:', errors)
     },
   })
@@ -126,7 +130,7 @@ const handleDelete = () => {
       </Dialog>
 
       <!-- Content Editor -->
-      <div v-if="content" class="space-y-4">
+      <div v-if="concept.isTerminal" class="space-y-4">
         <h2 class="text-2xl font-bold">Content</h2>
         <form @submit.prevent="handleContentSubmit" class="space-y-4">
           <!-- Error Alert -->
