@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, computed, hasMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import EmailHistory from '#models/email_history'
@@ -62,6 +62,16 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare emailVerified: string | null
+
+  @column.dateTime()
+  declare emailVerifiedAt: DateTime | null
+
+  @computed()
+  get isEmailVerified() {
+    return this.emailVerified === this.email && this.emailVerifiedAt
+  }
 
   @belongsTo(() => Role)
   declare role: BelongsTo<typeof Role>

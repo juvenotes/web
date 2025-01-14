@@ -2,11 +2,6 @@
 import { useForm, Link } from '@inertiajs/vue3'
 import { AlertCircle, Loader } from 'lucide-vue-next'
 import AuthLayout from '~/layouts/AuthLayout.vue'
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { Alert, AlertTitle, AlertDescription } from '~/components/ui/alert'
-import { Checkbox } from '~/components/ui/checkbox'
 
 defineOptions({ layout: AuthLayout })
 
@@ -22,6 +17,7 @@ const form = useForm({
 </script>
 
 <template>
+    <AppHead title="Login" description="Welcome back to Juvenotes" />
     <div class="min-h-[80vh] flex items-center justify-center px-4">
         <div class="w-full max-w-md">
             <!-- Card Container -->

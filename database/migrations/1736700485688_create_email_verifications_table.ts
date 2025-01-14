@@ -5,7 +5,7 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable('users', (table) => {
-      table.boolean('is_email_verified').defaultTo(false)
+      table.boolean('email_verified').nullable()
       table.timestamp('email_verified_at').nullable()
     })
 
@@ -22,8 +22,7 @@ export default class extends BaseSchema {
   async down() {
     this.schema.dropTable(this.tableName)
     this.schema.alterTable('users', (table) => {
-      table.dropColumn('is_email_verified')
-      table.dropColumn('email_verified_at')
+      table.dropColumns('email_verified', 'email_verified_at')
     })
   }
 }

@@ -17,6 +17,7 @@ const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
 const GoogleSignupController = () => import('#controllers/auth/google_signup_controller')
+const EmailVerificationsController = () => import('#controllers/auth/email_verification_controller')
 const ForgotPasswordController = () => import('#controllers/auth/forgot_password_controller')
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
@@ -48,6 +49,11 @@ router
   .as('auth.register.store')
   .use([middleware.guest()])
 router.post('/logout', [LogoutController, 'handle']).as('auth.logout').use(middleware.auth())
+
+//* AUTH -> VERIFY EMAIL
+router.get('/auth/verify', [EmailVerificationsController, 'pending'])
+router.get('/auth/verify-email/:token', [EmailVerificationsController, 'verify'])
+router.get('/auth/verify-email-success', [EmailVerificationsController, 'success'])
 
 //* AUTH -> FORGOT PASSWORD
 router
