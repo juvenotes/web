@@ -38,15 +38,15 @@ export default class VerificationController {
       await auth.use('web').login(user)
 
       session.flash('success', 'Email verified successfully!')
-      return response.redirect().toPath('/auth/verify-email-success')
+      return response.redirect().toPath('/learn')
     } catch (error) {
-      console.error('Verification error:', error)
-      session.flash('error', 'Invalid or expired verification link')
+      console.error('Verification error:', {
+        error,
+        token: params.token,
+        timestamp: new Date().toISOString(),
+      })
+      session.flash('error', 'Invalid or expired verification link. Try again')
       return response.redirect().toPath('/auth/verify')
     }
-  }
-
-  async success({ inertia }: HttpContext) {
-    return inertia.render('auth/verify_email_success')
   }
 }

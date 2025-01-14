@@ -53,7 +53,6 @@ router.post('/logout', [LogoutController, 'handle']).as('auth.logout').use(middl
 //* AUTH -> VERIFY EMAIL
 router.get('/auth/verify', [EmailVerificationsController, 'pending'])
 router.get('/auth/verify-email/:token', [EmailVerificationsController, 'verify'])
-router.get('/auth/verify-email-success', [EmailVerificationsController, 'success'])
 
 //* AUTH -> FORGOT PASSWORD
 router
