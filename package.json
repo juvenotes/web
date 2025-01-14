@@ -84,6 +84,7 @@
     "@editorjs/paragraph": "^2.11.7",
     "@hookform/resolvers": "^3.9.1",
     "@inertiajs/vue3": "^2.0.0",
+    "@julr/adonisjs-prometheus": "^1.0.1",
     "@mdx-js/react": "^3.1.0",
     "@mdx-js/vue": "^3.1.0",
     "@radix-icons/vue": "^1.0.0",
