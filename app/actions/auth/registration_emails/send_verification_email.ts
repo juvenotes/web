@@ -26,10 +26,10 @@ export default class SendVerificationEmail {
         .to(user.email)
         .from('noreply@juvenotes.com')
         .subject('Verify your Juvenotes account')
-        .htmlView('emails/verify_email', { 
-          user, 
+        .htmlView('emails/verify_email', {
+          user,
           verificationUrl,
-          expiresIn: '24 hours'
+          expiresIn: '24 hours',
         })
     })
   }

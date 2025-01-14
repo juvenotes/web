@@ -1,3 +1,4 @@
+import EmailVerification from '#models/email_verification'
 import type { HttpContext } from '@adonisjs/core/http'
 import encryption from '@adonisjs/core/services/encryption'
 import { DateTime } from 'luxon'
@@ -28,6 +29,7 @@ export default class VerificationController {
 
       await user
         .merge({
+          emailVerified: true,
           emailVerifiedAt: DateTime.now(),
         })
         .save()

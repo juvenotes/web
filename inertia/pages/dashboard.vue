@@ -5,20 +5,11 @@ import {
 
   BookOpen,
   FileText,
-  Menu as MenuIcon,
+  Menu,
   GraduationCap,
   Clock,
   Flame
 } from 'lucide-vue-next'
-
-// const formatTime = (minutes: number) => {
-//   const hours = Math.floor(minutes / 60)
-//   const mins = minutes % 60
-//   return `${hours}h ${mins}m`
-// }
-
-
-const logoPath = '/images/logo.png'
 
 defineProps<{
   messages: Record<string, string | Record<string, string>>
@@ -28,6 +19,7 @@ defineProps<{
 defineOptions({ layout: DashLayout })
 </script>
 <template>
+  <AppHead title="Your dashboard" description="All available concepts in Juvenotes" />
   <div class="max-w-7xl mx-auto space-y-10">
     <!-- Hero Welcome Section -->
     <div class="relative bg-gradient-to-br from-primary/5 via-primary/10 to-transparent p-6 rounded-xl">
