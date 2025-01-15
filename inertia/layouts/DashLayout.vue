@@ -66,7 +66,7 @@ onUnmounted(() => {
           <div class="flex-1 max-w-md mx-4 hidden md:block">
             <div class="relative">
               <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Search..." class="w-full pl-8 bg-muted/50" />
+              <Input type="search" placeholder="Search...is not available yet" class="w-full pl-8 bg-muted/50" />
             </div>
           </div>
 
