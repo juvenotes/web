@@ -18,6 +18,7 @@ export default class UserDto extends BaseModelDto {
   declare password: string
   declare providerId: string
   declare provider: string
+  declare personalization_complete: boolean
   declare total_study_time: number
   declare streak_count: number
   // declare last_login: string
@@ -44,6 +45,7 @@ export default class UserDto extends BaseModelDto {
     this.password = user.password
     this.providerId = user.providerId
     this.provider = user.provider
+    this.personalization_complete = user.personalization_complete
     this.total_study_time = user.total_study_time
     this.streak_count = user.streak_count
     // this.last_login = user.last_login.toISO()!

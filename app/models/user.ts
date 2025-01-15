@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, belongsTo, column, computed, hasMany, hasOne } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import EmailHistory from '#models/email_history'
@@ -45,6 +45,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   declare provider: string
+
+  @column()
+  declare personalization_complete: boolean
 
   @column()
   declare total_study_time: number

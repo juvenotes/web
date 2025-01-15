@@ -12,7 +12,7 @@ import { middleware } from './kernel.js'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
 
-const HomeController = () => import('#controllers/home_controller')
+const HomeController = () => import('#controllers/home/home_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
@@ -27,7 +27,7 @@ const IndexQuestionsController = () => import('#controllers/questions/index_cont
 // const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
 const IndexPapersController = () => import('#controllers/papers/index_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
-const PersonalizationController = () => import('#controllers/personalization/index_controller')
+const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 //terns and privacy
@@ -73,13 +73,11 @@ router
   .use([middleware.guest()])
 
 router
-  .get('/personalization', [PersonalizationController, 'show'])
-  .as('auth.personalize.show')
-  .use(middleware.auth())
-
-router
-  .post('/onboarding', [PersonalizationController, 'store'])
-  .as('auth.personalize.store')
+  .group(() => {
+    router.get('/personalize', [PersonalizationController, 'show'])
+    router.post('/personalize', [PersonalizationController, 'store'])
+  })
+  .prefix('/auth')
   .use(middleware.auth())
 
 //* USER DASHBOARD

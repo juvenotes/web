@@ -216,7 +216,7 @@ onUnmounted(() => {
               <span class="text-sm font-medium text-muted-foreground">Contact us:</span>
               <div class="flex gap-2">
                 <a
-                  href="#"
+                  href="https://x.com/juvenotes"
                   class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
                   aria-label="Twitter"
                 >
@@ -225,7 +225,7 @@ onUnmounted(() => {
                   />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.instagram.com/juvenotes/"
                   class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
                   aria-label="Instagram"
                 >
@@ -234,7 +234,7 @@ onUnmounted(() => {
                   />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/company/juvenotes"
                   class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
                   aria-label="LinkedIn"
                 >
