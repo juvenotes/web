@@ -1,18 +1,19 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import EmailHistory from '#models/email_history'
 import Role from '#models/role'
-import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import PasswordResetToken from './password_reset_token.js'
 import Concept from './concept.js'
 import Question from './question.js'
 import PastPaper from './past_paper.js'
 import UserEducationEntry from './user_education_entry.js'
 import { CountryCode } from '#enums/countries'
+import EmailVerification from './email_verification.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -46,6 +47,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare provider: string
 
   @column()
+  declare personalization_complete: boolean
+
+  @column()
   declare total_study_time: number
 
   @column()
@@ -62,6 +66,20 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+
+  @column()
+  declare emailVerified: Boolean | null
+
+  @column.dateTime()
+  declare emailVerifiedAt: DateTime | null
+
+  @hasOne(() => EmailVerification)
+  declare emailVerification: HasOne<typeof EmailVerification>
+
+  // @computed()
+  // get isEmailVerified() {
+  //   return this.emailVerified === this.email && this.emailVerifiedAt
+  // }
 
   @belongsTo(() => Role)
   declare role: BelongsTo<typeof Role>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #0891b2;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      margin: 20px 0;
+    }
+    .footer {
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 style="color: #334155; margin-bottom: 20px;">Verify your email</h1>
+
+    <p style="color: #64748b; margin-bottom: 20px;">
+      Hi {{ user.fullName }},
+    </p>
+
+    <p style="color: #64748b; margin-bottom: 20px;">
+      Thanks for signing up for Juvenotes! To complete your registration, please verify your email address by clicking the button below.
+    </p>
+
+    <a href="{{ verificationUrl }}" class="button">
+      Verify Email Address
+    </a>
+
+    <p style="color: #64748b; margin-bottom: 20px;">
+      If the button doesn't work, copy and paste this link into your browser:
+      <br>
+      {{ verificationUrl }}
+    </p>
+
+    <div class="footer">
+      <p>If you didn't create an account, you can safely ignore this email.</p>
+      <p>Need help? Contact our support team.</p>
+    </div>
+  </div>
+</body>
+</html>
