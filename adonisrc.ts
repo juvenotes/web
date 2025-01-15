@@ -17,6 +17,7 @@ export default defineConfig({
     () => import('@adonisjs/bouncer/commands'),
     () => import('@adocasts.com/dto/commands'),
     () => import('@adocasts.com/actions/commands'),
+    () => import('@foadonis/maintenance/commands')
   ],
 
   /*
@@ -49,6 +50,7 @@ export default defineConfig({
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/ally/ally_provider'),
     () => import('@julr/adonisjs-prometheus/prometheus_provider'),
+    () => import('@foadonis/maintenance/maintenance_provider')
   ],
 
   /*

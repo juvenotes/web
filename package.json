@@ -82,6 +82,7 @@
     "@editorjs/header": "^2.8.8",
     "@editorjs/list": "^2.0.2",
     "@editorjs/paragraph": "^2.11.7",
+    "@foadonis/maintenance": "^0.0.3",
     "@hookform/resolvers": "^3.9.1",
     "@inertiajs/vue3": "^2.0.0",
     "@julr/adonisjs-prometheus": "^1.0.1",
