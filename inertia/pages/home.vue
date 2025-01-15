@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import Toaster from '~/components/ui/toast/Toaster.vue'
 import AppLayout from '~/layouts/AppLayout.vue'
-const logoPath = '/images/logo.png'
 import UserDto from '#dtos/user'
 defineProps<{
   messages: Record<string, string | Record<string, string>>
