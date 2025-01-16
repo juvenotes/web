@@ -19,7 +19,7 @@ export default class SendVerificationEmail {
       expiresAt: DateTime.now().plus({ hours: 24 }),
     })
 
-    const verificationUrl = `${env.get('APP_URL')}/auth/verify-email/${encryptedToken}`
+    const verificationUrl = `${env.get('APP_DOMAIN')}/auth/verify-email/${encryptedToken}`
 
     await mail.send((message) => {
       message
