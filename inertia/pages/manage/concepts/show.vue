@@ -54,14 +54,6 @@ const newChildForm = useForm({
   isTerminal: false,
 })
 
-watchEffect(() => {
-  console.log('Props changed:', {
-    concept: props.concept,
-    children: props.children,
-    content: props.content,
-  })
-})
-
 const updateContent = (value: string) => {
   console.log('Content updated:', value)
   contentForm.knowledgeBlock = value
