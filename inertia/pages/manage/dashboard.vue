@@ -5,11 +5,8 @@ import type StatsDto from '#dtos/stats'
 import { 
   BookOpen, 
   FileQuestion, 
-  FileText,
-  Plus 
-} from 'lucide-vue-next'
+  FileText} from 'lucide-vue-next'
 import { computed } from 'vue'
-import { Button } from '~/components/ui/button'
 
 defineOptions({ layout: AdminLayout })
 
@@ -58,20 +55,6 @@ const quickLinks = [
   <div class="container mx-auto p-6">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold">Dashboard</h1>
-      <div class="flex gap-2">
-        <Button asChild variant="outline">
-          <Link href="/manage/concepts/new">
-            <Plus class="w-4 h-4 mr-2" />
-            New Concept
-          </Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/manage/questions/new">
-            <Plus class="w-4 h-4 mr-2" />
-            New Question
-          </Link>
-        </Button>
-      </div>
     </div>
 
     <!-- Stats Grid -->

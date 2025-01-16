@@ -2,10 +2,12 @@
 import UserDto from '#dtos/user'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { BookOpen, FileText, GraduationCap, Clock, Flame } from 'lucide-vue-next'
+import FeatureFlagsDto from '#dtos/feature_flags'
 
 defineProps<{
   messages: Record<string, string | Record<string, string>>
   user: UserDto | null | undefined
+  features: FeatureFlagsDto
 }>()
 
 defineOptions({ layout: DashLayout })

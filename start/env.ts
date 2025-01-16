@@ -59,14 +59,16 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   BREVO_API_KEY: Env.schema.string(),
-
-  /*
-  |----------------------------------------------------------
-  | Variables for configuring the mail package
-  |----------------------------------------------------------
-  */
   SMTP_HOST: Env.schema.string(),
   SMTP_PORT: Env.schema.string(),
   SMTP_USERNAME: Env.schema.string(),
   SMTP_PASSWORD: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for statsig
+  |----------------------------------------------------------
+  */
+  STATSIG_CLIENT_KEY: Env.schema.string(),
+  STATSIG_SERVER_SECRET: Env.schema.string(),
 })

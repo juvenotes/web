@@ -30,7 +30,6 @@ const editor = useEditor({
   onUpdate: ({ editor }) => {
     // Get markdown directly
     const markdown = editor.storage.markdown.getMarkdown()
-    console.log(markdown)
     emitUpdate(markdown)
   },
 })

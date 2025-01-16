@@ -9,8 +9,6 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
-import AutoSwagger from 'adonis-autoswagger'
-import swagger from '#config/swagger'
 
 const HomeController = () => import('#controllers/home/home_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
@@ -30,9 +28,7 @@ const UserDashboardController = () => import('#controllers/dashboard/index_contr
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
-//terns and privacy
-const TermsController = () => import('#controllers/legal/terms_controller')
-const PrivacyController = () => import('#controllers/legal/privacy_controller')
+const ManageUsersController = () => import('#controllers/manage/users/index_controller')
 
 //* HOME
 router.get('/', [HomeController, 'index']).as('home')
@@ -82,6 +78,10 @@ router
   })
   .prefix('/auth')
   .use(middleware.auth())
+
+//* TERMS AND PRIVACY
+const TermsController = () => import('#controllers/legal/terms_controller')
+const PrivacyController = () => import('#controllers/legal/privacy_controller')
 
 //* USER DASHBOARD
 router.get('learn', [UserDashboardController, 'handle']).as('learn').use(middleware.auth())
@@ -155,18 +155,6 @@ router
 //   })
 //   .prefix('/manage/questions')
 
-// returns swagger in YAML
-router.get('/swagger', async () => {
-  return AutoSwagger.default.docs(router.toJSON(), swagger)
-})
-
-// Renders Swagger-UI and passes YAML-output of /swagger
-router.get('/docs', async () => {
-  return AutoSwagger.default.ui('/swagger', swagger)
-  // return AutoSwagger.default.scalar("/swagger"); to use Scalar instead
-  // return AutoSwagger.default.rapidoc("/swagger", "view"); to use RapiDoc instead (pass "view" default, or "read" to change the render-style)
-})
-
 //* AUTH -> GOOGLE
 router
   .group(() => {
@@ -198,3 +186,11 @@ router.get('/privacy', [PrivacyController, 'handle']).as('legal.privacy')
 //     router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
 //   })
 //   .prefix('/manage/papers')
+
+router
+  .group(() => {
+    router.get('/users', [ManageUsersController, 'index'])
+    router.put('/users/:id/role', [ManageUsersController, 'updateRole'])
+  })
+  .prefix('/manage')
+  .use(middleware.auth())

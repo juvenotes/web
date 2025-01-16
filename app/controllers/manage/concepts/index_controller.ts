@@ -47,7 +47,6 @@ export default class ManageConceptsController {
         .firstOrFail()
 
       const content = concept.isTerminal ? concept.knowledgeBlock : null
-      console.log(typeof concept.knowledgeBlock)
 
       return inertia.render('manage/concepts/show', {
         concept: new ConceptDto(concept),
@@ -66,11 +65,21 @@ export default class ManageConceptsController {
     }
     const data = await request.validateUsing(createConceptValidator)
 
+    let newLevel = 0
+    let parentId = null
+
+    if (data.parentId) {
+      const parentConcept = await Concept.findByOrFail('slug', data.parentId)
+      newLevel = parentConcept.level + 1
+      parentId = parentConcept.id
+    }
+
     const concept = await Concept.create({
       ...data,
       userId: auth.user!.id,
       slug: generateSlug(),
-      level: data.parentId ? 1 : 0,
+      level: newLevel,
+      parentId,
     })
 
     session.flash('success', `${concept.title} created successfuly`)

@@ -15,7 +15,7 @@ export default class ConceptSeeder extends BaseSeeder {
     }
 
     // Read and parse CSV
-    const csvContent = fs.readFileSync('database/seeders/syllabus.csv', 'utf-8')
+    const csvContent = fs.readFileSync('database/seeders/syllabus-updated.csv', 'utf-8')
     const records = parse(csvContent, {
       columns: false,
       skip_empty_lines: true,
