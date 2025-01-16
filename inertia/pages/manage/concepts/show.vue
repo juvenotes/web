@@ -142,6 +142,13 @@ const handleDelete = () => {
         </div>
       </div>
 
+      <!-- Info Grid -->
+      <div v-if="!concept.isTerminal" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="p-4 rounded-lg border">
+          <span class="text-sm text-muted-foreground"><b>{{ concept.title }} </b> is example of a parent concept here. All others are child concepts.</span>
+        </div>
+      </div>
+
       <!-- Child Concepts Grid -->
       <div v-if="children?.length" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Link
@@ -168,6 +175,11 @@ const handleDelete = () => {
               <p v-if="form.errors.title" class="text-sm text-destructive">
                 {{ form.errors.title }}
               </p>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <Checkbox v-model="form.isTerminal" id="edit-terminal" />
+              <Label for="edit-terminal">Is Terminal Concept</Label>
             </div>
 
             <Button type="submit" :disabled="form.processing">
