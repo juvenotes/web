@@ -18,7 +18,7 @@ export default defineConfig({
       enforce: 'pre',
       ...mdx({
         /* jsxImportSource: …, otherOptions… */
-        providerImportSource: '@mdx-js/react',
+        providerImportSource: '@mdx-js/vue',
         remarkPlugins: [remarkGfm],
         rehypePlugins: [rehypeHighlight],
       }),

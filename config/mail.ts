@@ -2,11 +2,11 @@ import env from '#start/env'
 import { defineConfig, transports } from '@adonisjs/mail'
 
 const mailConfig = defineConfig({
-  default: 'smtp',
+  default: 'brevo',
 
   from: {
-    address: 'admin@example.com',
-    name: 'Juvenotes Admin Team',
+    address: 'noreply@juvenotes.com',
+    name: 'Juvenotes',
   },
 
   /**

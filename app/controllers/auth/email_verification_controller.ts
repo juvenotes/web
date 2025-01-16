@@ -1,4 +1,6 @@
+import SendVerificationEmail from '#actions/auth/registration_emails/send_verification_email'
 import EmailVerification from '#models/email_verification'
+import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import encryption from '@adonisjs/core/services/encryption'
 import { DateTime } from 'luxon'
@@ -10,6 +12,29 @@ export default class VerificationController {
       return response.redirect().toPath('/register')
     }
     return inertia.render('auth/verify_email', { email })
+  }
+
+  async resend({ session, response }: HttpContext) {
+    const email = session.get('pending_verification_email')
+    if (!email) {
+      session.flash('error', 'No pending verification found')
+      return response.redirect().back()
+    }
+
+    try {
+      const user = await User.findByOrFail('email', email)
+      await SendVerificationEmail.handle({ user })
+
+      session.flash('success', 'Verification email sent')
+      return response.redirect().back()
+    } catch (error) {
+      console.error('Resend verification failed:', error, {
+        email,
+        timestamp: new Date().toISOString(),
+      })
+      session.flash('error', 'Could not send verification email')
+      return response.redirect().back()
+    }
   }
 
   async verify({ params, response, auth, session }: HttpContext) {
