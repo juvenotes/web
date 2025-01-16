@@ -6,7 +6,7 @@ import { computed, ref, watchEffect } from 'vue'
 import MdxContent from '~/components/MdxContent.vue'
 
 import DashLayout from '~/layouts/DashLayout.vue'
-import { Home, BookOpen, ChevronRight, Network, HelpCircle, Circle, Award } from 'lucide-vue-next'
+import { Home, BookOpen, ChevronRight, Network, HelpCircle, Circle, Award, ArrowLeft } from 'lucide-vue-next'
 
 defineOptions({ layout: DashLayout })
 
@@ -21,6 +21,10 @@ const children = ref(props.children)
 const questions = ref(props.questions)
 const content = computed(() => props.content || '')
 
+const goBack = () => {
+  window.history.back()
+}
+
 watchEffect(() => {
   children.value = props.children
   questions.value = props.questions
@@ -32,6 +36,14 @@ watchEffect(() => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Modern Breadcrumbs -->
     <nav class="flex items-center gap-3 text-sm text-muted-foreground bg-white/50 p-3 rounded-lg border">
+      <button 
+        @click="goBack" 
+        class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+      >
+        <ArrowLeft class="h-4 w-4" />
+        Back
+      </button>
+      <ChevronRight class="h-4 w-4 text-muted-foreground/50" />
       <Home class="h-4 w-4" />
       <Link href="/concepts" class="hover:text-primary transition-colors flex items-center gap-2">
         <BookOpen class="h-4 w-4" />
@@ -62,9 +74,7 @@ watchEffect(() => {
             v-for="child in children"
             :key="child.id"
             :href="`/concepts/${child.slug}`"
-            class="group p-5 rounded-xl bg-white/50 backdrop-blur-sm border 
-                   hover:border-primary/20 hover:shadow-lg hover:-translate-y-0.5 
-                   transition-all duration-300"
+            class="group p-5 rounded-xl bg-white/50 backdrop-blur-sm border hover:border-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
           >
             <h3 class="text-base font-medium group-hover:text-primary transition-colors flex items-center gap-2">
               <BookOpen class="h-4 w-4 text-primary/70" />
@@ -75,8 +85,7 @@ watchEffect(() => {
       </div>
 
       <!-- Enhanced Main Content -->
-      <div v-if="content" class="prose prose-primary max-w-none 
-                                prose-headings:text-foreground prose-p:text-muted-foreground">
+      <div v-if="content" class="prose prose-primary max-w-none prose-headings:text-foreground prose-p:text-muted-foreground">
         <MdxContent :content="content" />
       </div>
 
@@ -100,8 +109,7 @@ watchEffect(() => {
               <div
                 v-for="choice in question.choices"
                 :key="choice.id"
-                class="flex items-start gap-3 p-3 rounded-lg hover:bg-primary/5 
-                       border border-transparent hover:border-primary/10 transition-all duration-300"
+                class="flex items-start gap-3 p-3 rounded-lg hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all duration-300"
               >
                 <Circle class="h-4 w-4 mt-0.5 text-muted-foreground" />
                 <span class="text-muted-foreground">{{ choice.choiceText }}</span>
@@ -115,8 +123,7 @@ watchEffect(() => {
                 :key="part.id" 
                 class="relative pl-6 py-3"
               >
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/40 to-primary/10 
-                          rounded-full" />
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/40 to-primary/10 rounded-full" />
                 <p class="font-medium text-foreground">{{ part.partText }}</p>
                 <p class="mt-2 text-muted-foreground">{{ part.expectedAnswer }}</p>
                 <div class="flex items-center gap-2 mt-2">
