@@ -116,38 +116,42 @@ const handleDelete = () => {
     :title="`Manage ${concept.title}`"
     description="Manage a specific concept in Juvenotes"
   />
-  <div class="container mx-auto px-4 py-8">
-    <nav class="flex items-center gap-2 mb-6 text-sm">
+  <div class="container mx-auto px-4 py-4 sm:py-8">
+    <nav class="flex flex-wrap items-center gap-2 mb-4 sm:mb-6 text-sm">
       <button
         @click="goBack"
         class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
       >
         <ArrowLeft class="h-4 w-4" />
-        Back
+        <span class="hidden sm:inline">Back</span>
       </button>
       <Link href="/manage/concepts">Concepts</Link>
       <span>/</span>
-      <span>{{ concept.title }}</span>
+      <span class="truncate max-w-[200px]">{{ concept.title }}</span>
     </nav>
 
-    <div class="space-y-8">
-      <div class="flex items-center justify-between">
-        <h1 class="text-3xl font-bold">{{ concept.title }}</h1>
-        <div class="flex gap-2">
+    <div class="space-y-6 sm:space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 class="text-2xl sm:text-3xl font-bold truncate">{{ concept.title }}</h1>
+        <div class="flex flex-wrap gap-2">
           <!-- Only show Add buttons for non-terminal concepts -->
           <template v-if="!concept.isTerminal">
-            <Button variant="outline" @click="showNewChildDialog = true">
+            <Button variant="outline" @click="showNewChildDialog = true" class="w-full sm:w-auto">
               <Plus class="h-4 w-4 mr-2" />
               Add Child Concept
             </Button>
           </template>
-          <Button variant="outline" @click="showEditDialog = true"> Edit </Button>
-          <Button variant="destructive" @click="handleDelete"> Delete </Button>
+          <Button variant="outline" @click="showEditDialog = true" class="w-full sm:w-auto">
+            Edit
+          </Button>
+          <Button variant="destructive" @click="handleDelete" class="w-full sm:w-auto">
+            Delete
+          </Button>
         </div>
       </div>
 
       <!-- Child Concepts Grid -->
-      <div v-if="children?.length" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div v-if="children?.length" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Link
           v-for="child in children"
           :key="child.id"
@@ -160,7 +164,7 @@ const handleDelete = () => {
 
       <!-- edit dialog -->
       <Dialog :open="showEditDialog" @update:open="showEditDialog = $event">
-        <DialogContent class="sm:max-w-[800px]">
+        <DialogContent class="w-[95vw] max-w-[800px] sm:w-[90vw]">
           <DialogHeader>
             <DialogTitle>Edit Concept</DialogTitle>
           </DialogHeader>
@@ -183,7 +187,7 @@ const handleDelete = () => {
 
       <!-- New Child Dialog -->
       <Dialog :open="showNewChildDialog" @update:open="showNewChildDialog = $event">
-        <DialogContent class="sm:max-w-[800px]">
+        <DialogContent class="w-[95vw] max-w-[800px] sm:w-[90vw]">
           <DialogHeader>
             <DialogTitle>Add Child Concept</DialogTitle>
           </DialogHeader>
@@ -215,9 +219,9 @@ const handleDelete = () => {
 
       <!-- Terminal Content Section -->
       <div v-if="concept.isTerminal" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h2 class="text-2xl font-bold">Content</h2>
-          <Button variant="outline" @click="toggleContentEditor">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h2 class="text-xl sm:text-2xl font-bold">Content</h2>
+          <Button variant="outline" @click="toggleContentEditor" class="w-full sm:w-auto">
             {{ showContentEditor ? 'Hide Editor' : 'Edit Content' }}
           </Button>
         </div>
@@ -238,8 +242,8 @@ const handleDelete = () => {
       </div>
 
       <!-- Questions -->
-      <div v-if="questions?.length" class="mt-8 space-y-8">
-        <h2 class="text-2xl font-bold">Practice Questions</h2>
+      <div v-if="questions?.length" class="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
+        <h2 class="text-xl sm:text-2xl font-bold">Practice Questions</h2>
         <div v-for="question in questions" :key="question.id" class="space-y-4">
           <div class="p-4 rounded-lg border">
             <p class="font-medium">{{ question.questionText }}</p>
