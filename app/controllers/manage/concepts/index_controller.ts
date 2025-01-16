@@ -65,15 +65,21 @@ export default class ManageConceptsController {
     }
     const data = await request.validateUsing(createConceptValidator)
 
-    const parentConcept = await Concept.findByOrFail('slug', data.parentId)
-    const newLevel = parentConcept.level + 1
+    let newLevel = 0
+    let parentId = null
+
+    if (data.parentId) {
+      const parentConcept = await Concept.findByOrFail('slug', data.parentId)
+      newLevel = parentConcept.level + 1
+      parentId = parentConcept.id
+    }
 
     const concept = await Concept.create({
       ...data,
       userId: auth.user!.id,
       slug: generateSlug(),
       level: newLevel,
-      parentId: parentConcept.id,
+      parentId,
     })
 
     session.flash('success', `${concept.title} created successfuly`)
