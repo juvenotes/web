@@ -50,7 +50,7 @@ router.use([
   () => import('@adonisjs/auth/initialize_auth_middleware'),
   () => import('@adonisjs/shield/shield_middleware'),
   () => import('#middleware/initialize_bouncer_middleware'),
-  () => import('#middleware/statsig_middleware'),
+  // () => import('#middleware/statsig_middleware'),
   // () => import('#middleware/experiment_middleware')
 ])
 
