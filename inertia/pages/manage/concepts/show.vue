@@ -7,7 +7,7 @@ import AdminLayout from '~/layouts/AdminLayout.vue'
 import MdxContent from '~/components/MdxContent.vue'
 import KnowledgeEditor from '~/components/KnowledgeEditor.vue'
 import { toast } from 'vue-sonner'
-import { Plus } from 'lucide-vue-next'
+import { Plus, ArrowLeft } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -27,13 +27,16 @@ const toggleContentEditor = () => {
   showContentEditor.value = !showContentEditor.value
 }
 
+const goBack = () => {
+  window.history.back()
+}
+
 watchEffect(() => {
   children.value = props.children
   questions.value = props.questions
 })
 
 const showEditDialog = ref(false)
-const showNewSiblingDialog = ref(false)
 const showNewChildDialog = ref(false)
 
 const form = useForm({
@@ -43,12 +46,6 @@ const form = useForm({
 
 const contentForm = useForm({
   knowledgeBlock: typeof props.content === 'string' ? props.content : '',
-})
-
-const newSiblingForm = useForm({
-  title: '',
-  parentId: props.concept.parentId || null,
-  isTerminal: false,
 })
 
 const newChildForm = useForm({
@@ -61,7 +58,7 @@ watchEffect(() => {
   console.log('Props changed:', {
     concept: props.concept,
     children: props.children,
-    content: props.content
+    content: props.content,
   })
 })
 
@@ -76,19 +73,6 @@ const handleSubmit = () => {
       showEditDialog.value = false
     },
     onError: (errors) => {
-      console.error('Form errors:', errors)
-    },
-  })
-}
-
-const handleNewSibling = () => {
-  newSiblingForm.post('/manage/concepts', {
-    onSuccess: () => {
-      showNewSiblingDialog.value = false
-      newSiblingForm.reset()
-    },
-    onError: (errors) => {
-      toast.error('Failed to create sibling concept')
       console.error('Form errors:', errors)
     },
   })
@@ -134,6 +118,13 @@ const handleDelete = () => {
   />
   <div class="container mx-auto px-4 py-8">
     <nav class="flex items-center gap-2 mb-6 text-sm">
+      <button
+        @click="goBack"
+        class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+      >
+        <ArrowLeft class="h-4 w-4" />
+        Back
+      </button>
       <Link href="/manage/concepts">Concepts</Link>
       <span>/</span>
       <span>{{ concept.title }}</span>
@@ -144,16 +135,12 @@ const handleDelete = () => {
         <h1 class="text-3xl font-bold">{{ concept.title }}</h1>
         <div class="flex gap-2">
           <!-- Only show Add buttons for non-terminal concepts -->
-      <template v-if="!concept.isTerminal">
-        <Button variant="outline" @click="showNewSiblingDialog = true">
-          <Plus class="h-4 w-4 mr-2" />
-          Add Sibling Concept
-        </Button>
-        <Button variant="outline" @click="showNewChildDialog = true">
-          <Plus class="h-4 w-4 mr-2" />
-          Add Child Concept
-        </Button>
-      </template>
+          <template v-if="!concept.isTerminal">
+            <Button variant="outline" @click="showNewChildDialog = true">
+              <Plus class="h-4 w-4 mr-2" />
+              Add Child Concept
+            </Button>
+          </template>
           <Button variant="outline" @click="showEditDialog = true"> Edit </Button>
           <Button variant="destructive" @click="handleDelete"> Delete </Button>
         </div>
@@ -194,65 +181,34 @@ const handleDelete = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog :open="showNewSiblingDialog" @update:open="showNewSiblingDialog = $event">
-        <DialogContent class="sm:max-w-[800px]">
-          <DialogHeader>
-            <DialogTitle>Add Sibling Concept</DialogTitle>
-          </DialogHeader>
-
-          <form @submit.prevent="handleNewSibling" class="space-y-4">
-            <div class="space-y-2">
-              <Label for="sibling-title">Title</Label>
-              <Input
-                id="sibling-title"
-                v-model="newSiblingForm.title"
-                :class="{ 'border-destructive': newSiblingForm.errors.title }"
-              />
-              <p v-if="newSiblingForm.errors.title" class="text-sm text-destructive">
-                {{ newSiblingForm.errors.title }}
-              </p>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <Checkbox id="sibling-terminal" v-model="newSiblingForm.isTerminal" />
-              <Label for="sibling-terminal">Is Terminal Concept</Label>
-            </div>
-
-            <Button type="submit" :disabled="newSiblingForm.processing">
-              {{ newSiblingForm.processing ? 'Creating...' : 'Create Concept' }}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-
       <!-- New Child Dialog -->
       <Dialog :open="showNewChildDialog" @update:open="showNewChildDialog = $event">
         <DialogContent class="sm:max-w-[800px]">
           <DialogHeader>
-        <DialogTitle>Add Child Concept</DialogTitle>
+            <DialogTitle>Add Child Concept</DialogTitle>
           </DialogHeader>
 
           <form @submit.prevent="handleNewChild" class="space-y-4">
-        <div class="space-y-2">
-          <Label for="child-title">Title</Label>
-          <Input
-            id="child-title"
-            v-model="newChildForm.title"
-            :class="{ 'border-destructive': newChildForm.errors.title }"
-          />
-          <p v-if="newChildForm.errors.title" class="text-sm text-destructive">
-            {{ newChildForm.errors.title }}
-          </p>
-        </div>
+            <div class="space-y-2">
+              <Label for="child-title">Title</Label>
+              <Input
+                id="child-title"
+                v-model="newChildForm.title"
+                :class="{ 'border-destructive': newChildForm.errors.title }"
+              />
+              <p v-if="newChildForm.errors.title" class="text-sm text-destructive">
+                {{ newChildForm.errors.title }}
+              </p>
+            </div>
 
-        <div class="flex items-center space-x-2">
-          <Checkbox v-model="newChildForm.isTerminal" id="child-terminal" />
-          <Label for="child-terminal">Is Terminal Concept</Label>
-        </div>
+            <div class="flex items-center space-x-2">
+              <Checkbox v-model="newChildForm.isTerminal" id="child-terminal" />
+              <Label for="child-terminal">Is Terminal Concept</Label>
+            </div>
 
-        <Button type="submit" :disabled="newChildForm.processing">
-          {{ newChildForm.processing ? 'Creating...' : 'Create Concept' }}
-        </Button>
+            <Button type="submit" :disabled="newChildForm.processing">
+              {{ newChildForm.processing ? 'Creating...' : 'Create Concept' }}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

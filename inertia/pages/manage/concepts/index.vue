@@ -28,8 +28,6 @@ defineProps<Props>()
       >
         <h2 class="text-lg font-semibold mb-2">{{ concept.title }}</h2>
         <div class="flex items-center text-sm text-muted-foreground">
-          <!-- <span v-if="concept.isTerminal" class="text-green-500">Terminal Node</span> -->
-          <!-- <span v-else>Parent Node</span> -->
         </div>
       </Link>
     </div>

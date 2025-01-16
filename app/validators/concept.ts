@@ -15,12 +15,9 @@ const metadataSchema = vine
 
 export const createConceptValidator = vine.compile(
   vine.object({
-    title: vine.string().minLength(3),
-    parentId: vine.number().optional(),
-    knowledgeBlock: vine.string().optional(),
+    title: vine.string().trim().minLength(2).maxLength(255),
+    parentId: vine.string().trim(),
     isTerminal: vine.boolean(),
-    level: vine.number(),
-    metadata: metadataSchema,
   })
 )
 
