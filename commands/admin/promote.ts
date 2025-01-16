@@ -39,28 +39,15 @@ export default class Promote extends BaseCommand {
       return
     }
 
-    // Get and validate password
-    const password = await this.prompt.secure('Enter admin password')
-    const confirmPassword = await this.prompt.secure('Confirm password')
-
-    if (password.length < 8) {
-      this.logger.error('Password must be at least 8 characters')
-      return
-    }
-
-    if (password !== confirmPassword) {
-      this.logger.error('Passwords do not match')
-      return
-    }
-
     if (this.create) {
-      // Create new admin
+      // Create new admin with default password
       await User.create({
         email: this.email,
-        password: await hash.make(password),
+        password: await hash.make('changeme123'),
         roleId: Role.ADMIN,
       })
       this.logger.success(`Created new admin user ${this.email}`)
+      this.logger.info('Default password is: changeme123')
     } else {
       // Promote existing user
       const user = await User.findBy('email', this.email)
@@ -68,7 +55,6 @@ export default class Promote extends BaseCommand {
         this.logger.error('User not found')
         return
       }
-      user.password = await hash.make(password)
       user.roleId = Role.ADMIN
       await user.save()
       this.logger.success(`User ${this.email} promoted to admin`)
