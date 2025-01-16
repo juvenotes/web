@@ -13,6 +13,8 @@
 */
 
 export const policies = {
+  AdminDashboardPolicy: () => import('#policies/admin_dashboard_policy'),
+  PaperPolicy: () => import('#policies/paper_policy'),
   UserPolicy: () => import('#policies/user_policy'),
   QuestionPolicy: () => import('#policies/question_policy'),
   ConceptPolicy: () => import('#policies/concept_policy'),

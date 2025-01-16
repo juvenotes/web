@@ -1,3 +1,6 @@
+// import FeatureFlagsDto from '#dtos/feature_flags'
+import UserDto from '#dtos/user'
+// import { StatsigService } from '#services/statsig'
 import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 
@@ -11,7 +14,30 @@ const inertiaConfig = defineConfig({
    * Data that should be shared with all rendered pages
    */
   sharedData: {
-    errors: (ctx) => ctx.session?.flashMessages.get('errors'),
+    user: async (ctx) => {
+      await ctx.auth.use('web').check()
+      const user = ctx.auth.use('web').user
+      return user ? new UserDto(user) : null
+    },
+    errors: (ctx) => {
+      const errors = ctx.session?.flashMessages.get('errors') ?? {}
+      return Object.keys(errors).reduce(
+        (obj, key) => ({
+          ...obj,
+          [key]: errors[key].join(', '),
+        }),
+        {}
+      )
+    },
+    exceptions: (ctx) => ctx.session.flashMessages.get('errorsBag') ?? {},
+    messages: (ctx) => ctx.session.flashMessages.all() ?? {},
+    // features: async (ctx) => {
+    //   const user = ctx.auth.use('web').user
+    //   if (!user) return null
+
+    //   const flags = await StatsigService.getFeatures(user.id.toString())
+    //   return new FeatureFlagsDto(flags)
+    // },
   },
 
   /**
@@ -19,8 +45,8 @@ const inertiaConfig = defineConfig({
    */
   ssr: {
     enabled: true,
-    entrypoint: 'inertia/app/ssr.tsx'
-  }
+    entrypoint: 'inertia/app/ssr.ts',
+  },
 })
 
 export default inertiaConfig

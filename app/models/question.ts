@@ -6,6 +6,7 @@ import Concept from './concept.js'
 import User from './user.js'
 import McqChoice from './mcq_choice.js'
 import SaqPart from './saq_part.js'
+import PastPaper from './past_paper.js'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })
@@ -44,6 +45,12 @@ export default class Question extends BaseModel {
   declare parts: HasMany<typeof SaqPart>
   slug: any
 
+  @column()
+  declare pastPaperId: number | null
+
+  @belongsTo(() => PastPaper)
+  declare pastPaper: BelongsTo<typeof PastPaper>
+
   @computed()
   get isMcq() {
     return this.type === QuestionType.MCQ
@@ -54,11 +61,11 @@ export default class Question extends BaseModel {
     return this.type === QuestionType.SAQ
   }
 
-  @computed()
-  get totalMarks() {
-    if (this.isSaq && this.parts) {
-      return this.parts.reduce((sum, part) => sum + part.marks, 0)
-    }
-    return 1 // MCQ questions worth 1 mark
-  }
+  // @computed()
+  // get totalMarks() {
+  //   if (this.isSaq && this.parts) {
+  //     return this.parts.reduce((sum, part) => sum + part.marks, 0)
+  //   }
+  //   return 1
+  // }
 }

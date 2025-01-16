@@ -15,20 +15,22 @@ const metadataSchema = vine
 
 export const createConceptValidator = vine.compile(
   vine.object({
-    title: vine.string().minLength(3),
-    parentId: vine.number().optional(),
-    knowledgeBlock: vine.string().optional(),
+    title: vine.string().trim().minLength(2).maxLength(255),
+    parentId: vine.string().trim().nullable(),
     isTerminal: vine.boolean(),
-    level: vine.number(),
-    metadata: metadataSchema,
   })
 )
 
 export const updateConceptValidator = vine.compile(
   vine.object({
     title: vine.string().minLength(3).optional(),
-    knowledgeBlock: vine.string().optional(),
     isTerminal: vine.boolean().optional(),
     metadata: metadataSchema.optional(),
+  })
+)
+
+export const updateKnowledgeBlockValidator = vine.compile(
+  vine.object({
+    knowledgeBlock: vine.string().optional(),
   })
 )

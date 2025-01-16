@@ -1,60 +1,63 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Concept from '#models/concept'
+import ConceptDto from '#dtos/concept'
+import QuestionDto from '#dtos/question'
 
 export default class IndexController {
   /**
    * Show root level concepts
    */
-  async index({ response }: HttpContext) {
+  async index({ inertia, logger }: HttpContext) {
+    logger.info('Fetching root level concepts')
+
     const concepts = await Concept.query()
       .whereNull('parent_id')
       .orderBy('level', 'asc')
       .select(['id', 'title', 'slug', 'is_terminal', 'level'])
 
-    return response.json(concepts)
+    logger.info('Found %d root concepts', concepts.length)
+
+    return inertia.render('concepts/index', {
+      concepts: ConceptDto.fromArray(concepts),
+    })
   }
 
   /**
    * Show single concept with its children
    */
-  async show({ params, response }: HttpContext) {
+  async show({ params, inertia, logger }: HttpContext) {
+    logger.info('Fetching concept with slug: %s', params.slug)
+
     const concept = await Concept.query()
       .where('slug', params.slug)
+      .preload('children', (query) => {
+        query.select(['id', 'title', 'slug', 'level', 'is_terminal'])
+      })
       .preload('questions', (query) => {
         query
-          .select(['id', 'type', 'question_text', 'difficulty_level', 'slug'])
+          .select(['id', 'type', 'question_text', 'difficulty_level'])
+          .orderBy('questions.created_at', 'desc')
           .preload('choices', (choicesQuery) => {
-            choicesQuery.select(['id', 'question_id', 'choice_text', 'is_correct', 'explanation'])
+            choicesQuery.select(['id', 'choice_text', 'is_correct', 'explanation'])
           })
           .preload('parts', (partsQuery) => {
-            partsQuery.select(['id', 'question_id', 'part_text', 'expected_answer', 'marks'])
+            partsQuery.select(['id', 'part_text', 'expected_answer', 'marks'])
           })
-          .orderBy('questions.created_at', 'desc')
       })
       .firstOrFail()
 
-    if (concept.isTerminal) {
-      return response.json({
-        concept: {
-          ...concept.serialize(),
-          questions: concept.questions.map((q) => ({
-            ...q.serialize(),
-            choices: q.type === 'mcq' ? q.choices : undefined,
-            parts: q.type === 'saq' ? q.parts : undefined,
-          })),
-          content: concept.knowledgeBlock,
-        },
-      })
-    }
+    logger.info(
+      'Found concept: %s with %d children and %d questions',
+      concept.title,
+      concept.children?.length ?? 0,
+      concept.questions?.length ?? 0
+    )
 
-    const children = await Concept.query()
-      .where('parent_id', concept.id)
-      .orderBy('level', 'asc')
-      .select(['id', 'title', 'slug', 'is_terminal', 'level'])
-
-    return response.json({
-      concept: concept.serialize(),
-      children,
+    return inertia.render('concepts/show', {
+      concept: new ConceptDto(concept),
+      children: concept.children ? ConceptDto.fromArray(concept.children) : [],
+      questions: concept.questions ? QuestionDto.fromArray(concept.questions) : [],
+      content: concept.knowledgeBlock,
     })
   }
 }

@@ -1,38 +1,38 @@
-import PasswordResetToken from '#models/password_reset_token'
+import ResetPassword from '#actions/auth/password_reset/reset_password'
+import TrySendPasswordResetEmail from '#actions/auth/password_reset/try_send_password_reset_email'
+import VerifyPasswordResetToken from '#actions/auth/password_reset/verify_password_reset_token'
 import { passwordResetSendValidator, passwordResetValidator } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
+import logger from '@adonisjs/core/services/logger'
 
 export default class ForgotPasswordsController {
   #sentSessionKey = 'FORGOT_PASSWORD_SENT'
 
   async index({ inertia, session }: HttpContext) {
     const isSent = session.flashMessages.has(this.#sentSessionKey)
-    return inertia.render('auth/forgot_password/index', { isSent }) // create this file @monari
+    logger.info('Rendering forgot password page')
+    return inertia.render('auth/forgot_password/index', { isSent })
   }
 
-  /**
-   * Form fields:
-   * email: john@mail.com
-   */
-
   async send({ request, response, session }: HttpContext) {
-    const { email } = await request.validateUsing(passwordResetSendValidator)
-    await PasswordResetToken.send(email)
+    const data = await request.validateUsing(passwordResetSendValidator)
+    logger.info('Attempting to send password reset email', { email: data.email })
+
+    await TrySendPasswordResetEmail.handle(data)
+
     session.flash(this.#sentSessionKey, true)
+    logger.info('Password reset email sent successfully', { email: data.email })
+
     return response.redirect().back()
   }
 
-  /**
-   * Validates the password reset token and update's the user's password
-   * @param encryptedValue encrypted password reset token value
-   * @param password user's new password
-   * @returns
-   * Form fields:
-   * encryptedValue: encrypted password reset token value
-   */
-
   async reset({ params, inertia }: HttpContext) {
-    const { isValid, user } = await PasswordResetToken.verify(params.value)
+    logger.info('Verifying password reset token')
+    const { isValid, user } = await VerifyPasswordResetToken.handle({
+      encryptedValue: params.value,
+    })
+
+    logger.info('Token verification result', { isValid, email: user?.email })
     return inertia.render('auth/forgot_password/reset', {
       value: params.value,
       email: user?.email,
@@ -40,10 +40,16 @@ export default class ForgotPasswordsController {
     })
   }
 
-  async update({ request, response, session }: HttpContext) {
+  async update({ request, response, session, auth }: HttpContext) {
     const data = await request.validateUsing(passwordResetValidator)
-    await PasswordResetToken.reset(data.value, data.password)
+    logger.info('Resetting password for user')
+
+    const user = await ResetPassword.handle({ data })
+    await auth.use('web').login(user)
+
     session.flash('success', 'Your password has been updated')
-    return response.redirect().toRoute('auth.login.show')
+    logger.info('Password reset successful', { userId: user.id })
+
+    return response.redirect().toPath('/')
   }
 }

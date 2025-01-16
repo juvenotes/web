@@ -14,7 +14,10 @@ export default defineConfig({
     () => import('@adonisjs/core/commands'),
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/mail/commands'),
-    () => import('@adonisjs/bouncer/commands')
+    () => import('@adonisjs/bouncer/commands'),
+    () => import('@adocasts.com/dto/commands'),
+    () => import('@adocasts.com/actions/commands'),
+    () => import('@foadonis/maintenance/commands'),
   ],
 
   /*
@@ -45,7 +48,9 @@ export default defineConfig({
     () => import('@adonisjs/inertia/inertia_provider'),
     () => import('@adonisjs/mail/mail_provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
-    () => import('@adonisjs/ally/ally_provider')
+    () => import('@adonisjs/ally/ally_provider'),
+    () => import('@julr/adonisjs-prometheus/prometheus_provider'),
+    () => import('@foadonis/maintenance/maintenance_provider'),
   ],
 
   /*

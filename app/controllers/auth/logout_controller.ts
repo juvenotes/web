@@ -1,12 +1,16 @@
-import User from '#models/user'
+import WebLogout from '#actions/auth/http/web_logout'
+import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import logger from '@adonisjs/core/services/logger'
 
 export default class LogoutController {
-  async handle({ response, auth, session }: HttpContext) {
-    await User.logout(auth)
+  @inject()
+  async handle({ response, session }: HttpContext, webLogout: WebLogout) {
+    await webLogout.handle()
 
-    session.flash('success', 'See you next time')
+    logger.info('User logged out successfully')
+    session.flash('success', 'Cya next time')
 
-    return response.redirect().toRoute('auth.login.show')
+    return response.redirect().toRoute('/login')
   }
 }

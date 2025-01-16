@@ -1,24 +1,36 @@
 import { defineConfig } from 'vite'
 import { getDirname } from '@adonisjs/core/helpers'
 import inertia from '@adonisjs/inertia/client'
-import react from '@vitejs/plugin-react'
 import adonisjs from '@adonisjs/vite/client'
 import mdx from '@mdx-js/rollup'
 import tailwind from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
 import path from 'node:path'
+import vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
 
 export default defineConfig({
   plugins: [
-    inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.tsx' } }),
+    inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.ts' } }),
     {
       enforce: 'pre',
       ...mdx({
         /* jsxImportSource: …, otherOptions… */
+        providerImportSource: '@mdx-js/vue',
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypeHighlight],
       }),
     },
-    react(),
-    adonisjs({ entrypoints: ['inertia/app/app.tsx'], reload: ['resources/views/**/*.edge'] }),
+    adonisjs({ entrypoints: ['inertia/app/app.ts'], reload: ['resources/views/**/*.edge'] }),
+    inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.ts' } }),
+    vue(),
+    adonisjs({ entrypoints: ['inertia/app/app.ts'], reload: ['resources/views/**/*.edge'] }),
+    Components({
+      dirs: ['inertia/components'],
+      dts: true,
+    }),
   ],
   css: {
     postcss: {

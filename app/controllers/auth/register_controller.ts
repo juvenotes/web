@@ -1,26 +1,46 @@
-import User from '#models/user'
+import WebRegister from '#actions/auth/http/web_register'
+import SendVerificationEmail from '#actions/auth/registration_emails/send_verification_email'
 import { registerValidator } from '#validators/auth'
+import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
-import app from '@adonisjs/core/services/app'
+import logger from '@adonisjs/core/services/logger'
 
 export default class RegisterController {
   async show({ inertia }: HttpContext) {
-    return inertia.render('auth/register') //create this file @monari, inside pages
+    return inertia.render('auth/register')
   }
 
-  /**
-   * Form fields:
-   * fullName: John Doe
-   * email: john@mail.com
-   * password: password
-   */
+  @inject()
+  async store({ request, response, session }: HttpContext, webRegister: WebRegister) {
+    try {
+      const data = await request.validateUsing(registerValidator)
+      const { user } = await webRegister.handle({ data })
 
-  async store({ request, response, auth, session }: HttpContext) {
-    const data = await request.validateUsing(registerValidator)
-    const user = await User.register(auth, data)
-    const baseMessage = `Welcome to ${app.appName}`
+      try {
+        await SendVerificationEmail.handle({ user })
+        session.put('pending_verification_email', user.email)
+        session.flash('success', 'Please check your email to verify your account')
+      } catch (emailError) {
+        logger.error('Email sending failed:', { error: emailError })
+        session.flash(
+          'warning',
+          'Account created but verification email could not be sent. Please contact support.'
+        )
+        return response.redirect().toPath('/auth/verify')
+      }
 
-    session.flash('success', user.fullName ? `${baseMessage}, ${user.fullName}` : baseMessage)
-    return response.redirect().toRoute('/')
+      session.put('pending_verification_email', user.email)
+
+      session.flash('success', 'Please check your email to verify your account')
+      return response.redirect().toPath('/auth/verify')
+    } catch (error) {
+      logger.error('Registration error:', {
+        error,
+        data: request.all(),
+        timestamp: new Date().toISOString(),
+      })
+      session.flash('error', 'Registration failed. Please try again.')
+      return response.redirect().back()
+    }
   }
 }

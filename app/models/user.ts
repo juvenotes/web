@@ -1,20 +1,19 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
-import { Authenticator } from '@adonisjs/auth'
-import { Authenticators } from '@adonisjs/auth/types'
-import { Infer } from '@vinejs/vine/types'
-import { loginValidator, registerValidator } from '#validators/auth'
-import { updateEmailValidator } from '#validators/settings'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
-import db from '@adonisjs/lucid/services/db'
-import mail from '@adonisjs/mail/services/main'
-import app from '@adonisjs/core/services/app'
 import EmailHistory from '#models/email_history'
 import Role from '#models/role'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany, HasOne } from '@adonisjs/lucid/types/relations'
+import PasswordResetToken from './password_reset_token.js'
+import Concept from './concept.js'
+import Question from './question.js'
+import PastPaper from './past_paper.js'
+import UserEducationEntry from './user_education_entry.js'
+import { CountryCode } from '#enums/countries'
+import EmailVerification from './email_verification.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -47,62 +46,59 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare provider: string
 
+  @column()
+  declare personalization_complete: boolean
+
+  @column()
+  declare total_study_time: number
+
+  @column()
+  declare streak_count: number
+
+  @column.dateTime()
+  declare last_login: DateTime
+
+  @column()
+  declare countryCode: CountryCode
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 
+  @column()
+  declare emailVerified: Boolean | null
+
+  @column.dateTime()
+  declare emailVerifiedAt: DateTime | null
+
+  @hasOne(() => EmailVerification)
+  declare emailVerification: HasOne<typeof EmailVerification>
+
+  // @computed()
+  // get isEmailVerified() {
+  //   return this.emailVerified === this.email && this.emailVerifiedAt
+  // }
+
   @belongsTo(() => Role)
   declare role: BelongsTo<typeof Role>
 
-  static async login(
-    auth: Authenticator<Authenticators>,
-    { email, password, remember }: Infer<typeof loginValidator>
-  ) {
-    const user = await this.verifyCredentials(email, password)
-    await auth.use('web').login(user, remember)
-    return user
-  }
+  @hasMany(() => EmailHistory)
+  declare emailHistories: HasMany<typeof EmailHistory>
 
-  static async register(
-    auth: Authenticator<Authenticators>,
-    data: Infer<typeof registerValidator>
-  ) {
-    const user = await this.create(data)
-    await auth.use('web').login(user)
-    return user
-  }
+  @hasMany(() => PasswordResetToken)
+  declare passwordResetTokens: HasMany<typeof PasswordResetToken>
 
-  static async logout(auth: Authenticator<Authenticators>) {
-    await auth.use('web').logout()
-  }
+  @hasMany(() => Concept)
+  declare concepts: HasMany<typeof Concept>
 
-  async updateEmail(data: Infer<typeof updateEmailValidator>) {
-    const emailOld = this.email
+  @hasMany(() => Question)
+  declare questions: HasMany<typeof Question>
 
-    // verify the password is correct for auth user
-    await User.verifyCredentials(emailOld, data.password)
+  @hasMany(() => PastPaper)
+  declare pastPapers: HasMany<typeof PastPaper>
 
-    await db.transaction(async (trx) => {
-      this.useTransaction(trx)
-
-      await this.merge({ email: data.email }).save()
-      await EmailHistory.create(
-        {
-          userId: this.id,
-          emailNew: data.email,
-          emailOld,
-        },
-        { client: trx }
-      )
-    })
-
-    await mail.sendLater((message) => {
-      message
-        .to(emailOld)
-        .subject(`Your ${app.appName} email has been successfully changed`)
-        .htmlView('emails/account/email_changed', { user: this })
-    })
-  }
+  @hasMany(() => UserEducationEntry)
+  declare userEducationEntries: HasMany<typeof UserEducationEntry>
 }

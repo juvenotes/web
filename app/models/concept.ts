@@ -3,6 +3,7 @@ import { BaseModel, column, hasMany, belongsTo, manyToMany, computed } from '@ad
 import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import Question from './question.js'
 import User from './user.js'
+import PastPaper from './past_paper.js'
 
 export default class Concept extends BaseModel {
   @column({ isPrimary: true })
@@ -59,13 +60,21 @@ export default class Concept extends BaseModel {
   })
   declare questions: ManyToMany<typeof Question>
 
+  @hasMany(() => PastPaper)
+  declare pastPapers: HasMany<typeof PastPaper>
+
   @computed()
-  get hasChildren() {
+  public get hasChildren(): boolean {
     return this.children?.length > 0
   }
 
   @computed()
-  get isRoot() {
+  public get isRoot(): boolean {
     return this.parentId === null
+  }
+
+  @computed()
+  public get isRootLevel(): boolean {
+    return this.level === 0
   }
 }
