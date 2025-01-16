@@ -86,7 +86,7 @@ defineOptions({ layout: AppLayout })
 
       <section>
         <p class="text-sm text-muted-foreground mt-8">
-          Last updated: March 19, 2024
+          Last updated: January 17 2025
         </p>
       </section>
     </div>

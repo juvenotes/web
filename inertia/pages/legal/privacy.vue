@@ -4,6 +4,7 @@ defineOptions({ layout: AppLayout })
 </script>
 
 <template>
+      <AppHead title="Our privacy policies" description="Juvenotes privacy policies" />
   <div class="max-w-4xl mx-auto py-12 px-4">
     <h1 class="text-3xl font-bold mb-8">Privacy Policy</h1>
     
@@ -91,7 +92,7 @@ defineOptions({ layout: AppLayout })
           the new policy on this page and updating the effective date.
         </p>
         <p class="mt-4">
-          Last updated: March 19, 2024
+          Last updated: January 17 2025
         </p>
       </section>
     </div>

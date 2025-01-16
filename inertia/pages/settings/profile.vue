@@ -16,12 +16,13 @@ const form = useForm({
 // Form handler
 const updateProfile = () => {
   form.put('/settings/profile', {
-    onSuccess: () => form.reset()
+    onSuccess: () => form.reset(),
   })
 }
 </script>
 
 <template>
+  <AppHead title="Your Profile" description="Manage your profile settings here" />
   <div class="max-w-3xl mx-auto space-y-8">
     <!-- Header with Back Button -->
     <div class="flex items-center justify-between">

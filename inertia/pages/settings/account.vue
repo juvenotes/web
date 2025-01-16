@@ -11,18 +11,19 @@ defineProps<{ user: UserDto }>()
 // Email update form
 const emailForm = useForm({
   email: '',
-  password: ''
+  password: '',
 })
 
 // Form handlers
 const updateEmail = () => {
   emailForm.put('/settings/account/email', {
-    onSuccess: () => emailForm.reset()
+    onSuccess: () => emailForm.reset(),
   })
 }
 </script>
 
 <template>
+  <AppHead title="Your Account" description="Manage your account settings here" />
   <div class="max-w-3xl mx-auto space-y-8">
     <!-- Header with Back Button -->
     <div class="flex items-center justify-between">
@@ -78,8 +79,7 @@ const updateEmail = () => {
 
         <button
           type="submit"
-          class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 
-                 transition-colors disabled:opacity-50"
+          class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
           :disabled="emailForm.processing"
         >
           {{ emailForm.processing ? 'Updating...' : 'Update Email' }}
@@ -95,8 +95,7 @@ const updateEmail = () => {
       </p>
 
       <button
-        class="mt-4 bg-destructive text-white px-4 py-2 rounded-md 
-               hover:bg-destructive/90 transition-colors"
+        class="mt-4 bg-destructive text-white px-4 py-2 rounded-md hover:bg-destructive/90 transition-colors"
         @click="$inertia.delete('/settings/account')"
       >
         Delete Account
