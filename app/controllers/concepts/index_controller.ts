@@ -7,13 +7,16 @@ export default class IndexController {
   /**
    * Show root level concepts
    */
-  async index({ inertia }: HttpContext) {
+  async index({ inertia, logger }: HttpContext) {
+    logger.info('Fetching root level concepts')
+
     const concepts = await Concept.query()
       .whereNull('parent_id')
       .orderBy('level', 'asc')
       .select(['id', 'title', 'slug', 'is_terminal', 'level'])
 
-    // return response.json(concepts)
+    logger.info('Found %d root concepts', concepts.length)
+
     return inertia.render('concepts/index', {
       concepts: ConceptDto.fromArray(concepts),
     })
@@ -22,7 +25,9 @@ export default class IndexController {
   /**
    * Show single concept with its children
    */
-  async show({ params, inertia }: HttpContext) {
+  async show({ params, inertia, logger }: HttpContext) {
+    logger.info('Fetching concept with slug: %s', params.slug)
+
     const concept = await Concept.query()
       .where('slug', params.slug)
       .preload('children', (query) => {
@@ -40,6 +45,13 @@ export default class IndexController {
           })
       })
       .firstOrFail()
+
+    logger.info(
+      'Found concept: %s with %d children and %d questions',
+      concept.title,
+      concept.children?.length ?? 0,
+      concept.questions?.length ?? 0
+    )
 
     return inertia.render('concepts/show', {
       concept: new ConceptDto(concept),

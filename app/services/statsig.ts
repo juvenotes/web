@@ -1,3 +1,4 @@
+import logger from '@adonisjs/core/services/logger'
 import env from '#start/env'
 import Statsig from 'statsig-node'
 
@@ -13,9 +14,12 @@ export class StatsigService {
       try {
         await Statsig.initialize(env.get('STATSIG_SERVER_SECRET'))
         this.initialized = true
-        console.log('Statsig initialized successfully')
+        logger.info('Statsig initialized successfully')
       } catch (error) {
-        console.error('Failed to initialize Statsig:', error)
+        logger.error('Failed to initialize Statsig', {
+          error,
+          context: 'StatsigService.init',
+        })
       }
     }
     return this.instance
@@ -26,9 +30,12 @@ export class StatsigService {
       try {
         await Statsig.shutdown()
         this.initialized = false
-        console.log('Statsig shut down successfully')
+        logger.info('Statsig shut down successfully')
       } catch (error) {
-        console.error('Failed to shutdown Statsig:', error)
+        logger.error('Failed to shutdown Statsig', {
+          error,
+          context: 'StatsigService.shutdown',
+        })
       }
     }
   }
@@ -39,8 +46,28 @@ export class StatsigService {
     value?: string,
     metadata?: Record<string, any>
   ) {
-    if (!this.initialized) await this.init()
-    return Statsig.logEvent({ userID: userId }, event, value, metadata)
+    try {
+      if (!this.initialized) await this.init()
+
+      const result = await Statsig.logEvent({ userID: userId }, event, value, metadata)
+
+      logger.debug('Statsig event logged', {
+        userId,
+        event,
+        value,
+        metadata,
+      })
+
+      return result
+    } catch (error) {
+      logger.error('Failed to log Statsig event', {
+        error,
+        context: 'StatsigService.logEvent',
+        userId,
+        event,
+      })
+      throw error
+    }
   }
 
   static async checkGate(userId: string, gate: string) {

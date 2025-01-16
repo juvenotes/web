@@ -1,9 +1,9 @@
 import WebRegister from '#actions/auth/http/web_register'
 import SendVerificationEmail from '#actions/auth/registration_emails/send_verification_email'
-// import SendWelcomeEmail from '#actions/auth/registration_emails/send_welcome_email'
 import { registerValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import logger from '@adonisjs/core/services/logger'
 
 export default class RegisterController {
   async show({ inertia }: HttpContext) {
@@ -21,7 +21,7 @@ export default class RegisterController {
         session.put('pending_verification_email', user.email)
         session.flash('success', 'Please check your email to verify your account')
       } catch (emailError) {
-        console.error('Email sending failed:', emailError)
+        logger.error('Email sending failed:', { error: emailError })
         session.flash(
           'warning',
           'Account created but verification email could not be sent. Please contact support.'
@@ -34,7 +34,7 @@ export default class RegisterController {
       session.flash('success', 'Please check your email to verify your account')
       return response.redirect().toPath('/auth/verify')
     } catch (error) {
-      console.error('Registration error:', {
+      logger.error('Registration error:', {
         error,
         data: request.all(),
         timestamp: new Date().toISOString(),

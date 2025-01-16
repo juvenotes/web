@@ -1,13 +1,14 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import { Role } from '#enums/roles'
+import Logger from '@adonisjs/core/logger'
 
 export default class GoogleSignupController {
   async redirect({ ally }: HttpContext) {
     return ally.use('google').redirect()
   }
 
-  async handleCallback({ ally, auth, response, session }: HttpContext) {
+  async handleCallback({ ally, auth, response, session, logger }: HttpContext) {
     const google = ally.use('google')
 
     try {
@@ -50,14 +51,14 @@ export default class GoogleSignupController {
 
       session.flash('message', {
         type: 'success',
-        text: `Welcome ${user.email}`,
+        text: `Welcome back, ${user.fullName}! You've successfully logged in with Google.`,
       })
       return response.redirect().toPath('/')
     } catch (error) {
-      console.error('Google auth error:', error)
+      logger.error({ err: error, email: google.user?.email }, 'Failed to authenticate with Google')
       session.flash('message', {
         type: 'error',
-        text: 'Authentication failed',
+        text: 'Authentication failed. Please try again later.',
       })
       return response.redirect().toRoute('/')
     }
