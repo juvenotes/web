@@ -28,9 +28,7 @@ const UserDashboardController = () => import('#controllers/dashboard/index_contr
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
 // const ManagePapersController = () => import('#controllers/manage/papers_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
-//terns and privacy
-const TermsController = () => import('#controllers/legal/terms_controller')
-const PrivacyController = () => import('#controllers/legal/privacy_controller')
+const ManageUsersController = () => import('#controllers/manage/users/index_controller')
 
 //* HOME
 router.get('/', [HomeController, 'index']).as('home')
@@ -80,6 +78,10 @@ router
   })
   .prefix('/auth')
   .use(middleware.auth())
+
+//* TERMS AND PRIVACY
+const TermsController = () => import('#controllers/legal/terms_controller')
+const PrivacyController = () => import('#controllers/legal/privacy_controller')
 
 //* USER DASHBOARD
 router.get('learn', [UserDashboardController, 'handle']).as('learn').use(middleware.auth())
@@ -184,3 +186,11 @@ router.get('/privacy', [PrivacyController, 'handle']).as('legal.privacy')
 //     router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
 //   })
 //   .prefix('/manage/papers')
+
+router
+  .group(() => {
+    router.get('/users', [ManageUsersController, 'index'])
+    router.put('/users/:id/role', [ManageUsersController, 'updateRole'])
+  })
+  .prefix('/manage')
+  .use(middleware.auth())
