@@ -1,7 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import { Role } from '#enums/roles'
-import logger from '@adonisjs/core/services/logger'
 import sendWelcomeEmail from '#actions/auth/registration_emails/send_welcome_email'
 
 export default class GoogleSignupController {
@@ -9,22 +8,35 @@ export default class GoogleSignupController {
     return ally.use('google').redirect()
   }
 
-  async handleCallback({ ally, auth, response, session }: HttpContext) {
+  async handleCallback({ ally, auth, response, session, logger }: HttpContext) {
     const google = ally.use('google')
     let userEmail: string | undefined
+    const logContext = { provider: 'google', method: 'handleCallback' }
 
     try {
       if (google.accessDenied()) {
+        logger.info(
+          { ...logContext, reason: 'access_denied' },
+          'User cancelled Google authentication'
+        )
         session.flash('error', 'You have cancelled the login process')
         return response.redirect().toRoute('login')
       }
 
       if (google.stateMisMatch()) {
+        logger.warn(
+          { ...logContext, reason: 'state_mismatch' },
+          'Google auth state mismatch detected'
+        )
         session.flash('error', 'We are unable to verify the request. Please try again')
         return response.redirect().toRoute('login')
       }
 
       if (google.hasError()) {
+        logger.error(
+          { ...logContext, reason: 'provider_error', error: google.getError() },
+          'Google authentication error'
+        )
         session.flash('error', google.getError() || 'Authentication failed')
         return response.redirect().toRoute('login')
       }
@@ -45,9 +57,15 @@ export default class GoogleSignupController {
 
       try {
         await sendWelcomeEmail.handle({ user })
-        logger.info({ email: userEmail }, 'Sent welcome email')
+        logger.info(
+          { ...logContext, email: userEmail, userId: user.id },
+          'Welcome email sent successfully'
+        )
       } catch (emailError) {
-        logger.error({ err: emailError, email: userEmail }, 'Failed to send welcome email')
+        logger.error(
+          { ...logContext, err: emailError, email: userEmail, userId: user.id },
+          'Failed to send welcome email'
+        )
       }
 
       session.flash(
@@ -56,7 +74,15 @@ export default class GoogleSignupController {
       )
       return response.redirect().toPath('/')
     } catch (error) {
-      logger.error({ err: error, email: userEmail }, 'Failed to authenticate with Google')
+      logger.error(
+        {
+          ...logContext,
+          err: error,
+          email: userEmail,
+          step: 'authentication',
+        },
+        'Google authentication failed'
+      )
       session.flash(
         'error',
         'Authentication failed. Please try again later. If the problem persists, contact support.'

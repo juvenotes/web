@@ -3,11 +3,10 @@ import EmailVerification from '#models/email_verification'
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import encryption from '@adonisjs/core/services/encryption'
-import logger from '@adonisjs/core/services/logger'
 import { DateTime } from 'luxon'
 
 export default class VerificationController {
-  async pending({ inertia, session, response }: HttpContext) {
+  async pending({ inertia, session, response, logger }: HttpContext) {
     const email = session.get('pending_verification_email')
     if (!email) {
       logger.info('No pending verification email found, redirecting to register')
@@ -16,7 +15,7 @@ export default class VerificationController {
     return inertia.render('auth/verify_email', { email })
   }
 
-  async resend({ session, response }: HttpContext) {
+  async resend({ session, response, logger }: HttpContext) {
     const email = session.get('pending_verification_email')
     if (!email) {
       logger.info('Resend attempted without pending email', {
@@ -50,7 +49,7 @@ export default class VerificationController {
     }
   }
 
-  async verify({ params, response, auth, session }: HttpContext) {
+  async verify({ params, response, auth, session, logger }: HttpContext) {
     try {
       const decrypted = encryption.decrypt(params.token)
       if (typeof decrypted !== 'string') {

@@ -7,15 +7,24 @@ export default class IndexController {
   /**
    * Show root level concepts
    */
-  async index({ inertia, logger }: HttpContext) {
-    logger.info('Fetching root level concepts')
+  async index({ inertia, logger, auth }: HttpContext) {
+    logger.info('concepts:index:start', {
+      operation: 'fetch_root_concepts',
+      filters: { parent_id: null },
+      userId: auth.user?.id,
+    })
 
     const concepts = await Concept.query()
       .whereNull('parent_id')
       .orderBy('level', 'asc')
       .select(['id', 'title', 'slug', 'is_terminal', 'level'])
 
-    logger.info('Found %d root concepts', concepts.length)
+    logger.info('concepts:index:complete', {
+      operation: 'fetch_root_concepts',
+      count: concepts.length,
+      levels: concepts.map((c) => c.level),
+      userId: auth.user?.id,
+    })
 
     return inertia.render('concepts/index', {
       concepts: ConceptDto.fromArray(concepts),
@@ -25,8 +34,11 @@ export default class IndexController {
   /**
    * Show single concept with its children
    */
-  async show({ params, inertia, logger }: HttpContext) {
-    logger.info('Fetching concept with slug: %s', params.slug)
+  async show({ params, inertia, logger, auth }: HttpContext) {
+    logger.info('concepts:show:start', {
+      operation: 'fetch_concept',
+      filters: { slug: params.slug },
+    })
 
     const concept = await Concept.query()
       .where('slug', params.slug)
@@ -46,12 +58,16 @@ export default class IndexController {
       })
       .firstOrFail()
 
-    logger.info(
-      'Found concept: %s with %d children and %d questions',
-      concept.title,
-      concept.children?.length ?? 0,
-      concept.questions?.length ?? 0
-    )
+    logger.info('concepts:show:complete', {
+      operation: 'fetch_concept',
+      concept: {
+        id: concept.id,
+        title: concept.title,
+        childrenCount: concept.children?.length ?? 0,
+        questionsCount: concept.questions?.length ?? 0,
+      },
+      userId: auth.user?.id,
+    })
 
     return inertia.render('concepts/show', {
       concept: new ConceptDto(concept),
