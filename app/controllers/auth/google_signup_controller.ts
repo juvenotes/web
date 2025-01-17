@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import { Role } from '#enums/roles'
 import logger from '@adonisjs/core/services/logger'
+import sendWelcomeEmail from '#actions/auth/registration_emails/send_welcome_email'
 
 export default class GoogleSignupController {
   async redirect({ ally }: HttpContext) {
@@ -41,6 +42,14 @@ export default class GoogleSignupController {
       })
 
       await auth.use('web').login(user)
+
+      try {
+        await sendWelcomeEmail.handle({ user })
+        logger.info({ email: userEmail }, 'Sent welcome email')
+      } catch (emailError) {
+        logger.error({ err: emailError, email: userEmail }, 'Failed to send welcome email')
+      }
+
       session.flash(
         'success',
         `Welcome ${user.fullName}! You've successfully logged in with Google.`
