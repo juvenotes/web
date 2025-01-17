@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import { Role } from '#enums/roles'
 import logger from '@adonisjs/core/services/logger'
+import sendWelcomeEmail from '#actions/auth/registration_emails/send_welcome_email'
 
 export default class GoogleSignupController {
   async redirect({ ally }: HttpContext) {
@@ -14,26 +15,17 @@ export default class GoogleSignupController {
 
     try {
       if (google.accessDenied()) {
-        session.flash('message', {
-          type: 'error',
-          text: 'You have cancelled the login process',
-        })
+        session.flash('error', 'You have cancelled the login process')
         return response.redirect().toRoute('login')
       }
 
       if (google.stateMisMatch()) {
-        session.flash('message', {
-          type: 'error',
-          text: 'We are unable to verify the request. Please try again',
-        })
+        session.flash('error', 'We are unable to verify the request. Please try again')
         return response.redirect().toRoute('login')
       }
 
       if (google.hasError()) {
-        session.flash('message', {
-          type: 'error',
-          text: google.getError() || 'Authentication failed',
-        })
+        session.flash('error', google.getError() || 'Authentication failed')
         return response.redirect().toRoute('login')
       }
 
@@ -51,17 +43,24 @@ export default class GoogleSignupController {
 
       await auth.use('web').login(user)
 
-      session.flash('message', {
-        type: 'success',
-        text: `Welcome back, ${user.fullName}! You've successfully logged in with Google.`,
-      })
+      try {
+        await sendWelcomeEmail.handle({ user })
+        logger.info({ email: userEmail }, 'Sent welcome email')
+      } catch (emailError) {
+        logger.error({ err: emailError, email: userEmail }, 'Failed to send welcome email')
+      }
+
+      session.flash(
+        'success',
+        `Welcome ${user.fullName}! You've successfully logged in with Google.`
+      )
       return response.redirect().toPath('/')
     } catch (error) {
       logger.error({ err: error, email: userEmail }, 'Failed to authenticate with Google')
-      session.flash('message', {
-        type: 'error',
-        text: 'Authentication failed. Please try again later.',
-      })
+      session.flash(
+        'error',
+        'Authentication failed. Please try again later. If the problem persists, contact support.'
+      )
       return response.redirect().toRoute('/')
     }
   }

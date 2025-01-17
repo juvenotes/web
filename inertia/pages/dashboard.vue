@@ -65,7 +65,7 @@ defineOptions({ layout: DashLayout })
     <div class="grid md:grid-cols-2 gap-8">
       <!-- Past Papers Card -->
       <div
-        @click="$inertia.visit('/pastpapers')"
+        @click="$inertia.visit('/papers')"
         class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-primary/10"
       >
         <!-- Gradient Overlay -->
