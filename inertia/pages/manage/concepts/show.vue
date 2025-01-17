@@ -74,6 +74,13 @@ const getCorrectAnswer = (question: QuestionDto) => {
         </h1>
       </div>
 
+      <!-- Info Grid -->
+      <div v-if="!concept.isTerminal" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="p-4 rounded-lg border">
+          <span class="text-sm text-muted-foreground"
+            ><b>{{ concept.title }} </b> is example of a parent concept here. All others are child
+            concepts.</span
+          >
       <!-- Modernized Child Concepts Grid -->
       <div v-if="children?.length" class="space-y-4">
         <div class="flex items-center gap-2">
@@ -101,6 +108,83 @@ const getCorrectAnswer = (question: QuestionDto) => {
         <MdxContent :content="content" />
       </div>
 
+      <!-- edit dialog -->
+      <Dialog :open="showEditDialog" @update:open="showEditDialog = $event">
+        <DialogContent class="w-[95vw] max-w-[800px] sm:w-[90vw]">
+          <DialogHeader>
+            <DialogTitle>Edit Concept</DialogTitle>
+          </DialogHeader>
+
+          <form @submit.prevent="handleSubmit" class="space-y-4">
+            <div class="space-y-2">
+              <Label>Title</Label>
+              <Input v-model="form.title" />
+              <p v-if="form.errors.title" class="text-sm text-destructive">
+                {{ form.errors.title }}
+              </p>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                v-model="form.isTerminal"
+                id="edit-terminal"
+                class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
+              />
+              <Label for="edit-terminal">Is Terminal Concept</Label>
+            </div>
+
+            <Button type="submit" :disabled="form.processing">
+              {{ form.processing ? 'Saving...' : 'Save Changes' }}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <!-- New Child Dialog -->
+      <Dialog :open="showNewChildDialog" @update:open="showNewChildDialog = $event">
+        <DialogContent class="w-[95vw] max-w-[800px] sm:w-[90vw]">
+          <DialogHeader>
+            <DialogTitle>Add Child Concept</DialogTitle>
+          </DialogHeader>
+
+          <form @submit.prevent="handleNewChild" class="space-y-4">
+            <div class="space-y-2">
+              <Label for="child-title">Title</Label>
+              <Input
+                id="child-title"
+                v-model="newChildForm.title"
+                :class="{ 'border-destructive': newChildForm.errors.title }"
+              />
+              <p v-if="newChildForm.errors.title" class="text-sm text-destructive">
+                {{ newChildForm.errors.title }}
+              </p>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                v-model="newChildForm.isTerminal"
+                id="child-terminal"
+                class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
+              />
+              <Label for="child-terminal">Is Terminal Concept</Label>
+            </div>
+
+            <Button type="submit" :disabled="newChildForm.processing">
+              {{ newChildForm.processing ? 'Creating...' : 'Create Concept' }}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <!-- Terminal Content Section -->
+      <div v-if="concept.isTerminal" class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h2 class="text-xl sm:text-2xl font-bold">Content</h2>
+          <Button variant="outline" @click="toggleContentEditor" class="w-full sm:w-auto">
+            {{ showContentEditor ? 'Hide Editor' : 'Edit Content' }}
+          </Button>
       <!-- Modern Questions Section -->
       <div v-if="questions?.length" class="space-y-6">
         <div class="flex items-center gap-2">
