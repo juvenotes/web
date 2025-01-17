@@ -166,7 +166,10 @@ router
 
 //* PAST PAPERS -> VIEW
 router.get('/papers', [IndexPapersController, 'index']).use(middleware.auth())
-// router.get('/papers/:slug', [IndexPapersController, 'show'])
+router.get('/papers/:slug', [IndexPapersController, 'show']).use(middleware.auth())
+router
+  .get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'paper'])
+  .use(middleware.auth())
 
 // LEGAL -> TERMS
 router.get('/terms', [TermsController, 'handle']).as('legal.terms')
