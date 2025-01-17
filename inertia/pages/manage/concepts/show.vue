@@ -145,7 +145,10 @@ const handleDelete = () => {
       <!-- Info Grid -->
       <div v-if="!concept.isTerminal" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <div class="p-4 rounded-lg border">
-          <span class="text-sm text-muted-foreground"><b>{{ concept.title }} </b> is example of a parent concept here. All others are child concepts.</span>
+          <span class="text-sm text-muted-foreground"
+            ><b>{{ concept.title }} </b> is example of a parent concept here. All others are child
+            concepts.</span
+          >
         </div>
       </div>
 
@@ -178,7 +181,12 @@ const handleDelete = () => {
             </div>
 
             <div class="flex items-center space-x-2">
-              <Checkbox v-model="form.isTerminal" id="edit-terminal" />
+              <input
+                type="checkbox"
+                v-model="form.isTerminal"
+                id="edit-terminal"
+                class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
+              />
               <Label for="edit-terminal">Is Terminal Concept</Label>
             </div>
 
@@ -210,7 +218,12 @@ const handleDelete = () => {
             </div>
 
             <div class="flex items-center space-x-2">
-              <Checkbox v-model="newChildForm.isTerminal" id="child-terminal" />
+              <input
+                type="checkbox"
+                v-model="newChildForm.isTerminal"
+                id="child-terminal"
+                class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
+              />
               <Label for="child-terminal">Is Terminal Concept</Label>
             </div>
 

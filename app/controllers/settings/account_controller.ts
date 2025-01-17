@@ -11,16 +11,32 @@ export default class AccountsController {
     return inertia.render('settings/account')
   }
 
-  async updateEmail({ request, response, session, auth }: HttpContext) {
+  async updateEmail({ request, response, session, auth, logger }: HttpContext) {
     const data = await request.validateUsing(updateEmailValidator)
     const user = await auth.use('web').user!
 
+    logger.info('attempting to update user email', {
+      userId: user.id,
+      currentEmail: user.email,
+      newEmail: data.email,
+    })
+
     if (data.email === user.email) {
+      logger.info('email update skipped - same email', {
+        userId: user.id,
+        email: user.email,
+      })
       session.flash('success', 'You are already using the submitted email')
       return response.redirect().back()
     }
 
     await UpdateUserEmail.handle({ user, data })
+
+    logger.info('email updated successfully', {
+      userId: user.id,
+      oldEmail: user.email,
+      newEmail: data.email,
+    })
 
     session.flash('success', 'Your email has been updated')
 

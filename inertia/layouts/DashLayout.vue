@@ -185,7 +185,7 @@ onUnmounted(() => {
     </div>
 
     <footer class="w-screen border-t bg-background/95">
-      <div class="container mx-auto px-4 sm:px-6 py-6">
+      <div class="container mx-auto px-4 sm:px-6 py-2">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
           <!-- Company Info -->
           <div class="flex items-center gap-4">

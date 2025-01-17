@@ -7,8 +7,9 @@ import PastPaper from '#models/past_paper'
 import QuestionDto from '#dtos/question'
 
 export default class IndexController {
-  async index({ inertia, logger }: HttpContext) {
-    logger.info('Fetching root level concepts with papers')
+  async index({ inertia, logger, auth }: HttpContext) {
+    const context = { controller: 'PapersIndexController', action: 'index' }
+    logger.info({ ...context, message: 'Fetching root level concepts with papers' })
 
     const concepts = await Concept.query()
       .where('level', 0)
@@ -19,15 +20,26 @@ export default class IndexController {
           .orderBy('year', 'desc')
       })
 
-    logger.info('Found %d concepts with papers', concepts.length)
+    logger.info({
+      ...context,
+      conceptsCount: concepts.length,
+      papersCount: concepts.reduce((sum, c) => sum + (c.pastPapers?.length ?? 0), 0),
+      message: 'Retrieved root level concepts with papers',
+      userId: auth.user?.id,
+    })
 
     return inertia.render('papers/index', {
       concepts: ConceptDto.fromArray(concepts),
     })
   }
 
-  async show({ params, inertia, logger }: HttpContext) {
-    logger.info('Fetching concept papers with slug: %s', params.slug)
+  async show({ params, inertia, logger, auth }: HttpContext) {
+    const context = {
+      controller: 'PapersIndexController',
+      action: 'show',
+      conceptSlug: params.slug,
+    }
+    logger.info({ ...context, message: 'Fetching concept papers' })
 
     const concept = await Concept.query()
       .where('slug', params.slug)
@@ -45,7 +57,15 @@ export default class IndexController {
       })
       .firstOrFail()
 
-    logger.info('Found concept: %s with %d papers', concept.title, concept.pastPapers?.length ?? 0)
+    logger.info({
+      ...context,
+      conceptTitle: concept.title,
+      papersCount: concept.pastPapers?.length ?? 0,
+      questionsCount:
+        concept.pastPapers?.reduce((sum, p) => sum + (p.questions?.length ?? 0), 0) ?? 0,
+      message: 'Retrieved concept papers with questions',
+      userId: auth.user?.id,
+    })
 
     return inertia.render('papers/show', {
       concept: new ConceptDto(concept),
@@ -53,8 +73,15 @@ export default class IndexController {
       questions: concept.pastPapers?.flatMap((paper) => paper.questions) ?? [],
     })
   }
-  async paper({ params, inertia, logger }: HttpContext) {
-    logger.info('Fetching paper: %s for concept: %s', params.paperSlug, params.conceptSlug)
+
+  async paper({ params, inertia, logger, auth }: HttpContext) {
+    const context = {
+      controller: 'PapersIndexController',
+      action: 'paper',
+      conceptSlug: params.conceptSlug,
+      paperSlug: params.paperSlug,
+    }
+    logger.info({ ...context, message: 'Fetching paper with questions' })
 
     const paper = await PastPaper.query()
       .where('slug', params.paperSlug)
@@ -71,7 +98,13 @@ export default class IndexController {
       })
       .firstOrFail()
 
-    logger.info('Found paper with %d questions', paper.questions?.length ?? 0)
+    logger.info({
+      ...context,
+      paperTitle: paper.title,
+      questionsCount: paper.questions?.length ?? 0,
+      message: 'Retrieved paper with questions',
+      userId: auth.user?.id,
+    })
 
     return inertia.render('papers/paper', {
       paper: new PastPaperDto(paper),
