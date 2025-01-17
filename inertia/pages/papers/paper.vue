@@ -4,6 +4,7 @@ import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, ArrowLeft, Circle } from 'lucide-vue-next'
+import { ref } from 'vue'
 
 defineOptions({ layout: DashLayout })
 
@@ -15,8 +16,20 @@ interface Props {
 
 defineProps<Props>()
 
+const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
+const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
+
 function goBack() {
   window.history.back()
+}
+
+const handleChoiceSelect = (questionId: number, choiceId: number) => {
+  selectedAnswers.value[questionId] = choiceId
+  showAnswer.value[questionId] = true
+}
+
+const getCorrectAnswer = (question: QuestionDto) => {
+  return question.choices.find(choice => choice.isCorrect)
 }
 </script>
 
@@ -54,8 +67,7 @@ function goBack() {
 
     <!-- Questions List -->
     <div class="space-y-6">
-      <div v-for="(question, index) in questions" :key="question.id" 
-           class="p-6 bg-white rounded-xl border">
+      <div v-for="(question, index) in questions" :key="question.id" class="p-6 bg-white rounded-xl border">
         <!-- Question Text -->
         <div class="space-y-4">
           <div class="flex gap-3">
@@ -68,7 +80,14 @@ function goBack() {
           <!-- MCQ Section -->
           <div v-if="question.isMcq" class="pl-10 space-y-3">
             <div v-for="choice in question.choices" :key="choice.id"
-                 class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50">
+                 :class="{
+                   'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
+                   'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
+                   'hover:bg-slate-50': !showAnswer[question.id],
+                   'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id]
+                 }"
+                 class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150"
+                 @click="handleChoiceSelect(question.id, choice.id)">
               <Circle class="h-4 w-4 mt-1 text-muted-foreground" />
               <span class="text-muted-foreground">{{ choice.choiceText }}</span>
             </div>
@@ -76,13 +95,21 @@ function goBack() {
 
           <!-- SAQ Section -->
           <div v-if="question.isSaq" class="pl-10 space-y-4">
-            <div v-for="part in question.parts" :key="part.id" 
-                 class="border-l-2 border-primary/20 pl-4">
+            <div v-for="part in question.parts" :key="part.id" class="border-l-2 border-primary/20 pl-4">
               <p class="text-foreground">{{ part.partText }}</p>
               <p class="text-xs text-primary mt-1">{{ part.marks }} marks</p>
             </div>
           </div>
         </div>
+
+        <!-- Display Correct Answer and Explanation -->
+        <div v-if="showAnswer[question.id]" class="mt-4 p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]">
+  <p class="text-lg font-semibold text-foreground"><strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}</p>
+  <p class="mt-2 text-base text-muted-foreground">
+    <strong>Explanation:</strong> {{ getCorrectAnswer(question)?.explanation }}
+  </p>
+</div>
+
       </div>
     </div>
   </div>
