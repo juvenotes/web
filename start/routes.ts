@@ -176,19 +176,19 @@ router.get('/terms', [TermsController, 'handle']).as('legal.terms')
 router.get('/privacy', [PrivacyController, 'handle']).as('legal.privacy')
 
 //* PAST PAPERS -> MANAGE
-// router
-//   .group(() => {
-//     router.get('/', [ManagePapersController, 'index'])
-//     router.get('/:slug', [ManagePapersController, 'show'])
-//     // router.post('/', [ManagePapersController, 'store'])
-//     // router.put('/:slug', [ManagePapersController, 'update'])
-//     // router.delete('/:slug', [ManagePapersController, 'destroy'])
-//     router.get('/:slug/questions/new', [ManagePapersController, 'createQuestion'])
-//     router.post('/:slug/questions', [ManagePapersController, 'addQuestion'])
-//     router.get('/:slug/questions/:questionSlug/edit', [ManagePapersController, 'editQuestion'])
-//     router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
-//   })
-//   .prefix('/manage/papers')
+router
+  .group(() => {
+    router.get('/', [ManagePapersController, 'index'])
+    router.get('/:slug', [ManagePapersController, 'show'])
+    // router.post('/', [ManagePapersController, 'store'])
+    // router.put('/:slug', [ManagePapersController, 'update'])
+    // router.delete('/:slug', [ManagePapersController, 'destroy'])
+    router.get('/:slug/questions/new', [ManagePapersController, 'createQuestion'])
+    router.post('/:slug/questions', [ManagePapersController, 'addQuestion'])
+    router.get('/:slug/questions/:questionSlug/edit', [ManagePapersController, 'editQuestion'])
+    router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
+  })
+  .prefix('/manage/papers')
 
 router
   .group(() => {
