@@ -18,6 +18,7 @@ export default defineConfig({
     () => import('@adocasts.com/dto/commands'),
     () => import('@adocasts.com/actions/commands'),
     () => import('@foadonis/maintenance/commands'),
+    () => import('@foadonis/magnify/commands'),
   ],
 
   /*
@@ -51,6 +52,7 @@ export default defineConfig({
     () => import('@adonisjs/ally/ally_provider'),
     () => import('@julr/adonisjs-prometheus/prometheus_provider'),
     () => import('@foadonis/maintenance/maintenance_provider'),
+    () => import('@foadonis/magnify/magnify_provider'),
   ],
 
   /*

@@ -4,8 +4,10 @@ import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relat
 import Question from './question.js'
 import User from './user.js'
 import PastPaper from './past_paper.js'
+import { Searchable } from '@foadonis/magnify'
+import { compose } from '@adonisjs/core/helpers'
 
-export default class Concept extends BaseModel {
+export default class Concept extends compose(BaseModel, Searchable) {
   @column({ isPrimary: true })
   declare id: number
 
@@ -76,5 +78,16 @@ export default class Concept extends BaseModel {
   @computed()
   public get isRootLevel(): boolean {
     return this.level === 0
+  }
+
+  toSearchableObject() {
+    return {
+      id: this.id,
+      title: this.title,
+      slug: this.slug,
+      knowledgeBlock: this.knowledgeBlock,
+      isTerminal: this.isTerminal,
+      level: this.level,
+    }
   }
 }
