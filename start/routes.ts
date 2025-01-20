@@ -26,7 +26,7 @@ const IndexQuestionsController = () => import('#controllers/questions/index_cont
 const IndexPapersController = () => import('#controllers/papers/index_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
-// const ManagePapersController = () => import('#controllers/manage/papers_controller')
+const ManagePapersController = () => import('#controllers/manage/papers_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 const ManageUsersController = () => import('#controllers/manage/users/index_controller')
 
