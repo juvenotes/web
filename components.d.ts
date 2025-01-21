@@ -57,5 +57,6 @@ declare module 'vue' {
     ToastProvider: typeof import('./inertia/components/ui/toast/ToastProvider.vue')['default']
     ToastTitle: typeof import('./inertia/components/ui/toast/ToastTitle.vue')['default']
     ToastViewport: typeof import('./inertia/components/ui/toast/ToastViewport.vue')['default']
+    UploadQuestionsDialog: typeof import('./inertia/components/UploadQuestionsDialog.vue')['default']
   }
 }

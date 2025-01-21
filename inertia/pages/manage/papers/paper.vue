@@ -4,6 +4,8 @@ import type PastPaperDto from '#dtos/past_paper'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { FileText, ArrowLeft, Plus } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
+import UploadQuestionsDialog from '~/components/UploadQuestionsDialog.vue'
+import { ref } from 'vue'
 
 defineOptions({ layout: AdminLayout })
 
@@ -17,15 +19,18 @@ defineProps<Props>()
 function goBack() {
   window.history.back()
 }
+const isUploadDialogOpen = ref(false)
 </script>
 
 <template>
   <AppHead :title="paper.title" :description="`Manage ${paper.title}`" />
-  
+
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
 
       <button @click="goBack" class="flex items-center gap-2 text-primary hover:text-primary/70">
         <ArrowLeft class="h-5 w-5" />
@@ -53,6 +58,14 @@ function goBack() {
           <Plus class="h-4 w-4" />
           Add Question
         </Button>
+        <Button
+          variant="outline"
+          @click="isUploadDialogOpen = true"
+          class="flex items-center gap-2"
+        >
+          <Upload class="h-4 w-4" />
+          Upload Questions
+        </Button>
       </div>
     </div>
 
@@ -62,5 +75,6 @@ function goBack() {
         No questions added yet. Click "Add Question" to start building your paper.
       </p>
     </div>
+    <UploadQuestionsDialog v-model:open="isUploadDialogOpen" :paper="paper" />
   </div>
 </template>
