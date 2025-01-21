@@ -182,6 +182,10 @@ router
     router.get('/:slug', [ManagePapersController, 'show'])
     router.get('/:conceptSlug/:paperSlug', [ManagePapersController, 'paper'])
     router.post('/', [ManagePapersController, 'store'])
+    router.post('/:conceptSlug/:paperSlug/upload-questions', [
+      ManagePapersController,
+      'uploadQuestions',
+    ])
     router.delete('/:conceptSlug/:paperSlug', [ManagePapersController, 'destroy'])
   })
   .prefix('/manage/papers')

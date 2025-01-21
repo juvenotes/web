@@ -6,6 +6,11 @@ import PastPaperDto from '#dtos/past_paper'
 import { createPastPaperValidator } from '#validators/past_paper'
 import { generateSlug } from '#utils/slug_generator'
 import PastPaperPolicy from '#policies/paper_policy'
+import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
+import db from '@adonisjs/lucid/services/db'
+import Question from '#models/question'
+import { DifficultyLevel, QuestionType } from '#enums/question_types'
+import { promises as fs } from 'node:fs'
 
 export default class ManagePastPapersController {
   /**
@@ -124,6 +129,80 @@ export default class ManagePastPapersController {
     return response.redirect().toPath(`/manage/papers/${concept.slug}/${paper.slug}`)
   }
 
+  async uploadQuestions({ request, response, params, auth, logger }: HttpContext) {
+    const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
+
+    logger.info('attempting to upload questions', {
+      userId: auth.user?.id,
+      paperId: paper.id,
+      paperSlug: paper.slug,
+      action: 'upload_questions',
+    })
+
+    const file = request.file('file')
+    if (!file) {
+      return response.badRequest('No file uploaded')
+    }
+
+    try {
+      // Read file content
+      const content = await fs.readFile(file.tmpPath!, 'utf-8')
+
+      // Parse MCQs
+      const parsedQuestions = MCQParser.parse(content)
+
+      // Create questions in database
+      await db.transaction(async (trx) => {
+        for (const parsedQuestion of parsedQuestions) {
+          // Create question
+          const question = await Question.create(
+            {
+              userId: auth.user!.id,
+              type: QuestionType.MCQ,
+              questionText: parsedQuestion.stem,
+              difficultyLevel: DifficultyLevel.MEDIUM,
+              slug: generateSlug(),
+              pastPaperId: paper.id,
+            },
+            { client: trx }
+          )
+
+          // Create choices
+          const choices = parsedQuestion.choices.map((choice: string, index: number) => ({
+            questionId: question.id,
+            choiceText: choice.substring(3).trim(), // Remove "A. " prefix
+            isCorrect: `${index + 1}` === parsedQuestion.answer,
+            explanation: parsedQuestion.explanation,
+          }))
+
+          await question.related('choices').createMany(choices, { client: trx })
+        }
+      })
+
+      logger.info('questions uploaded successfully', {
+        userId: auth.user?.id,
+        paperId: paper.id,
+        paperSlug: paper.slug,
+        questionsCount: parsedQuestions.length,
+        action: 'upload_questions',
+      })
+
+      return response.redirect().toPath(`/manage/papers/${params.conceptSlug}/${params.paperSlug}`)
+    } catch (error) {
+      if (error instanceof MCQParserError) {
+        logger.error('mcq parsing failed', {
+          userId: auth.user?.id,
+          paperId: paper.id,
+          paperSlug: paper.slug,
+          error: error.message,
+          line: error.line,
+          action: 'upload_questions',
+        })
+        return response.badRequest(`Parse error on line ${error.line}: ${error.message}`)
+      }
+      throw error
+    }
+  }
   /**
    * Delete a paper
    */

@@ -75,6 +75,11 @@ const isUploadDialogOpen = ref(false)
         No questions added yet. Click "Add Question" to start building your paper.
       </p>
     </div>
-    <UploadQuestionsDialog v-model:open="isUploadDialogOpen" :paper="paper" />
+    <UploadQuestionsDialog
+      v-model:open="isUploadDialogOpen"
+      :paper="paper"
+      :concept="concept"
+      @uploaded="(data: any) => console.log('Questions uploaded:', data)"
+    />
   </div>
 </template>
