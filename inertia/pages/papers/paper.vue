@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, ArrowLeft, Circle } from 'lucide-vue-next'
+import { FileText, ArrowLeft, Circle, CheckCircle, XCircle } from 'lucide-vue-next'
 import { ref } from 'vue'
 
 defineOptions({ layout: DashLayout })
@@ -88,7 +88,18 @@ const getCorrectAnswer = (question: QuestionDto) => {
                  }"
                  class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150"
                  @click="handleChoiceSelect(question.id, choice.id)">
-              <Circle class="h-4 w-4 mt-1 text-muted-foreground" />
+              <CheckCircle
+                v-if="showAnswer[question.id] && choice.isCorrect"
+                class="h-4 w-4 mt-1 text-green-500"
+              />
+              <XCircle
+                v-else-if="showAnswer[question.id] && selectedAnswers[question.id] === choice.id && !choice.isCorrect"
+                class="h-4 w-4 mt-1 text-red-500"
+              />
+              <Circle
+                v-else
+                class="h-4 w-4 mt-1 text-muted-foreground"
+              />
               <span class="text-muted-foreground">{{ choice.choiceText }}</span>
             </div>
           </div>
@@ -104,12 +115,11 @@ const getCorrectAnswer = (question: QuestionDto) => {
 
         <!-- Display Correct Answer and Explanation -->
         <div v-if="showAnswer[question.id]" class="mt-4 p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]">
-  <p class="text-lg font-semibold text-foreground"><strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}</p>
-  <p class="mt-2 text-base text-muted-foreground">
-    <strong>Explanation:</strong> {{ getCorrectAnswer(question)?.explanation }}
-  </p>
-</div>
-
+          <p class="text-lg font-semibold text-foreground"><strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}</p>
+          <p class="mt-2 text-base text-muted-foreground">
+            <strong>Explanation:</strong> {{ getCorrectAnswer(question)?.explanation }}
+          </p>
+        </div>
       </div>
     </div>
   </div>

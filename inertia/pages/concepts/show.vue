@@ -12,7 +12,7 @@ defineOptions({ layout: DashLayout })
 
 const props = defineProps<{
   concept: ConceptDto
-  children: ConceptDto[]
+  children: ConceptDto[] 
   questions: QuestionDto[]
   content: string | null
 }>()
@@ -29,13 +29,25 @@ watchEffect(() => {
   children.value = props.children
   questions.value = props.questions
 })
+
+const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
+const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
+
+const handleChoiceSelect = (questionId: number, choiceId: number) => {
+  selectedAnswers.value[questionId] = choiceId
+  showAnswer.value[questionId] = true
+}
+
+const getCorrectAnswer = (question: QuestionDto) => {
+  return question.choices.find(choice => choice.isCorrect)
+}
 </script>
 
 <template>
   <AppHead :title="`${concept.title}`" description="All available concepts in Juvenotes" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Modern Breadcrumbs -->
-    <nav class="flex items-center gap-3 text-sm text-muted-foreground bg-white/50 p-3 rounded-lg border">
+    <nav class="flex items-center gap-3 text-sm text-muted-foreground bg-white/50 p-3 rounded-lg border shadow-md">
       <button 
         @click="goBack" 
         class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
@@ -74,7 +86,7 @@ watchEffect(() => {
             v-for="child in children"
             :key="child.id"
             :href="`/concepts/${child.slug}`"
-            class="group p-5 rounded-xl bg-white/50 backdrop-blur-sm border hover:border-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+            class="group p-5 rounded-xl bg-white/50 backdrop-blur-sm border hover:border-primary/20 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 transform"
           >
             <h3 class="text-base font-medium group-hover:text-primary transition-colors flex items-center gap-2">
               <BookOpen class="h-4 w-4 text-primary/70" />
@@ -100,7 +112,7 @@ watchEffect(() => {
           <div 
             v-for="question in questions" 
             :key="question.id" 
-            class="p-6 rounded-xl bg-white/50 backdrop-blur-sm border hover:shadow-lg transition-all duration-300"
+            class="p-6 rounded-xl bg-white/50 backdrop-blur-sm border shadow-md hover:shadow-xl transition-all duration-300"
           >
             <p class="font-medium text-foreground">{{ question.questionText }}</p>
 
@@ -109,7 +121,13 @@ watchEffect(() => {
               <div
                 v-for="choice in question.choices"
                 :key="choice.id"
-                class="flex items-start gap-3 p-3 rounded-lg hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all duration-300"
+                :class="{
+                  'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
+                  'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
+                  'hover:bg-primary/10': !showAnswer[question.id]
+                }"
+                class="flex items-start gap-3 p-3 rounded-lg border border-transparent hover:border-primary/20 transition-all duration-100 cursor-pointer"
+                @click="handleChoiceSelect(question.id, choice.id)"
               >
                 <Circle class="h-4 w-4 mt-0.5 text-muted-foreground" />
                 <span class="text-muted-foreground">{{ choice.choiceText }}</span>
@@ -133,6 +151,12 @@ watchEffect(() => {
                   </p>
                 </div>
               </div>
+            </div>
+
+            <!-- Display Correct Answer and Explanation -->
+            <div v-if="showAnswer[question.id]" class="mt-4 p-4 rounded-lg bg-primary/5 text-muted-foreground">
+              <p class="font-medium text-foreground"><strong>Correct Answer: </strong>{{ getCorrectAnswer(question)?.choiceText }}</p>
+              <p><strong>Explanation: </strong>{{ getCorrectAnswer(question)?.explanation }}</p>
             </div>
           </div>
         </div>
