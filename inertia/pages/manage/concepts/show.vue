@@ -8,6 +8,7 @@ import MdxContent from '~/components/MdxContent.vue'
 import KnowledgeEditor from '~/components/KnowledgeEditor.vue'
 import { toast } from 'vue-sonner'
 import { Plus, ArrowLeft } from 'lucide-vue-next'
+import { router } from '@inertiajs/vue3'
 
 defineOptions({ layout: AdminLayout })
 
@@ -27,8 +28,11 @@ const toggleContentEditor = () => {
   showContentEditor.value = !showContentEditor.value
 }
 
-const goBack = () => {
-  window.history.back()
+function goBack() {
+  router.visit(document.referrer || '/manage', {
+    preserveScroll: true,
+    preserveState: true
+  })
 }
 
 watchEffect(() => {
