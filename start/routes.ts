@@ -35,7 +35,7 @@ const ManagementDashboardController = () => import('#controllers/manage/dashboar
 router.get('/', [HomeController, 'index']).as('home')
 
 //* SUPPORT
-router.get('/suport', [SupportController, 'index']).as('support')
+router.get('/support', [SupportController, 'index']).as('support')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
