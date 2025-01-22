@@ -1,15 +1,4 @@
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
-import { Label } from '~/components/ui/label'
-import { Input } from '~/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select'
 import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
@@ -74,7 +63,7 @@ watch(
 )
 
 const getError = (path: string) => {
-  return form.errors[path] as string | undefined
+  return form.errors[path as keyof typeof form.errors]
 }
 
 const addChoice = () => {

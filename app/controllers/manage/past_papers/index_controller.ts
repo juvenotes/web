@@ -140,9 +140,8 @@ export default class ManagePastPapersController {
     return response.redirect().toPath(`/manage/papers/${concept.slug}/${paper.slug}`)
   }
 
-  async addQuestion({ request, response, params, auth }: HttpContext) {
+  async addQuestion({ request, response, params, auth, session }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
-
     const data = await request.validateUsing(createQuestionValidator)
 
     const question = await Question.create({
@@ -150,6 +149,7 @@ export default class ManagePastPapersController {
       type: data.type,
       userId: auth.user!.id,
       pastPaperId: paper.id,
+      slug: generateSlug(),
     })
 
     if (data.type === QuestionType.MCQ && data.choices) {
@@ -160,6 +160,7 @@ export default class ManagePastPapersController {
       await question.related('parts').createMany(data.parts)
     }
 
+    session.flash('success', 'Question added successfully')
     return response.redirect().back()
   }
 
