@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-import { 
-  LayoutDashboard, 
-  BookOpen, 
+import {
+  LayoutDashboard,
+  BookOpen,
   FileQuestion,
   FileText,
   Users,
   Settings,
   Menu,
-  X // Add X icon for close button
+  X, // Add X icon for close button
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type UserDto from '#dtos/user'
@@ -26,47 +26,51 @@ const menuItems = [
   { name: 'Questions', href: '/manage/questions', icon: FileQuestion },
   { name: 'Papers', href: '/manage/papers', icon: FileText },
   { name: 'Users', href: '/manage/users', icon: Users },
-  { name: 'Settings', href: '/manage/settings', icon: Settings }
+  { name: 'Settings', href: '/manage/settings', icon: Settings },
 ]
 </script>
 
 <template>
   <div class="min-h-screen bg-background">
     <!-- Top Navigation -->
-    <nav class="sticky top-0 z-40 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+    <nav
+      class="sticky top-0 z-40 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60"
+    >
       <div class="px-4 h-16 flex items-center justify-between">
-        <button 
-          @click="isSidebarOpen = !isSidebarOpen" 
-          class="p-2 -ml-2 md:hidden"
-        >
+        <button @click="isSidebarOpen = !isSidebarOpen" class="p-2 -ml-2 md:hidden">
           <Menu v-if="!isSidebarOpen" class="w-5 h-5" />
           <X v-else class="w-5 h-5" />
         </button>
         <div class="flex items-center gap-4">
           <span class="text-sm text-muted-foreground">{{ user?.email }}</span>
-         </div>
-         <Button variant="ghost" @click="$inertia.post('/logout')" class="bg-primary/40 rounded-lg px-4 py-2 hover:bg-primary/20 transition-colors">Logout</Button>
+        </div>
+        <Button
+          variant="ghost"
+          @click="$inertia.post('/logout')"
+          class="bg-primary/40 rounded-lg px-4 py-2 hover:bg-primary/20 transition-colors"
+          >Logout</Button
+        >
       </div>
     </nav>
 
     <div class="flex">
       <!-- Mobile Overlay -->
-      <div 
-        v-if="isSidebarOpen" 
+      <div
+        v-if="isSidebarOpen"
         class="fixed inset-0 z-30 bg-black/20 md:hidden"
         @click="isSidebarOpen = false"
       />
 
       <!-- Sidebar -->
-      <aside 
+      <aside
         :class="[
           'fixed md:static inset-y-0 left-0 z-30 w-64 border-r bg-background transition-transform duration-300 md:translate-x-0',
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
       >
         <nav class="p-4 space-y-2">
-          <Link 
-            v-for="item in menuItems" 
+          <Link
+            v-for="item in menuItems"
             :key="item.name"
             :href="item.href"
             class="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors"

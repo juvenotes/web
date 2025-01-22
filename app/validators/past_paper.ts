@@ -7,7 +7,7 @@ export const createPastPaperValidator = vine.compile(
     year: vine.string().regex(/^\d{4}$/),
     examType: vine.enum(Object.values(ExamType)),
     paperType: vine.enum(Object.values(PaperType)),
-    conceptId: vine.number()
+    conceptId: vine.number(),
   })
 )
 

@@ -21,7 +21,7 @@ const isCreateDialogOpen = ref(false)
 function goBack() {
   router.visit(document.referrer || '/manage', {
     preserveScroll: true,
-    preserveState: true
+    preserveState: true,
   })
 }
 </script>

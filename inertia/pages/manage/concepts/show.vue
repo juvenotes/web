@@ -31,7 +31,7 @@ const toggleContentEditor = () => {
 function goBack() {
   router.visit(document.referrer || '/manage', {
     preserveScroll: true,
-    preserveState: true
+    preserveState: true,
   })
 }
 
