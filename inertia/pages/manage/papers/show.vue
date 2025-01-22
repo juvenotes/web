@@ -6,6 +6,7 @@ import type PastPaperDto from '#dtos/past_paper'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { FileText, Plus, ArrowLeft } from 'lucide-vue-next'
 import CreatePaperDialog from '~/components/CreatePaperDialog.vue'
+import { router } from '@inertiajs/vue3'
 
 defineOptions({ layout: AdminLayout })
 
@@ -18,7 +19,10 @@ defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
 function goBack() {
-  window.history.back()
+  router.visit(document.referrer || '/learn', {
+    preserveScroll: true,
+    preserveState: true
+  })
 }
 </script>
 
@@ -34,7 +38,7 @@ function goBack() {
 
       <button @click="goBack" class="flex items-center gap-2 text-primary hover:text-primary/70">
         <ArrowLeft class="h-5 w-5" />
-        <span class="text-sm font-medium">Back to Subjects</span>
+        <span class="text-sm font-medium">Back to Units</span>
       </button>
 
       <div class="flex items-start justify-between mt-4">

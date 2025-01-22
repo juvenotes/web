@@ -3,6 +3,7 @@ import Concept from '#models/concept'
 import PastPaper from '#models/past_paper'
 import ConceptDto from '#dtos/concept'
 import PastPaperDto from '#dtos/past_paper'
+import QuestionDto from '#dtos/question'
 import { createPastPaperValidator } from '#validators/past_paper'
 import { generateSlug } from '#utils/slug_generator'
 import PastPaperPolicy from '#policies/paper_policy'
@@ -76,31 +77,40 @@ export default class ManagePastPapersController {
    * Show a specific paper for management
    */
   async paper({ params, inertia, logger, auth }: HttpContext) {
-    logger.info('fetching paper for management', {
+    logger.info('fetching paper with questions', {
       userId: auth.user?.id,
-      conceptSlug: params.conceptSlug,
       paperSlug: params.paperSlug,
-      action: 'show_paper',
+      action: 'show_paper_details',
     })
 
     const paper = await PastPaper.query()
       .where('slug', params.paperSlug)
       .preload('concept')
-      .preload('questions')
+      .preload('questions', (query) => {
+        query
+          .orderBy('id', 'asc')
+          .preload('choices', (choicesQuery) => {
+            choicesQuery.select(['id', 'choice_text', 'is_correct', 'explanation', 'question_id'])
+          })
+          .preload('parts', (partsQuery) => {
+            partsQuery.select(['id', 'part_text', 'expected_answer', 'marks', 'question_id'])
+          })
+      })
       .firstOrFail()
 
-    logger.info('paper found for management', {
+    logger.info('found paper with questions', {
       userId: auth.user?.id,
       paperId: paper.id,
       paperSlug: paper.slug,
       conceptId: paper.concept.id,
-      conceptSlug: paper.concept.slug,
-      action: 'show_paper',
+      questionsCount: paper.questions?.length ?? 0,
+      action: 'show_paper_details',
     })
 
     return inertia.render('manage/papers/paper', {
       paper: new PastPaperDto(paper),
       concept: new ConceptDto(paper.concept),
+      questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
     })
   }
 

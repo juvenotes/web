@@ -1,23 +1,29 @@
 <script setup lang="ts">
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
+import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, ArrowLeft, Plus } from 'lucide-vue-next'
+import { FileText, ArrowLeft, Plus, Circle } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
 import UploadQuestionsDialog from '~/components/UploadQuestionsDialog.vue'
 import { ref } from 'vue'
+import { router } from '@inertiajs/vue3'
 
 defineOptions({ layout: AdminLayout })
 
 interface Props {
   paper: PastPaperDto
   concept: ConceptDto
+  questions: QuestionDto[]
 }
 
 defineProps<Props>()
 
 function goBack() {
-  window.history.back()
+  router.visit(document.referrer || '/learn', {
+    preserveScroll: true,
+    preserveState: true
+  })
 }
 const isUploadDialogOpen = ref(false)
 </script>
@@ -69,12 +75,57 @@ const isUploadDialogOpen = ref(false)
       </div>
     </div>
 
-    <!-- Questions Section (Empty State) -->
-    <div class="p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm text-center">
-      <p class="text-muted-foreground">
-        No questions added yet. Click "Add Question" to start building your paper.
-      </p>
-    </div>
+    <!-- Questions Section -->
+    <template v-if="questions.length">
+      <div class="space-y-6">
+        <div
+          v-for="(question, index) in questions"
+          :key="question.id"
+          class="p-6 bg-white rounded-xl border"
+        >
+          <!-- Question Text -->
+          <div class="space-y-4">
+            <div class="flex gap-3">
+              <span class="flex-none px-2 py-1 bg-primary/10 text-primary rounded-lg font-medium">
+                Q{{ index + 1 }}
+              </span>
+              <p class="text-foreground">{{ question.questionText }}</p>
+            </div>
+
+            <!-- MCQ Section -->
+            <div v-if="question.isMcq" class="pl-10 space-y-3">
+              <div
+                v-for="choice in question.choices"
+                :key="choice.id"
+                class="flex items-start gap-3 p-3 rounded-lg border"
+              >
+                <Circle class="h-4 w-4 mt-1 text-muted-foreground" />
+                <span class="text-muted-foreground">{{ choice.choiceText }}</span>
+              </div>
+            </div>
+
+            <!-- SAQ Section -->
+            <div v-if="question.isSaq" class="pl-10 space-y-4">
+              <div
+                v-for="part in question.parts"
+                :key="part.id"
+                class="border-l-2 border-primary/20 pl-4"
+              >
+                <p class="text-foreground">{{ part.partText }}</p>
+                <p class="text-xs text-primary mt-1">{{ part.marks }} marks</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template v-else>
+      <div class="p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm text-center">
+        <p class="text-muted-foreground">
+          No questions added yet. Click "Add Question" to start building your paper.
+        </p>
+      </div>
+    </template>
     <UploadQuestionsDialog
       v-model:open="isUploadDialogOpen"
       :paper="paper"
