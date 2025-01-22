@@ -3,9 +3,10 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, ArrowLeft, Plus, Circle } from 'lucide-vue-next'
+import { FileText, ArrowLeft, Plus, Circle, Upload } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
 import UploadQuestionsDialog from '~/components/UploadQuestionsDialog.vue'
+import AddQuestionDialog from '~/components/AddQuestionDialog.vue'
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 
@@ -20,12 +21,13 @@ interface Props {
 defineProps<Props>()
 
 function goBack() {
-  router.visit(document.referrer || '/learn', {
+  router.visit(document.referrer || '/manage', {
     preserveScroll: true,
-    preserveState: true
+    preserveState: true,
   })
 }
 const isUploadDialogOpen = ref(false)
+const isAddDialogOpen = ref(false)
 </script>
 
 <template>
@@ -60,7 +62,7 @@ const isUploadDialogOpen = ref(false)
           </div>
         </div>
 
-        <Button class="flex items-center gap-2">
+        <Button @click="isAddDialogOpen = true" class="flex items-center gap-2">
           <Plus class="h-4 w-4" />
           Add Question
         </Button>
@@ -126,6 +128,7 @@ const isUploadDialogOpen = ref(false)
         </p>
       </div>
     </template>
+    <AddQuestionDialog v-model:open="isAddDialogOpen" :paper="paper" :concept="concept" />
     <UploadQuestionsDialog
       v-model:open="isUploadDialogOpen"
       :paper="paper"

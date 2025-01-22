@@ -12,6 +12,7 @@ import db from '@adonisjs/lucid/services/db'
 import Question from '#models/question'
 import { DifficultyLevel, QuestionType } from '#enums/question_types'
 import { promises as fs } from 'node:fs'
+import { createQuestionValidator } from '#validators/question'
 
 export default class ManagePastPapersController {
   /**
@@ -137,6 +138,29 @@ export default class ManagePastPapersController {
     })
 
     return response.redirect().toPath(`/manage/papers/${concept.slug}/${paper.slug}`)
+  }
+
+  async addQuestion({ request, response, params, auth }: HttpContext) {
+    const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
+
+    const data = await request.validateUsing(createQuestionValidator)
+
+    const question = await Question.create({
+      questionText: data.questionText,
+      type: data.type,
+      userId: auth.user!.id,
+      pastPaperId: paper.id,
+    })
+
+    if (data.type === QuestionType.MCQ && data.choices) {
+      await question.related('choices').createMany(data.choices)
+    }
+
+    if (data.type === QuestionType.SAQ && data.parts) {
+      await question.related('parts').createMany(data.parts)
+    }
+
+    return response.redirect().back()
   }
 
   async uploadQuestions({ request, response, params, auth, logger }: HttpContext) {

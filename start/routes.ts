@@ -186,6 +186,7 @@ router
       ManagePapersController,
       'uploadQuestions',
     ])
+    router.post('/:conceptSlug/:paperSlug/questions', [ManagePapersController, 'addQuestion'])
     router.delete('/:conceptSlug/:paperSlug', [ManagePapersController, 'destroy'])
   })
   .prefix('/manage/papers')

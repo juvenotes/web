@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AddQuestionDialog: typeof import('./inertia/components/AddQuestionDialog.vue')['default']
     Alert: typeof import('./inertia/components/ui/alert/Alert.vue')['default']
     AlertDescription: typeof import('./inertia/components/ui/alert/AlertDescription.vue')['default']
     AlertTitle: typeof import('./inertia/components/ui/alert/AlertTitle.vue')['default']

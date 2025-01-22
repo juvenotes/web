@@ -19,7 +19,7 @@ defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
 function goBack() {
-  router.visit(document.referrer || '/learn', {
+  router.visit(document.referrer || '/manage', {
     preserveScroll: true,
     preserveState: true
   })
