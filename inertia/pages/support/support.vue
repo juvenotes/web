@@ -116,7 +116,7 @@ defineOptions({ layout: AppLayout })
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     div .reach-out-section h1 {
-        color: rgb(31, 41, 55); /* Black color */
+        color: rgb(31, 41, 55); 
         font-weight: 700;
         font-size: 1.875rem;
         line-height: 2.25rem;
@@ -129,13 +129,13 @@ defineOptions({ layout: AppLayout })
         display: inline-block;
         margin-top: 1rem;
         padding: 0.8em 1.5em;
-        background-color: rgb(85, 169, 196); /* Blue button */
-        color: white; /* White text color */
+        background-color: rgb(85, 169, 196); 
+        color: white; 
         text-decoration: none;
         border-radius: 4px;
         transition: background-color 0.3s ease;
     }
     div .contact-button:hover {
-        background-color: rgb(65, 149, 176); /* Slightly darker blue on hover */
+        background-color: rgb(65, 149, 176); 
     }
 </style>
