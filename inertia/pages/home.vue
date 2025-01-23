@@ -2,6 +2,7 @@
 import AppLayout from '~/layouts/AppLayout.vue'
 import UserDto from '#dtos/user'
 import StatsDto from '#dtos/stats'
+import CookieConsent from '~/components/CookieConsent.vue'
 
 const props = defineProps<{
   messages: Record<string, string | Record<string, string>>
@@ -132,5 +133,6 @@ const statsDisplay = [
         </div>
       </section> -->
     </main>
+    <CookieConsent />
   </div>
 </template>
