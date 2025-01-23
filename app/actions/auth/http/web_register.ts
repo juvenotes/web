@@ -19,7 +19,6 @@ export default class WebRegister {
       roleId: Role.USER,
     })
 
-    await this.ctx.auth.use('web').login(user)
     return { user }
   }
 }

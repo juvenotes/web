@@ -1,11 +1,16 @@
 <script setup lang="ts">
-defineProps<{ error: any }>();
+import { Button } from '~/components/ui/button'
+
+defineProps<{ error: any }>()
 </script>
 
 <template>
-  <div class="container">
-    <div class="title">Server Error</div>
-
-    <span>{{ error.message }}</span>
+  <AppHead title="Server error" description="Server has an error" />
+  <div class="flex min-h-screen flex-col items-center justify-center">
+    <div class="text-center space-y-4">
+      <h1 class="text-4xl font-bold">Server Error</h1>
+      <p class="text-muted-foreground">{{ error.message }}</p>
+      <Button as="a" href="/">Back Home</Button>
+    </div>
   </div>
 </template>

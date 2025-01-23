@@ -1,5 +1,5 @@
 import vine from '@vinejs/vine'
-import { QuestionType, DifficultyLevel } from '#enums/question_types'
+import { QuestionType } from '#enums/question_types'
 
 // MCQ Choice Schema
 const mcqChoiceSchema = vine.object({
@@ -17,20 +17,36 @@ const saqPartSchema = vine.object({
 
 export const createQuestionValidator = vine.compile(
   vine.object({
+    questionText: vine.string().minLength(3),
     type: vine.enum(Object.values(QuestionType)),
-    question_text: vine.string().minLength(3).maxLength(1000),
-    difficulty_level: vine.enum(Object.values(DifficultyLevel)),
-    concept_ids: vine.array(vine.number()).minLength(1),
-    choices: vine.array(mcqChoiceSchema).optional(),
-    parts: vine.array(saqPartSchema).optional(),
+
+    // MCQ specific
+    choices: vine
+      .array(
+        vine.object({
+          choiceText: vine.string().minLength(1),
+          isCorrect: vine.boolean(),
+          explanation: vine.string().optional(),
+        })
+      )
+      .optional(),
+
+    // SAQ specific
+    parts: vine
+      .array(
+        vine.object({
+          partText: vine.string().minLength(1),
+          expectedAnswer: vine.string().minLength(1),
+          marks: vine.number().min(1),
+        })
+      )
+      .optional(),
   })
 )
 
 export const updateQuestionValidator = vine.compile(
   vine.object({
     question_text: vine.string().minLength(3).maxLength(1000).optional(),
-    difficulty_level: vine.enum(Object.values(DifficultyLevel)).optional(),
-    concept_ids: vine.array(vine.number()).minLength(1).optional(),
     choices: vine.array(mcqChoiceSchema).optional(),
     parts: vine.array(saqPartSchema).optional(),
   })

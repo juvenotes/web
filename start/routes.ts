@@ -9,8 +9,6 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
-import AutoSwagger from 'adonis-autoswagger'
-import swagger from '#config/swagger'
 
 const HomeController = () => import('#controllers/landing/home_controller')
 const SupportController = () => import('#controllers/landing/support_controller')
@@ -18,6 +16,7 @@ const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
 const GoogleSignupController = () => import('#controllers/auth/google_signup_controller')
+const EmailVerificationsController = () => import('#controllers/auth/email_verification_controller')
 const ForgotPasswordController = () => import('#controllers/auth/forgot_password_controller')
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
@@ -27,9 +26,10 @@ const IndexQuestionsController = () => import('#controllers/questions/index_cont
 // const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
 const IndexPapersController = () => import('#controllers/papers/index_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
-const PersonalizationController = () => import('#controllers/personalization/index_controller')
-// const ManagePapersController = () => import('#controllers/manage/papers_controller')
+const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
+const ManagePapersController = () => import('#controllers/manage/past_papers/index_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
+const ManageUsersController = () => import('#controllers/manage/users/index_controller')
 
 //* HOME
 router.get('/', [HomeController, 'index']).as('home')
@@ -50,6 +50,13 @@ router
   .use([middleware.guest()])
 router.post('/logout', [LogoutController, 'handle']).as('auth.logout').use(middleware.auth())
 
+//* AUTH -> VERIFY EMAIL
+router.get('/auth/verify', [EmailVerificationsController, 'pending'])
+router.get('/auth/verify-email/:token', [EmailVerificationsController, 'verify'])
+router
+  .post('/auth/resend-email', [EmailVerificationsController, 'resend'])
+  .as('verification.resend')
+
 //* AUTH -> FORGOT PASSWORD
 router
   .get('/forgot-password', [ForgotPasswordController, 'index'])
@@ -69,14 +76,16 @@ router
   .use([middleware.guest()])
 
 router
-  .get('/personalization', [PersonalizationController, 'show'])
-  .as('auth.personalize.show')
+  .group(() => {
+    router.get('/personalize', [PersonalizationController, 'show'])
+    router.post('/personalize', [PersonalizationController, 'store'])
+  })
+  .prefix('/auth')
   .use(middleware.auth())
 
-router
-  .post('/onboarding', [PersonalizationController, 'store'])
-  .as('auth.personalize.store')
-  .use(middleware.auth())
+//* TERMS AND PRIVACY
+const TermsController = () => import('#controllers/legal/terms_controller')
+const PrivacyController = () => import('#controllers/legal/privacy_controller')
 
 //* USER DASHBOARD
 router.get('learn', [UserDashboardController, 'handle']).as('learn').use(middleware.auth())
@@ -150,18 +159,6 @@ router
 //   })
 //   .prefix('/manage/questions')
 
-// returns swagger in YAML
-router.get('/swagger', async () => {
-  return AutoSwagger.default.docs(router.toJSON(), swagger)
-})
-
-// Renders Swagger-UI and passes YAML-output of /swagger
-router.get('/docs', async () => {
-  return AutoSwagger.default.ui('/swagger', swagger)
-  // return AutoSwagger.default.scalar("/swagger"); to use Scalar instead
-  // return AutoSwagger.default.rapidoc("/swagger", "view"); to use RapiDoc instead (pass "view" default, or "read" to change the render-style)
-})
-
 //* AUTH -> GOOGLE
 router
   .group(() => {
@@ -173,19 +170,36 @@ router
 
 //* PAST PAPERS -> VIEW
 router.get('/papers', [IndexPapersController, 'index']).use(middleware.auth())
-// router.get('/papers/:slug', [IndexPapersController, 'show'])
+router.get('/papers/:slug', [IndexPapersController, 'show']).use(middleware.auth())
+router
+  .get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'paper'])
+  .use(middleware.auth())
+
+// LEGAL -> TERMS
+router.get('/terms', [TermsController, 'handle']).as('legal.terms')
+router.get('/privacy', [PrivacyController, 'handle']).as('legal.privacy')
 
 //* PAST PAPERS -> MANAGE
-// router
-//   .group(() => {
-//     router.get('/', [ManagePapersController, 'index'])
-//     router.get('/:slug', [ManagePapersController, 'show'])
-//     // router.post('/', [ManagePapersController, 'store'])
-//     // router.put('/:slug', [ManagePapersController, 'update'])
-//     // router.delete('/:slug', [ManagePapersController, 'destroy'])
-//     router.get('/:slug/questions/new', [ManagePapersController, 'createQuestion'])
-//     router.post('/:slug/questions', [ManagePapersController, 'addQuestion'])
-//     router.get('/:slug/questions/:questionSlug/edit', [ManagePapersController, 'editQuestion'])
-//     router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
-//   })
-//   .prefix('/manage/papers')
+router
+  .group(() => {
+    router.get('/', [ManagePapersController, 'index'])
+    router.get('/:slug', [ManagePapersController, 'show'])
+    router.get('/:conceptSlug/:paperSlug', [ManagePapersController, 'paper'])
+    router.post('/', [ManagePapersController, 'store'])
+    router.post('/:conceptSlug/:paperSlug/upload-questions', [
+      ManagePapersController,
+      'uploadQuestions',
+    ])
+    router.post('/:conceptSlug/:paperSlug/questions', [ManagePapersController, 'addQuestion'])
+    router.delete('/:conceptSlug/:paperSlug', [ManagePapersController, 'destroy'])
+  })
+  .prefix('/manage/papers')
+  .use(middleware.auth())
+
+router
+  .group(() => {
+    router.get('/users', [ManageUsersController, 'index'])
+    router.put('/users/:id/role', [ManageUsersController, 'updateRole'])
+  })
+  .prefix('/manage')
+  .use(middleware.auth())

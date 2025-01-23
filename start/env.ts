@@ -17,9 +17,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   APP_KEY: Env.schema.string(),
   HOST: Env.schema.string({ format: 'host' }),
   LOG_LEVEL: Env.schema.string(),
-  APP_URL: Env.schema.string(),
-  APP_DOMAIN: Env.schema.string(),
-
+  APP_URL: Env.schema.string({ format: 'url' }),
+  APP_DOMAIN: Env.schema.string({ format: 'url' }),
   /*
   |----------------------------------------------------------
   | Variables for configuring session package
@@ -60,4 +59,16 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   BREVO_API_KEY: Env.schema.string(),
+  SMTP_HOST: Env.schema.string(),
+  SMTP_PORT: Env.schema.string(),
+  SMTP_USERNAME: Env.schema.string(),
+  SMTP_PASSWORD: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for statsig
+  |----------------------------------------------------------
+  */
+  STATSIG_CLIENT_KEY: Env.schema.string(),
+  STATSIG_SERVER_SECRET: Env.schema.string(),
 })

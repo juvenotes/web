@@ -4,6 +4,11 @@ import { defineConfig, transports } from '@adonisjs/mail'
 const mailConfig = defineConfig({
   default: 'brevo',
 
+  from: {
+    address: 'noreply@juvenotes.com',
+    name: 'Juvenotes',
+  },
+
   /**
    * The mailers object can be used to configure multiple mailers
    * each using a different transport or same transport with different
@@ -18,6 +23,15 @@ const mailConfig = defineConfig({
     brevo: transports.brevo({
       key: env.get('BREVO_API_KEY'),
       baseUrl: 'https://api.brevo.com/v3',
+    }),
+    smtp: transports.smtp({
+      host: env.get('SMTP_HOST'),
+      port: env.get('SMTP_PORT'),
+      auth: {
+        type: 'login',
+        user: env.get('SMTP_USERNAME'),
+        pass: env.get('SMTP_PASSWORD'),
+      },
     }),
   },
 })

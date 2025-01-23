@@ -33,7 +33,7 @@ export default class TrySendPasswordResetEmail {
 
     await mail.sendLater((message) => {
       message
-        .subject('Reset Your PlotMyCourse Password')
+        .subject('Reset Your Juvenotes Password')
         .to(user.email)
         .htmlView('emails/forgot_password', {
           user,
