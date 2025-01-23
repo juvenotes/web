@@ -12,7 +12,7 @@ const form = useForm({
 </script>
 
 <template>
-  <AppHead title="Forgot Your Password?" description="Reset your PlotMyCourse password" />
+  <AppHead title="Forgot Your Password?" description="Reset your Juvenotes password" />
 
   <div class="flex flex-col space-y-2">
     <h1 class="text-2xl font-semibold tracking-tight">Forgot Your Password?</h1>

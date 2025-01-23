@@ -29,7 +29,7 @@ const handleChoiceSelect = (questionId: number, choiceId: number) => {
 }
 
 const getCorrectAnswer = (question: QuestionDto) => {
-  return question.choices.find(choice => choice.isCorrect)
+  return question.choices.find((choice) => choice.isCorrect)
 }
 </script>
 
@@ -39,8 +39,10 @@ const getCorrectAnswer = (question: QuestionDto) => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header section remains same -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
-      
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
+
       <!-- Back Button -->
       <button @click="goBack" class="flex items-center gap-2 text-primary hover:text-primary/70">
         <ArrowLeft class="h-5 w-5" />
@@ -67,7 +69,11 @@ const getCorrectAnswer = (question: QuestionDto) => {
 
     <!-- Questions List -->
     <div class="space-y-6">
-      <div v-for="(question, index) in questions" :key="question.id" class="p-6 bg-white rounded-xl border">
+      <div
+        v-for="(question, index) in questions"
+        :key="question.id"
+        class="p-6 bg-white rounded-xl border"
+      >
         <!-- Question Text -->
         <div class="space-y-4">
           <div class="flex gap-3">
@@ -106,7 +112,11 @@ const getCorrectAnswer = (question: QuestionDto) => {
 
           <!-- SAQ Section -->
           <div v-if="question.isSaq" class="pl-10 space-y-4">
-            <div v-for="part in question.parts" :key="part.id" class="border-l-2 border-primary/20 pl-4">
+            <div
+              v-for="part in question.parts"
+              :key="part.id"
+              class="border-l-2 border-primary/20 pl-4"
+            >
               <p class="text-foreground">{{ part.partText }}</p>
               <p class="text-xs text-primary mt-1">{{ part.marks }} marks</p>
             </div>

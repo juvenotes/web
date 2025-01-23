@@ -11,7 +11,7 @@ export default class EmailVerification extends BaseModel {
   declare userId: number
 
   @column()
-  declare token: string  
+  declare token: string
 
   @column.dateTime()
   declare expiresAt: DateTime

@@ -2,10 +2,7 @@
 import { Link } from '@inertiajs/vue3'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import type StatsDto from '#dtos/stats'
-import { 
-  BookOpen, 
-  FileQuestion, 
-  FileText} from 'lucide-vue-next'
+import { BookOpen, FileQuestion, FileText } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 defineOptions({ layout: AdminLayout })
@@ -25,28 +22,28 @@ const statItems: Array<{
 }> = [
   { key: 'concepts', label: 'Total Concepts', icon: BookOpen },
   { key: 'questions', label: 'Total Questions', icon: FileQuestion },
-  { key: 'papers', label: 'Total Papers', icon: FileText }
+  { key: 'papers', label: 'Total Papers', icon: FileText },
 ]
 
 const quickLinks = [
-  { 
+  {
     title: 'Manage Concepts',
     description: 'Create and organize learning content',
     href: '/manage/concepts',
-    icon: BookOpen
+    icon: BookOpen,
   },
   {
-    title: 'Question Bank', 
+    title: 'Question Bank',
     description: 'Create and manage test questions',
     href: '/manage/questions',
-    icon: FileQuestion
+    icon: FileQuestion,
   },
   {
     title: 'Past Papers',
     description: 'Organize examination papers',
-    href: '/manage/papers', 
-    icon: FileText
-  }
+    href: '/manage/papers',
+    icon: FileText,
+  },
 ]
 </script>
 
@@ -59,8 +56,7 @@ const quickLinks = [
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div v-for="item in statItems" :key="item.key"
-           class="p-6 bg-card rounded-lg border">
+      <div v-for="item in statItems" :key="item.key" class="p-6 bg-card rounded-lg border">
         <div class="flex items-center gap-2">
           <component :is="item.icon" class="w-5 h-5 text-primary" />
           <h3 class="font-medium text-muted-foreground">{{ item.label }}</h3>
@@ -71,15 +67,16 @@ const quickLinks = [
 
     <!-- Quick Links -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Link 
-        v-for="link in quickLinks" 
+      <Link
+        v-for="link in quickLinks"
         :key="link.title"
         :href="link.href"
         class="p-6 rounded-lg border hover:border-primary transition-colors group"
       >
         <div class="flex items-center gap-2 mb-2">
-          <component :is="link.icon" 
-            class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" 
+          <component
+            :is="link.icon"
+            class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors"
           />
           <h3 class="font-semibold">{{ link.title }}</h3>
         </div>

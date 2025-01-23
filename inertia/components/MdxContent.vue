@@ -21,21 +21,14 @@ watchEffect(async () => {
     .use(rehypeHighlight)
     .use(rehypeStringify)
     .process(props.content)
-  
+
   html.value = String(result)
 })
 </script>
 <template>
-  <div 
-    class="prose dark:prose-invert max-w-none notion-like 
-           prose-headings:font-medium prose-headings:text-foreground/90 
-           prose-p:text-muted-foreground prose-a:text-primary 
-           prose-a:no-underline hover:prose-a:underline 
-           prose-strong:text-foreground/90 prose-code:text-primary/90 
-           prose-code:bg-primary/5 prose-code:px-1.5 prose-code:py-0.5 
-           prose-code:rounded-md prose-pre:bg-zinc-950 
-           prose-pre:border prose-pre:border-white/10"
-    v-html="html" 
+  <div
+    class="prose dark:prose-invert max-w-none notion-like prose-headings:font-medium prose-headings:text-foreground/90 prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground/90 prose-code:text-primary/90 prose-code:bg-primary/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-white/10"
+    v-html="html"
   />
 </template>
 
@@ -47,32 +40,42 @@ watchEffect(async () => {
   --notion-transition: all 0.2s ease;
   font-family: var(--notion-font);
   line-height: 1.8;
-  
+
   /* Block spacing */
   & > * + * {
     margin-top: var(--notion-spacing);
   }
-  
+
   /* Headings */
-  & h1, & h2, & h3, & h4 {
+  & h1,
+  & h2,
+  & h3,
+  & h4 {
     font-weight: 600;
     line-height: 1.3;
     margin-top: calc(var(--notion-spacing) * 2);
     margin-bottom: calc(var(--notion-spacing) * 0.5);
     transition: var(--notion-transition);
-    
+
     &:hover {
       color: hsl(var(--primary));
       transform: translateX(4px);
     }
   }
 
-  & h1 { font-size: 2.5em; }
-  & h2 { font-size: 1.75em; }
-  & h3 { font-size: 1.35em; }
+  & h1 {
+    font-size: 2.5em;
+  }
+  & h2 {
+    font-size: 1.75em;
+  }
+  & h3 {
+    font-size: 1.35em;
+  }
 
   /* Lists */
-  & ul, & ol {
+  & ul,
+  & ol {
     padding-left: 1.5em;
     margin: var(--notion-spacing) 0;
   }
@@ -137,7 +140,7 @@ watchEffect(async () => {
     text-decoration: none;
     color: hsl(var(--primary));
     transition: var(--notion-transition);
-    
+
     &::after {
       content: '';
       position: absolute;

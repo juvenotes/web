@@ -26,7 +26,7 @@ const IndexQuestionsController = () => import('#controllers/questions/index_cont
 const IndexPapersController = () => import('#controllers/papers/index_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
-// const ManagePapersController = () => import('#controllers/manage/papers_controller')
+const ManagePapersController = () => import('#controllers/manage/past_papers/index_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 const ManageUsersController = () => import('#controllers/manage/users/index_controller')
 
@@ -176,19 +176,21 @@ router.get('/terms', [TermsController, 'handle']).as('legal.terms')
 router.get('/privacy', [PrivacyController, 'handle']).as('legal.privacy')
 
 //* PAST PAPERS -> MANAGE
-// router
-//   .group(() => {
-//     router.get('/', [ManagePapersController, 'index'])
-//     router.get('/:slug', [ManagePapersController, 'show'])
-//     // router.post('/', [ManagePapersController, 'store'])
-//     // router.put('/:slug', [ManagePapersController, 'update'])
-//     // router.delete('/:slug', [ManagePapersController, 'destroy'])
-//     router.get('/:slug/questions/new', [ManagePapersController, 'createQuestion'])
-//     router.post('/:slug/questions', [ManagePapersController, 'addQuestion'])
-//     router.get('/:slug/questions/:questionSlug/edit', [ManagePapersController, 'editQuestion'])
-//     router.delete('/:slug/questions/:questionSlug', [ManagePapersController, 'removeQuestion'])
-//   })
-//   .prefix('/manage/papers')
+router
+  .group(() => {
+    router.get('/', [ManagePapersController, 'index'])
+    router.get('/:slug', [ManagePapersController, 'show'])
+    router.get('/:conceptSlug/:paperSlug', [ManagePapersController, 'paper'])
+    router.post('/', [ManagePapersController, 'store'])
+    router.post('/:conceptSlug/:paperSlug/upload-questions', [
+      ManagePapersController,
+      'uploadQuestions',
+    ])
+    router.post('/:conceptSlug/:paperSlug/questions', [ManagePapersController, 'addQuestion'])
+    router.delete('/:conceptSlug/:paperSlug', [ManagePapersController, 'destroy'])
+  })
+  .prefix('/manage/papers')
+  .use(middleware.auth())
 
 router
   .group(() => {
