@@ -138,4 +138,25 @@ defineOptions({ layout: AppLayout })
     div .contact-button:hover {
         background-color: rgb(65, 149, 176); 
     }
+
+    @media (max-width: 768px) {
+        .welcome-section h1 {
+            font-size: 1rem;
+            line-height: 1.5rem;
+            text-align: center;
+        }
+
+        .faq-section h1, .reach-out-section h1 {
+            font-size: 1rem;
+            line-height: 1.5rem;
+        }
+
+        .search-bar input[type="search"] {
+            padding: 10px 35px 10px 10px;
+        }
+
+        .search-bar .search-icon {
+            right: 5px;
+        }
+    }
 </style>
