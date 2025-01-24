@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { router, useForm } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import { ExamType, PaperType, PaperTypeLabels, ExamTypeLabels } from '#enums/exam_type'
 
@@ -24,14 +24,9 @@ const form = useForm({
 function handleSubmit() {
   form.post('/manage/papers', {
     preserveScroll: true,
-    onSuccess: (response) => {
+    onSuccess: () => {
       emit('update:open', false)
       form.reset()
-      // Force a fresh visit to load new data
-      router.visit(response.url, {
-        preserveState: false,
-        preserveScroll: true
-      })
     },
   })
 }

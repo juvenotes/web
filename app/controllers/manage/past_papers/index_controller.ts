@@ -127,7 +127,7 @@ export default class ManagePastPapersController {
   /**
    * Store a new paper
    */
-  async store({ request, response, auth, logger }: HttpContext) {
+  async store({ request, response, auth, logger, session }: HttpContext) {
     const data = await request.validateUsing(createPastPaperValidator)
 
     const concept = await Concept.findOrFail(data.conceptId)
@@ -152,6 +152,7 @@ export default class ManagePastPapersController {
       action: 'create_paper',
     })
 
+    session.flash('success', 'Paper created successfully')
     return response.redirect().toPath(`/manage/papers/${concept.slug}/${paper.slug}`)
   }
 
@@ -185,7 +186,7 @@ export default class ManagePastPapersController {
     return response.redirect().back()
   }
 
-  async uploadQuestions({ request, response, params, auth, logger }: HttpContext) {
+  async uploadQuestions({ request, response, params, auth, logger, session }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
 
     logger.info('attempting to upload questions', {
@@ -249,6 +250,7 @@ export default class ManagePastPapersController {
         action: 'upload_questions',
       })
 
+      session.flash('success', 'Questions uploaded successfully')
       return response.redirect().toPath(`/manage/papers/${params.conceptSlug}/${params.paperSlug}`)
     } catch (error) {
       if (error instanceof MCQParserError) {
