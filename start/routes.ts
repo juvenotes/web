@@ -10,7 +10,8 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
-const HomeController = () => import('#controllers/home/home_controller')
+const HomeController = () => import('#controllers/landing/home_controller')
+const SupportController = () => import('#controllers/landing/support_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
@@ -32,6 +33,9 @@ const ManageUsersController = () => import('#controllers/manage/users/index_cont
 
 //* HOME
 router.get('/', [HomeController, 'index']).as('home')
+
+//* SUPPORT
+router.get('/support', [SupportController, 'index']).as('support')
 
 //* AUTH -> LOGIN, REGISTER, LOGOUT
 router.get('/login', [LoginController, 'show']).as('auth.login.show').use(middleware.guest())
