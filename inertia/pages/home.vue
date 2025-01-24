@@ -25,7 +25,7 @@ const features = [
 const statsDisplay = [
   { number: `${props.stats.users}+`, label: 'Already Active Users' },
   { number: `${props.stats.concepts}+`, label: 'Concepts Broken Down' },
-  { number: `${props.stats.papers}+`, label: 'Practice Papers With QUestions' },
+  { number: `${props.stats.papers}+`, label: 'Practice Papers With Questions' },
 ]
 </script>
 
