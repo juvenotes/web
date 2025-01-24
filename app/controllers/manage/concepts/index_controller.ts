@@ -146,7 +146,7 @@ export default class ManageConceptsController {
       action: 'create_concept',
     })
 
-    session.flash('success', `${concept.title} created successfuly`)
+    session.flash('success', `${concept.title} created successfully`)
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
@@ -199,7 +199,7 @@ export default class ManageConceptsController {
       action: 'update_concept',
     })
 
-    session.flash('success', `${concept.title} updated successfuly`)
+    session.flash('success', `${concept.title} updated. Refresh page if necessary`)
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
@@ -263,7 +263,7 @@ export default class ManageConceptsController {
       action: 'delete_concept',
     })
 
-    session.flash('success', 'Concept deleted successfully')
+    session.flash('success', 'Concept deleted. Refresh page if necessary')
     return response.redirect().toPath('/manage/concepts')
   }
 }

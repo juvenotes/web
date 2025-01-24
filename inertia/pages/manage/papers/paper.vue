@@ -8,7 +8,6 @@ import { Button } from '~/components/ui/button'
 import UploadQuestionsDialog from '~/components/UploadQuestionsDialog.vue'
 import AddQuestionDialog from '~/components/AddQuestionDialog.vue'
 import { ref } from 'vue'
-import { router } from '@inertiajs/vue3'
 
 defineOptions({ layout: AdminLayout })
 
@@ -20,11 +19,8 @@ interface Props {
 
 defineProps<Props>()
 
-function goBack() {
-  router.visit(document.referrer || '/manage', {
-    preserveScroll: true,
-    preserveState: true,
-  })
+const goBack = () => {
+  window.history.back()
 }
 const isUploadDialogOpen = ref(false)
 const isAddDialogOpen = ref(false)

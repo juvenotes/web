@@ -297,7 +297,7 @@ export default class ManagePastPapersController {
       action: 'delete_paper',
     })
 
-    session.flash('success', 'Paper deleted successfully')
+    session.flash('success', 'Paper deleted. Refresh page if necessary')
     return response.redirect().toPath('/manage/papers')
   }
 }
