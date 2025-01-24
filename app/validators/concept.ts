@@ -25,6 +25,7 @@ export const createConceptValidator = vine.compile(
     title: vine.string().trim().minLength(2).maxLength(255),
     parentId: vine.string().trim().nullable(),
     isTerminal: vine.boolean(),
+    metadata: metadataSchema.optional(),
   })
 )
 

@@ -120,12 +120,21 @@ export default class ManageConceptsController {
       parentId = parentConcept.id
     }
 
+    const metadata = {
+      lastEditedBy: {
+        id: auth.user!.id,
+        fullName: auth.user!.fullName!,
+        timestamp: new Date(),
+      },
+    }
+
     const concept = await Concept.create({
       ...data,
       userId: auth.user!.id,
       slug: generateSlug(),
       level: newLevel,
       parentId,
+      metadata,
     })
 
     logger.info('concept created successfully', {

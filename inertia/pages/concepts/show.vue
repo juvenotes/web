@@ -34,6 +34,12 @@ const goBack = () => {
   window.history.back()
 }
 
+const getLastEditDate = computed(() => {
+  return new Date(
+    props.concept.metadata?.lastEditedBy?.timestamp ?? props.concept.createdAt
+  ).toLocaleDateString()
+})
+
 watchEffect(() => {
   children.value = props.children
   questions.value = props.questions
@@ -111,9 +117,11 @@ const getCorrectAnswer = (question: QuestionDto) => {
           </Link>
         </div>
       </div>
-      <div v-if="concept.metadata?.lastEditedBy" class="text-sm text-muted-foreground">
-        Last edited on
-        {{ new Date(concept.metadata.lastEditedBy.timestamp).toLocaleDateString() }}
+      <div
+        v-if="concept.metadata?.lastEditedBy || concept.createdAt"
+        class="text-sm text-muted-foreground"
+      >
+        Last edited on {{ getLastEditDate }}
       </div>
 
       <!-- Enhanced Main Content -->

@@ -15,6 +15,15 @@ import { promises as fs } from 'node:fs'
 import { createQuestionValidator } from '#validators/question'
 
 export default class ManagePastPapersController {
+  private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
+    return {
+      ...currentMetadata,
+      lastEditedBy: {
+        fullName: auth.user!.fullName!,
+        timestamp: new Date(),
+      },
+    }
+  }
   /**
    * Show root level concepts with their papers
    */
@@ -126,6 +135,12 @@ export default class ManagePastPapersController {
       ...data,
       userId: auth.user!.id,
       slug: generateSlug(),
+      metadata: {
+        lastEditedBy: {
+          fullName: auth.user!.fullName!,
+          timestamp: new Date(),
+        },
+      },
     })
 
     logger.info('paper created successfully', {
@@ -143,6 +158,12 @@ export default class ManagePastPapersController {
   async addQuestion({ request, response, params, auth, session }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
     const data = await request.validateUsing(createQuestionValidator)
+
+    await paper
+      .merge({
+        metadata: this.getMetadataUpdate(paper.metadata, auth),
+      })
+      .save()
 
     const question = await Question.create({
       questionText: data.questionText,
@@ -188,6 +209,12 @@ export default class ManagePastPapersController {
 
       // Create questions in database
       await db.transaction(async (trx) => {
+        // Update paper metadata
+        await paper
+          .merge({
+            metadata: this.getMetadataUpdate(paper.metadata, auth),
+          })
+          .save()
         for (const parsedQuestion of parsedQuestions) {
           // Create question
           const question = await Question.create(
