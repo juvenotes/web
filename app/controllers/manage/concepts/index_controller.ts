@@ -163,10 +163,21 @@ export default class ManageConceptsController {
 
     const data = await request.validateUsing(updateConceptValidator)
 
+    // Update metadata with last editor info
+    const metadata = {
+      ...concept.metadata,
+      lastEditedBy: {
+        id: auth.user!.id,
+        fullName: auth.user!.fullName!,
+        timestamp: new Date(),
+      },
+    }
+
     await concept
       .merge({
         ...data,
         isTerminal: data.isTerminal,
+        metadata,
       })
       .save()
 

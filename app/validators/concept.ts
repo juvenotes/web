@@ -10,6 +10,13 @@ const metadataSchema = vine
     status: vine.enum(['draft', 'review', 'published']).optional(),
     lastReviewed: vine.date().optional(),
     authors: vine.array(vine.string()).optional(),
+    lastEditedBy: vine
+      .object({
+        id: vine.number(),
+        fullName: vine.string(),
+        timestamp: vine.date(),
+      })
+      .optional(),
   })
   .allowUnknownProperties()
 
