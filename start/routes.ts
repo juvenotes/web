@@ -189,7 +189,8 @@ router
   .group(() => {
     router.get('/', [ManagePapersController, 'index'])
     router.get('/:slug', [ManagePapersController, 'show'])
-    router.get('/:conceptSlug/:paperSlug', [ManagePapersController, 'paper'])
+    // router.get('/:conceptSlug/:paperSlug', [ManagePapersController, 'paper'])
+    router.get('/:conceptSlug/:paperSlug', [ManagePapersController, 'viewPaper'])
     router.post('/', [ManagePapersController, 'store'])
     router.post('/:conceptSlug/:paperSlug/upload-questions', [
       ManagePapersController,

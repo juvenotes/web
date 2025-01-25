@@ -17,7 +17,7 @@ interface Props {
 defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
-const goBack = () => {
+function goBack() {
   window.history.back()
 }
 </script>
