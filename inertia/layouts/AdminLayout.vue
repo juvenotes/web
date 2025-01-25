@@ -3,10 +3,10 @@ import { Link } from '@inertiajs/vue3'
 import {
   LayoutDashboard,
   BookOpen,
-  FileQuestion,
+  // FileQuestion,
   FileText,
   Users,
-  Settings,
+  // Settings,
   Menu,
   X, // Add X icon for close button
 } from 'lucide-vue-next'
@@ -23,10 +23,10 @@ const isSidebarOpen = ref(false) // Default closed for mobile
 const menuItems = [
   { name: 'Dashboard', href: '/manage', icon: LayoutDashboard },
   { name: 'Concepts', href: '/manage/concepts', icon: BookOpen },
-  { name: 'Questions', href: '/manage/questions', icon: FileQuestion },
+  // { name: 'Questions', href: '/manage/questions', icon: FileQuestion },
   { name: 'Papers', href: '/manage/papers', icon: FileText },
   { name: 'Users', href: '/manage/users', icon: Users },
-  { name: 'Settings', href: '/manage/settings', icon: Settings },
+  // { name: 'Settings', href: '/manage/settings', icon: Settings },
 ]
 </script>
 
