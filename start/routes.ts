@@ -10,8 +10,8 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
-const HomeController = () => import('#controllers/landing/home_controller')
-const SupportController = () => import('#controllers/landing/support_controller')
+const HomeController = () => import('#controllers/home/home_controller')
+const SupportController = () => import('#controllers/home/support_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
 const RegisterController = () => import('#controllers/auth/register_controller')
@@ -30,6 +30,11 @@ const PersonalizationController = () => import('#controllers/auth/personalizatio
 const ManagePapersController = () => import('#controllers/manage/past_papers/index_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 const ManageUsersController = () => import('#controllers/manage/users/index_controller')
+
+// test crash route
+router.get('/crash', () => {
+  throw new Error('Test 500 error')
+})
 
 //* HOME
 router.get('/', [HomeController, 'index']).as('home')

@@ -31,6 +31,14 @@ export default class PastPaper extends BaseModel {
   @column()
   declare paperType: PaperType
 
+  @column()
+  declare metadata: {
+    lastEditedBy?: {
+      fullName: string
+      timestamp: Date
+    }
+  }
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

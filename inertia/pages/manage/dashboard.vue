@@ -2,7 +2,7 @@
 import { Link } from '@inertiajs/vue3'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import type StatsDto from '#dtos/stats'
-import { BookOpen, FileQuestion, FileText } from 'lucide-vue-next'
+import { BookOpen, FileText } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 defineOptions({ layout: AdminLayout })
@@ -21,7 +21,7 @@ const statItems: Array<{
   icon: any
 }> = [
   { key: 'concepts', label: 'Total Concepts', icon: BookOpen },
-  { key: 'questions', label: 'Total Questions', icon: FileQuestion },
+  // { key: 'questions', label: 'Total Questions', icon: FileQuestion },
   { key: 'papers', label: 'Total Papers', icon: FileText },
 ]
 
@@ -32,12 +32,12 @@ const quickLinks = [
     href: '/manage/concepts',
     icon: BookOpen,
   },
-  {
-    title: 'Question Bank',
-    description: 'Create and manage test questions',
-    href: '/manage/questions',
-    icon: FileQuestion,
-  },
+  // {
+  //   title: 'Question Bank',
+  //   description: 'Create and manage test questions',
+  //   href: '/manage/questions',
+  //   icon: FileQuestion,
+  // },
   {
     title: 'Past Papers',
     description: 'Organize examination papers',

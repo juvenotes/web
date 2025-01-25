@@ -19,7 +19,7 @@ interface Props {
 
 defineProps<Props>()
 
-function goBack() {
+const goBack = () => {
   window.history.back()
 }
 const isUploadDialogOpen = ref(false)

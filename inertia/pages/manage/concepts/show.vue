@@ -27,7 +27,7 @@ const toggleContentEditor = () => {
   showContentEditor.value = !showContentEditor.value
 }
 
-function goBack() {
+const goBack = () => {
   window.history.back()
 }
 

@@ -15,6 +15,15 @@ import { promises as fs } from 'node:fs'
 import { createQuestionValidator } from '#validators/question'
 
 export default class ManagePastPapersController {
+  private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
+    return {
+      ...currentMetadata,
+      lastEditedBy: {
+        fullName: auth.user!.fullName!,
+        timestamp: new Date(),
+      },
+    }
+  }
   /**
    * Show root level concepts with their papers
    */
@@ -118,7 +127,7 @@ export default class ManagePastPapersController {
   /**
    * Store a new paper
    */
-  async store({ request, response, auth, logger }: HttpContext) {
+  async store({ request, response, auth, logger, session }: HttpContext) {
     const data = await request.validateUsing(createPastPaperValidator)
 
     const concept = await Concept.findOrFail(data.conceptId)
@@ -126,6 +135,12 @@ export default class ManagePastPapersController {
       ...data,
       userId: auth.user!.id,
       slug: generateSlug(),
+      metadata: {
+        lastEditedBy: {
+          fullName: auth.user!.fullName!,
+          timestamp: new Date(),
+        },
+      },
     })
 
     logger.info('paper created successfully', {
@@ -137,12 +152,19 @@ export default class ManagePastPapersController {
       action: 'create_paper',
     })
 
+    session.flash('success', 'Paper created successfully')
     return response.redirect().toPath(`/manage/papers/${concept.slug}/${paper.slug}`)
   }
 
   async addQuestion({ request, response, params, auth, session }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
     const data = await request.validateUsing(createQuestionValidator)
+
+    await paper
+      .merge({
+        metadata: this.getMetadataUpdate(paper.metadata, auth),
+      })
+      .save()
 
     const question = await Question.create({
       questionText: data.questionText,
@@ -164,7 +186,7 @@ export default class ManagePastPapersController {
     return response.redirect().back()
   }
 
-  async uploadQuestions({ request, response, params, auth, logger }: HttpContext) {
+  async uploadQuestions({ request, response, params, auth, logger, session }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
 
     logger.info('attempting to upload questions', {
@@ -188,6 +210,12 @@ export default class ManagePastPapersController {
 
       // Create questions in database
       await db.transaction(async (trx) => {
+        // Update paper metadata
+        await paper
+          .merge({
+            metadata: this.getMetadataUpdate(paper.metadata, auth),
+          })
+          .save()
         for (const parsedQuestion of parsedQuestions) {
           // Create question
           const question = await Question.create(
@@ -222,6 +250,7 @@ export default class ManagePastPapersController {
         action: 'upload_questions',
       })
 
+      session.flash('success', 'Questions uploaded successfully')
       return response.redirect().toPath(`/manage/papers/${params.conceptSlug}/${params.paperSlug}`)
     } catch (error) {
       if (error instanceof MCQParserError) {
@@ -270,7 +299,7 @@ export default class ManagePastPapersController {
       action: 'delete_paper',
     })
 
-    session.flash('success', 'Paper deleted successfully')
+    session.flash('success', 'Paper deleted. Refresh page if necessary')
     return response.redirect().toPath('/manage/papers')
   }
 }
