@@ -4,90 +4,79 @@ import { Role } from '#enums/roles'
 import sendWelcomeEmail from '#actions/auth/registration_emails/send_welcome_email'
 
 export default class GoogleSignupController {
+  private async handleLogin(
+    existingUser: User,
+    googleUser: any,
+    { auth, response, session }: HttpContext
+  ) {
+    if (!existingUser.providerId) {
+      existingUser.merge({
+        provider: 'google',
+        providerId: googleUser.id,
+        avatar_url: googleUser.avatarUrl,
+      })
+      await existingUser.save()
+    }
+
+    await auth.use('web').login(existingUser)
+    session.flash('success', `Welcome back ${existingUser.fullName}!`)
+    return response.redirect().toPath('/')
+  }
+
+  private async handleRegistration(
+    googleUser: any,
+    { auth, response, session, logger }: HttpContext
+  ) {
+    const newUser = await User.create({
+      email: googleUser.email,
+      provider: 'google',
+      providerId: googleUser.id,
+      roleId: Role.USER,
+      password: '',
+      fullName: googleUser.name,
+      avatar_url: googleUser.avatarUrl,
+    })
+
+    await auth.use('web').login(newUser)
+
+    try {
+      await sendWelcomeEmail.handle({ user: newUser })
+    } catch (error) {
+      logger.error({ err: error, email: newUser.email }, 'Welcome email failed')
+    }
+
+    session.flash('success', `Welcome to Juvenotes, ${newUser.fullName}!`)
+    return response.redirect().toPath('/')
+  }
+
   async redirect({ ally }: HttpContext) {
     return ally.use('google').redirect()
   }
 
-  async handleCallback({ ally, auth, response, session, logger }: HttpContext) {
+  async handleCallback(ctx: HttpContext) {
+    const { ally, response, session, logger } = ctx
     const google = ally.use('google')
-    let userEmail: string | undefined
     const logContext = { provider: 'google', method: 'handleCallback' }
 
     try {
-      if (google.accessDenied()) {
-        logger.info(
-          { ...logContext, reason: 'access_denied' },
-          'User cancelled Google authentication'
-        )
-        session.flash('error', 'You have cancelled the login process')
-        return response.redirect().toRoute('login')
-      }
-
-      if (google.stateMisMatch()) {
-        logger.warn(
-          { ...logContext, reason: 'state_mismatch' },
-          'Google auth state mismatch detected'
-        )
-        session.flash('error', 'We are unable to verify the request. Please try again')
-        return response.redirect().toRoute('login')
-      }
-
-      if (google.hasError()) {
-        logger.error(
-          { ...logContext, reason: 'provider_error', error: google.getError() },
-          'Google authentication error'
-        )
-        session.flash('error', google.getError() || 'Authentication failed')
+      if (google.accessDenied() || google.stateMisMatch() || google.hasError()) {
+        logger.info(logContext, 'Google auth failed')
+        session.flash('error', 'Authentication failed. Please try again.')
         return response.redirect().toRoute('login')
       }
 
       const googleUser = await google.user()
-      userEmail = googleUser.email
-      const user = await User.firstOrCreate({
-        email: googleUser.email,
-        provider: 'google',
-        providerId: googleUser.id,
-        roleId: Role.USER,
-        password: '',
-        fullName: googleUser.name,
-        avatar_url: googleUser.avatarUrl,
-      })
+      const existingUser = await User.findBy('email', googleUser.email)
 
-      await auth.use('web').login(user)
-
-      try {
-        await sendWelcomeEmail.handle({ user })
-        logger.info(
-          { ...logContext, email: userEmail, userId: user.id },
-          'Welcome email sent successfully'
-        )
-      } catch (emailError) {
-        logger.error(
-          { ...logContext, err: emailError, email: userEmail, userId: user.id },
-          'Failed to send welcome email'
-        )
+      if (existingUser) {
+        return this.handleLogin(existingUser, googleUser, ctx)
       }
 
-      session.flash(
-        'success',
-        `Welcome ${user.fullName}! You've successfully logged in with Google.`
-      )
-      return response.redirect().toPath('/')
+      return this.handleRegistration(googleUser, ctx)
     } catch (error) {
-      logger.error(
-        {
-          ...logContext,
-          err: error,
-          email: userEmail,
-          step: 'authentication',
-        },
-        'Google authentication failed'
-      )
-      session.flash(
-        'error',
-        'Authentication failed. Please try again later. If the problem persists, contact support.'
-      )
-      return response.redirect().toRoute('/')
+      logger.error({ ...logContext, err: error }, 'Google auth error')
+      session.flash('error', 'Authentication failed. Please try again.')
+      return response.redirect().toRoute('login')
     }
   }
 }
