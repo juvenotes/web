@@ -31,6 +31,11 @@ const ManagePapersController = () => import('#controllers/manage/past_papers/ind
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 const ManageUsersController = () => import('#controllers/manage/users/index_controller')
 
+// test crash route
+router.get('/crash', () => {
+  throw new Error('Test 500 error')
+})
+
 //* HOME
 router.get('/', [HomeController, 'index']).as('home')
 
