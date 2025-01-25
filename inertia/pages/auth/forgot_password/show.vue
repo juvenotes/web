@@ -13,11 +13,11 @@ const form = useForm({
 </script>
 
 <template>
-  <AppHead title="Reset Your Password?" description="Reset your PlotMyCourse password" />
+  <AppHead title="Reset Your Password?" description="Reset your Juvenotes password" />
 
   <div class="flex flex-col space-y-2">
     <h1 class="text-2xl font-semibold tracking-tight">Reset Your Password?</h1>
-    <p class="text-sm text-muted-foreground">Please enter yoru desired new password below</p>
+    <p class="text-sm text-muted-foreground">Please enter your desired new password below</p>
   </div>
 
   <div v-if="!isValid">

@@ -7,12 +7,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AddQuestionDialog: typeof import('./inertia/components/AddQuestionDialog.vue')['default']
     Alert: typeof import('./inertia/components/ui/alert/Alert.vue')['default']
     AlertDescription: typeof import('./inertia/components/ui/alert/AlertDescription.vue')['default']
     AlertTitle: typeof import('./inertia/components/ui/alert/AlertTitle.vue')['default']
     AppHead: typeof import('./inertia/components/AppHead.vue')['default']
     Button: typeof import('./inertia/components/ui/button/Button.vue')['default']
     Checkbox: typeof import('./inertia/components/ui/checkbox/Checkbox.vue')['default']
+    CookieConsent: typeof import('./inertia/components/CookieConsent.vue')['default']
+    CreatePaperDialog: typeof import('./inertia/components/CreatePaperDialog.vue')['default']
     Dialog: typeof import('./inertia/components/ui/dialog/Dialog.vue')['default']
     DialogClose: typeof import('./inertia/components/ui/dialog/DialogClose.vue')['default']
     DialogContent: typeof import('./inertia/components/ui/dialog/DialogContent.vue')['default']
@@ -56,5 +59,6 @@ declare module 'vue' {
     ToastProvider: typeof import('./inertia/components/ui/toast/ToastProvider.vue')['default']
     ToastTitle: typeof import('./inertia/components/ui/toast/ToastTitle.vue')['default']
     ToastViewport: typeof import('./inertia/components/ui/toast/ToastViewport.vue')['default']
+    UploadQuestionsDialog: typeof import('./inertia/components/UploadQuestionsDialog.vue')['default']
   }
 }

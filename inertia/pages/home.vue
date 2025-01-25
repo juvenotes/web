@@ -2,6 +2,7 @@
 import AppLayout from '~/layouts/AppLayout.vue'
 import UserDto from '#dtos/user'
 import StatsDto from '#dtos/stats'
+// import CookieConsent from '~/components/CookieConsent.vue'
 
 const props = defineProps<{
   messages: Record<string, string | Record<string, string>>
@@ -24,7 +25,7 @@ const features = [
 const statsDisplay = [
   { number: `${props.stats.users}+`, label: 'Already Active Users' },
   { number: `${props.stats.concepts}+`, label: 'Concepts Broken Down' },
-  { number: `${props.stats.papers}+`, label: 'Practice Papers With QUestions' },
+  { number: `${props.stats.papers}+`, label: 'Practice Papers With Questions' },
 ]
 </script>
 
@@ -132,5 +133,6 @@ const statsDisplay = [
         </div>
       </section> -->
     </main>
+    <!-- <CookieConsent /> -->
   </div>
 </template>

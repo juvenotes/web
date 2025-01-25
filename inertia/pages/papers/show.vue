@@ -123,9 +123,7 @@ function goBack() {
           <AlertCircle class="h-6 w-6 text-amber-500" />
         </div>
         <div class="space-y-2">
-          <h2 class="text-lg font-semibold text-foreground">
-            No Papers Available Yet
-          </h2>
+          <h2 class="text-lg font-semibold text-foreground">No Papers Available Yet</h2>
           <p class="text-base text-muted-foreground/90 max-w-2xl">
             We're currently adding past papers for {{ concept.title }}. Please check back later.
           </p>

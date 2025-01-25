@@ -3,8 +3,8 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, ArrowLeft, Circle } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { FileText, ArrowLeft, Circle, CheckCircle, XCircle } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
 
 defineOptions({ layout: DashLayout })
 
@@ -14,7 +14,7 @@ interface Props {
   questions: QuestionDto[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>() 
 
 const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
 const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
@@ -29,8 +29,13 @@ const handleChoiceSelect = (questionId: number, choiceId: number) => {
 }
 
 const getCorrectAnswer = (question: QuestionDto) => {
-  return question.choices.find(choice => choice.isCorrect)
+  return question.choices.find((choice) => choice.isCorrect)
 }
+const getLastEditDate = computed(() => {
+  return new Date(
+    props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt
+  ).toLocaleDateString()
+})
 </script>
 
 <template>
@@ -39,8 +44,10 @@ const getCorrectAnswer = (question: QuestionDto) => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header section remains same -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
-      
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
+
       <!-- Back Button -->
       <button @click="goBack" class="flex items-center gap-2 text-primary hover:text-primary/70">
         <ArrowLeft class="h-5 w-5" />
@@ -64,10 +71,20 @@ const getCorrectAnswer = (question: QuestionDto) => {
         </div>
       </div>
     </div>
+    <div
+      v-if="paper.metadata?.lastEditedBy || paper.createdAt"
+      class="text-sm text-muted-foreground"
+    >
+      Last edited on {{ getLastEditDate }}
+    </div>
 
     <!-- Questions List -->
     <div class="space-y-6">
-      <div v-for="(question, index) in questions" :key="question.id" class="p-6 bg-white rounded-xl border">
+      <div
+        v-for="(question, index) in questions"
+        :key="question.id"
+        class="p-6 bg-white rounded-xl border"
+      >
         <!-- Question Text -->
         <div class="space-y-4">
           <div class="flex gap-3">
@@ -79,23 +96,42 @@ const getCorrectAnswer = (question: QuestionDto) => {
 
           <!-- MCQ Section -->
           <div v-if="question.isMcq" class="pl-10 space-y-3">
-            <div v-for="choice in question.choices" :key="choice.id"
-                 :class="{
-                   'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
-                   'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
-                   'hover:bg-slate-50': !showAnswer[question.id],
-                   'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id]
-                 }"
-                 class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150"
-                 @click="handleChoiceSelect(question.id, choice.id)">
-              <Circle class="h-4 w-4 mt-1 text-muted-foreground" />
+            <div
+              v-for="choice in question.choices"
+              :key="choice.id"
+              :class="{
+                'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
+                'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
+                'hover:bg-slate-50': !showAnswer[question.id],
+                'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
+              }"
+              class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150"
+              @click="handleChoiceSelect(question.id, choice.id)"
+            >
+              <CheckCircle
+                v-if="showAnswer[question.id] && choice.isCorrect"
+                class="h-4 w-4 mt-1 text-green-500"
+              />
+              <XCircle
+                v-else-if="
+                  showAnswer[question.id] &&
+                  selectedAnswers[question.id] === choice.id &&
+                  !choice.isCorrect
+                "
+                class="h-4 w-4 mt-1 text-red-500"
+              />
+              <Circle v-else class="h-4 w-4 mt-1 text-muted-foreground" />
               <span class="text-muted-foreground">{{ choice.choiceText }}</span>
             </div>
           </div>
 
           <!-- SAQ Section -->
           <div v-if="question.isSaq" class="pl-10 space-y-4">
-            <div v-for="part in question.parts" :key="part.id" class="border-l-2 border-primary/20 pl-4">
+            <div
+              v-for="part in question.parts"
+              :key="part.id"
+              class="border-l-2 border-primary/20 pl-4"
+            >
               <p class="text-foreground">{{ part.partText }}</p>
               <p class="text-xs text-primary mt-1">{{ part.marks }} marks</p>
             </div>
@@ -103,13 +139,17 @@ const getCorrectAnswer = (question: QuestionDto) => {
         </div>
 
         <!-- Display Correct Answer and Explanation -->
-        <div v-if="showAnswer[question.id]" class="mt-4 p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]">
-  <p class="text-lg font-semibold text-foreground"><strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}</p>
-  <p class="mt-2 text-base text-muted-foreground">
-    <strong>Explanation:</strong> {{ getCorrectAnswer(question)?.explanation }}
-  </p>
-</div>
-
+        <div
+          v-if="showAnswer[question.id]"
+          class="mt-4 p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]"
+        >
+          <p class="text-lg font-semibold text-foreground">
+            <strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}
+          </p>
+          <p class="mt-2 text-base text-muted-foreground">
+            <strong>Explanation:</strong> {{ getCorrectAnswer(question)?.explanation }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
