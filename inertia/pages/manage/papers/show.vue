@@ -6,7 +6,6 @@ import type PastPaperDto from '#dtos/past_paper'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { FileText, Plus, ArrowLeft } from 'lucide-vue-next'
 import CreatePaperDialog from '~/components/CreatePaperDialog.vue'
-import { router } from '@inertiajs/vue3'
 
 defineOptions({ layout: AdminLayout })
 
@@ -19,10 +18,7 @@ defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
 function goBack() {
-  router.visit(document.referrer || '/manage', {
-    preserveScroll: true,
-    preserveState: true,
-  })
+  window.history.back()
 }
 </script>
 
