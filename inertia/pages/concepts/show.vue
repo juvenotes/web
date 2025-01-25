@@ -21,7 +21,7 @@ defineOptions({ layout: DashLayout })
 
 const props = defineProps<{
   concept: ConceptDto
-  children: ConceptDto[] 
+  children: ConceptDto[]
   questions: QuestionDto[]
   content: string | null
 }>()
@@ -33,6 +33,12 @@ const content = computed(() => props.content || '')
 const goBack = () => {
   window.history.back()
 }
+
+const getLastEditDate = computed(() => {
+  return new Date(
+    props.concept.metadata?.lastEditedBy?.timestamp ?? props.concept.createdAt
+  ).toLocaleDateString()
+})
 
 watchEffect(() => {
   children.value = props.children
@@ -48,7 +54,7 @@ const handleChoiceSelect = (questionId: number, choiceId: number) => {
 }
 
 const getCorrectAnswer = (question: QuestionDto) => {
-  return question.choices.find(choice => choice.isCorrect)
+  return question.choices.find((choice) => choice.isCorrect)
 }
 </script>
 
@@ -56,9 +62,11 @@ const getCorrectAnswer = (question: QuestionDto) => {
   <AppHead :title="`${concept.title}`" description="All available concepts in Juvenotes" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Modern Breadcrumbs -->
-    <nav class="flex items-center gap-3 text-sm text-muted-foreground bg-white/50 p-3 rounded-lg border shadow-md">
-      <button 
-        @click="goBack" 
+    <nav
+      class="flex items-center gap-3 text-sm text-muted-foreground bg-white/50 p-3 rounded-lg border shadow-md"
+    >
+      <button
+        @click="goBack"
         class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
       >
         <ArrowLeft class="h-4 w-4" />
@@ -109,6 +117,12 @@ const getCorrectAnswer = (question: QuestionDto) => {
           </Link>
         </div>
       </div>
+      <div
+        v-if="concept.metadata?.lastEditedBy || concept.createdAt"
+        class="text-sm text-muted-foreground"
+      >
+        Last edited on {{ getLastEditDate }}
+      </div>
 
       <!-- Enhanced Main Content -->
       <div
@@ -126,9 +140,9 @@ const getCorrectAnswer = (question: QuestionDto) => {
         </div>
 
         <div class="space-y-6">
-          <div 
-            v-for="question in questions" 
-            :key="question.id" 
+          <div
+            v-for="question in questions"
+            :key="question.id"
             class="p-6 rounded-xl bg-white/50 backdrop-blur-sm border shadow-md hover:shadow-xl transition-all duration-300"
           >
             <p class="font-medium text-foreground">{{ question.questionText }}</p>
@@ -139,9 +153,10 @@ const getCorrectAnswer = (question: QuestionDto) => {
                 v-for="choice in question.choices"
                 :key="choice.id"
                 :class="{
-                  'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
+                  'border-green-500':
+                    selectedAnswers[question.id] === choice.id && choice.isCorrect,
                   'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
-                  'hover:bg-primary/10': !showAnswer[question.id]
+                  'hover:bg-primary/10': !showAnswer[question.id],
                 }"
                 class="flex items-start gap-3 p-3 rounded-lg border border-transparent hover:border-primary/20 transition-all duration-100 cursor-pointer"
                 @click="handleChoiceSelect(question.id, choice.id)"
@@ -167,8 +182,13 @@ const getCorrectAnswer = (question: QuestionDto) => {
             </div>
 
             <!-- Display Correct Answer and Explanation -->
-            <div v-if="showAnswer[question.id]" class="mt-4 p-4 rounded-lg bg-primary/5 text-muted-foreground">
-              <p class="font-medium text-foreground"><strong>Correct Answer: </strong>{{ getCorrectAnswer(question)?.choiceText }}</p>
+            <div
+              v-if="showAnswer[question.id]"
+              class="mt-4 p-4 rounded-lg bg-primary/5 text-muted-foreground"
+            >
+              <p class="font-medium text-foreground">
+                <strong>Correct Answer: </strong>{{ getCorrectAnswer(question)?.choiceText }}
+              </p>
               <p><strong>Explanation: </strong>{{ getCorrectAnswer(question)?.explanation }}</p>
             </div>
           </div>

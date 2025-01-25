@@ -28,7 +28,7 @@ const logoPath = '/images/logo.png'
         <div class="flex items-center gap-4">
           <template v-if="user">
             <span class="text-sm text-muted-foreground">
-              Welcome, {{ user.fullName || user.email }}
+              Welcome, {{ user?.fullName }}
             </span>
             <Button variant="ghost" @click="() => $inertia.post('/logout')"> Logout </Button>
           </template>

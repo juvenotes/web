@@ -10,6 +10,13 @@ const metadataSchema = vine
     status: vine.enum(['draft', 'review', 'published']).optional(),
     lastReviewed: vine.date().optional(),
     authors: vine.array(vine.string()).optional(),
+    lastEditedBy: vine
+      .object({
+        id: vine.number(),
+        fullName: vine.string(),
+        timestamp: vine.date(),
+      })
+      .optional(),
   })
   .allowUnknownProperties()
 
@@ -18,6 +25,7 @@ export const createConceptValidator = vine.compile(
     title: vine.string().trim().minLength(2).maxLength(255),
     parentId: vine.string().trim().nullable(),
     isTerminal: vine.boolean(),
+    metadata: metadataSchema.optional(),
   })
 )
 

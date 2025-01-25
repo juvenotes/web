@@ -4,7 +4,7 @@ import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, ArrowLeft, Circle, CheckCircle, XCircle } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 defineOptions({ layout: DashLayout })
 
@@ -14,7 +14,7 @@ interface Props {
   questions: QuestionDto[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>() 
 
 const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
 const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
@@ -31,6 +31,11 @@ const handleChoiceSelect = (questionId: number, choiceId: number) => {
 const getCorrectAnswer = (question: QuestionDto) => {
   return question.choices.find((choice) => choice.isCorrect)
 }
+const getLastEditDate = computed(() => {
+  return new Date(
+    props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt
+  ).toLocaleDateString()
+})
 </script>
 
 <template>
@@ -66,6 +71,12 @@ const getCorrectAnswer = (question: QuestionDto) => {
         </div>
       </div>
     </div>
+    <div
+      v-if="paper.metadata?.lastEditedBy || paper.createdAt"
+      class="text-sm text-muted-foreground"
+    >
+      Last edited on {{ getLastEditDate }}
+    </div>
 
     <!-- Questions List -->
     <div class="space-y-6">
@@ -85,27 +96,31 @@ const getCorrectAnswer = (question: QuestionDto) => {
 
           <!-- MCQ Section -->
           <div v-if="question.isMcq" class="pl-10 space-y-3">
-            <div v-for="choice in question.choices" :key="choice.id"
-                 :class="{
-                   'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
-                   'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
-                   'hover:bg-slate-50': !showAnswer[question.id],
-                   'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id]
-                 }"
-                 class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150"
-                 @click="handleChoiceSelect(question.id, choice.id)">
+            <div
+              v-for="choice in question.choices"
+              :key="choice.id"
+              :class="{
+                'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
+                'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
+                'hover:bg-slate-50': !showAnswer[question.id],
+                'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
+              }"
+              class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150"
+              @click="handleChoiceSelect(question.id, choice.id)"
+            >
               <CheckCircle
                 v-if="showAnswer[question.id] && choice.isCorrect"
                 class="h-4 w-4 mt-1 text-green-500"
               />
               <XCircle
-                v-else-if="showAnswer[question.id] && selectedAnswers[question.id] === choice.id && !choice.isCorrect"
+                v-else-if="
+                  showAnswer[question.id] &&
+                  selectedAnswers[question.id] === choice.id &&
+                  !choice.isCorrect
+                "
                 class="h-4 w-4 mt-1 text-red-500"
               />
-              <Circle
-                v-else
-                class="h-4 w-4 mt-1 text-muted-foreground"
-              />
+              <Circle v-else class="h-4 w-4 mt-1 text-muted-foreground" />
               <span class="text-muted-foreground">{{ choice.choiceText }}</span>
             </div>
           </div>
@@ -124,8 +139,13 @@ const getCorrectAnswer = (question: QuestionDto) => {
         </div>
 
         <!-- Display Correct Answer and Explanation -->
-        <div v-if="showAnswer[question.id]" class="mt-4 p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]">
-          <p class="text-lg font-semibold text-foreground"><strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}</p>
+        <div
+          v-if="showAnswer[question.id]"
+          class="mt-4 p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]"
+        >
+          <p class="text-lg font-semibold text-foreground">
+            <strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}
+          </p>
           <p class="mt-2 text-base text-muted-foreground">
             <strong>Explanation:</strong> {{ getCorrectAnswer(question)?.explanation }}
           </p>
