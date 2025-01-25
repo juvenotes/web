@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { Info } from 'lucide-vue-next'
+import { Info, Loader, AlertTriangle } from 'lucide-vue-next'
 import AuthLayout from '~/layouts/AuthLayout.vue'
 
 defineOptions({ layout: AuthLayout })
-defineProps<{ isSent: boolean }>()
+defineProps<{
+  isSent: boolean
+  hasError?: boolean
+}>()
 
 const form = useForm({
   email: '',
@@ -31,13 +34,35 @@ const form = useForm({
     </AlertDescription>
   </Alert>
 
+  <Alert v-if="hasError" variant="destructive">
+    <AlertTriangle class="w-4 h-4" />
+    <AlertTitle>Password Reset Unavailable</AlertTitle>
+    <AlertDescription>
+      We are currently unable to reset your password for you. This unfortunately means you might
+      have to create a new account. Our sincere apologies.
+    </AlertDescription>
+  </Alert>
+
   <form
     @submit.prevent="
       form.post('/forgot-password', { onSuccess: () => form.reset(), preserveScroll: true })
     "
   >
     <div class="grid gap-3">
-      <FormInput label="Email" type="email" v-model="form.email" :error="form.errors.email" />
+      <div class="space-y-2">
+        <Label for="email">Email</Label>
+        <Input
+          id="email"
+          v-model="form.email"
+          type="email"
+          required
+          placeholder="name@example.com"
+          :class="{ 'border-destructive': form.errors.email }"
+        />
+        <p v-if="form.errors.email" class="text-sm text-destructive">
+          {{ form.errors.email }}
+        </p>
+      </div>
 
       <Button type="submit" :disable="form.processing">
         <Loader v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
