@@ -15,7 +15,7 @@ const inertiaConfig = defineConfig({
    */
   sharedData: {
     user: async (ctx) => {
-      const auth = ctx.auth // Might be undefined for error pages
+      const auth = ctx.auth
       if (!auth) return null
 
       await auth.use('web').check()
@@ -33,7 +33,7 @@ const inertiaConfig = defineConfig({
       )
     },
     exceptions: (ctx) => ctx.session?.flashMessages.get('errorsBag') ?? {},
-    messages: (ctx) => ctx.session.flashMessages.all() ?? {},
+    messages: (ctx) => ctx.session?.flashMessages.all() ?? {},
     // features: async (ctx) => {
     //   const user = ctx.auth.use('web').user
     //   if (!user) return null
