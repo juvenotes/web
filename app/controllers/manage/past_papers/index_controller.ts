@@ -124,6 +124,28 @@ export default class ManagePastPapersController {
     })
   }
 
+  async viewPaper({ params, inertia, logger, auth }: HttpContext) {
+    logger.info('fetching paper details', {
+      userId: auth.user?.id,
+      paperSlug: params.paperSlug,
+      action: 'view_paper_details',
+    })
+
+    const paper = await PastPaper.query()
+      .where('slug', params.paperSlug)
+      .preload('concept')
+      .preload('questions', (query) => {
+        query.orderBy('id', 'asc').preload('choices').preload('parts')
+      })
+      .firstOrFail()
+
+    return inertia.render('manage/papers/view', {
+      paper: new PastPaperDto(paper),
+      concept: new ConceptDto(paper.concept),
+      questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
+    })
+  }
+
   /**
    * Store a new paper
    */
