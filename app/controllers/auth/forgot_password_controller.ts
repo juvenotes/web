@@ -19,20 +19,29 @@ export default class ForgotPasswordsController {
   async send({ request, response, session, logger }: HttpContext) {
     try {
       const data = await request.validateUsing(passwordResetSendValidator)
-      logger.info('Processing password reset request', {
-        context: 'forgot_password.send',
+      const context = {
+        controller: 'ForgotPasswordsController',
+        action: 'send',
         email: data.email,
-      })
+        message: 'Processing password reset request',
+      }
+
+      logger.info({ ...context })
 
       await TrySendPasswordResetEmail.handle(data)
 
       session.flash(this.#sentSessionKey, true)
       return response.redirect().back()
     } catch (error) {
-      logger.error('Password reset request failed', {
-        error,
-        context: 'forgot_password.send',
-      })
+      const context = {
+        controller: 'ForgotPasswordsController',
+        action: 'send',
+        error: error as Error,
+        message: 'Password reset request failed',
+      }
+
+      logger.error({ ...context })
+
       session.flash('error', 'Unable to process password reset request')
       return response.redirect().back()
     }
