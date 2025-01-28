@@ -27,6 +27,72 @@ const statsDisplay = [
   { number: `${props.stats.concepts}+`, label: 'Concepts Broken Down' },
   { number: `${props.stats.papers}+`, label: 'Practice Papers With Questions' },
 ]
+
+import { onMounted } from 'vue';
+
+declare global {
+  interface Window {
+    cookieconsent: any;
+  }
+}
+
+onMounted(() => {
+  const script = document.createElement('script')
+  script.src = "//www.freeprivacypolicy.com/public/cookie-consent/4.2.0/cookie-consent.js"
+  script.charset = "UTF-8"
+  
+  script.onload = () => {
+    window.cookieconsent.run({
+      notice_banner_type: "modal",
+      website_name: "Juvenotes",
+      website_privacy_policy_url: "https://juvenotes.com/privacy",
+      consent_type: "express",
+      palette: {
+        popup: {
+          background: "#ffffff",
+          text: "#1a1b1f",
+          border: "1px solid rgba(205, 229, 237, 0.2)"
+        },
+        button: {
+          background: "#CDE5ED",
+          text: "#1a1b1f"
+        }
+      },
+      theme: "clean",
+      position: "center",
+      transition: "slide",
+      layout: "basic-header",
+      layouts: {
+        "basic-header": "{{header}}{{message}}{{link}}{{compliance}}"
+      },
+      layouts_message: {
+        "basic-header": "We care about your privacy and use cookies to enhance your experience."
+      },
+      button: {
+        accept: {
+          background: "#CDE5ED",
+          text: "#1a1b1f",
+          padding: "12px 24px",
+          borderRadius: "8px"
+        },
+        reject: {
+          background: "transparent",
+          text: "#64748b",
+          padding: "12px 24px",
+          borderRadius: "8px"
+        }
+      },
+      language: {
+        header: {
+          title: "Cookie Settings 🍪",
+          text: ""
+        }
+      }
+    })
+  }
+  
+  document.head.appendChild(script)
+});
 </script>
 
 <template>
@@ -134,5 +200,109 @@ const statsDisplay = [
       </section> -->
     </main>
     <!-- <CookieConsent /> -->
+     <div>
+    <!-- Button to open cookie preferences -->
+    <a href="#" id="open_preferences_center">Update cookies preferences</a>
+  </div>
   </div>
 </template>
+
+<style>
+.cc-window {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 10000 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 16px !important;
+  max-width: 450px !important;
+  padding: 2rem !important;
+  animation: modalFade 0.3s ease-out !important;
+}
+
+
+.cc-header {
+  text-align: center !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.cc-header h1 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  color: #1a1b1f !important;
+}
+
+.cc-message {
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+  color: #4b5563 !important;
+  text-align: center !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.cc-compliance {
+  display: flex !important;
+  gap: 1rem !important;
+  justify-content: center !important;
+}
+
+.cc-btn {
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  flex: 1 !important;
+  text-align: center !important;
+}
+
+.cc-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 6px rgba(205, 229, 237, 0.2) !important;
+}
+
+.cc-link {
+  color: #CDE5ED !important;
+  text-decoration: none !important;
+  display: block !important;
+  text-align: center !important;
+  margin: 1rem 0 !important;
+  font-size: 0.875rem !important;
+}
+
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cc-revoke {
+  display: none !important;
+}
+.freeprivacypolicy-com---palette-dark .cc-nb-okagree{
+  background-color: #55A9C4 !important;
+}
+.freeprivacypolicy-com---palette-dark .cc-nb-reject{
+  background-color: #55A9C4 !important;
+}
+.freeprivacypolicy-com---palette-dark .cc-cp-foot-save{
+  background-color: #55A9C4 !important;
+}
+.freeprivacypolicy-com---palette-dark.freeprivacypolicy-com---nb{
+  background-color: #CDE5ED !important;
+}
+.freeprivacypolicy-com---palette-dark .cc-nb-title{
+  color: #1a1b1f !important;
+}
+.cc-nb-text-content{
+  color: #1a1b1f !important;
+}
+.freeprivacypolicy-com---palette-dark .cc-nb-changep{
+  background-color: #fff !important;
+}
+</style>
