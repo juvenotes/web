@@ -12,7 +12,8 @@ import db from '@adonisjs/lucid/services/db'
 import Question from '#models/question'
 import { DifficultyLevel, QuestionType } from '#enums/question_types'
 import { promises as fs } from 'node:fs'
-import { createQuestionValidator } from '#validators/question'
+import { createMcqQuestionValidator, createSaqQuestionValidator } from '#validators/question'
+// import { createQuestionValidator } from '#validators/question'
 
 export default class ManagePastPapersController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -86,44 +87,6 @@ export default class ManagePastPapersController {
   /**
    * Show a specific paper for management
    */
-  async paper({ params, inertia, logger, auth }: HttpContext) {
-    logger.info('fetching paper with questions', {
-      userId: auth.user?.id,
-      paperSlug: params.paperSlug,
-      action: 'show_paper_details',
-    })
-
-    const paper = await PastPaper.query()
-      .where('slug', params.paperSlug)
-      .preload('concept')
-      .preload('questions', (query) => {
-        query
-          .orderBy('id', 'asc')
-          .preload('choices', (choicesQuery) => {
-            choicesQuery.select(['id', 'choice_text', 'is_correct', 'explanation', 'question_id'])
-          })
-          .preload('parts', (partsQuery) => {
-            partsQuery.select(['id', 'part_text', 'expected_answer', 'marks', 'question_id'])
-          })
-      })
-      .firstOrFail()
-
-    logger.info('found paper with questions', {
-      userId: auth.user?.id,
-      paperId: paper.id,
-      paperSlug: paper.slug,
-      conceptId: paper.concept.id,
-      questionsCount: paper.questions?.length ?? 0,
-      action: 'show_paper_details',
-    })
-
-    return inertia.render('manage/papers/paper', {
-      paper: new PastPaperDto(paper),
-      concept: new ConceptDto(paper.concept),
-      questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
-    })
-  }
-
   async viewPaper({ params, inertia, logger, auth }: HttpContext) {
     logger.info('fetching paper details', {
       userId: auth.user?.id,
@@ -178,34 +141,102 @@ export default class ManagePastPapersController {
     return response.redirect().toPath(`/manage/papers/${concept.slug}/${paper.slug}`)
   }
 
-  async addQuestion({ request, response, params, auth, session }: HttpContext) {
+  async addMcqQuestion({ request, response, params, auth, session, logger }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
-    const data = await request.validateUsing(createQuestionValidator)
+    const data = await request.validateUsing(createMcqQuestionValidator)
+    const slug = generateSlug()
 
-    await paper
-      .merge({
-        metadata: this.getMetadataUpdate(paper.metadata, auth),
+    try {
+      await db.transaction(async (trx) => {
+        // Update paper metadata
+        await paper
+          .merge({
+            metadata: this.getMetadataUpdate(paper.metadata, auth),
+          })
+          .save()
+
+        // Use raw query like seeder
+        const [question] = await trx
+          .insertQuery()
+          .table('questions')
+          .insert({
+            user_id: auth.user!.id,
+            past_paper_id: paper.id,
+            slug,
+            type: QuestionType.MCQ,
+            question_text: data.questionText,
+          })
+          .returning('*')
+
+        // Insert choices
+        await trx
+          .insertQuery()
+          .table('mcq_choices')
+          .insert(
+            data.choices.map((choice) => ({
+              question_id: question.id,
+              choice_text: choice.choiceText,
+              is_correct: choice.isCorrect,
+              explanation: choice.explanation,
+            }))
+          )
       })
-      .save()
 
-    const question = await Question.create({
-      questionText: data.questionText,
-      type: data.type,
-      userId: auth.user!.id,
-      pastPaperId: paper.id,
-      slug: generateSlug(),
-    })
-
-    if (data.type === QuestionType.MCQ && data.choices) {
-      await question.related('choices').createMany(data.choices)
+      session.flash('success', 'MCQ added successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('failed to create mcq question', { error })
+      throw error
     }
+  }
 
-    if (data.type === QuestionType.SAQ && data.parts) {
-      await question.related('parts').createMany(data.parts)
+  async addSaqQuestion({ request, response, params, auth, session, logger }: HttpContext) {
+    const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
+    const data = await request.validateUsing(createSaqQuestionValidator)
+    const slug = generateSlug()
+
+    try {
+      await db.transaction(async (trx) => {
+        // Update paper metadata
+        await paper
+          .merge({
+            metadata: this.getMetadataUpdate(paper.metadata, auth),
+          })
+          .save()
+
+        // Use raw query like seeder
+        const [question] = await trx
+          .insertQuery()
+          .table('questions')
+          .insert({
+            user_id: auth.user!.id,
+            past_paper_id: paper.id,
+            slug,
+            type: QuestionType.SAQ,
+            question_text: data.questionText,
+          })
+          .returning('*')
+
+        // Insert parts
+        await trx
+          .insertQuery()
+          .table('saq_parts')
+          .insert(
+            data.parts.map((part) => ({
+              question_id: question.id,
+              part_text: part.partText,
+              expected_answer: part.expectedAnswer,
+              marks: part.marks,
+            }))
+          )
+      })
+
+      session.flash('success', 'SAQ added successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('failed to create saq question', { error })
+      throw error
     }
-
-    session.flash('success', 'Question added successfully')
-    return response.redirect().back()
   }
 
   async uploadQuestions({ request, response, params, auth, logger, session }: HttpContext) {

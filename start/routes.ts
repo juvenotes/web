@@ -189,14 +189,20 @@ router
   .group(() => {
     router.get('/', [ManagePapersController, 'index'])
     router.get('/:slug', [ManagePapersController, 'show'])
-    // router.get('/:conceptSlug/:paperSlug', [ManagePapersController, 'paper'])
     router.get('/:conceptSlug/:paperSlug', [ManagePapersController, 'viewPaper'])
     router.post('/', [ManagePapersController, 'store'])
-    router.post('/:conceptSlug/:paperSlug/upload-questions', [
+    router.post('/:conceptSlug/:paperSlug/questions/mcq', [
       ManagePapersController,
-      'uploadQuestions',
+      'addMcqQuestion',
     ])
-    router.post('/:conceptSlug/:paperSlug/questions', [ManagePapersController, 'addQuestion'])
+    router.post('/:conceptSlug/:paperSlug/questions/saq', [
+      ManagePapersController,
+      'addSaqQuestion',
+    ])
+    // router.post('/:conceptSlug/:paperSlug/upload-questions', [
+    //   ManagePapersController,
+    //   'uploadQuestions',
+    // ])
     router.delete('/:conceptSlug/:paperSlug', [ManagePapersController, 'destroy'])
   })
   .prefix('/manage/papers')

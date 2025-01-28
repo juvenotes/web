@@ -3,11 +3,10 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, ArrowLeft, Plus, Upload, Clock } from 'lucide-vue-next'
-import { Button } from '~/components/ui/button'
-import AddQuestionDialog from '~/components/AddQuestionDialog.vue'
-import UploadQuestionsDialog from '~/components/UploadQuestionsDialog.vue'
-import { ref, computed } from 'vue'
+import { FileText, ArrowLeft, Clock, Plus } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
+import AddMcqQuestionDialog from '~/components/AddMcqDialog.vue'
+import AddSaqQuestionDialog from '~/components/AddSaqDialog.vue'
 
 defineOptions({ layout: AdminLayout })
 
@@ -19,9 +18,6 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const isAddDialogOpen = ref(false)
-const isUploadDialogOpen = ref(false)
-
 function goBack() {
   window.history.back()
 }
@@ -31,6 +27,8 @@ const lastEditDate = computed(() => {
     props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt
   ).toLocaleDateString()
 })
+const showAddMcqDialog = ref(false)
+const showAddSaqDialog = ref(false)
 </script>
 
 <template>
@@ -73,16 +71,10 @@ const lastEditDate = computed(() => {
             <span>Last edited {{ lastEditDate }}</span>
           </div>
         </div>
-
-        <div class="flex flex-col sm:flex-row gap-3">
-          <Button @click="isAddDialogOpen = true" class="w-full sm:w-auto">
-            <Plus class="h-4 w-4 mr-2" />
-            Add Question
-          </Button>
-          <Button variant="outline" @click="isUploadDialogOpen = true" class="w-full sm:w-auto">
-            <Upload class="h-4 w-4 mr-2" />
-            Upload Questions
-          </Button>
+        <!-- Add Questions Buttons -->
+        <div class="flex gap-2 justify-end mb-6">
+          <Button @click="showAddMcqDialog = true"> <Plus class="h-4 w-4 mr-2" />Add MCQ </Button>
+          <Button @click="showAddSaqDialog = true"> <Plus class="h-4 w-4 mr-2" />Add SAQ </Button>
         </div>
       </div>
     </div>
@@ -143,6 +135,7 @@ const lastEditDate = computed(() => {
   </div>
 
   <!-- Dialogs -->
-  <AddQuestionDialog v-model:open="isAddDialogOpen" :paper="paper" :concept="concept" />
-  <UploadQuestionsDialog v-model:open="isUploadDialogOpen" :paper="paper" :concept="concept" />
+  <AddMcqQuestionDialog v-model:open="showAddMcqDialog" :paper="paper" :concept="concept" />
+
+  <AddSaqQuestionDialog v-model:open="showAddSaqDialog" :paper="paper" :concept="concept" />
 </template>
