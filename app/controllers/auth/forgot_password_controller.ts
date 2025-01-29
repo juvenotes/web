@@ -64,7 +64,7 @@ export default class ForgotPasswordsController {
       email: user?.email,
     })
 
-    return inertia.render('auth/forgot_password/reset', {
+    return inertia.render('auth/forgot_password/show', {
       value: params.value,
       email: user?.email,
       isValid,
