@@ -105,7 +105,7 @@ onUnmounted(() => {
                 href="/settings/profile"
                 class="w-full px-4 py-2 text-sm text-left hover:bg-muted/50 flex items-center"
               >
-                <User class="mr-2 h-4 w-4" />
+                <User class="mr-2 h-5 w-5" />
                 Profile Settings
               </Link>
 
@@ -153,7 +153,7 @@ onUnmounted(() => {
             class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors"
             @click="isSidebarCollapsed = true"
           >
-            <component :is="link.icon" class="h-4 w-4 shrink-0" />
+            <component :is="link.icon" class="h-5 w-5 shrink-0" />
             <span
               :class="[
                 'transition-opacity duration-300 whitespace-nowrap',
@@ -165,7 +165,7 @@ onUnmounted(() => {
           </Link>
         </nav>
 
-        <div class="border-t p-4">
+        <div class="p-4">
           <button
             @click="$inertia.post('/logout')"
             class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors w-full text-destructive"
