@@ -17,7 +17,7 @@ export default class McqChoice extends BaseModel {
   declare isCorrect: boolean
 
   @column()
-  declare explanation: string
+  declare explanation: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

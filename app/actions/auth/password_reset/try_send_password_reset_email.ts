@@ -35,7 +35,7 @@ export default class TrySendPasswordResetEmail {
       .builder()
       .prefixUrl(env.get('APP_DOMAIN'))
       .params({ value: encryptedValue })
-      .make('forgot_password.reset')
+      .make('auth.password.reset')
 
     logger.info('Generated reset link', { email, resetLink })
 

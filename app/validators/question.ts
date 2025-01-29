@@ -15,32 +15,95 @@ const saqPartSchema = vine.object({
   marks: vine.number().min(0).max(100),
 })
 
-export const createQuestionValidator = vine.compile(
-  vine.object({
-    questionText: vine.string().minLength(3),
-    type: vine.enum(Object.values(QuestionType)),
+// export const createQuestionValidator = vine.compile(
+//   vine.object({
+//     questionText: vine.string().minLength(3),
+//     type: vine.enum(Object.values(QuestionType)),
 
-    // MCQ specific
+//     // MCQ specific
+//     choices: vine
+//       .array(
+//         vine.object({
+//           choiceText: vine.string().minLength(1),
+//           isCorrect: vine.boolean(),
+//           explanation: vine.string().optional(),
+//         })
+//       )
+//       .optional(),
+
+//     // SAQ specific
+//     parts: vine
+//       .array(
+//         vine.object({
+//           partText: vine.string().minLength(1),
+//           expectedAnswer: vine.string().minLength(1),
+//           marks: vine.number().min(1),
+//         })
+//       )
+//       .optional(),
+//   })
+// )
+
+export const createMcqQuestionValidator = vine.compile(
+  vine.object({
+    questionText: vine.string().trim().minLength(1),
+    type: vine.literal(QuestionType.MCQ),
     choices: vine
       .array(
         vine.object({
-          choiceText: vine.string().minLength(1),
+          choiceText: vine.string().trim().minLength(1),
           isCorrect: vine.boolean(),
-          explanation: vine.string().optional(),
+          explanation: vine.string().nullable().optional(),
         })
       )
-      .optional(),
+      .minLength(1),
+  })
+)
 
-    // SAQ specific
+export const createSaqQuestionValidator = vine.compile(
+  vine.object({
+    questionText: vine.string().trim().minLength(1),
+    type: vine.literal(QuestionType.SAQ),
     parts: vine
       .array(
         vine.object({
-          partText: vine.string().minLength(1),
-          expectedAnswer: vine.string().minLength(1),
+          partText: vine.string().trim().minLength(1),
+          expectedAnswer: vine.string().trim().minLength(1),
           marks: vine.number().min(1),
         })
       )
-      .optional(),
+      .minLength(1),
+  })
+)
+
+export const updateMcqQuestionValidator = vine.compile(
+  vine.object({
+    questionText: vine.string().trim().minLength(1),
+    type: vine.literal(QuestionType.MCQ),
+    choices: vine
+      .array(
+        vine.object({
+          choiceText: vine.string().trim().minLength(1),
+          isCorrect: vine.boolean(),
+          explanation: vine.string().nullable().optional(),
+        })
+      )
+      .minLength(1),
+  })
+)
+export const updateSaqQuestionValidator = vine.compile(
+  vine.object({
+    questionText: vine.string().trim().minLength(1),
+    type: vine.literal(QuestionType.SAQ),
+    parts: vine
+      .array(
+        vine.object({
+          partText: vine.string().trim().minLength(1),
+          expectedAnswer: vine.string().trim().minLength(1),
+          marks: vine.number().min(1),
+        })
+      )
+      .minLength(1),
   })
 )
 
