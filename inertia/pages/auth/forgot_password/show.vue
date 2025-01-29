@@ -12,6 +12,7 @@ const props = defineProps<{ value: string; isValid: boolean; email: string | nul
 
 const form = useForm({
   value: props.value,
+  // email: props.email,
   password: '',
 })
 </script>
@@ -49,7 +50,7 @@ const form = useForm({
         <Label for="email">Email</Label>
         <Input
           id="email"
-          :model-value="email
+          :model-value="email ?? ''"
           type="email"
           disabled"
         />
