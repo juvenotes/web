@@ -22,7 +22,7 @@ const emit = defineEmits<{
 const form = useForm({
   questionText: '',
   type: QuestionType.SAQ as const,
-  parts: [{ partText: '', expectedAnswer: '', marks: 1 }]
+  parts: [{ partText: '', expectedAnswer: '', marks: 1 }],
 })
 
 const addPart = () => {
@@ -43,49 +43,46 @@ const handleSubmit = () => {
     onSuccess: () => {
       emit('update:open', false)
       form.reset()
-    }
+    },
   })
 }
 </script>
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-      <DialogHeader class="sticky top-0 bg-background z-10 pb-4 border-b">
-        <DialogTitle>Add SAQ to {{ paper.title }}</DialogTitle>
+    <DialogContent class="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogHeader
+        class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto"
+      >
+        <DialogTitle class="text-lg sm:text-xl">Add SAQ to {{ paper.title }}</DialogTitle>
       </DialogHeader>
 
-      <div class="py-4 px-6">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <div class="space-y-2">
-            <Label>Question Text</Label>
-            <Input 
-              v-model="form.questionText" 
+      <div class="p-3 sm:p-6">
+        <form @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
+          <!-- Question Text -->
+          <div class="space-y-2 sm:space-y-3">
+            <Label class="text-sm sm:text-base">Question Text</Label>
+            <Input
+              v-model="form.questionText"
+              class="min-h-[44px] sm:min-h-[48px]"
               :class="{ 'border-destructive': form.errors.questionText }"
             />
-            <p v-if="form.errors.questionText" class="text-sm text-destructive">
-              {{ form.errors.questionText }}
-            </p>
           </div>
 
-          <div class="space-y-4">
+          <!-- Parts Section -->
+          <div class="space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between">
-              <Label>Parts ({{ form.parts.length }}/5)</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                @click="addPart"
-                :disabled="form.parts.length >= 5"
-              >
+              <Label class="text-sm sm:text-base">Parts ({{ form.parts.length }}/5)</Label>
+              <Button type="button" variant="outline" size="sm" class="h-8 sm:h-9" @click="addPart">
                 <Plus class="h-4 w-4 mr-2" />Add Part
               </Button>
             </div>
 
+            <!-- Part Cards -->
             <div
               v-for="(part, index) in form.parts"
               :key="index"
-              class="p-4 border rounded-lg space-y-3"
+              class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
               <div class="flex items-center justify-between">
                 <Label>Part {{ index + 1 }}</Label>
@@ -101,31 +98,20 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <Input
-                  v-model="part.partText"
-                  placeholder="Part question"
-                />
+                <Input v-model="part.partText" placeholder="Part question" />
               </div>
 
               <div class="space-y-2">
-                <Input
-                  v-model="part.expectedAnswer"
-                  placeholder="Expected answer"
-                />
+                <Input v-model="part.expectedAnswer" placeholder="Expected answer" />
               </div>
 
               <div class="space-y-2">
-                <Input
-                  v-model="part.marks"
-                  type="number"
-                  placeholder="Marks"
-                  min="1"
-                />
+                <Input v-model="part.marks" type="number" placeholder="Marks" min="1" />
               </div>
             </div>
           </div>
 
-          <Button type="submit" :disabled="form.processing" class="w-full">
+          <Button type="submit" :disabled="form.processing" class="w-full h-10 sm:h-11">
             {{ form.processing ? 'Adding...' : 'Add SAQ' }}
           </Button>
         </form>

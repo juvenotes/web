@@ -27,6 +27,8 @@ declare module 'vue' {
     DialogScrollContent: typeof import('./inertia/components/ui/dialog/DialogScrollContent.vue')['default']
     DialogTitle: typeof import('./inertia/components/ui/dialog/DialogTitle.vue')['default']
     DialogTrigger: typeof import('./inertia/components/ui/dialog/DialogTrigger.vue')['default']
+    EditMcqDialog: typeof import('./inertia/components/EditMcqDialog.vue')['default']
+    EditSaqDialog: typeof import('./inertia/components/EditSaqDialog.vue')['default']
     FormControl: typeof import('./inertia/components/ui/form/FormControl.vue')['default']
     FormDescription: typeof import('./inertia/components/ui/form/FormDescription.vue')['default']
     FormItem: typeof import('./inertia/components/ui/form/FormItem.vue')['default']
@@ -61,6 +63,7 @@ declare module 'vue' {
     ToastProvider: typeof import('./inertia/components/ui/toast/ToastProvider.vue')['default']
     ToastTitle: typeof import('./inertia/components/ui/toast/ToastTitle.vue')['default']
     ToastViewport: typeof import('./inertia/components/ui/toast/ToastViewport.vue')['default']
+    UploadMcqsDialog: typeof import('./inertia/components/UploadMcqsDialog.vue')['default']
     UploadQuestionsDialog: typeof import('./inertia/components/UploadQuestionsDialog.vue')['default']
   }
 }

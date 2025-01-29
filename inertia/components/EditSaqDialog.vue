@@ -8,11 +8,13 @@ import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
+import type QuestionDto from '#dtos/question'
 
 const props = defineProps<{
   open: boolean
   paper: PastPaperDto
   concept: ConceptDto
+  question: QuestionDto
 }>()
 
 const emit = defineEmits<{
@@ -20,44 +22,32 @@ const emit = defineEmits<{
 }>()
 
 const form = useForm({
-  questionText: '',
-  type: QuestionType.MCQ as const,
-  choices: [{ choiceText: '', isCorrect: true, explanation: '' }],
+  questionText: props.question.questionText,
+  type: QuestionType.SAQ as const,
+  parts: props.question.parts.map(part => ({
+    partText: part.partText,
+    expectedAnswer: part.expectedAnswer,
+    marks: part.marks
+  }))
 })
 
-const addChoice = () => {
-  if (form.choices.length < 5) {
-    form.choices.push({ choiceText: '', isCorrect: false, explanation: '' })
+const addPart = () => {
+  if (form.parts.length < 5) {
+    form.parts.push({ partText: '', expectedAnswer: '', marks: 1 })
   }
 }
 
-const removeChoice = (index: number) => {
-  if (form.choices.length > 1) {
-    const wasCorrect = form.choices[index].isCorrect
-    form.choices.splice(index, 1)
-    if (wasCorrect && form.choices.length > 0) {
-      form.choices[0].isCorrect = true
-    }
+const removePart = (index: number) => {
+  if (form.parts.length > 1) {
+    form.parts.splice(index, 1)
   }
-}
-
-const setCorrectChoice = (index: number) => {
-  form.choices = form.choices.map((choice, i) => ({
-    ...choice,
-    isCorrect: i === index,
-  }))
 }
 
 const handleSubmit = () => {
-  if (!form.choices.some((choice) => choice.isCorrect)) {
-    return
-  }
-
-  form.post(`/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/mcq`, {
+  form.put(`/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/${props.question.slug}/saq`, {
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
-      form.reset()
     },
   })
 }
@@ -66,14 +56,13 @@ const handleSubmit = () => {
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-      <DialogHeader
-        class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto"
-      >
-        <DialogTitle class="text-lg sm:text-xl">Add MCQ to {{ paper.title }}</DialogTitle>
+      <DialogHeader class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto">
+        <DialogTitle class="text-lg sm:text-xl">Edit SAQ</DialogTitle>
       </DialogHeader>
 
       <div class="p-3 sm:p-6">
         <form @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
+          <!-- Question Text -->
           <div class="space-y-2 sm:space-y-3">
             <Label class="text-sm sm:text-base">Question Text</Label>
             <Input
@@ -83,33 +72,34 @@ const handleSubmit = () => {
             />
           </div>
 
+          <!-- Parts -->
           <div class="space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between">
-              <Label class="text-sm sm:text-base">Choices ({{ form.choices.length }}/5)</Label>
+              <Label class="text-sm sm:text-base">Parts ({{ form.parts.length }}/5)</Label>
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
+                size="sm" 
                 class="h-8 sm:h-9"
-                @click="addChoice"
+                @click="addPart"
               >
-                <Plus class="h-4 w-4 mr-2" />Add Choice
+                <Plus class="h-4 w-4 mr-2" />Add Part
               </Button>
             </div>
 
             <div
-              v-for="(choice, index) in form.choices"
+              v-for="(part, index) in form.parts"
               :key="index"
               class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
               <div class="flex items-center justify-between">
-                <Label>Choice {{ String.fromCharCode(65 + index) }}</Label>
+                <Label>Part {{ index + 1 }}</Label>
                 <Button
-                  v-if="form.choices.length > 1"
+                  v-if="form.parts.length > 1"
                   type="button"
                   variant="ghost"
                   size="sm"
-                  @click="removeChoice(index)"
+                  @click="removePart(index)"
                 >
                   <Trash2 class="h-4 w-4" />
                 </Button>
@@ -117,29 +107,31 @@ const handleSubmit = () => {
 
               <div class="space-y-2">
                 <Input
-                  v-model="choice.choiceText"
-                  :placeholder="`Choice ${String.fromCharCode(65 + index)}`"
+                  v-model="part.partText"
+                  placeholder="Question part"
                 />
-              </div>
-
-              <div class="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="correct-choice"
-                  :checked="choice.isCorrect"
-                  @change="setCorrectChoice(index)"
-                />
-                <Label>Correct Answer</Label>
               </div>
 
               <div class="space-y-2">
-                <Input v-model="choice.explanation" placeholder="Explanation (optional)" />
+                <Input
+                  v-model="part.expectedAnswer"
+                  placeholder="Expected answer"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <Input
+                  v-model="part.marks"
+                  type="number"
+                  min="1"
+                  placeholder="Marks"
+                />
               </div>
             </div>
           </div>
 
           <Button type="submit" :disabled="form.processing" class="w-full h-10 sm:h-11">
-            {{ form.processing ? 'Adding...' : 'Add MCQ' }}
+            {{ form.processing ? 'Saving...' : 'Save Changes' }}
           </Button>
         </form>
       </div>

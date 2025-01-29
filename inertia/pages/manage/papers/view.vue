@@ -3,10 +3,15 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, ArrowLeft, Clock, Plus } from 'lucide-vue-next'
+import { FileText, ArrowLeft, Clock, Plus, Upload, Pencil } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import AddMcqQuestionDialog from '~/components/AddMcqDialog.vue'
 import AddSaqQuestionDialog from '~/components/AddSaqDialog.vue'
+import UploadMcqsDialog from '~/components/UploadMcqsDialog.vue'
+import EditMcqDialog from '~/components/EditMcqDialog.vue'
+import EditSaqDialog from '~/components/EditSaqDialog.vue'
+import { toast } from 'vue-sonner'
+import { useForm } from '@inertiajs/vue3'
 
 defineOptions({ layout: AdminLayout })
 
@@ -17,6 +22,61 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+interface ParsingStatus {
+  total: number
+  current: number
+  successCount: number
+  errorCount: number
+  isProcessing: boolean
+  currentStem?: string
+}
+
+const parsingStatus = ref<ParsingStatus>({
+  total: 0,
+  current: 0,
+  successCount: 0,
+  errorCount: 0,
+  isProcessing: false,
+})
+
+const uploadProgress = computed(() => {
+  if (!parsingStatus.value.total) return 0
+  return Math.round((parsingStatus.value.current / parsingStatus.value.total) * 100)
+})
+
+const onParseProgress = (status: ParsingStatus) => {
+  parsingStatus.value = status
+}
+
+async function handleDeleteQuestion(question: QuestionDto) {
+  if (!confirm('Are you sure you want to delete this question?')) return
+
+  const form = useForm({})
+
+  form.delete(
+    `/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/${question.slug}`,
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.success('Question deleted successfully')
+      },
+      onError: () => {
+        toast.error('Failed to delete question')
+      },
+    }
+  )
+}
+
+function handleEditQuestion(question: QuestionDto) {
+  if (question.isMcq) {
+    showEditMcqDialog.value = true
+    selectedQuestion.value = question
+  } else if (question.isSaq) {
+    showEditSaqDialog.value = true
+    selectedQuestion.value = question
+  }
+}
 
 function goBack() {
   window.history.back()
@@ -29,90 +89,121 @@ const lastEditDate = computed(() => {
 })
 const showAddMcqDialog = ref(false)
 const showAddSaqDialog = ref(false)
+const showUploadDialog = ref(false)
+const showEditMcqDialog = ref(false)
+const showEditSaqDialog = ref(false)
+const selectedQuestion = ref<QuestionDto | null>(null)
 </script>
 
 <template>
   <AppHead :title="paper.title" :description="`View and manage ${paper.title}`" />
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
     <!-- Paper Header -->
-    <div class="mb-8 space-y-6">
+    <div class="mb-4 sm:mb-8 space-y-4 sm:space-y-6">
       <!-- Navigation -->
-      <nav class="flex items-center gap-2 text-sm text-muted-foreground">
+      <nav class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
         <button
           @click="goBack"
-          class="flex items-center gap-2 text-primary hover:text-primary/70 transition-colors"
+          class="flex items-center gap-1 sm:gap-2 text-primary hover:text-primary/70 transition-colors"
         >
           <ArrowLeft class="h-4 w-4" />
           Back to Papers
         </button>
         <span>/</span>
-        <span>{{ paper.title }}</span>
+        <span class="truncate max-w-[200px] sm:max-w-none">{{ paper.title }}</span>
       </nav>
 
       <!-- Paper Info -->
-      <div class="flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-start">
+      <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
         <div class="space-y-1">
-          <div class="flex items-center gap-3">
-            <div class="p-2 rounded-lg bg-primary/5">
-              <FileText class="h-5 w-5 text-primary" />
+          <!-- Title section -->
+          <div class="flex items-center gap-2 sm:gap-3">
+            <div class="p-1.5 sm:p-2 rounded-lg bg-primary/5">
+              <FileText class="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            <h1 class="text-2xl font-bold">{{ paper.title }}</h1>
+            <h1 class="text-xl sm:text-2xl font-bold truncate">{{ paper.title }}</h1>
           </div>
-          <div class="flex items-center gap-3 text-sm text-muted-foreground ml-10">
-            <span>{{ concept.title }}</span>
-            <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+          <!-- Metadata -->
+          <div
+            class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground ml-8 sm:ml-10"
+          >
+            <span class="truncate max-w-[150px] sm:max-w-none">{{ concept.title }}</span>
+            <span
+              class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium shrink-0"
+            >
               {{ paper.examType }}
             </span>
-            <span>{{ paper.year }}</span>
+            <span class="shrink-0">{{ paper.year }}</span>
           </div>
-          <div class="flex items-center gap-2 ml-10 mt-2 text-xs text-muted-foreground">
+          <div
+            class="flex items-center gap-1 sm:gap-2 ml-8 sm:ml-10 mt-2 text-xs text-muted-foreground"
+          >
             <Clock class="h-3 w-3" />
             <span>Last edited {{ lastEditDate }}</span>
           </div>
         </div>
         <!-- Add Questions Buttons -->
-        <div class="flex gap-2 justify-end mb-6">
-          <Button @click="showAddMcqDialog = true"> <Plus class="h-4 w-4 mr-2" />Add MCQ </Button>
-          <Button @click="showAddSaqDialog = true"> <Plus class="h-4 w-4 mr-2" />Add SAQ </Button>
+        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button class="w-full sm:w-auto" @click="showAddMcqDialog = true">
+            <Plus class="h-4 w-4 mr-2" />Add MCQ
+          </Button>
+          <Button class="w-full sm:w-auto" @click="showAddSaqDialog = true">
+            <Plus class="h-4 w-4 mr-2" />Add SAQ
+          </Button>
+          <Button class="w-full sm:w-auto" variant="outline" @click="showUploadDialog = true">
+            <Upload class="h-4 w-4 mr-2" />Upload MCQs
+          </Button>
         </div>
       </div>
     </div>
 
     <!-- Questions List -->
-    <div class="space-y-6">
+    <div class="space-y-4 sm:space-y-6">
       <template v-if="questions.length">
         <div
           v-for="(question, index) in questions"
           :key="question.id"
-          class="p-6 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow"
+          class="p-4 sm:p-6 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow"
         >
-          <div class="space-y-4">
+          <div class="space-y-3 sm:space-y-4">
             <!-- Question Header -->
-            <div class="flex gap-3">
-              <span class="px-2 py-1 bg-primary/10 text-primary rounded text-sm font-medium">
+            <div class="flex gap-2 sm:gap-3">
+              <span
+                class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-xs sm:text-sm font-medium"
+              >
                 Q{{ index + 1 }}
               </span>
-              <p class="text-foreground">{{ question.questionText }}</p>
+              <p class="text-sm sm:text-base text-foreground">{{ question.questionText }}</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2">
+              <Button variant="ghost" size="sm" @click="handleEditQuestion(question)">
+                <Pencil class="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
+                <Trash2 class="h-4 w-4 text-destructive" />
+              </Button>
             </div>
 
             <!-- MCQ Choices -->
-            <div v-if="question.isMcq" class="pl-10 space-y-3">
+            <div v-if="question.isMcq" class="pl-6 sm:pl-10 space-y-2 sm:space-y-3">
               <div
                 v-for="choice in question.choices"
                 :key="choice.id"
-                class="flex items-start gap-3 p-3 rounded-lg border"
+                class="flex items-start gap-3 p-2 sm:p-3 rounded-lg border"
               >
                 <div
-                  class="h-4 w-4 mt-1 rounded-full border"
+                  class="h-3 w-3 sm:h-4 sm:w-4 mt-1 rounded-full border"
                   :class="{ 'bg-primary border-primary': choice.isCorrect }"
                 />
-                <span class="text-muted-foreground">{{ choice.choiceText }}</span>
+                <span class="text-sm text-muted-foreground">{{ choice.choiceText }}</span>
               </div>
             </div>
 
             <!-- SAQ Parts -->
-            <div v-if="question.isSaq" class="pl-10 space-y-4">
+            <div v-if="question.isSaq" class="pl-6 sm:pl-10 space-y-3 sm:space-y-4">
               <div
                 v-for="part in question.parts"
                 :key="part.id"
@@ -136,6 +227,63 @@ const showAddSaqDialog = ref(false)
 
   <!-- Dialogs -->
   <AddMcqQuestionDialog v-model:open="showAddMcqDialog" :paper="paper" :concept="concept" />
-
   <AddSaqQuestionDialog v-model:open="showAddSaqDialog" :paper="paper" :concept="concept" />
+  <UploadMcqsDialog
+    v-model:open="showUploadDialog"
+    :paper="paper"
+    :concept="concept"
+    @parse-progress="onParseProgress"
+  />
+  <EditMcqDialog
+    v-if="selectedQuestion?.isMcq"
+    v-model:open="showEditMcqDialog"
+    :paper="paper"
+    :concept="concept"
+    :question="selectedQuestion"
+  />
+  <EditSaqDialog
+    v-if="selectedQuestion?.isSaq"
+    v-model:open="showEditSaqDialog"
+    :paper="paper"
+    :concept="concept"
+    :question="selectedQuestion"
+  />
+  <!-- Progress Overlay -->
+  <div
+    v-if="parsingStatus.isProcessing"
+    class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span>Processing Questions...</span>
+            <span>{{ uploadProgress }}%</span>
+          </div>
+          <div class="h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              class="h-full bg-primary transition-all"
+              :style="{ width: `${uploadProgress}%` }"
+            />
+          </div>
+        </div>
+
+        <div v-if="parsingStatus.currentStem" class="text-sm text-muted-foreground">
+          <p class="truncate">{{ parsingStatus.currentStem }}</p>
+        </div>
+
+        <div class="flex justify-between text-sm">
+          <span>Processed: {{ parsingStatus.current }}/{{ parsingStatus.total }}</span>
+          <span class="text-green-600">Success: {{ parsingStatus.successCount }}</span>
+          <span class="text-red-600">Errors: {{ parsingStatus.errorCount }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-center pt-4">
+    <Button @click="showAddMcqDialog = true" class="mr-2">
+      <Plus class="h-4 w-4 mr-2" />Add MCQ
+    </Button>
+    <Button @click="showAddSaqDialog = true"> <Plus class="h-4 w-4 mr-2" />Add SAQ </Button>
+  </div>
 </template>

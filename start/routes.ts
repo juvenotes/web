@@ -199,6 +199,19 @@ router
       ManagePapersController,
       'addSaqQuestion',
     ])
+    router.post('/:conceptSlug/:paperSlug/questions/mcq/upload', [
+      ManagePapersController,
+      'uploadMcqs',
+    ])
+    router.put('/:conceptSlug/:paperSlug/questions/:questionSlug/mcq', [
+      ManagePapersController,
+      'updateMcq',
+    ])
+
+    router.put('/:conceptSlug/:paperSlug/questions/:questionSlug/saq', [
+      ManagePapersController,
+      'updateSaq',
+    ])
     // router.post('/:conceptSlug/:paperSlug/upload-questions', [
     //   ManagePapersController,
     //   'uploadQuestions',

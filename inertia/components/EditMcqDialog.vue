@@ -8,11 +8,13 @@ import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
+import type QuestionDto from '#dtos/question'
 
 const props = defineProps<{
   open: boolean
   paper: PastPaperDto
   concept: ConceptDto
+  question: QuestionDto
 }>()
 
 const emit = defineEmits<{
@@ -20,9 +22,13 @@ const emit = defineEmits<{
 }>()
 
 const form = useForm({
-  questionText: '',
+  questionText: props.question.questionText,
   type: QuestionType.MCQ as const,
-  choices: [{ choiceText: '', isCorrect: true, explanation: '' }],
+  choices: props.question.choices.map(choice => ({
+    choiceText: choice.choiceText,
+    isCorrect: choice.isCorrect,
+    explanation: choice.explanation || ''
+  }))
 })
 
 const addChoice = () => {
@@ -49,15 +55,10 @@ const setCorrectChoice = (index: number) => {
 }
 
 const handleSubmit = () => {
-  if (!form.choices.some((choice) => choice.isCorrect)) {
-    return
-  }
-
-  form.post(`/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/mcq`, {
+  form.put(`/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/${props.question.slug}/mcq`, {
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
-      form.reset()
     },
   })
 }
@@ -66,14 +67,13 @@ const handleSubmit = () => {
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-      <DialogHeader
-        class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto"
-      >
-        <DialogTitle class="text-lg sm:text-xl">Add MCQ to {{ paper.title }}</DialogTitle>
+      <DialogHeader class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto">
+        <DialogTitle class="text-lg sm:text-xl">Edit MCQ</DialogTitle>
       </DialogHeader>
 
       <div class="p-3 sm:p-6">
         <form @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
+          <!-- Question Text -->
           <div class="space-y-2 sm:space-y-3">
             <Label class="text-sm sm:text-base">Question Text</Label>
             <Input
@@ -83,6 +83,7 @@ const handleSubmit = () => {
             />
           </div>
 
+          <!-- Choices -->
           <div class="space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between">
               <Label class="text-sm sm:text-base">Choices ({{ form.choices.length }}/5)</Label>
@@ -139,7 +140,7 @@ const handleSubmit = () => {
           </div>
 
           <Button type="submit" :disabled="form.processing" class="w-full h-10 sm:h-11">
-            {{ form.processing ? 'Adding...' : 'Add MCQ' }}
+            {{ form.processing ? 'Saving...' : 'Save Changes' }}
           </Button>
         </form>
       </div>

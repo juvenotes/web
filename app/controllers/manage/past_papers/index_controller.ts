@@ -10,10 +10,14 @@ import PastPaperPolicy from '#policies/paper_policy'
 import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
 import db from '@adonisjs/lucid/services/db'
 import Question from '#models/question'
-import { DifficultyLevel, QuestionType } from '#enums/question_types'
+import { QuestionType } from '#enums/question_types'
 import { promises as fs } from 'node:fs'
-import { createMcqQuestionValidator, createSaqQuestionValidator } from '#validators/question'
-// import { createQuestionValidator } from '#validators/question'
+import {
+  createMcqQuestionValidator,
+  createSaqQuestionValidator,
+  updateMcqQuestionValidator,
+  updateSaqQuestionValidator,
+} from '#validators/question'
 
 export default class ManagePastPapersController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -239,87 +243,329 @@ export default class ManagePastPapersController {
     }
   }
 
-  async uploadQuestions({ request, response, params, auth, logger, session }: HttpContext) {
+  async uploadMcqs({ request, response, params, auth, session, logger }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
-
-    logger.info('attempting to upload questions', {
-      userId: auth.user?.id,
-      paperId: paper.id,
-      paperSlug: paper.slug,
-      action: 'upload_questions',
-    })
-
     const file = request.file('file')
-    if (!file) {
-      return response.badRequest('No file uploaded')
-    }
+    if (!file) return response.badRequest('No file uploaded')
 
     try {
-      // Read file content
       const content = await fs.readFile(file.tmpPath!, 'utf-8')
-
-      // Parse MCQs
       const parsedQuestions = MCQParser.parse(content)
+      console.log('Parsed Questions:', parsedQuestions)
 
-      // Create questions in database
+      logger.info('questions parsed', {
+        count: parsedQuestions.length,
+        first: parsedQuestions[0]?.stem,
+      })
+
       await db.transaction(async (trx) => {
-        // Update paper metadata
         await paper
           .merge({
             metadata: this.getMetadataUpdate(paper.metadata, auth),
           })
           .save()
-        for (const parsedQuestion of parsedQuestions) {
-          // Create question
-          const question = await Question.create(
-            {
-              userId: auth.user!.id,
-              type: QuestionType.MCQ,
-              questionText: parsedQuestion.stem,
-              difficultyLevel: DifficultyLevel.MEDIUM,
-              slug: generateSlug(),
-              pastPaperId: paper.id,
-            },
-            { client: trx }
-          )
 
-          // Create choices
-          const choices = parsedQuestion.choices.map((choice: string, index: number) => ({
-            questionId: question.id,
-            choiceText: choice.substring(3).trim(), // Remove "A. " prefix
-            isCorrect: `${index + 1}` === parsedQuestion.answer,
-            explanation: parsedQuestion.explanation,
+        for (const [index, parsedQuestion] of parsedQuestions.entries()) {
+          logger.info(`processing question ${index + 1}/${parsedQuestions.length}`)
+
+          const [question] = await trx
+            .insertQuery()
+            .table('questions')
+            .insert({
+              user_id: auth.user!.id,
+              past_paper_id: paper.id,
+              slug: generateSlug(),
+              type: QuestionType.MCQ,
+              question_text: parsedQuestion.stem,
+            })
+            .returning('*')
+
+          const correctIndex = parsedQuestion.answer.charCodeAt(0) - 65
+          const choices = parsedQuestion.choices.map((choiceText, idx) => ({
+            question_id: question.id,
+            choice_text: choiceText,
+            is_correct: idx === correctIndex,
+            explanation: idx === correctIndex ? parsedQuestion.explanation : null,
           }))
 
-          await question.related('choices').createMany(choices, { client: trx })
+          await trx.insertQuery().table('mcq_choices').insert(choices)
         }
       })
 
-      logger.info('questions uploaded successfully', {
-        userId: auth.user?.id,
-        paperId: paper.id,
-        paperSlug: paper.slug,
-        questionsCount: parsedQuestions.length,
-        action: 'upload_questions',
-      })
-
-      session.flash('success', 'Questions uploaded successfully')
-      return response.redirect().toPath(`/manage/papers/${params.conceptSlug}/${params.paperSlug}`)
+      session.flash('success', `Successfully uploaded ${parsedQuestions.length} questions`)
+      return response.redirect().back()
     } catch (error) {
       if (error instanceof MCQParserError) {
-        logger.error('mcq parsing failed', {
-          userId: auth.user?.id,
-          paperId: paper.id,
-          paperSlug: paper.slug,
-          error: error.message,
-          line: error.line,
-          action: 'upload_questions',
-        })
-        return response.badRequest(`Parse error on line ${error.line}: ${error.message}`)
+        logger.error('mcq parsing failed', { error })
+        return response.badRequest(`Parse error: ${error.message}`)
       }
+      logger.error('failed to upload mcqs', { error })
       throw error
     }
   }
+
+  async updateMcq({ params, request, response, auth, session, logger }: HttpContext) {
+    try {
+      // Load question with pastPaper relationship
+      const question = await Question.query()
+        .where('slug', params.questionSlug)
+        .preload('pastPaper')
+        .firstOrFail()
+
+      if (!question.isMcq) {
+        return response.badRequest('Question is not MCQ type')
+      }
+
+      const data = await request.validateUsing(updateMcqQuestionValidator)
+
+      await db.transaction(async (trx) => {
+        // Update paper metadata
+        await question.pastPaper
+          .merge({
+            metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
+          })
+          .useTransaction(trx)
+          .save()
+
+        // Update question
+        await question
+          .merge({
+            questionText: data.questionText,
+          })
+          .useTransaction(trx)
+          .save()
+
+        // Update choices
+        await trx.from('mcq_choices').where('question_id', question.id).delete()
+
+        await trx.table('mcq_choices').insert(
+          data.choices.map((choice) => ({
+            question_id: question.id,
+            choice_text: choice.choiceText,
+            is_correct: choice.isCorrect,
+            explanation: choice.explanation ?? null,
+          }))
+        )
+      })
+
+      session.flash('success', 'MCQ updated successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('failed to update mcq', { error })
+      throw error
+    }
+  }
+
+  async updateSaq({ params, request, response, auth, session, logger }: HttpContext) {
+    const question = await Question.findByOrFail('slug', params.questionSlug)
+    if (!question.isSaq) {
+      return response.badRequest('Question is not SAQ type')
+    }
+
+    try {
+      const data = await request.validateUsing(updateSaqQuestionValidator)
+
+      await db.transaction(async (trx) => {
+        await question.pastPaper
+          .merge({
+            metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
+          })
+          .useTransaction(trx)
+          .save()
+
+        await question
+          .merge({
+            questionText: data.questionText,
+          })
+          .useTransaction(trx)
+          .save()
+
+        await trx.from('saq_parts').where('question_id', question.id).delete()
+        await trx.table('saq_parts').insert(
+          data.parts.map((part: { partText: string; expectedAnswer: string; marks: number }) => ({
+            question_id: question.id,
+            part_text: part.partText,
+            expected_answer: part.expectedAnswer,
+            marks: part.marks,
+          }))
+        )
+      })
+
+      session.flash('success', 'SAQ updated successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('failed to update saq', { error })
+      throw error
+    }
+  }
+
+  async deleteQuestion({ params, response, auth, session, logger }: HttpContext) {
+    const question = await Question.findByOrFail('slug', params.questionSlug)
+
+    try {
+      await db.transaction(async (trx) => {
+        // Update paper metadata
+        await question.pastPaper
+          .merge({
+            metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
+          })
+          .useTransaction(trx)
+          .save()
+
+        await question.useTransaction(trx).delete()
+      })
+
+      session.flash('success', 'Question deleted successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('failed to delete question', { error })
+      throw error
+    }
+  }
+
+  // async updateQuestion({ params, request, response, auth, session, logger }: HttpContext) {
+  //   const question = await Question.findByOrFail('slug', params.questionSlug)
+
+  //   try {
+  //     const data = (await request.validateUsing(
+  //       question.isMcq ? createMcqQuestionValidator : createSaqQuestionValidator
+  //     )) as QuestionData
+
+  //     await db.transaction(async (trx) => {
+  //       // Update paper metadata
+  //       await question.pastPaper
+  //         .merge({
+  //           metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
+  //         })
+  //         .useTransaction(trx)
+  //         .save()
+
+  //       // Update question
+  //       await question
+  //         .merge({
+  //           questionText: data.questionText,
+  //         })
+  //         .useTransaction(trx)
+  //         .save()
+
+  //       if (question.isMcq && 'choices' in data) {
+  //         // Delete existing choices
+  //         await trx.from('mcq_choices').where('question_id', question.id).delete()
+
+  //         // Insert new choices
+  //         await trx.table('mcq_choices').insert(
+  //           data.choices.map((choice) => ({
+  //             question_id: question.id,
+  //             choice_text: choice.choiceText,
+  //             is_correct: choice.isCorrect,
+  //             explanation: choice.explanation,
+  //           }))
+  //         )
+  //       } else if (question.isSaq && 'parts' in data) {
+  //         // Delete existing parts
+  //         await trx.from('saq_parts').where('question_id', question.id).delete()
+
+  //         // Insert new parts
+  //         await trx.table('saq_parts').insert(
+  //           data.parts.map((part) => ({
+  //             question_id: question.id,
+  //             part_text: part.partText,
+  //             expected_answer: part.expectedAnswer,
+  //             marks: part.marks,
+  //           }))
+  //         )
+  //       }
+  //     })
+
+  //     session.flash('success', 'Question updated successfully')
+  //     return response.redirect().back()
+  //   } catch (error) {
+  //     logger.error('failed to update question', { error })
+  //     throw error
+  //   }
+  // }
+
+  // async uploadQuestions({ request, response, params, auth, logger, session }: HttpContext) {
+  //   const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
+
+  //   logger.info('attempting to upload questions', {
+  //     userId: auth.user?.id,
+  //     paperId: paper.id,
+  //     paperSlug: paper.slug,
+  //     action: 'upload_questions',
+  //   })
+
+  //   const file = request.file('file')
+  //   if (!file) {
+  //     return response.badRequest('No file uploaded')
+  //   }
+
+  //   try {
+  //     // Read file content
+  //     const content = await fs.readFile(file.tmpPath!, 'utf-8')
+
+  //     // Parse MCQs
+  //     const parsedQuestions = MCQParser.parse(content)
+
+  //     // Create questions in database
+  //     await db.transaction(async (trx) => {
+  //       // Update paper metadata
+  //       await paper
+  //         .merge({
+  //           metadata: this.getMetadataUpdate(paper.metadata, auth),
+  //         })
+  //         .save()
+  //       for (const parsedQuestion of parsedQuestions) {
+  //         // Create question
+  //         const question = await Question.create(
+  //           {
+  //             userId: auth.user!.id,
+  //             type: QuestionType.MCQ,
+  //             questionText: parsedQuestion.stem,
+  //             difficultyLevel: DifficultyLevel.MEDIUM,
+  //             slug: generateSlug(),
+  //             pastPaperId: paper.id,
+  //           },
+  //           { client: trx }
+  //         )
+
+  //         // Create choices
+  //         const choices = parsedQuestion.choices.map((choice: string, index: number) => ({
+  //           questionId: question.id,
+  //           choiceText: choice.substring(3).trim(), // Remove "A. " prefix
+  //           isCorrect: `${index + 1}` === parsedQuestion.answer,
+  //           explanation: parsedQuestion.explanation,
+  //         }))
+
+  //         await question.related('choices').createMany(choices, { client: trx })
+  //       }
+  //     })
+
+  //     logger.info('questions uploaded successfully', {
+  //       userId: auth.user?.id,
+  //       paperId: paper.id,
+  //       paperSlug: paper.slug,
+  //       questionsCount: parsedQuestions.length,
+  //       action: 'upload_questions',
+  //     })
+
+  //     session.flash('success', 'Questions uploaded successfully')
+  //     return response.redirect().toPath(`/manage/papers/${params.conceptSlug}/${params.paperSlug}`)
+  //   } catch (error) {
+  //     if (error instanceof MCQParserError) {
+  //       logger.error('mcq parsing failed', {
+  //         userId: auth.user?.id,
+  //         paperId: paper.id,
+  //         paperSlug: paper.slug,
+  //         error: error.message,
+  //         line: error.line,
+  //         action: 'upload_questions',
+  //       })
+  //       return response.badRequest(`Parse error on line ${error.line}: ${error.message}`)
+  //     }
+  //     throw error
+  //   }
+  // }
   /**
    * Delete a paper
    */
