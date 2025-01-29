@@ -216,6 +216,10 @@ router
     //   ManagePapersController,
     //   'uploadQuestions',
     // ])
+    router.delete('/:conceptSlug/:paperSlug/questions/:questionSlug', [
+      ManagePapersController,
+      'deleteQuestion',
+    ])
     router.delete('/:conceptSlug/:paperSlug', [ManagePapersController, 'destroy'])
   })
   .prefix('/manage/papers')

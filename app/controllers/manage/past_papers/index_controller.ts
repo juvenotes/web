@@ -400,9 +400,13 @@ export default class ManagePastPapersController {
   }
 
   async deleteQuestion({ params, response, auth, session, logger }: HttpContext) {
-    const question = await Question.findByOrFail('slug', params.questionSlug)
-
     try {
+      // Load question with pastPaper relationship
+      const question = await Question.query()
+        .where('slug', params.questionSlug)
+        .preload('pastPaper')
+        .firstOrFail()
+
       await db.transaction(async (trx) => {
         // Update paper metadata
         await question.pastPaper
@@ -412,6 +416,7 @@ export default class ManagePastPapersController {
           .useTransaction(trx)
           .save()
 
+        // Delete the question
         await question.useTransaction(trx).delete()
       })
 
@@ -422,7 +427,6 @@ export default class ManagePastPapersController {
       throw error
     }
   }
-
   // async updateQuestion({ params, request, response, auth, session, logger }: HttpContext) {
   //   const question = await Question.findByOrFail('slug', params.questionSlug)
 
