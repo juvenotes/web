@@ -52,7 +52,7 @@ const form = useForm({
           id="email"
           :model-value="email ?? ''"
           type="email"
-          disabled"
+          disabled
         />
         <!-- :class="{ 'border-destructive': form.errors.email } -->
         <!-- <p v-if="form.errors.email" class="text-sm text-destructive">
