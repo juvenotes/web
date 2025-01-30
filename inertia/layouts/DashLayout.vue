@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
-import { Input } from '~/components/ui/input'
+import Search from '~/components/Search.vue'
 import {
-  Search,
   User,
   Settings,
   LogOut,
@@ -54,27 +53,23 @@ onUnmounted(() => {
     <nav class="sticky top-0 z-[100] w-screen border-b bg-background/95 backdrop-blur">
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
-          <div class="flex items-center gap-4">
+          <!-- Left section -->
+          <div class="flex items-center gap-4 w-[200px]">
+            <!-- Add fixed width -->
             <button class="lg:hidden" @click="isSidebarCollapsed = !isSidebarCollapsed">
               <MenuIcon class="h-6 w-6" />
             </button>
-            <Link href="/learn">
+            <Link href="/learn" class="hidden md:block">
               <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
             </Link>
           </div>
 
-          <div class="flex-1 max-w-md mx-4 hidden md:block">
-            <div class="relative">
-              <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search...is not available yet"
-                class="w-full pl-8 bg-muted/50"
-              />
-            </div>
+          <!-- Center search -->
+          <div class="flex-1 mx-auto max-w-2xl">
+              <Search />
           </div>
 
-          <div class="relative user-menu">
+          <div class="relative user-menu shrink-0">
             <button
               @click="isMenuOpen = !isMenuOpen"
               class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
@@ -105,7 +100,7 @@ onUnmounted(() => {
                 href="/settings/profile"
                 class="w-full px-4 py-2 text-sm text-left hover:bg-muted/50 flex items-center"
               >
-                <User class="mr-2 h-4 w-4" />
+                <User class="mr-2 h-5 w-5" />
                 Profile Settings
               </Link>
 
@@ -153,7 +148,7 @@ onUnmounted(() => {
             class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors"
             @click="isSidebarCollapsed = true"
           >
-            <component :is="link.icon" class="h-4 w-4 shrink-0" />
+            <component :is="link.icon" class="h-5 w-5 shrink-0" />
             <span
               :class="[
                 'transition-opacity duration-300 whitespace-nowrap',
@@ -165,7 +160,7 @@ onUnmounted(() => {
           </Link>
         </nav>
 
-        <div class="border-t p-4">
+        <div class="p-4">
           <button
             @click="$inertia.post('/logout')"
             class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors w-full text-destructive"

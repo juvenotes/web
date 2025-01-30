@@ -1,6 +1,6 @@
 export class MCQParserError extends Error {
   constructor(
-    message: string,
+    public message: string,
     public line: number
   ) {
     super(message)
@@ -8,64 +8,90 @@ export class MCQParserError extends Error {
   }
 }
 
+interface ParsedMCQ {
+  stem: string
+  choices: string[]
+  answer: string
+  explanation: string | null
+}
+
 export class MCQParser {
-  static parse(content: string) {
-    const questions = []
-    const lines = content.split('\n')
-    let currentQuestion: any = {}
-    let currentSection = 'stem'
-    let lineNumber = 0
+  static parse(content: string): ParsedMCQ[] {
+    const startTime = Date.now()
+    const questions: ParsedMCQ[] = []
 
-    for (let i = 0; i < lines.length; i++) {
-      lineNumber++
-      const line = lines[i].trim()
+    const context = {
+      operation: 'parse_mcq',
+      contentLength: content.length,
+      startTime: new Date().toISOString(),
+    }
 
-      if (!line) {
-        if (currentSection === 'explanation') {
-          // Two newlines indicate new question
-          if (!lines[i + 1]?.trim()) {
-            if (this.isValidQuestion(currentQuestion)) {
-              questions.push({ ...currentQuestion })
-              currentQuestion = {}
-              currentSection = 'stem'
-              i++ // Skip second newline
-            }
-          }
-        }
-        continue
+    // Normalize and split content
+    const normalizedContent = content.replace(/\r\n/g, '\n')
+    const blocks = normalizedContent.split(/\n{2,}/).filter(Boolean)
+
+    console.info('starting mcq parsing', {
+      ...context,
+      blockCount: blocks.length,
+    })
+
+    for (const [index, block] of blocks.entries()) {
+      const blockContext = {
+        ...context,
+        blockIndex: index + 1,
+        totalBlocks: blocks.length,
       }
 
-      if (currentSection === 'stem') {
-        currentQuestion.stem = line
-        currentQuestion.choices = []
-        currentSection = 'choices'
-      } else if (currentSection === 'choices') {
-        if (line.startsWith('ANSWER:')) {
-          currentQuestion.answer = line.replace('ANSWER:', '').trim()
-          currentSection = 'explanation'
-        } else if (/^[A-E]\.\s/.test(line)) {
-          currentQuestion.choices.push(line)
-        } else {
-          throw new MCQParserError('Invalid choice format', lineNumber)
+      try {
+        const lines = block.split('\n').filter(Boolean)
+
+        if (lines.length < 7) {
+          console.warn('skipping invalid block', {
+            ...blockContext,
+            reason: 'insufficient_lines',
+            lineCount: lines.length,
+          })
+          continue
         }
-      } else if (currentSection === 'explanation') {
-        if (line.startsWith('EXPLANATION:')) {
-          currentQuestion.explanation = line.replace('EXPLANATION:', '').trim()
+
+        const stem = lines[0]
+        const choices = lines.slice(1, 6).map((line) => line.substring(3).trim())
+
+        const answerLine = lines.find((l) => l.startsWith('ANSWER:'))
+        if (!answerLine) {
+          console.warn('skipping block without answer', blockContext)
+          continue
         }
+
+        const answer = answerLine.split(':')[1].trim()
+
+        const explanationLine = lines.find(
+          (l) => l.startsWith('EXPLANATION:') || l.startsWith('FEEDBACK:')
+        )
+        const explanation = explanationLine ? explanationLine.split(':')[1].trim() : null
+
+        questions.push({ stem, choices, answer, explanation })
+
+        console.info('parsed question block', {
+          ...blockContext,
+          stemPreview: stem.substring(0, 50),
+        })
+      } catch (error) {
+        console.error('failed to parse block', {
+          ...blockContext,
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
-    // Add last question if valid
-    if (this.isValidQuestion(currentQuestion)) {
-      questions.push(currentQuestion)
-    }
+    const duration = Date.now() - startTime
+    console.info('completed mcq parsing', {
+      ...context,
+      questionCount: questions.length,
+      durationMs: duration,
+      status: 'success',
+    })
 
     return questions
-  }
-
-  private static isValidQuestion(question: any) {
-    return (
-      question.stem && question.choices?.length === 5 && question.answer && question.explanation
-    )
   }
 }

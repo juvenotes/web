@@ -7,7 +7,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminSearch: typeof import('./inertia/components/AdminSearch.vue')['default']
+    AddMcqDialog: typeof import('./inertia/components/AddMcqDialog.vue')['default']
     AddQuestionDialog: typeof import('./inertia/components/AddQuestionDialog.vue')['default']
+    AddSaqDialog: typeof import('./inertia/components/AddSaqDialog.vue')['default']
     Alert: typeof import('./inertia/components/ui/alert/Alert.vue')['default']
     AlertDescription: typeof import('./inertia/components/ui/alert/AlertDescription.vue')['default']
     AlertTitle: typeof import('./inertia/components/ui/alert/AlertTitle.vue')['default']
@@ -25,6 +28,8 @@ declare module 'vue' {
     DialogScrollContent: typeof import('./inertia/components/ui/dialog/DialogScrollContent.vue')['default']
     DialogTitle: typeof import('./inertia/components/ui/dialog/DialogTitle.vue')['default']
     DialogTrigger: typeof import('./inertia/components/ui/dialog/DialogTrigger.vue')['default']
+    EditMcqDialog: typeof import('./inertia/components/EditMcqDialog.vue')['default']
+    EditSaqDialog: typeof import('./inertia/components/EditSaqDialog.vue')['default']
     FormControl: typeof import('./inertia/components/ui/form/FormControl.vue')['default']
     FormDescription: typeof import('./inertia/components/ui/form/FormDescription.vue')['default']
     FormItem: typeof import('./inertia/components/ui/form/FormItem.vue')['default']
@@ -37,6 +42,7 @@ declare module 'vue' {
     Popover: typeof import('./inertia/components/ui/popover/Popover.vue')['default']
     PopoverContent: typeof import('./inertia/components/ui/popover/PopoverContent.vue')['default']
     PopoverTrigger: typeof import('./inertia/components/ui/popover/PopoverTrigger.vue')['default']
+    Search: typeof import('./inertia/components/Search.vue')['default']
     Select: typeof import('./inertia/components/ui/select/Select.vue')['default']
     SelectContent: typeof import('./inertia/components/ui/select/SelectContent.vue')['default']
     SelectGroup: typeof import('./inertia/components/ui/select/SelectGroup.vue')['default']
@@ -59,6 +65,9 @@ declare module 'vue' {
     ToastProvider: typeof import('./inertia/components/ui/toast/ToastProvider.vue')['default']
     ToastTitle: typeof import('./inertia/components/ui/toast/ToastTitle.vue')['default']
     ToastViewport: typeof import('./inertia/components/ui/toast/ToastViewport.vue')['default']
+    Toggle: typeof import('./inertia/components/ToggleUrl.vue')['default']
+    ToggleUrl: typeof import('./inertia/components/ToggleUrl.vue')['default']
+    UploadMcqsDialog: typeof import('./inertia/components/UploadMcqsDialog.vue')['default']
     UploadQuestionsDialog: typeof import('./inertia/components/UploadQuestionsDialog.vue')['default']
   }
 }

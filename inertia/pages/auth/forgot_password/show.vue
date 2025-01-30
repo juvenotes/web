@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { Info } from 'lucide-vue-next'
+import { Info, Loader } from 'lucide-vue-next'
 import AuthLayout from '~/layouts/AuthLayout.vue'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Alert, AlertTitle, AlertDescription } from '~/components/ui/alert'
+import { Button } from '~/components/ui/button'
 
 defineOptions({ layout: AuthLayout })
 const props = defineProps<{ value: string; isValid: boolean; email: string | null }>()
 
 const form = useForm({
   value: props.value,
+  // email: props.email,
   password: '',
 })
 </script>
@@ -41,17 +46,35 @@ const form = useForm({
     "
   >
     <div class="grid gap-3">
-      <FormInput label="Email" type="email" :model-value="email" disable />
+      <div class="space-y-2">
+        <Label for="email">Email</Label>
+        <Input
+          id="email"
+          :model-value="email ?? ''"
+          type="email"
+          disabled
+        />
+        <!-- :class="{ 'border-destructive': form.errors.email } -->
+        <!-- <p v-if="form.errors.email" class="text-sm text-destructive">
+          {{ form.errors.email }}
+        </p> -->
+      </div>
 
-      <FormInput
-        label="New Password"
-        type="password"
-        v-model="form.password"
-        :error="form.errors.password"
-        disable
-      />
+      <div class="space-y-2">
+        <Label for="password">New Password</Label>
+        <Input
+          id="password"
+          v-model="form.password"
+          type="password"
+          required
+          :class="{ 'border-destructive': form.errors.password }"
+        />
+        <p v-if="form.errors.password" class="text-sm text-destructive">
+          {{ form.errors.password }}
+        </p>
+      </div>
 
-      <Button type="submit" :disable="form.processing">
+      <Button type="submit" :disabled="form.processing">
         <Loader v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
         Reset Password
       </Button>

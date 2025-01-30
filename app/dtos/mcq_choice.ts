@@ -7,7 +7,7 @@ export default class McqChoiceDto extends BaseModelDto {
   declare questionId: number
   declare choiceText: string
   declare isCorrect: boolean
-  declare explanation: string
+  declare explanation: string | null
   declare createdAt: string
   declare updatedAt: string
   declare question: QuestionDto | null
