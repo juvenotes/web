@@ -52,7 +52,10 @@ const resendEmail = async () => {
       </Button>
 
       <p class="text-sm text-center text-muted-foreground">
-        Need help? <Link href="mailto:support@juvenotes.com" class="text-primary hover:underline">Contact support</Link>
+        Need help?
+        <Link href="mailto:support@juvenotes.com" class="text-primary hover:underline"
+          >Contact support</Link
+        >
       </p>
     </div>
   </div>

@@ -16,6 +16,7 @@ const updateRole = (userId: number, event: Event) => {
 </script>
 
 <template>
+    <AppHead title="Users" description="Manage users" />
   <div class="p-8 max-w-7xl mx-auto">
     <h1 class="text-3xl font-bold mb-8 text-gray-800">User Management</h1>
 

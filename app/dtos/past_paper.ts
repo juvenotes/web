@@ -12,6 +12,7 @@ export default class PastPaperDto extends BaseModelDto {
   declare title: string
   declare slug: string
   declare year: string
+  declare metadata: any
   declare examType: ExamType
   declare paperType: PaperType
   declare createdAt: string
@@ -32,6 +33,7 @@ export default class PastPaperDto extends BaseModelDto {
     this.year = pastPaper.year
     this.examType = pastPaper.examType
     this.paperType = pastPaper.paperType
+    this.metadata = pastPaper.metadata
     // this.createdAt = pastPaper.createdAt.toISO()!
     // this.updatedAt = pastPaper.updatedAt.toISO()!
     this.user = pastPaper.user && new UserDto(pastPaper.user)

@@ -17,23 +17,34 @@ export default class ForgotPasswordsController {
   }
 
   async send({ request, response, session, logger }: HttpContext) {
-    const data = await request.validateUsing(passwordResetSendValidator)
-    logger.info('Processing password reset request', {
-      context: 'forgot_password.send',
-      email: data.email,
-      action: 'attempt_send',
-    })
+    try {
+      const data = await request.validateUsing(passwordResetSendValidator)
+      const context = {
+        controller: 'ForgotPasswordsController',
+        action: 'send',
+        email: data.email,
+        message: 'Processing password reset request',
+      }
 
-    await TrySendPasswordResetEmail.handle(data)
+      logger.info({ ...context })
 
-    session.flash(this.#sentSessionKey, true)
-    logger.info('Password reset email delivery completed', {
-      context: 'forgot_password.send',
-      email: data.email,
-      action: 'email_sent',
-    })
+      await TrySendPasswordResetEmail.handle(data)
 
-    return response.redirect().back()
+      session.flash(this.#sentSessionKey, true)
+      return response.redirect().back()
+    } catch (error) {
+      const context = {
+        controller: 'ForgotPasswordsController',
+        action: 'send',
+        error: error as Error,
+        message: 'Password reset request failed',
+      }
+
+      logger.error({ ...context })
+
+      session.flash('error', 'Unable to process password reset request')
+      return response.redirect().back()
+    }
   }
 
   async reset({ params, inertia, logger }: HttpContext) {
@@ -53,7 +64,7 @@ export default class ForgotPasswordsController {
       email: user?.email,
     })
 
-    return inertia.render('auth/forgot_password/reset', {
+    return inertia.render('auth/forgot_password/show', {
       value: params.value,
       email: user?.email,
       isValid,
