@@ -30,3 +30,6 @@ yarn-error.log
 
 # Miscellanous test data
 # database/seeders/syllabus.csv
+
+# tiptap
+.npmrc

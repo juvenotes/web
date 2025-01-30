@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
+import AdminSearch from '~/components/AdminSearch.vue'
 import {
   LayoutDashboard,
   BookOpen,
@@ -41,8 +42,12 @@ const menuItems = [
           <Menu v-if="!isSidebarOpen" class="w-5 h-5" />
           <X v-else class="w-5 h-5" />
         </button>
+        <!-- Search - Full width -->
+        <div class="flex-1 mx-auto max-w-2xl">
+          <AdminSearch />
+        </div>
         <div class="flex items-center gap-4">
-          <span class="text-sm text-muted-foreground">{{ user?.email }}</span>
+          <Button variant="ghost" @click="$inertia.post('/logout')">Logout</Button>
         </div>
         <Button
           variant="ghost"
