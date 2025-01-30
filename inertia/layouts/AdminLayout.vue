@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-import { 
-  LayoutDashboard, 
-  BookOpen, 
+import AdminSearch from '~/components/AdminSearch.vue'
+import {
+  LayoutDashboard,
+  BookOpen,
   FileQuestion,
   FileText,
   Users,
   Settings,
-  Menu
+  Menu,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type UserDto from '#dtos/user'
@@ -25,7 +26,7 @@ const menuItems = [
   { name: 'Questions', href: '/manage/questions', icon: FileQuestion },
   { name: 'Papers', href: '/manage/papers', icon: FileText },
   { name: 'Users', href: '/manage/users', icon: Users },
-  { name: 'Settings', href: '/manage/settings', icon: Settings }
+  { name: 'Settings', href: '/manage/settings', icon: Settings },
 ]
 </script>
 
@@ -37,8 +38,11 @@ const menuItems = [
         <button @click="isSidebarOpen = !isSidebarOpen" class="p-2">
           <Menu class="w-5 h-5" />
         </button>
+        <!-- Search - Full width -->
+        <div class="flex-1 mx-auto max-w-2xl">
+          <AdminSearch />
+        </div>
         <div class="flex items-center gap-4">
-          <span class="text-sm text-muted-foreground">{{ user?.email }}</span>
           <Button variant="ghost" @click="$inertia.post('/logout')">Logout</Button>
         </div>
       </div>
@@ -46,15 +50,15 @@ const menuItems = [
 
     <div class="flex">
       <!-- Sidebar -->
-      <aside 
+      <aside
         :class="[
           'w-64 border-r transition-all duration-300',
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
       >
         <nav class="p-4 space-y-2">
-          <Link 
-            v-for="item in menuItems" 
+          <Link
+            v-for="item in menuItems"
             :key="item.name"
             :href="item.href"
             class="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors"

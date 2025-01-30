@@ -141,6 +141,31 @@ export default class ManageConceptsController {
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
   }
 
+  async search({ request, response, bouncer, logger, auth }: HttpContext) {
+    await bouncer.with('ConceptPolicy').authorize('view')
+
+    const query = request.input('q', '')
+
+    if (!query || query.length < 2) {
+      return response.json([])
+    }
+
+    logger.info('admin:concepts:search:start', {
+      query,
+      userId: auth.user?.id,
+    })
+
+    const results = await Concept.searchConceptByTitle(request.input('q', ''), 5, true)
+
+    logger.info('admin:concepts:search:complete', {
+      query,
+      count: results.length,
+      userId: auth.user?.id,
+    })
+
+    return response.json(results)
+  }
+
   async update({ request, params, response, session, bouncer, auth, logger }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
 

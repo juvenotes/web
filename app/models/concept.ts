@@ -4,10 +4,10 @@ import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relat
 import Question from './question.js'
 import User from './user.js'
 import PastPaper from './past_paper.js'
-import { Searchable } from '@foadonis/magnify'
-import { compose } from '@adonisjs/core/helpers'
+// import { Searchable } from '@foadonis/magnify'
+// import { compose } from '@adonisjs/core/helpers'
 
-export default class Concept extends compose(BaseModel, Searchable) {
+export default class Concept extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -80,14 +80,29 @@ export default class Concept extends compose(BaseModel, Searchable) {
     return this.level === 0
   }
 
-  toSearchableObject() {
-    return {
-      id: this.id,
-      title: this.title,
-      slug: this.slug,
-      knowledgeBlock: this.knowledgeBlock,
-      isTerminal: this.isTerminal,
-      level: this.level,
+  public static async searchConceptByTitle(query: string, limit = 5, adminSearch = false) {
+    const baseQuery = this.query()
+      .whereILike('title', `%${query}%`)
+      .select(['id', 'title', 'slug', 'is_terminal', 'level'])
+      .limit(limit)
+      .orderBy('title', 'asc')
+
+    // Only filter for terminal concepts in non-admin search
+    if (!adminSearch) {
+      baseQuery.where('is_terminal', true)
     }
+
+    return await baseQuery
   }
+
+  // toSearchableObject() {
+  //   return {
+  //     id: this.id,
+  //     title: this.title,
+  //     slug: this.slug,
+  //     knowledgeBlock: this.knowledgeBlock,
+  //     isTerminal: this.isTerminal,
+  //     level: this.level,
+  //   }
+  // }
 }

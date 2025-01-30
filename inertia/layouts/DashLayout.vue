@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
-import { Input } from '~/components/ui/input'
+import Search from '~/components/Search.vue'
 import {
-  Search,
   User,
   Settings,
   LogOut,
@@ -54,23 +53,23 @@ onUnmounted(() => {
     <nav class="sticky top-0 z-[100] w-screen border-b bg-background/95 backdrop-blur">
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
-          <div class="flex items-center gap-4">
+          <!-- Left section -->
+          <div class="flex items-center gap-4 w-[200px]">
+            <!-- Add fixed width -->
             <button class="lg:hidden" @click="isSidebarCollapsed = !isSidebarCollapsed">
               <MenuIcon class="h-6 w-6" />
             </button>
-            <Link href="/learn">
+            <Link href="/learn" class="hidden md:block">
               <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
             </Link>
           </div>
 
-          <div class="flex-1 max-w-md mx-4 hidden md:block">
-            <div class="relative">
-              <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Search...is not available yet" class="w-full pl-8 bg-muted/50" />
-            </div>
+          <!-- Center search -->
+          <div class="flex-1 mx-auto max-w-2xl">
+              <Search />
           </div>
 
-          <div class="relative user-menu">
+          <div class="relative user-menu shrink-0">
             <button
               @click="isMenuOpen = !isMenuOpen"
               class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
