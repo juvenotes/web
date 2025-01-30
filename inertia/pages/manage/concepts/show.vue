@@ -46,6 +46,13 @@ const form = useForm({
 
 const contentForm = useForm({
   knowledgeBlock: typeof props.content === 'string' ? props.content : '',
+  metadata: props.concept.metadata || {
+    lastEditedBy: {
+      fullName: null,
+      timestamp: null,
+      status: 'edited',
+    },
+  },
 })
 
 const newChildForm = useForm({
@@ -54,9 +61,11 @@ const newChildForm = useForm({
   isTerminal: false,
 })
 
-const updateContent = (value: string) => {
-  console.log('Content updated:', value)
+const updateContent = (value: string, metadata?: any) => {
   contentForm.knowledgeBlock = value
+  if (metadata) {
+    contentForm.metadata = metadata
+  }
 }
 
 const handleSubmit = () => {
@@ -87,11 +96,11 @@ const handleContentSubmit = () => {
   contentForm.put(`/manage/concepts/${props.concept.slug}/content`, {
     preserveScroll: true,
     onSuccess: () => {
-      toast.success('Content updated successfully')
-    },
-    onError: (errors) => {
-      toast.error('Failed to update content')
-      console.error('Form errors:', errors)
+      toast.success('Content saved successfully')
+      // Update metadata status to 'edited' on final save
+      if (contentForm.metadata?.lastEditedBy) {
+        contentForm.metadata.lastEditedBy.status = 'edited'
+      }
     },
   })
 }
@@ -238,12 +247,12 @@ const handleDelete = () => {
       <div v-if="concept.isTerminal" class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h2 class="text-xl sm:text-2xl font-bold">Content</h2>
-          <Button variant="outline" @click="toggleContentEditor" class="w-full sm:w-auto">
+          <Button @click="toggleContentEditor" variant="outline" class="w-full sm:w-auto">
             {{ showContentEditor ? 'Hide Editor' : 'Edit Content' }}
           </Button>
         </div>
 
-        <form v-if="showContentEditor" @submit.prevent="handleContentSubmit" class="space-y-4">
+        <!-- <form v-if="showContentEditor" @submit.prevent="handleContentSubmit" class="space-y-4">
           <KnowledgeEditor
             :modelValue="contentForm.knowledgeBlock"
             @update:modelValue="updateContent"
@@ -251,9 +260,32 @@ const handleDelete = () => {
           <Button type="submit" :disabled="contentForm.processing">
             {{ contentForm.processing ? 'Saving...' : 'Save Content' }}
           </Button>
+        </form> -->
+
+        <form v-if="showContentEditor" @submit.prevent="handleContentSubmit" class="space-y-4">
+          <KnowledgeEditor
+            :modelValue="contentForm.knowledgeBlock"
+            :metadata="contentForm.metadata"
+            @update:modelValue="updateContent"
+            @update:metadata="(metadata) => (contentForm.metadata = metadata)"
+          />
+          <div class="flex justify-between items-center">
+            <p class="text-sm text-muted-foreground">
+              {{ contentForm.metadata?.lastEditedBy?.status === 'draft' ? 'Draft • ' : '' }}
+              Last edited
+              {{
+                contentForm.metadata?.lastEditedBy?.timestamp
+                  ? new Date(contentForm.metadata.lastEditedBy.timestamp).toLocaleString()
+                  : 'Never'
+              }}
+            </p>
+            <Button type="submit" :disabled="contentForm.processing">
+              {{ contentForm.processing ? 'Saving...' : 'Publish Changes' }}
+            </Button>
+          </div>
         </form>
 
-        <div v-if="content">
+        <div v-if="content && !showContentEditor">
           <MdxContent :content="content" />
         </div>
       </div>
