@@ -71,4 +71,10 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   STATSIG_CLIENT_KEY: Env.schema.string(),
   STATSIG_SERVER_SECRET: Env.schema.string(),
+
+  CLOUDINARY_CLOUD_NAME: Env.schema.string(),
+
+  CLOUDINARY_API_KEY: Env.schema.string(),
+
+  CLOUDINARY_API_SECRET: Env.schema.string(),
 })
