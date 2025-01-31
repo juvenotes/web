@@ -30,6 +30,7 @@ yarn-error.log
 
 # Miscellanous test data
 # database/seeders/syllabus.csv
+app/services/old_cloudinary_service.ts
 
 # tiptap
 .npmrc

@@ -15,28 +15,40 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { Youtube } from '@tiptap/extension-youtube'
+import { FileHandler } from '@tiptap-pro/extension-file-handler'
 import {
-  Bold, Italic, List, ListOrdered, Code, Quote, ImageIcon,Link as LinkIcon, Youtube as YoutubeIcon,
-  Heading1, Heading2, Clock
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
+  Code,
+  Quote,
+  ImageIcon,
+  Link as LinkIcon,
+  Youtube as YoutubeIcon,
+  Heading1,
+  Heading2,
+  Clock,
+  Pilcrow,
+  Heading3,
 } from 'lucide-vue-next'
 import debounce from 'lodash/debounce'
 import { ref, computed } from 'vue'
 
-const props = defineProps<{ 
+const props = defineProps<{
   modelValue: string
-  metadata?: any 
+  metadata?: any
 }>()
 
 const emit = defineEmits(['update:modelValue', 'update:metadata'])
 
 const AUTOSAVE_DELAY = 2000
 const isSaving = ref(false)
+const isUploading = ref(false)
 
 const saveStatus = computed(() => {
   if (isSaving.value) return 'Saving...'
-  return props.metadata?.lastEditedBy?.status === 'draft' 
-    ? 'Draft saved'
-    : 'All changes saved'
+  return props.metadata?.lastEditedBy?.status === 'draft' ? 'Draft saved' : 'All changes saved'
 })
 
 const emitUpdate = debounce((markdown: string, status: 'draft' | 'edited' = 'draft') => {
@@ -47,19 +59,63 @@ const emitUpdate = debounce((markdown: string, status: 'draft' | 'edited' = 'dra
     lastEditedBy: {
       fullName: props.metadata?.lastEditedBy?.fullName,
       timestamp: new Date(),
-      status
-    }
+      status,
+    },
   })
   setTimeout(() => {
     isSaving.value = false
   }, 500)
 }, AUTOSAVE_DELAY)
 
+const handleFileUpload = async (file: File) => {
+  isUploading.value = true
+
+  try {
+    const formData = new FormData()
+    formData.append('image', file)
+
+    const response = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+      },
+      body: formData,
+    })
+
+    const text = await response.text()
+    console.log('Raw response:', text)
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    try {
+      const data = JSON.parse(text)
+      if (data.error) throw new Error(data.error)
+      return data.url
+    } catch (e) {
+      console.error('JSON parse error:', e)
+      throw e
+    }
+  } catch (error) {
+    console.error('Upload failed:', error)
+    return null
+  } finally {
+    isUploading.value = false
+  }
+}
+
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
     StarterKit,
-    Markdown,
+    Markdown.configure({
+      html: true,
+      tightLists: true,
+      bulletListMarker: '-',
+      // transformPastedText: true,
+    }),
     FontFamily,
     TextStyle,
     Color,
@@ -72,45 +128,147 @@ const editor = useEditor({
         class: 'editor-image',
         width: '100%',
         height: 'auto',
-      }
+      },
     }),
     Table.configure({ resizable: true }),
     TableRow,
     TableCell,
     TableHeader,
-    Youtube.configure({ width: 640, height: 360 })
+    Youtube.configure({ width: 640, height: 360 }),
+    FileHandler.configure({
+      allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+      onDrop: async (editor, files, pos) => {
+        console.info('File drop detected', {
+          action: 'file_drop',
+          fileCount: files.length,
+          position: pos,
+        })
+        for (const file of files) {
+          const url = await handleFileUpload(file)
+          if (url) {
+            console.info('Inserting dropped image', {
+              action: 'insert_dropped_image',
+              url,
+            })
+            editor.chain().focus().setTextSelection(pos).setImage({ src: url }).run()
+          }
+        }
+      },
+      onPaste: async (editor, files, _htmlContent) => {
+        console.info('File paste detected', {
+          action: 'file_paste',
+          fileCount: files.length,
+        })
+        for (const file of files) {
+          const url = await handleFileUpload(file)
+          if (url) {
+            console.info('Inserting pasted image', {
+              action: 'insert_pasted_image',
+              url,
+            })
+            editor.chain().focus().setImage({ src: url }).run()
+          }
+        }
+      },
+    }),
   ],
   onUpdate: ({ editor }) => {
     const markdown = editor.storage.markdown.getMarkdown()
     emitUpdate(markdown)
-  }
+  },
 })
 
 const toolbar = [
-  { icon: Bold, title: 'Bold', action: () => editor.value?.chain().focus().toggleBold().run() },
-  { icon: Italic, title: 'Italic', action: () => editor.value?.chain().focus().toggleItalic().run() },
-  { icon: Heading1, title: 'H1', action: () => editor.value?.chain().focus().toggleHeading({ level: 1 }).run() },
-  { icon: Heading2, title: 'H2', action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run() },
-  { icon: List, title: 'Bullet List', action: () => editor.value?.chain().focus().toggleBulletList().run() },
-  { icon: ListOrdered, title: 'Ordered List', action: () => editor.value?.chain().focus().toggleOrderedList().run() },
-  { icon: Code, title: 'Code', action: () => editor.value?.chain().focus().toggleCode().run() },
-  { icon: Quote, title: 'Quote', action: () => editor.value?.chain().focus().toggleBlockquote().run() }
+  {
+    icon: Bold,
+    title: 'Bold',
+    action: () => editor.value?.chain().focus().toggleBold().run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: Italic,
+    title: 'Italic',
+    action: () => editor.value?.chain().focus().toggleItalic().run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: Pilcrow,
+    title: 'Paragraph',
+    action: () => editor.value?.chain().focus().setParagraph().run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: Heading1,
+    title: 'H1',
+    action: () => editor.value?.chain().focus().toggleHeading({ level: 1 }).run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: Heading2,
+    title: 'H2',
+    action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: Heading3,
+    title: 'H3',
+    action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: List,
+    title: 'Bullet List',
+    action: () => editor.value?.chain().focus().toggleBulletList().run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: ListOrdered,
+    title: 'Ordered List',
+    action: () => editor.value?.chain().focus().toggleOrderedList().run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: Code,
+    title: 'Code',
+    action: () => editor.value?.chain().focus().toggleCode().run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
+  {
+    icon: Quote,
+    title: 'Quote',
+    action: () => editor.value?.chain().focus().toggleBlockquote().run(),
+    isActive: () => editor.value?.isActive('bold'),
+  },
 ]
 
 const addImage = () => {
- const url = prompt('Enter Image URL:')
-  if (url) {
-    editor.value?.chain().focus().setImage({ src: url }).run()
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+
+  input.onchange = async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0]
+    if (!file) return
+
+    const url = await handleFileUpload(file)
+    if (url) {
+      editor.value?.chain().focus().setImage({ src: url }).run()
+    }
   }
+
+  input.click()
 }
 
 const addLink = () => {
   const url = prompt('Enter URL:')
   if (url) {
-    editor.value?.chain().focus().setLink({ href: url, target: '_blank', rel: 'noopener noreferrer' }).run()
+    editor.value
+      ?.chain()
+      .focus()
+      .setLink({ href: url, target: '_blank', rel: 'noopener noreferrer' })
+      .run()
   }
 }
-
 
 const addYoutubeVideo = () => {
   const url = prompt('Enter YouTube URL:')
@@ -125,8 +283,8 @@ const addYoutubeVideo = () => {
     <!-- Status Bar -->
     <div class="flex items-center justify-between px-4 py-2 border-b bg-muted/50">
       <div class="flex items-center gap-2 text-sm text-muted-foreground">
-        <Clock class="h-4 w-4" :class="{ 'animate-spin': isSaving }" />
-        <span>{{ saveStatus }}</span>
+        <Clock class="h-4 w-4" :class="{ 'animate-spin': isSaving || isUploading }" />
+        <span>{{ isUploading ? 'Uploading image...' : saveStatus }}</span>
       </div>
     </div>
 
@@ -135,6 +293,7 @@ const addYoutubeVideo = () => {
       <button
         v-for="item in toolbar"
         :key="item.title"
+        type="button"
         @click="item.action"
         class="p-2 rounded-lg hover:bg-accent transition-colors"
         :title="item.title"
@@ -144,22 +303,37 @@ const addYoutubeVideo = () => {
 
       <div class="h-4 w-px bg-border mx-2"></div>
 
-      <button @click="addImage" class="p-2 rounded-lg hover:bg-accent transition-colors" title="Add Image">
+      <button
+        @click="addImage"
+        type="button"
+        class="p-2 rounded-lg hover:bg-accent transition-colors"
+        title="Add Image"
+      >
         <ImageIcon class="h-4 w-4" />
       </button>
-      <button @click="addLink" class="p-2 rounded-lg hover:bg-accent transition-colors" title="Add Link">
+      <button
+        @click="addLink"
+        type="button"
+        class="p-2 rounded-lg hover:bg-accent transition-colors"
+        title="Add Link"
+      >
         <LinkIcon class="h-4 w-4" />
       </button>
-      <button @click="addYoutubeVideo" class="p-2 rounded-lg hover:bg-accent transition-colors" title="Add YouTube Video">
+      <button
+        @click="addYoutubeVideo"
+        type="button"
+        class="p-2 rounded-lg hover:bg-accent transition-colors"
+        title="Add YouTube Video"
+      >
         <YoutubeIcon class="h-4 w-4" />
       </button>
     </div>
 
     <!-- Editor Content -->
-    <EditorContent 
-      v-if="editor" 
-      :editor="editor" 
-      class="prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none p-4" 
+    <EditorContent
+      v-if="editor"
+      :editor="editor"
+      class="prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none p-4"
     />
     <p v-else class="text-center text-muted-foreground p-4">Loading editor...</p>
   </div>
@@ -172,7 +346,7 @@ const addYoutubeVideo = () => {
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
-  content: "Start typing...";
+  content: 'Start typing...';
   float: left;
   color: #adb5bd;
   pointer-events: none;
@@ -213,7 +387,7 @@ const addYoutubeVideo = () => {
 
 .ProseMirror .selectedCell:after {
   background: rgba(200, 200, 255, 0.4);
-  content: "";
+  content: '';
   left: 0;
   right: 0;
   top: 0;
@@ -234,5 +408,9 @@ const addYoutubeVideo = () => {
 .prose iframe {
   margin: 1rem auto;
   border-radius: 0.5rem;
+}
+.editor-image[data-uploading] {
+  opacity: 0.5;
+  cursor: wait;
 }
 </style>

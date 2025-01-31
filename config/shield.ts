@@ -6,8 +6,12 @@ const shieldConfig = defineConfig({
    * to learn more
    */
   csp: {
-    enabled: false,
-    directives: {},
+    enabled: true,
+    directives: {
+      defaultSrc: [`'self'`, '@viteDevUrl'],
+      connectSrc: ['@viteHmrUrl'],
+      frameSrc: ["'self'", '*.youtube.com', 'www.youtube.com'],
+    },
     reportOnly: false,
   },
 
