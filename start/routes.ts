@@ -30,6 +30,7 @@ const PersonalizationController = () => import('#controllers/auth/personalizatio
 const ManagePapersController = () => import('#controllers/manage/past_papers/index_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 const ManageUsersController = () => import('#controllers/manage/users/index_controller')
+const UploadImageController = () => import('#controllers/api/upload_image_controller')
 
 // test crash route
 router.get('/crash', () => {
