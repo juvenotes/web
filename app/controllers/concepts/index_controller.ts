@@ -76,4 +76,27 @@ export default class IndexController {
       content: concept.knowledgeBlock,
     })
   }
+
+  async search({ request, response, logger, auth }: HttpContext) {
+    const query = request.input('q', '')
+
+    if (!query || query.length < 2) {
+      return response.json([])
+    }
+
+    logger.info('concepts:search:start', {
+      query,
+      userId: auth.user?.id,
+    })
+
+    const results = await Concept.searchConceptByTitle(request.input('q', ''))
+
+    logger.info('concepts:search:complete', {
+      query,
+      count: results.length,
+      userId: auth.user?.id,
+    })
+
+    return response.json(results)
+  }
 }

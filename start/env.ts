@@ -71,10 +71,23 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   STATSIG_CLIENT_KEY: Env.schema.string(),
   STATSIG_SERVER_SECRET: Env.schema.string(),
+  
+    /*
+  |----------------------------------------------------------
+  | Variables forcloudinary
+  |----------------------------------------------------------
+  */
 
   CLOUDINARY_CLOUD_NAME: Env.schema.string(),
 
   CLOUDINARY_API_KEY: Env.schema.string(),
 
   CLOUDINARY_API_SECRET: Env.schema.string(),
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring Magnify search engine
+  |----------------------------------------------------------
+  */
+  MEILISEARCH_HOST: Env.schema.string({ format: 'host' }),
+  MEILISEARCH_API_KEY: Env.schema.string.optional(),
 })
