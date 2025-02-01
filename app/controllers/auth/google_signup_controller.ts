@@ -62,7 +62,7 @@ export default class GoogleSignupController {
       if (google.accessDenied() || google.stateMisMatch() || google.hasError()) {
         logger.info(logContext, 'Google auth failed')
         session.flash('error', 'Authentication failed. Please try again.')
-        return response.redirect().toRoute('login')
+        return response.redirect().toRoute('/login')
       }
 
       const googleUser = await google.user()

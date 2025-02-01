@@ -234,5 +234,10 @@ router
   .prefix('/manage')
   .use(middleware.auth())
 
-//* IMAGE UPLOAD
-router.post('/api/upload-image', [UploadImageController, 'store']).use(middleware.auth())
+//* CONCEPTS -> SEARCH
+router.get('/api/concepts/search', [IndexConceptsController, 'search']).use(middleware.auth())
+
+//* MANAGE CONCEPTS -> SEARCH
+router
+  .get('/api/manage/concepts/search', [ManageConceptsController, 'search'])
+  .use(middleware.auth())
