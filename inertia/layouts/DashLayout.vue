@@ -12,6 +12,7 @@ import {
   Menu as MenuIcon,
   ChevronLeft,
   ChevronRight,
+  Search as SearchIcon,
 } from 'lucide-vue-next'
 import { Twitter, Instagram, Linkedin } from 'lucide-vue-next'
 import UserDto from '#dtos/user'
@@ -24,6 +25,7 @@ defineProps<{
 const logoPath = '/images/logo.png'
 const isMenuOpen = ref(false)
 const isSidebarCollapsed = ref(true)
+const isSearchOpen = ref(false) // State to manage search modal visibility
 
 const sidebarLinks = [
   { name: 'Dashboard', href: '/learn', icon: Home },
@@ -65,9 +67,13 @@ onUnmounted(() => {
           </div>
 
           <!-- Center search -->
-          <div class="flex-1 mx-auto max-w-2xl">
-              <Search />
+          <div class="hidden md:flex flex-1 mx-auto max-w-2xl">
+            <Search />
           </div>
+          <button class="block md:hidden p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+            @click="isSearchOpen = true">
+            <SearchIcon class="h-5 w-5" />
+          </button>
 
           <div class="relative user-menu shrink-0">
             <button
@@ -119,6 +125,20 @@ onUnmounted(() => {
         </div>
       </div>
     </nav>
+
+    <!-- Mobile Search Modal -->
+    <div v-show="isSearchOpen" class="fixed inset-0 z-[120] bg-black/50 flex items-center justify-center px-4"
+      @click.self="isSearchOpen = false" <!-- This listens for clicks only on the background -->
+      >
+      <div class="w-full max-w-lg p-4 bg-white rounded-lg shadow-lg relative">
+
+        <button @click="isSearchOpen = false"
+          class="absolute top-3 right-3 h-10 w-10 flex items-center justify-center rounded-full bg-muted/20 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all shadow-lg">
+          <ChevronRight class="h-5 w-5" />
+        </button>
+        <Search />
+      </div>
+    </div>
 
     <div class="flex-1 flex">
       <div
