@@ -10,6 +10,7 @@ import AddSaqQuestionDialog from '~/components/AddSaqDialog.vue'
 import UploadMcqsDialog from '~/components/UploadMcqsDialog.vue'
 import EditMcqDialog from '~/components/EditMcqDialog.vue'
 import EditSaqDialog from '~/components/EditSaqDialog.vue'
+import EditPaperDialog from '~/components/EditPaperDialog.vue'
 import { toast } from 'vue-sonner'
 import { useForm } from '@inertiajs/vue3'
 
@@ -68,6 +69,22 @@ async function handleDeleteQuestion(question: QuestionDto) {
   )
 }
 
+function handleDeletePaper() {
+  if (!confirm('Are you sure you want to delete this paper?')) return
+
+  const form = useForm({})
+
+  form.delete(`/manage/papers/${props.concept.slug}/${props.paper.slug}`, {
+    onSuccess: () => {
+      toast.success('Paper deleted successfully')
+      window.location.href = `/manage/papers/${props.concept.slug}`
+    },
+    onError: () => {
+      toast.error('Failed to delete paper')
+    },
+  })
+}
+
 function handleEditQuestion(question: QuestionDto) {
   if (question.isMcq) {
     showEditMcqDialog.value = true
@@ -92,6 +109,7 @@ const showAddSaqDialog = ref(false)
 const showUploadDialog = ref(false)
 const showEditMcqDialog = ref(false)
 const showEditSaqDialog = ref(false)
+const showEditPaperDialog = ref(false)
 const selectedQuestion = ref<QuestionDto | null>(null)
 </script>
 
@@ -153,6 +171,12 @@ const selectedQuestion = ref<QuestionDto | null>(null)
           </Button>
           <Button class="w-full sm:w-auto" variant="outline" @click="showUploadDialog = true">
             <Upload class="h-4 w-4 mr-2" />Upload MCQs
+          </Button>
+          <Button variant="outline" class="w-full sm:w-auto" @click="showEditPaperDialog = true">
+            <Pencil class="h-4 w-4 mr-2" />Edit Paper
+          </Button>
+          <Button variant="destructive" class="w-full sm:w-auto" @click="handleDeletePaper">
+            <Trash2 class="h-4 w-4 mr-2" />Delete Paper
           </Button>
         </div>
       </div>
@@ -248,6 +272,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
     :concept="concept"
     :question="selectedQuestion"
   />
+  <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
   <!-- Progress Overlay -->
   <div
     v-if="parsingStatus.isProcessing"

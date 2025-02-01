@@ -212,10 +212,7 @@ router
       ManagePapersController,
       'updateSaq',
     ])
-    // router.post('/:conceptSlug/:paperSlug/upload-questions', [
-    //   ManagePapersController,
-    //   'uploadQuestions',
-    // ])
+    router.put('/:conceptSlug/:paperSlug', [ManagePapersController, 'update'])
     router.delete('/:conceptSlug/:paperSlug/questions/:questionSlug', [
       ManagePapersController,
       'deleteQuestion',
