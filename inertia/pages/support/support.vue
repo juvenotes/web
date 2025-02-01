@@ -2,8 +2,6 @@
 import AppLayout from '~/layouts/AppLayout.vue'
 
 import { Search } from 'lucide-vue-next'
-import { ChevronDownIcon } from '@radix-icons/vue';
-
 
 defineOptions({ layout: AppLayout })
 
@@ -40,7 +38,7 @@ defineOptions({ layout: AppLayout })
                         <p>What does Juvenotes offer?</p>
                     </div>
                     <div class="answer">
-                        <p>We offer a wide range of study material, past papers, custom and personalised learning paths, together with an active community that promotes learning with peers easier.
+                        <p>We offer a wide range of study material, past papers, custom and personalised learning paths, together with an active community that promotes learning with peers.
                         </p>
                     </div>
                 </div>
@@ -49,7 +47,7 @@ defineOptions({ layout: AppLayout })
                         <p>Is my personal data safe?</p>
                     </div>
                     <div class="answer">
-                        <p>Yes, we take your privacy seriously. For more information about how we collect, use,
+                        <p>Yes, we take your privacy seriously. For more information about how we collect, use
                             and protect your personal information visit the <a href="/">privacy policy</a> page.
                         </p>
                     </div>
