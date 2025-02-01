@@ -4,7 +4,7 @@ import PastPaper from '#models/past_paper'
 import ConceptDto from '#dtos/concept'
 import PastPaperDto from '#dtos/past_paper'
 import QuestionDto from '#dtos/question'
-import { createPastPaperValidator } from '#validators/past_paper'
+import { createPastPaperValidator, updatePastPaperValidator } from '#validators/past_paper'
 import { generateSlug } from '#utils/slug_generator'
 import PastPaperPolicy from '#policies/paper_policy'
 import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
@@ -143,6 +143,19 @@ export default class ManagePastPapersController {
 
     session.flash('success', 'Paper created successfully')
     return response.redirect().toPath(`/manage/papers/${concept.slug}/${paper.slug}`)
+  }
+
+  async update({ params, request, response, bouncer }: HttpContext) {
+    const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
+
+    if (await bouncer.with(PastPaperPolicy).denies('update', paper)) {
+      return response.forbidden()
+    }
+
+    const payload = await request.validateUsing(updatePastPaperValidator)
+    await paper.merge(payload).save()
+
+    return response.redirect().back()
   }
 
   async addMcqQuestion({ request, response, params, auth, session, logger }: HttpContext) {
@@ -574,7 +587,7 @@ export default class ManagePastPapersController {
    * Delete a paper
    */
   async destroy({ params, response, session, bouncer, logger, auth }: HttpContext) {
-    const paper = await PastPaper.findByOrFail('slug', params.slug)
+    const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
 
     logger.info('attempting to delete paper', {
       userId: auth?.user?.id,
@@ -603,6 +616,6 @@ export default class ManagePastPapersController {
     })
 
     session.flash('success', 'Paper deleted. Refresh page if necessary')
-    return response.redirect().toPath('/manage/papers')
+    return response.redirect().toPath(`/manage/papers/${params.conceptSlug}`)
   }
 }

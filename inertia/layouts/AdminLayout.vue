@@ -46,9 +46,6 @@ const menuItems = [
         <div class="flex-1 mx-auto max-w-2xl">
           <AdminSearch />
         </div>
-        <div class="flex items-center gap-4">
-          <Button variant="ghost" @click="$inertia.post('/logout')">Logout</Button>
-        </div>
         <Button
           variant="ghost"
           @click="$inertia.post('/logout')"
