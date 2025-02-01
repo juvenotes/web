@@ -54,19 +54,18 @@ onUnmounted(() => {
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
           <!-- Left section -->
-          <div class="flex items-center gap-4 w-[200px]">
-            <!-- Add fixed width -->
+          <div class="flex items-center gap-4 lg:w-16">
             <button class="lg:hidden" @click="isSidebarCollapsed = !isSidebarCollapsed">
               <MenuIcon class="h-6 w-6" />
             </button>
-            <Link href="/learn" class="hidden md:block">
+            <Link href="/learn" class="hidden sm:block">
               <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
             </Link>
           </div>
 
           <!-- Center search -->
-          <div class="flex-1 mx-auto max-w-2xl">
-              <Search />
+          <div class="flex-1 mx-4">
+            <Search />
           </div>
 
           <div class="relative user-menu shrink-0">
