@@ -48,7 +48,7 @@ defineOptions({ layout: AppLayout })
                     </div>
                     <div class="answer">
                         <p>Yes, we take your privacy seriously. For more information about how we collect, use
-                            and protect your personal information visit the <a href="/">privacy policy</a> page.
+                            and protect your personal information visit the <a href="/privacy">privacy policy</a> page.
                         </p>
                     </div>
                 </div>
@@ -61,10 +61,6 @@ defineOptions({ layout: AppLayout })
                         </p>
                     </div>
                 </div>
-                <!-- <a href="#">Pricing Options and Payment Methods</a>
-                <a href="#">Having trouble logging in?</a>
-                <a href="#">Can't find a specific past paper or topic?</a>
-                <a href="#">Privacy policy and Terms of use</a> -->
             </div>
         </div>
         <div class="reach-out-section">
