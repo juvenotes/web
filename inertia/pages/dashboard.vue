@@ -84,7 +84,7 @@ defineOptions({ layout: DashLayout })
           </div>
 
           <!-- Description -->
-          <p class="text-muted-foreground/90 text-base leading-relaxed">
+          <p class="text-gray-600  text-base leading-relaxed">
             Practice with previous examination papers to enhance your preparation
           </p>
 
@@ -95,7 +95,7 @@ defineOptions({ layout: DashLayout })
             >
               25 Papers
             </span>
-            <span class="text-sm text-muted-foreground">Updated Weekly</span>
+            <span class="text-sm text-gray-500">Updated Weekly</span>
           </div>
 
           <!-- Action Indicator -->
@@ -137,7 +137,7 @@ defineOptions({ layout: DashLayout })
           </div>
 
           <!-- Description -->
-          <p class="text-muted-foreground/90 text-base leading-relaxed">
+          <p class="text-gray-600 text-base leading-relaxed">
             Master comprehensive study materials organized by topics
           </p>
 
@@ -148,7 +148,7 @@ defineOptions({ layout: DashLayout })
             >
               12 Units
             </span>
-            <span class="text-sm text-muted-foreground">200+ Topics</span>
+            <span class="text-sm text-gray-500">200+ Topics</span>
           </div>
 
           <!-- Action Indicator -->
