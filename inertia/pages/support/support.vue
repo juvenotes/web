@@ -10,7 +10,11 @@ defineOptions({ layout: AppLayout })
 <template>
     <AppHead title="Support" description="Support and FAQs" />
     <div class="wrapper">
-        <div class="welcome-section">
+        <div class="welcome-section"
+            :style="{
+               backgroundImage: 'url(\'/images/dashboard.png\')',
+            }"
+        >
             <h1>WELCOME TO JUVENOTES SUPPORT</h1>
             <div class="search-bar">
                 <input type="search" placeholder="Search for help" />
@@ -18,11 +22,45 @@ defineOptions({ layout: AppLayout })
             </div>
         </div>
         <div class="faq-section">
-            <h1>FAQS</h1>
+            <h1>FREQUENTLY ASKED QUESTIONS</h1>
             <div class="faqs">
-                <a href="#">Pricing Options and Payment Methods</a>
-                <a href="#">Having trouble logging in?</a>
-                <a href="#">How to create a new account?</a>
+                <div class="faq">
+                    <div class="question">
+                        <p>How do I get started?</p>
+                    </div>
+                    <div class="answer">
+                        <p>Simply <a href="/register">create an account</a> to gain access to our vast library of past papers and other revision material. 
+                        </p>
+                    </div>
+                </div>
+                <div class="faq">
+                    <div class="question">
+                        <p>What does Juvenotes offer?</p>
+                    </div>
+                    <div class="answer">
+                        <p>We offer a wide range of study material, past papers, custom and personalised learning paths, together with an active community that promotes learning with peers.
+                        </p>
+                    </div>
+                </div>
+                <div class="faq">
+                    <div class="question">
+                        <p>Is my personal data safe?</p>
+                    </div>
+                    <div class="answer">
+                        <p>Yes, we take your privacy seriously. For more information about how we collect, use
+                            and protect your personal information visit the <a href="/privacy">privacy policy</a> page.
+                        </p>
+                    </div>
+                </div>
+                <div class="faq">
+                    <div class="question">
+                        <p>How do I reset my password?</p>
+                    </div>
+                    <div class="answer">
+                        <p>Head over to the <a href="/login">login page</a> and select "forgot password".
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="reach-out-section">
@@ -36,11 +74,12 @@ defineOptions({ layout: AppLayout })
     div .wrapper{
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 3rem;
+        background-color: rgba(249, 250, 251, 0.722);
     }
      div .welcome-section{
         background-color: rgba(0, 0, 0, 0.5);
-        background-image: url('public/images/dashboard.png');
+        /* background-image: url('public/images/dashboard.png'); */
         background-size: cover;
         background-position: center;
         width: 100%;
@@ -99,21 +138,44 @@ defineOptions({ layout: AppLayout })
         font-weight: 700;
         font-size: 1.875rem;
         line-height: 2.25rem;
+        text-align: center;
     }
     div .faqs{
         display: flex;
         flex-direction: column;
-        gap: .5rem;
+        gap: 1rem;
     }
-    div .faqs a{
+    div .faqs .faq{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: white;
+    }
+   
+    div .faqs .faq .question{
+        display: flex;
+        color: rgb(65, 149, 176);
+        background-color: rgba(225, 225, 225, 0.722);
+        padding: .71em;
+    }
+    div .faqs .faq .question p{
+        font-weight: 600;
+        font-size: 1.3em;
+    }
+    div .faqs .faq .answer{
+        padding: 1em;
+    }
+    div .faqs .faq .answer p{
+        font-size: 1.1em;
+    }
+    div .faqs .faq a{
         text-decoration: none;
         color: rgb(85, 169, 196);
-        background-color: rgb(248, 248, 248);
-        padding: .8em 1em;
-        transition: box-shadow 0.3s ease;
     }
     div .faqs a:hover{
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-decoration: underline;
     }
     div .reach-out-section h1 {
         color: rgb(31, 41, 55); 
