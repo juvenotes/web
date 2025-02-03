@@ -57,7 +57,7 @@ function goBack() {
         v-for="concept in concepts"
         :key="concept.id"
         :href="`/concepts/${concept.slug}`"
-        class="group relative overflow-hidden rounded-xl bg-white/90 p-5 border border-white/20 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+        class="group relative overflow-hidden rounded-xl bg-white/90 p-5 border border-white/20 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 outline outline-1 outline-[#d3d3d3a1]"
       >
         <div
           class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"
