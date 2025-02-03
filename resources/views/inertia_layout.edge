@@ -2,7 +2,15 @@
 <html>
 
   <head>
-    <script defer src="https://umami.analytics.juvenotes.com/script.js" data-website-id="a174f339-2722-4725-91ca-4ae91ccef461">
+    <script>
+      if (window.location.hostname === "juvenotes.com") {
+        var script = document.createElement("script");
+        script.defer = true;
+        script.src = "https://umami.analytics.juvenotes.com/script.js";
+        script.dataset.websiteId = "a174f339-2722-4725-91ca-4ae91ccef461";
+        document.head.appendChild(script);
+      }
+    </script>
       
     </script>
     <!-- Google tag (gtag.js) -->
