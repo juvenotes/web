@@ -207,6 +207,13 @@ onUnmounted(() => {
               >
                 Privacy
               </Link>
+              <!-- Button to open cookie preferences -->
+              <a
+                href="#"
+                class="text-sm text-muted-foreground hover:text-primary transition-colors"
+                id="open_preferences_center"
+                >Update cookies preferences</a
+              >
             </div>
 
             <!-- Social Links -->
