@@ -201,8 +201,6 @@ onMounted(() => {
     </main>
     <!-- <CookieConsent /> -->
      <div>
-    <!-- Button to open cookie preferences -->
-    <a href="#" id="open_preferences_center">Update cookies preferences</a>
   </div>
   </div>
 </template>
