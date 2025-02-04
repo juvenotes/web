@@ -79,6 +79,8 @@
     "@adonisjs/shield": "^8.1.1",
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/vite": "^3.0.0",
+    "@citation-js/core": "^0.7.18",
+    "@citation-js/plugin-doi": "^0.7.18",
     "@foadonis/magnify": "^0.2.5",
     "@foadonis/maintenance": "^0.0.3",
     "@hookform/resolvers": "^3.9.1",
