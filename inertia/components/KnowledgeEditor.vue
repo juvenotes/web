@@ -21,7 +21,6 @@ import {
   Italic,
   List,
   ListOrdered,
-  Code,
   Quote,
   ImageIcon,
   Link as LinkIcon,
@@ -29,8 +28,6 @@ import {
   Heading1,
   Heading2,
   Clock,
-  Pilcrow,
-  Heading3,
 } from 'lucide-vue-next'
 import debounce from 'lodash/debounce'
 import { ref, computed } from 'vue'
@@ -42,7 +39,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue', 'update:metadata'])
 
-const AUTOSAVE_DELAY = 2000
+const AUTOSAVE_DELAY = 1000
 const isSaving = ref(false)
 const isUploading = ref(false)
 
@@ -178,59 +175,47 @@ const editor = useEditor({
   },
 })
 
-const toolbar = [
+const toolbar = [ 
   {
     icon: Bold,
     title: 'Bold',
     action: () => editor.value?.chain().focus().toggleBold().run(),
-    isActive: () => editor.value?.isActive('bold'),
+    isActive: () => editor.value?.isActive('bold')
   },
   {
     icon: Italic,
     title: 'Italic',
     action: () => editor.value?.chain().focus().toggleItalic().run(),
-    isActive: () => editor.value?.isActive('bold'),
-  },
-  {
-    icon: Pilcrow,
-    title: 'Paragraph',
-    action: () => editor.value?.chain().focus().setParagraph().run(),
-    isActive: () => editor.value?.isActive('bold'),
+    isActive: () => editor.value?.isActive('italic')
   },
   {
     icon: Heading1,
-    title: 'H1',
+    title: 'Heading 1',
     action: () => editor.value?.chain().focus().toggleHeading({ level: 1 }).run(),
-    isActive: () => editor.value?.isActive('bold'),
+    isActive: () => editor.value?.isActive('heading', { level: 1 })
   },
   {
     icon: Heading2,
-    title: 'H2',
+    title: 'Heading 2',
     action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run(),
-    isActive: () => editor.value?.isActive('bold'),
+    isActive: () => editor.value?.isActive('heading', { level: 2 })
   },
   {
-    icon: Heading3,
-    title: 'H3',
-    action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run(),
+    icon: Quote,
+    title: 'Quote',
+    action: () => editor.value?.chain().focus().toggleBlockquote().run(),
     isActive: () => editor.value?.isActive('bold'),
   },
   {
     icon: List,
     title: 'Bullet List',
     action: () => editor.value?.chain().focus().toggleBulletList().run(),
-    isActive: () => editor.value?.isActive('bold'),
+    isActive: () => editor.value?.isActive('bulletList')
   },
   {
     icon: ListOrdered,
     title: 'Ordered List',
     action: () => editor.value?.chain().focus().toggleOrderedList().run(),
-    isActive: () => editor.value?.isActive('bold'),
-  },
-  {
-    icon: Code,
-    title: 'Code',
-    action: () => editor.value?.chain().focus().toggleCode().run(),
     isActive: () => editor.value?.isActive('bold'),
   },
   {
@@ -346,7 +331,7 @@ const addYoutubeVideo = () => {
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
-  content: 'Start typing...';
+  content: "Start typing...";
   float: left;
   color: #adb5bd;
   pointer-events: none;
