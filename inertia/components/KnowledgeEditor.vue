@@ -27,6 +27,7 @@ import {
   Youtube as YoutubeIcon,
   Heading1,
   Heading2,
+  Heading3,
   Clock,
 } from 'lucide-vue-next'
 import debounce from 'lodash/debounce'
@@ -201,6 +202,12 @@ const toolbar = [
     isActive: () => editor.value?.isActive('heading', { level: 2 })
   },
   {
+    icon: Heading3,
+    title: 'Heading 3',
+    action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run(),
+    isActive: () => editor.value?.isActive('heading', { level: 2 })
+  },
+  {
     icon: Quote,
     title: 'Quote',
     action: () => editor.value?.chain().focus().toggleBlockquote().run(),
@@ -216,12 +223,6 @@ const toolbar = [
     icon: ListOrdered,
     title: 'Ordered List',
     action: () => editor.value?.chain().focus().toggleOrderedList().run(),
-    isActive: () => editor.value?.isActive('bold'),
-  },
-  {
-    icon: Quote,
-    title: 'Quote',
-    action: () => editor.value?.chain().focus().toggleBlockquote().run(),
     isActive: () => editor.value?.isActive('bold'),
   },
 ]
