@@ -25,13 +25,14 @@ import {
   ImageIcon,
   Link as LinkIcon,
   Youtube as YoutubeIcon,
+  Table as TableIcon,
   Heading1,
   Heading2,
   Heading3,
   Clock,
 } from 'lucide-vue-next'
 import debounce from 'lodash/debounce'
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted, onMounted } from 'vue'
 
 const props = defineProps<{
   modelValue: string
@@ -43,6 +44,21 @@ const emit = defineEmits(['update:modelValue', 'update:metadata'])
 const AUTOSAVE_DELAY = 1000
 const isSaving = ref(false)
 const isUploading = ref(false)
+const isTableMenuOpen = ref(false)
+
+const closeTableMenu = (event: Event) => {
+  if (!(event.target as HTMLElement).closest('.table-menu')) {
+    isTableMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeTableMenu)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeTableMenu)
+})
 
 const saveStatus = computed(() => {
   if (isSaving.value) return 'Saving...'
@@ -76,7 +92,8 @@ const handleFileUpload = async (file: File) => {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        'X-CSRF-TOKEN':
+          document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
       },
       body: formData,
     })
@@ -112,7 +129,8 @@ const editor = useEditor({
       html: true,
       tightLists: true,
       bulletListMarker: '-',
-      // transformPastedText: true,
+      transformPastedText: true,
+      linkify: false, 
     }),
     FontFamily,
     TextStyle,
@@ -176,36 +194,72 @@ const editor = useEditor({
   },
 })
 
-const toolbar = [ 
+const tableControls = [
+  {
+    title: 'Insert Table',
+    action: () =>
+      editor.value?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+  },
+  {
+    title: 'Add Column Before',
+    action: () => editor.value?.chain().focus().addColumnBefore().run(),
+  },
+  {
+    title: 'Add Column After',
+    action: () => editor.value?.chain().focus().addColumnAfter().run(),
+  },
+  {
+    title: 'Delete Column',
+    action: () => editor.value?.chain().focus().deleteColumn().run(),
+  },
+  {
+    title: 'Add Row Before',
+    action: () => editor.value?.chain().focus().addRowBefore().run(),
+  },
+  {
+    title: 'Add Row After',
+    action: () => editor.value?.chain().focus().addRowAfter().run(),
+  },
+  {
+    title: 'Delete Row',
+    action: () => editor.value?.chain().focus().deleteRow().run(),
+  },
+  {
+    title: 'Delete Table',
+    action: () => editor.value?.chain().focus().deleteTable().run(),
+  },
+]
+
+const toolbar = [
   {
     icon: Bold,
     title: 'Bold',
     action: () => editor.value?.chain().focus().toggleBold().run(),
-    isActive: () => editor.value?.isActive('bold')
+    isActive: () => editor.value?.isActive('bold'),
   },
   {
     icon: Italic,
     title: 'Italic',
     action: () => editor.value?.chain().focus().toggleItalic().run(),
-    isActive: () => editor.value?.isActive('italic')
+    isActive: () => editor.value?.isActive('italic'),
   },
   {
     icon: Heading1,
     title: 'Heading 1',
     action: () => editor.value?.chain().focus().toggleHeading({ level: 1 }).run(),
-    isActive: () => editor.value?.isActive('heading', { level: 1 })
+    isActive: () => editor.value?.isActive('heading', { level: 1 }),
   },
   {
     icon: Heading2,
     title: 'Heading 2',
     action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run(),
-    isActive: () => editor.value?.isActive('heading', { level: 2 })
+    isActive: () => editor.value?.isActive('heading', { level: 2 }),
   },
   {
     icon: Heading3,
     title: 'Heading 3',
     action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run(),
-    isActive: () => editor.value?.isActive('heading', { level: 2 })
+    isActive: () => editor.value?.isActive('heading', { level: 2 }),
   },
   {
     icon: Quote,
@@ -217,7 +271,7 @@ const toolbar = [
     icon: List,
     title: 'Bullet List',
     action: () => editor.value?.chain().focus().toggleBulletList().run(),
-    isActive: () => editor.value?.isActive('bulletList')
+    isActive: () => editor.value?.isActive('bulletList'),
   },
   {
     icon: ListOrdered,
@@ -288,7 +342,32 @@ const addYoutubeVideo = () => {
       </button>
 
       <div class="h-4 w-px bg-border mx-2"></div>
-
+      <div class="relative group table-menu">
+        <button
+          type="button"
+          class="p-2 rounded-lg hover:bg-accent transition-colors"
+          title="Table Controls"
+          @click.stop="isTableMenuOpen = !isTableMenuOpen"
+        >
+          <TableIcon class="h-4 w-4" />
+        </button>
+        <div
+          v-show="isTableMenuOpen"
+          class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-card z-10"
+        >
+          <div class="py-1">
+            <button
+              v-for="control in tableControls"
+              :key="control.title"
+              @click="control.action"
+              type="button"
+              class="block px-4 py-2 text-sm w-full text-left hover:bg-accent"
+            >
+              {{ control.title }}
+            </button>
+          </div>
+        </div>
+      </div>
       <button
         @click="addImage"
         type="button"
@@ -332,7 +411,7 @@ const addYoutubeVideo = () => {
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
-  content: "Start typing...";
+  content: 'Start typing...';
   float: left;
   color: #adb5bd;
   pointer-events: none;
@@ -398,5 +477,55 @@ const addYoutubeVideo = () => {
 .editor-image[data-uploading] {
   opacity: 0.5;
   cursor: wait;
+}
+.ProseMirror table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  border: 2px solid #ced4da;
+  box-sizing: border-box;
+  min-width: 1em;
+  padding: 3px 5px;
+  position: relative;
+  vertical-align: top;
+}
+
+.ProseMirror th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  text-align: left;
+}
+
+.ProseMirror .selectedCell:after {
+  background: rgba(200, 200, 255, 0.4);
+  content: '';
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.ProseMirror .column-resize-handle {
+  background-color: #adb5bd;
+  bottom: -2px;
+  position: absolute;
+  right: -2px;
+  pointer-events: none;
+  top: 0;
+  width: 4px;
+}
+
+.ProseMirror.resize-cursor {
+  cursor: ew-resize;
+  cursor: col-resize;
 }
 </style>
