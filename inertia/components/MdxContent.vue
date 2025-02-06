@@ -2,6 +2,7 @@
 import { ref, watchEffect } from 'vue'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
@@ -18,6 +19,7 @@ watchEffect(async () => {
     .use(remarkParse)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
+    .use(remarkGfm) 
     .use(rehypeHighlight)
     .use(rehypeStringify)
     .process(props.content)
@@ -170,6 +172,40 @@ watchEffect(async () => {
       border-color: hsl(var(--primary) / 0.2);
       box-shadow: 0 4px 20px -4px hsl(var(--primary) / 0.15);
     }
+  }
+
+    /* Table styles */
+    & table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--notion-spacing) 0;
+    font-size: 0.95em;
+  }
+
+  & th,
+  & td {
+    border: 1px solid hsl(var(--border));
+    padding: 0.75em;
+    text-align: left;
+  }
+
+  & th {
+    background: hsl(var(--muted));
+    font-weight: 600;
+  }
+
+  & tr:nth-child(even) {
+    background: hsl(var(--muted)/0.3);
+  }
+
+  & tr:hover {
+    background: hsl(var(--accent));
+  }
+
+  /* Make tables responsive */
+  & .table-wrapper {
+    overflow-x: auto;
+    max-width: 100%;
   }
 }
 </style>
