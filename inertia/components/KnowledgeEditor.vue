@@ -15,7 +15,7 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { Youtube } from '@tiptap/extension-youtube'
-import { FileHandler } from '@tiptap-pro/extension-file-handler'
+// import { FileHandler } from '@tiptap-pro/extension-file-handler'
 import {
   Bold,
   Italic,
@@ -151,42 +151,42 @@ const editor = useEditor({
     TableCell,
     TableHeader,
     Youtube.configure({ width: 640, height: 360 }),
-    FileHandler.configure({
-      allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-      onDrop: async (editor, files, pos) => {
-        console.info('File drop detected', {
-          action: 'file_drop',
-          fileCount: files.length,
-          position: pos,
-        })
-        for (const file of files) {
-          const url = await handleFileUpload(file)
-          if (url) {
-            console.info('Inserting dropped image', {
-              action: 'insert_dropped_image',
-              url,
-            })
-            editor.chain().focus().setTextSelection(pos).setImage({ src: url }).run()
-          }
-        }
-      },
-      onPaste: async (editor, files, _htmlContent) => {
-        console.info('File paste detected', {
-          action: 'file_paste',
-          fileCount: files.length,
-        })
-        for (const file of files) {
-          const url = await handleFileUpload(file)
-          if (url) {
-            console.info('Inserting pasted image', {
-              action: 'insert_pasted_image',
-              url,
-            })
-            editor.chain().focus().setImage({ src: url }).run()
-          }
-        }
-      },
-    }),
+    // FileHandler.configure({
+    //   allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+    //   onDrop: async (editor, files, pos) => {
+    //     console.info('File drop detected', {
+    //       action: 'file_drop',
+    //       fileCount: files.length,
+    //       position: pos,
+    //     })
+    //     for (const file of files) {
+    //       const url = await handleFileUpload(file)
+    //       if (url) {
+    //         console.info('Inserting dropped image', {
+    //           action: 'insert_dropped_image',
+    //           url,
+    //         })
+    //         editor.chain().focus().setTextSelection(pos).setImage({ src: url }).run()
+    //       }
+    //     }
+    //   },
+    //   onPaste: async (editor, files, _htmlContent) => {
+    //     console.info('File paste detected', {
+    //       action: 'file_paste',
+    //       fileCount: files.length,
+    //     })
+    //     for (const file of files) {
+    //       const url = await handleFileUpload(file)
+    //       if (url) {
+    //         console.info('Inserting pasted image', {
+    //           action: 'insert_pasted_image',
+    //           url,
+    //         })
+    //         editor.chain().focus().setImage({ src: url }).run()
+    //       }
+    //     }
+    //   },
+    // }),
   ],
   onUpdate: ({ editor }) => {
     const markdown = editor.storage.markdown.getMarkdown()
