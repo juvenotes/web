@@ -32,4 +32,4 @@ yarn-error.log
 # database/seeders/syllabus.csv
 
 # tiptap
-# .npmrc
+.npmrc
