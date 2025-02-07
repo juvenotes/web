@@ -127,7 +127,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
       <!-- Enhanced Main Content -->
       <div
         v-if="content"
-        class="prose prose-primary max-w-none prose-headings:text-foreground prose-p:text-muted-foreground"
+        class="prose prose-primary max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-video:mx-auto prose-video:w-full"
       >
         <MdxContent :content="content" />
       </div>
@@ -197,3 +197,51 @@ const getCorrectAnswer = (question: QuestionDto) => {
     </div>
   </div>
 </template>
+<style>
+/* Video Container Styles */
+.prose iframe {
+  aspect-ratio: 16/9;
+  width: 100%;
+  max-width: 100%;
+  margin: 2rem auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  position: relative;
+  z-index: 10;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 768px) {
+  .prose iframe {
+    max-width: 80%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .prose iframe {
+    max-width: 70%;
+  }
+}
+
+/* YouTube specific wrapper */
+.prose .youtube-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: visible;
+  margin: 2rem auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.prose .youtube-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  z-index: 20;
+}
+</style>
