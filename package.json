@@ -11,8 +11,7 @@
     "test": "node --import ts-node-maintained/register/esm --enable-source-maps bin/test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
-    "preinstall": "echo \"@tiptap-pro:registry=https://registry.tiptap.dev/\" > ~/.npmrc && echo \"//registry.tiptap.dev/:_authToken=${NPM_AUTH_TOKEN}\" >> ~/.npmrc"
+    "typecheck": "tsc --noEmit"
   },
   "imports": {
     "#utils/*": "./app/utils/*.js",
