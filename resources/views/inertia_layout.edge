@@ -2,7 +2,17 @@
 <html>
 
   <head>
-    <script defer src="http://umami-ws0c8k4oo4gkw8go884kgsow.20.164.19.119.sslip.io/script.js" data-website-id="a174f339-2722-4725-91ca-4ae91ccef461"></script>
+    <script>
+      if (window.location.hostname === "juvenotes.com") {
+        var script = document.createElement("script");
+        script.defer = true;
+        script.src = "https://umami.analytics.juvenotes.com/script.js";
+        script.dataset.websiteId = "a174f339-2722-4725-91ca-4ae91ccef461";
+        document.head.appendChild(script);
+      }
+    </script>
+      
+    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QGQDHCP9K4">
       

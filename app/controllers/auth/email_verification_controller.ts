@@ -83,7 +83,12 @@ export default class VerificationController {
       })
 
       session.flash('success', 'Email verified successfully!')
-      return response.redirect().toPath('/learn')
+
+      // Get stored return URL from post-verify key
+      const returnTo = session.pull('post_verify_return', '/learn')
+      await session.regenerate()
+
+      return response.redirect().toPath(returnTo)
     } catch (error) {
       logger.error('Email verification failed', {
         error,

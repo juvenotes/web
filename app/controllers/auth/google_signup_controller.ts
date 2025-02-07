@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import { Role } from '#enums/roles'
 import sendWelcomeEmail from '#actions/auth/registration_emails/send_welcome_email'
+import { SESSION_KEYS } from '#constants/session'
 
 export default class GoogleSignupController {
   private async handleLogin(
@@ -19,8 +20,11 @@ export default class GoogleSignupController {
     }
 
     await auth.use('web').login(existingUser)
+
+    const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
+    await session.regenerate()
     session.flash('success', `Welcome back ${existingUser.fullName}!`)
-    return response.redirect().toPath('/')
+    return response.redirect().toPath(returnTo)
   }
 
   private async handleRegistration(
@@ -39,6 +43,9 @@ export default class GoogleSignupController {
 
     await auth.use('web').login(newUser)
 
+    const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
+    await session.regenerate()
+
     try {
       await sendWelcomeEmail.handle({ user: newUser })
     } catch (error) {
@@ -46,7 +53,7 @@ export default class GoogleSignupController {
     }
 
     session.flash('success', `Welcome to Juvenotes, ${newUser.fullName}!`)
-    return response.redirect().toPath('/')
+    return response.redirect().toPath(returnTo)
   }
 
   async redirect({ ally }: HttpContext) {

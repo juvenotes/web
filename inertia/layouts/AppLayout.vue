@@ -27,9 +27,7 @@ const logoPath = '/images/logo.png'
 
         <div class="flex items-center gap-4">
           <template v-if="user">
-            <span class="text-sm text-muted-foreground">
-              Welcome, {{ user?.fullName }}
-            </span>
+            <span class="text-sm text-muted-foreground"> Welcome, {{ user?.fullName }} </span>
             <Button variant="ghost" @click="() => $inertia.post('/logout')"> Logout </Button>
           </template>
           <template v-else>
@@ -75,6 +73,13 @@ const logoPath = '/images/logo.png'
               >
                 Privacy
               </Link>
+              <!-- Button to open cookie preferences -->
+              <a
+                href="#"
+                class="text-sm text-muted-foreground hover:text-primary transition-colors"
+                id="open_preferences_center"
+                >Update cookies preferences</a
+              >
             </div>
 
             <!-- Social Links -->

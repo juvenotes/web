@@ -12,6 +12,7 @@ import {
   Menu as MenuIcon,
   ChevronLeft,
   ChevronRight,
+  Search as SearchIcon,
 } from 'lucide-vue-next'
 import { Twitter, Instagram, Linkedin } from 'lucide-vue-next'
 import UserDto from '#dtos/user'
@@ -24,6 +25,7 @@ defineProps<{
 const logoPath = '/images/logo.png'
 const isMenuOpen = ref(false)
 const isSidebarCollapsed = ref(true)
+const isSearchOpen = ref(false) // State to manage search modal visibility
 
 const sidebarLinks = [
   { name: 'Dashboard', href: '/learn', icon: Home },
@@ -54,19 +56,26 @@ onUnmounted(() => {
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
           <!-- Left section -->
-          <div class="flex items-center gap-4 lg:w-16">
+          <div class="flex items-center gap-4 w-[200px]">
+            <!-- Add fixed width -->
             <button class="lg:hidden" @click="isSidebarCollapsed = !isSidebarCollapsed">
               <MenuIcon class="h-6 w-6" />
             </button>
-            <Link href="/learn" class="hidden sm:block">
+            <Link href="/learn" class="hidden md:block">
               <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
             </Link>
           </div>
 
           <!-- Center search -->
-          <div class="flex-1 mx-4">
+          <div class="hidden md:flex flex-1 mx-auto max-w-2xl">
             <Search />
           </div>
+          <button
+            class="block md:hidden p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+            @click="isSearchOpen = true"
+          >
+            <SearchIcon class="h-5 w-5" />
+          </button>
 
           <div class="relative user-menu shrink-0">
             <button
@@ -118,6 +127,23 @@ onUnmounted(() => {
         </div>
       </div>
     </nav>
+
+    <!-- Mobile Search Modal -->
+    <div
+      v-show="isSearchOpen"
+      class="fixed inset-0 z-[120] bg-black/50 flex items-center justify-center px-4"
+      @click.self="isSearchOpen = false"
+    >
+      <div class="w-full max-w-lg p-4 bg-white rounded-lg shadow-lg relative">
+        <button
+          @click="isSearchOpen = false"
+          class="absolute top-3 right-3 h-10 w-10 flex items-center justify-center rounded-full bg-muted/20 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all shadow-lg"
+        >
+          <ChevronRight class="h-5 w-5" />
+        </button>
+        <Search />
+      </div>
+    </div>
 
     <div class="flex-1 flex">
       <div
@@ -207,6 +233,13 @@ onUnmounted(() => {
               >
                 Privacy
               </Link>
+              <!-- Button to open cookie preferences -->
+              <a
+                href="#"
+                class="text-sm text-muted-foreground hover:text-primary transition-colors"
+                id="open_preferences_center"
+                >Update cookies preferences</a
+              >
             </div>
 
             <!-- Social Links -->

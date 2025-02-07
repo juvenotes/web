@@ -2,12 +2,14 @@
 import UserDto from '#dtos/user'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { BookOpen, FileText, GraduationCap, Clock, Flame } from 'lucide-vue-next'
-import FeatureFlagsDto from '#dtos/feature_flags'
+// import FeatureFlagsDto from '#dtos/feature_flags'
+import StatsDto from '#dtos/stats';
 
 defineProps<{
   messages: Record<string, string | Record<string, string>>
   user: UserDto | null | undefined
-  features: FeatureFlagsDto
+  // features: FeatureFlagsDto
+  stats: StatsDto
 }>()
 
 defineOptions({ layout: DashLayout })
@@ -22,37 +24,37 @@ defineOptions({ layout: DashLayout })
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <!-- Welcome Text -->
         <div class="space-y-2">
-          <h1 class="text-3xl font-bold text-primary/90 flex items-center gap-3">
+          <h1 class="text-3xl font-bold text-primary flex items-center gap-3">
             Hey {{ user?.fullName }}!
             <GraduationCap class="h-8 w-8 text-primary/80" />
           </h1>
-          <p class="text-base text-muted-foreground/90">Ready to continue your learning journey?</p>
+          <p class="text-base text-gray-600">Ready to continue your learning journey?</p>
         </div>
 
         <!-- Stats Grid -->
         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <!-- Study Time -->
           <div
-            class="group flex items-center gap-3 bg-white/80 hover:bg-white/95 p-4 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex-1 md:flex-initial"
+            class="group flex items-center gap-3 bg-white/90 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 p-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex-1 md:flex-initial"
           >
-            <div class="rounded-lg bg-blue-50 p-2.5 group-hover:scale-105 transition-transform">
+            <div class="rounded-lg bg-blue-100 p-2.5 group-hover:scale-105 transition-transform">
               <Clock class="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p class="text-sm font-medium text-muted-foreground">Study Time</p>
+              <p class="text-sm font-medium text-gray-500">Study Time</p>
               <!-- <p class="text-xl font-bold text-primary">{{ formatTime(user?.total_study_time ?? 0) }}</p> -->
             </div>
           </div>
 
           <!-- Streak Counter -->
           <div
-            class="group flex items-center gap-3 bg-white/80 hover:bg-white/95 p-4 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex-1 md:flex-initial"
+            class="group flex items-center gap-3 bg-white/90 hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 p-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex-1 md:flex-initial"
           >
-            <div class="rounded-lg bg-orange-50 p-2.5 group-hover:scale-105 transition-transform">
+            <div class="rounded-lg bg-orange-100 p-2.5 group-hover:scale-105 transition-transform">
               <Flame class="h-5 w-5 text-orange-600" />
             </div>
             <div>
-              <p class="text-sm font-medium text-muted-foreground">Streak</p>
+              <p class="text-sm font-medium text-gray-500">Streak</p>
               <!-- <p class="text-xl font-bold text-primary">{{ user?.streak_count ?? 0 }} days</p> -->
             </div>
           </div>
@@ -84,7 +86,7 @@ defineOptions({ layout: DashLayout })
           </div>
 
           <!-- Description -->
-          <p class="text-muted-foreground/90 text-base leading-relaxed">
+          <p class="text-gray-600  text-base leading-relaxed">
             Practice with previous examination papers to enhance your preparation
           </p>
 
@@ -92,15 +94,16 @@ defineOptions({ layout: DashLayout })
           <div class="flex items-center gap-4">
             <span
               class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium"
+              data-umami-event="open_past_papers_from_dashboard"
             >
-              25 Papers
+            {{ stats.papers }} Papers
             </span>
-            <span class="text-sm text-muted-foreground">Updated Weekly</span>
+            <span class="text-sm text-gray-500">Updated Weekly</span>
           </div>
 
           <!-- Action Indicator -->
           <div class="flex items-center text-primary text-sm font-medium">
-            <span>Explore Papers</span>
+            <span>Explore Past Papers</span>
             <svg
               class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
               viewBox="0 0 20 20"
@@ -137,7 +140,7 @@ defineOptions({ layout: DashLayout })
           </div>
 
           <!-- Description -->
-          <p class="text-muted-foreground/90 text-base leading-relaxed">
+          <p class="text-gray-600 text-base leading-relaxed">
             Master comprehensive study materials organized by topics
           </p>
 
@@ -145,10 +148,13 @@ defineOptions({ layout: DashLayout })
           <div class="flex items-center gap-4">
             <span
               class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium"
+              data-umami-event="open_concepts_from_dashboard"
             >
-              12 Units
+            {{ stats.concepts }} Units
             </span>
-            <span class="text-sm text-muted-foreground">200+ Topics</span>
+            <span class="text-sm text-muted-foreground"
+              >{{ stats.contentfulConcepts }}+ Topics</span
+            >
           </div>
 
           <!-- Action Indicator -->

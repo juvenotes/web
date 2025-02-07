@@ -30,6 +30,7 @@ const PersonalizationController = () => import('#controllers/auth/personalizatio
 const ManagePapersController = () => import('#controllers/manage/past_papers/index_controller')
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 const ManageUsersController = () => import('#controllers/manage/users/index_controller')
+const UploadImageController = () => import('#controllers/api/upload_image_controller')
 
 // test crash route
 router.get('/crash', () => {
@@ -237,3 +238,10 @@ router.get('/api/concepts/search', [IndexConceptsController, 'search']).use(midd
 router
   .get('/api/manage/concepts/search', [ManageConceptsController, 'search'])
   .use(middleware.auth())
+
+//* UPLOAD IMAGE -> CLOUDINARY
+router.post('/api/upload-image', [UploadImageController, 'store'])
+
+router.get('/test/upload', ({ inertia }) => {
+  return inertia.render('test/upload')
+})
