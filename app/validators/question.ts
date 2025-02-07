@@ -68,7 +68,7 @@ export const createSaqQuestionValidator = vine.compile(
       .array(
         vine.object({
           partText: vine.string().trim().minLength(1),
-          expectedAnswer: vine.string().trim().minLength(1),
+          expectedAnswer: vine.string().trim().minLength(1).maxLength(5000),
           marks: vine.number().min(1),
         })
       )

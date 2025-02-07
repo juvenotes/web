@@ -370,7 +370,11 @@ export default class ManagePastPapersController {
   }
 
   async updateSaq({ params, request, response, auth, session, logger }: HttpContext) {
-    const question = await Question.findByOrFail('slug', params.questionSlug)
+    const question = await Question.query()
+      .where('slug', params.questionSlug)
+      .preload('pastPaper')
+      .firstOrFail()
+
     if (!question.isSaq) {
       return response.badRequest('Question is not SAQ type')
     }
