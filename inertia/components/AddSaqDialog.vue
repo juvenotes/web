@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
-import { Label } from '~/components/ui/label'
-import { Input } from '~/components/ui/input'
 import { Trash2, Plus } from 'lucide-vue-next'
 import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
@@ -102,7 +98,12 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <Input v-model="part.expectedAnswer" placeholder="Expected answer" />
+                <Textarea
+                  v-model="part.expectedAnswer"
+                  :placeholder="'Expected answer can include lists:\n- Point 1\n- Point 2\n- Point 3'"
+                  rows="4"
+                  class="resize-y min-h-[100px]"
+                />
               </div>
 
               <div class="space-y-2">
