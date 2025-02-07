@@ -127,7 +127,7 @@ const getLastEditDate = computed(() => {
 
               <!-- Show Answer Button for Each Part -->
               <button v-if="!showAnswer[part.id]" @click="showAnswer[part.id] = true"
-                class="mt-3 text-primary font-semibold text-sm">
+                class="mt-3 text-primary font-semibold text-sm rounded-lg p-2 bg-[#CDE5ED]">
                 Show Answer
               </button>
 
