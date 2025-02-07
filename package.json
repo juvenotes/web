@@ -115,7 +115,7 @@
     "@vee-validate/zod": "^4.15.0",
     "@vinejs/vine": "^2.1.0",
     "@vue/server-renderer": "^3.5.13",
-    "@vueuse/core": "^12.3.0",
+    "@vueuse/core": "^12.5.0",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.5.1",
