@@ -70,8 +70,10 @@ onUnmounted(() => {
           <div class="hidden md:flex flex-1 mx-auto max-w-2xl">
             <Search />
           </div>
-          <button class="block md:hidden p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
-            @click="isSearchOpen = true">
+          <button
+            class="block md:hidden p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+            @click="isSearchOpen = true"
+          >
             <SearchIcon class="h-5 w-5" />
           </button>
 
@@ -127,13 +129,16 @@ onUnmounted(() => {
     </nav>
 
     <!-- Mobile Search Modal -->
-    <div v-show="isSearchOpen" class="fixed inset-0 z-[120] bg-black/50 flex items-center justify-center px-4"
+    <div
+      v-show="isSearchOpen"
+      class="fixed inset-0 z-[120] bg-black/50 flex items-center justify-center px-4"
       @click.self="isSearchOpen = false"
-      >
+    >
       <div class="w-full max-w-lg p-4 bg-white rounded-lg shadow-lg relative">
-
-        <button @click="isSearchOpen = false"
-          class="absolute top-3 right-3 h-10 w-10 flex items-center justify-center rounded-full bg-muted/20 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all shadow-lg">
+        <button
+          @click="isSearchOpen = false"
+          class="absolute top-3 right-3 h-10 w-10 flex items-center justify-center rounded-full bg-muted/20 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all shadow-lg"
+        >
           <ChevronRight class="h-5 w-5" />
         </button>
         <Search />
@@ -228,6 +233,13 @@ onUnmounted(() => {
               >
                 Privacy
               </Link>
+              <!-- Button to open cookie preferences -->
+              <a
+                href="#"
+                class="text-sm text-muted-foreground hover:text-primary transition-colors"
+                id="open_preferences_center"
+                >Update cookies preferences</a
+              >
             </div>
 
             <!-- Social Links -->

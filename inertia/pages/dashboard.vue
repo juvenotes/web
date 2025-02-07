@@ -94,15 +94,16 @@ defineOptions({ layout: DashLayout })
           <div class="flex items-center gap-4">
             <span
               class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium"
+              data-umami-event="open_past_papers_from_dashboard"
             >
-              25 Papers
+            {{ stats.papers }} Papers
             </span>
             <span class="text-sm text-gray-500">Updated Weekly</span>
           </div>
 
           <!-- Action Indicator -->
           <div class="flex items-center text-primary text-sm font-medium">
-            <span>Explore Papers</span>
+            <span>Explore Past Papers</span>
             <svg
               class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
               viewBox="0 0 20 20"
@@ -147,10 +148,13 @@ defineOptions({ layout: DashLayout })
           <div class="flex items-center gap-4">
             <span
               class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium"
+              data-umami-event="open_concepts_from_dashboard"
             >
-              12 Units
+            {{ stats.concepts }} Units
             </span>
-            <span class="text-sm text-gray-500">200+ Topics</span>
+            <span class="text-sm text-muted-foreground"
+              >{{ stats.contentfulConcepts }}+ Topics</span
+            >
           </div>
 
           <!-- Action Indicator -->
