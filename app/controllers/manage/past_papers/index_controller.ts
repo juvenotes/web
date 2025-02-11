@@ -33,10 +33,11 @@ export default class ManagePastPapersController {
    * Show root level concepts with their papers
    */
   async index({ inertia, logger, auth }: HttpContext) {
-    logger.info('fetching root concepts with papers', {
-      userId: auth.user?.id,
-      action: 'list_root_concepts_papers',
-    })
+    const context = {
+      controller: 'ManagePastPapersController',
+      action: 'index',
+    }
+    logger.info({ ...context, message: 'Fetching root concepts with papers' })
 
     const concepts = await Concept.query()
       .where('level', 0)
@@ -45,11 +46,12 @@ export default class ManagePastPapersController {
         query.select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
       })
 
-    logger.info('found root concepts with papers', {
+    logger.info({
+      ...context,
       userId: auth.user?.id,
       count: concepts.length,
       papersCount: concepts.reduce((sum, c) => sum + (c.pastPapers?.length ?? 0), 0),
-      action: 'list_root_concepts_papers',
+      message: 'found root concepts with papers',
     })
 
     return inertia.render('manage/papers/index', {
@@ -61,11 +63,12 @@ export default class ManagePastPapersController {
    * Show concept details with its papers
    */
   async show({ params, inertia, logger, auth }: HttpContext) {
-    logger.info('fetching concept with papers', {
-      userId: auth.user?.id,
+    const context = {
+      controller: 'ManagePastPapersController',
+      action: 'show',
       conceptSlug: params.slug,
-      action: 'show_concept_papers',
-    })
+    }
+    logger.info({ ...context, message: 'Fetching concept with papers' })
 
     const concept = await Concept.query()
       .where('slug', params.slug)
@@ -74,12 +77,13 @@ export default class ManagePastPapersController {
       })
       .firstOrFail()
 
-    logger.info('found concept with papers', {
+    logger.info({
+      ...context,
       userId: auth.user?.id,
       conceptId: concept.id,
       conceptTitle: concept.title,
       papersCount: concept.pastPapers?.length ?? 0,
-      action: 'show_concept_papers',
+      message: 'found concept with papers',
     })
 
     return inertia.render('manage/papers/show', {
@@ -92,11 +96,13 @@ export default class ManagePastPapersController {
    * Show a specific paper for management
    */
   async viewPaper({ params, inertia, logger, auth }: HttpContext) {
-    logger.info('fetching paper details', {
-      userId: auth.user?.id,
+    const context = {
+      controller: 'ManagePastPapersController',
+      action: 'viewPaper',
       paperSlug: params.paperSlug,
-      action: 'view_paper_details',
-    })
+      userId: auth.user?.id,
+    }
+    logger.info({ ...context, message: 'fetching paper details' })
 
     const paper = await PastPaper.query()
       .where('slug', params.paperSlug)
