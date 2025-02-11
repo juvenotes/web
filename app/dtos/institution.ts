@@ -3,6 +3,7 @@ import Institution from '#models/institution'
 import { InstitutionType } from '#enums/institution_type'
 import { CountryCode } from '#enums/countries'
 import CourseDto from '#dtos/course'
+import InstitutionCoursesDto from '#dtos/institution_course'
 
 export default class InstitutionDto extends BaseModelDto {
   declare id: number
@@ -12,6 +13,7 @@ export default class InstitutionDto extends BaseModelDto {
   declare countryCode: CountryCode
   declare isActive: boolean
   declare courses: CourseDto[]
+  declare institutionCourses: InstitutionCoursesDto[]
   declare createdAt: string
   declare updatedAt: string
 
@@ -26,6 +28,7 @@ export default class InstitutionDto extends BaseModelDto {
     this.countryCode = institution.countryCode
     this.isActive = institution.isActive
     this.courses = CourseDto.fromArray(institution.courses)
+    this.institutionCourses = InstitutionCoursesDto.fromArray(institution.institutionCourses)
     // this.createdAt = institution.createdAt.toISO()!
     // this.updatedAt = institution.updatedAt.toISO()!
   }

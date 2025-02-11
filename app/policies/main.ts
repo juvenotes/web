@@ -13,6 +13,7 @@
 */
 
 export const policies = {
+  InstitutionPolicy: () => import('#policies/institution_policy'),
   AdminDashboardPolicy: () => import('#policies/admin_dashboard_policy'),
   PaperPolicy: () => import('#policies/paper_policy'),
   UserPolicy: () => import('#policies/user_policy'),
