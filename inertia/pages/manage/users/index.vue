@@ -16,7 +16,7 @@ interface Props {
   }
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 const updateRole = (userId: number, event: Event) => {
   const target = event.target as HTMLSelectElement

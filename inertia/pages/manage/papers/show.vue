@@ -70,6 +70,9 @@ function goBack() {
               <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
                 {{ paper.examType }}
               </span>
+              <span class="text-muted-foreground">
+                {{ paper.questions?.length ?? 0 }} questions
+              </span>
               <span class="text-muted-foreground">{{ paper.year }}</span>
             </div>
           </div>

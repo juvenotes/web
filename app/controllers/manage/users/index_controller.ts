@@ -12,7 +12,7 @@ export default class ManageUsersController {
     }
 
     const page = request.input('page', 1)
-    const limit = 50
+    const limit = 30
 
     const users = await User.query()
       .preload('role')

@@ -72,7 +72,7 @@ function goBack() {
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
             <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
               {{ concept.pastPapers?.length ?? 0 }}
-    {{ (concept.pastPapers?.length ?? 0) === 1 ? 'paper' : 'papers' }}
+              {{ (concept.pastPapers?.length ?? 0) === 1 ? 'paper' : 'papers' }}
             </span>
           </div>
 

@@ -73,7 +73,15 @@ export default class ManagePastPapersController {
     const concept = await Concept.query()
       .where('slug', params.slug)
       .preload('pastPapers', (query) => {
-        query.select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+        query
+          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .orderBy('year', 'desc')
+          .preload('questions', (questionsQuery) => {
+            questionsQuery
+              .select(['id', 'type', 'question_text', 'difficulty_level', 'past_paper_id'])
+              .preload('choices')
+              .preload('parts')
+          })
       })
       .firstOrFail()
 
@@ -89,6 +97,7 @@ export default class ManagePastPapersController {
     return inertia.render('manage/papers/show', {
       concept: new ConceptDto(concept),
       papers: concept.pastPapers ? PastPaperDto.fromArray(concept.pastPapers) : [],
+      questions: concept.pastPapers?.flatMap((paper) => paper.questions) ?? [],
     })
   }
 
