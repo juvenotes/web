@@ -17,20 +17,19 @@ export default class ManageConceptsController {
   async index({ inertia, bouncer, logger, auth }: HttpContext) {
     await bouncer.with('ConceptPolicy').authorize('view')
 
-    logger.info('fetching root concepts', {
-      userId: auth.user?.id,
-      action: 'list_root_concepts',
-    })
+    const context = { controller: 'ManageConceptsController', action: 'index' }
+    logger.info({ ...context, message: 'Fetching root concepts', userId: auth.user?.id })
 
     const concepts = await Concept.query()
       .whereNull('parent_id')
       .orderBy('level', 'asc')
       .select(['id', 'title', 'slug', 'is_terminal', 'level'])
 
-    logger.info('found root concepts', {
-      userId: auth.user?.id,
+    logger.info({
+      ...context,
       count: concepts.length,
-      action: 'list_root_concepts',
+      message: 'Found root concepts',
+      userId: auth.user?.id,
     })
 
     return inertia.render('manage/concepts/index', {
@@ -43,12 +42,16 @@ export default class ManageConceptsController {
    */
   async show({ params, inertia, response, bouncer, logger, auth }: HttpContext) {
     await bouncer.with('ConceptPolicy').authorize('view')
+
+    const context = {
+      controller: 'ManageConceptsController',
+      action: 'show',
+      conceptSlug: params.slug,
+      userId: auth.user?.id,
+    }
+
     try {
-      logger.info('fetching concept details', {
-        userId: auth.user?.id,
-        conceptSlug: params.slug,
-        action: 'view_concept',
-      })
+      logger.info({ ...context, message: 'Fetching concept details' })
 
       const concept = await Concept.query()
         .where('slug', params.slug)
@@ -66,14 +69,13 @@ export default class ManageConceptsController {
 
       const content = concept.isTerminal ? concept.knowledgeBlock : null
 
-      logger.info('concept details retrieved', {
-        userId: auth.user?.id,
+      logger.info({
+        ...context,
         conceptId: concept.id,
-        conceptSlug: concept.slug,
         childrenCount: concept.children?.length ?? 0,
         questionsCount: concept.questions?.length ?? 0,
         hasContent: !!content,
-        action: 'view_concept',
+        message: 'Retrieved concept details',
       })
 
       return inertia.render('manage/concepts/show', {
@@ -83,11 +85,9 @@ export default class ManageConceptsController {
         content,
       })
     } catch (error) {
-      logger.error('failed to fetch concept', {
-        userId: auth.user?.id,
-        conceptSlug: params.slug,
-        // we need to update type of error later
-        action: 'view_concept',
+      logger.error({
+        ...context,
+        message: 'Failed to fetch concept',
       })
       return response.redirect().toPath('/manage/concepts')
     }
@@ -98,10 +98,13 @@ export default class ManageConceptsController {
       return response.forbidden('You are not authorized to create concepts')
     }
 
-    logger.info('validating concept creation data', {
+    const context = {
+      controller: 'ManageConceptsController',
+      action: 'store',
       userId: auth.user!.id,
-      action: 'create_concept',
-    })
+    }
+
+    logger.info({ ...context, message: 'Validating concept creation data' })
 
     const data = await request.validateUsing(createConceptValidator)
 
@@ -109,10 +112,10 @@ export default class ManageConceptsController {
     let parentId = null
 
     if (data.parentId) {
-      logger.info('fetching parent concept', {
-        userId: auth.user!.id,
+      logger.info({
+        ...context,
         parentSlug: data.parentId,
-        action: 'create_concept',
+        message: 'Fetching parent concept',
       })
 
       const parentConcept = await Concept.findByOrFail('slug', data.parentId)
@@ -137,13 +140,13 @@ export default class ManageConceptsController {
       metadata,
     })
 
-    logger.info('concept created successfully', {
-      userId: auth.user!.id,
+    logger.info({
+      ...context,
       conceptId: concept.id,
       conceptSlug: concept.slug,
       parentId,
       level: newLevel,
-      action: 'create_concept',
+      message: 'Concept created successfully',
     })
 
     session.flash('success', `${concept.title} created successfully`)
@@ -153,23 +156,25 @@ export default class ManageConceptsController {
   async search({ request, response, bouncer, logger, auth }: HttpContext) {
     await bouncer.with('ConceptPolicy').authorize('view')
 
-    const query = request.input('q', '')
+    const context = {
+      controller: 'ManageConceptsController',
+      action: 'search',
+      query: request.input('q', ''),
+      userId: auth.user?.id,
+    }
 
-    if (!query || query.length < 2) {
+    if (!context.query || context.query.length < 2) {
       return response.json([])
     }
 
-    logger.info('admin:concepts:search:start', {
-      query,
-      userId: auth.user?.id,
-    })
+    logger.info({ ...context, message: 'Searching concepts' })
 
-    const results = await Concept.searchConceptByTitle(request.input('q', ''), 5, true)
+    const results = await Concept.searchConceptByTitle(context.query, 5, true)
 
-    logger.info('admin:concepts:search:complete', {
-      query,
-      count: results.length,
-      userId: auth.user?.id,
+    logger.info({
+      ...context,
+      resultsCount: results.length,
+      message: 'Search completed',
     })
 
     return response.json(results)
@@ -178,20 +183,18 @@ export default class ManageConceptsController {
   async update({ request, params, response, session, bouncer, auth, logger }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
 
-    logger.info('attempting to update concept', {
-      userId: auth?.user?.id,
+    const context = {
+      controller: 'ManageConceptsController',
+      action: 'update',
       conceptId: concept.id,
       conceptSlug: concept.slug,
-      action: 'update_concept',
-    })
+      userId: auth?.user?.id,
+    }
+
+    logger.info({ ...context, message: 'Attempting to update concept' })
 
     if (await bouncer.with(ConceptPolicy).denies('update', concept)) {
-      logger.warn('unauthorized concept update attempt', {
-        userId: auth?.user?.id,
-        conceptId: concept.id,
-        conceptSlug: concept.slug,
-        action: 'update_concept',
-      })
+      logger.warn({ ...context, message: 'Unauthorized concept update attempt' })
       return response.forbidden('Not authorized to update this concept')
     }
 
@@ -215,13 +218,11 @@ export default class ManageConceptsController {
       })
       .save()
 
-    logger.info('concept updated successfully', {
-      userId: auth?.user?.id,
-      conceptId: concept.id,
-      conceptSlug: concept.slug,
+    logger.info({
+      ...context,
       updatedFields: Object.keys(data),
       isTerminal: concept.isTerminal,
-      action: 'update_concept',
+      message: 'Concept updated successfully',
     })
 
     session.flash('success', `${concept.title} updated. Refresh page if necessary`)
@@ -231,12 +232,15 @@ export default class ManageConceptsController {
   async updateContent({ request, params, response, bouncer, auth, logger }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
 
-    logger.info('attempting to update concept content', {
-      userId: auth?.user?.id,
+    const context = {
+      controller: 'ManageConceptsController',
+      action: 'updateContent',
       conceptId: concept.id,
       conceptSlug: concept.slug,
-      action: 'update_concept_content',
-    })
+      userId: auth?.user?.id,
+    }
+
+    logger.info({ ...context, message: 'Attempting to update concept content' })
 
     await bouncer.with('ConceptPolicy').authorize('update', concept)
 
@@ -248,12 +252,10 @@ export default class ManageConceptsController {
       })
       .save()
 
-    logger.info('concept content updated successfully', {
-      userId: auth?.user?.id,
-      conceptId: concept.id,
-      conceptSlug: concept.slug,
+    logger.info({
+      ...context,
       contentLength: knowledgeBlock?.length ?? 0,
-      action: 'update_concept_content',
+      message: 'Concept content updated successfully',
     })
 
     return response.redirect().toPath(`/manage/concepts/${concept.slug}`)
@@ -262,31 +264,24 @@ export default class ManageConceptsController {
   async destroy({ params, response, session, bouncer, logger, auth }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
 
-    logger.info('attempting to delete concept', {
-      userId: auth?.user?.id,
+    const context = {
+      controller: 'ManageConceptsController',
+      action: 'destroy',
       conceptId: concept.id,
       conceptSlug: concept.slug,
-      action: 'delete_concept',
-    })
+      userId: auth?.user?.id,
+    }
+
+    logger.info({ ...context, message: 'Attempting to delete concept' })
 
     if (await bouncer.with(ConceptPolicy).denies('delete', concept)) {
-      logger.warn('unauthorized concept deletion attempt', {
-        userId: auth?.user?.id,
-        conceptId: concept.id,
-        conceptSlug: concept.slug,
-        action: 'delete_concept',
-      })
+      logger.warn({ ...context, message: 'Unauthorized concept deletion attempt' })
       return response.forbidden('Not authorized to delete this concept')
     }
 
     await concept.delete()
 
-    logger.info('concept deleted successfully', {
-      userId: auth?.user?.id,
-      conceptId: concept.id,
-      conceptSlug: concept.slug,
-      action: 'delete_concept',
-    })
+    logger.info({ ...context, message: 'Concept deleted successfully' })
 
     session.flash('success', 'Concept deleted. Refresh page if necessary')
     return response.redirect().toPath('/manage/concepts')

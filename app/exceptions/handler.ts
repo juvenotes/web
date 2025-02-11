@@ -1,6 +1,7 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
+import { errors } from '@adonisjs/bouncer'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -21,7 +22,6 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * to return the HTML contents to send as a response.
    */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
-    '403': (error, { inertia }) => inertia.render('errors/access_denied', { error }),
     '404': (error, { inertia }) => inertia.render('errors/not_found', { error }),
     '500..599': (error, { inertia }) => inertia.render('errors/server_error', { error }),
   }
@@ -31,6 +31,15 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (error instanceof errors.E_AUTHORIZATION_FAILURE) {
+      return ctx.inertia.render('errors/access_denied', {
+        error: {
+          status: error.status,
+          message: error.message || 'You do not have permission to access this resource',
+        },
+      })
+    }
+
     return super.handle(error, ctx)
   }
 

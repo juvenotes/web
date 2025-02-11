@@ -31,6 +31,8 @@ const ManagePapersController = () => import('#controllers/manage/past_papers/ind
 const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
 const ManageUsersController = () => import('#controllers/manage/users/index_controller')
 const UploadImageController = () => import('#controllers/api/upload_image_controller')
+const ManageInstitutionsController = () =>
+  import('#controllers/manage/institutions/index_controller')
 
 // test crash route
 router.get('/crash', () => {
@@ -245,3 +247,11 @@ router.post('/api/upload-image', [UploadImageController, 'store'])
 router.get('/test/upload', ({ inertia }) => {
   return inertia.render('test/upload')
 })
+
+router
+  .group(() => {
+    router.get('/', [ManageInstitutionsController, 'index'])
+    router.get('/:id', [ManageInstitutionsController, 'show'])
+  })
+  .prefix('/manage/institutions')
+  .use(middleware.auth())
