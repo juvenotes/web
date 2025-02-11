@@ -14,7 +14,7 @@ defineOptions({ layout: ErrorLayout })
       <h1 class="text-4xl font-bold">Page not found</h1>
       <p class="text-muted-foreground">This page does not exist.</p>
       <p class="text-muted-foreground">Let us go back to knowledge.</p>
-      <Link as="button" href="/learn">Go Back to Safety</Link>
+      <Button as="a" href="/learn">Go Back to Safety</Button>
     </div>
   </div>
 </template>
