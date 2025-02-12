@@ -58,6 +58,7 @@ declare module 'vue' {
     SelectValue: typeof import('./inertia/components/ui/select/SelectValue.vue')['default']
     Separator: typeof import('./inertia/components/ui/separator/Separator.vue')['default']
     Sonner: typeof import('./inertia/components/ui/sonner/Sonner.vue')['default']
+    Switch: typeof import('./inertia/components/ui/switch/Switch.vue')['default']
     Textarea: typeof import('./inertia/components/ui/textarea/Textarea.vue')['default']
     Toast: typeof import('./inertia/components/ui/toast/Toast.vue')['default']
     ToastAction: typeof import('./inertia/components/ui/toast/ToastAction.vue')['default']
