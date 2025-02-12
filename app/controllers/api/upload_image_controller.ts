@@ -16,7 +16,7 @@ export default class UploadImageController {
       }
 
       const url = await CloudinaryService.uploadImage(file.tmpPath!)
-      return response.status(200).json({ url })
+      return url
     } catch (error) {
       console.error('Upload failed:', error)
       return response.status(500).json({
