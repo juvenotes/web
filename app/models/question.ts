@@ -26,7 +26,7 @@ export default class Question extends BaseModel {
   declare difficultyLevel: DifficultyLevel
 
   @column()
-  declare questionImage: string | null
+  declare questionImagePath: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -13,7 +13,7 @@ export default class QuestionDto extends BaseModelDto {
   declare userId: number
   declare type: QuestionType
   declare questionText: string
-  declare questionImage: string | null
+  declare questionImagePath: string | null
   declare difficultyLevel: DifficultyLevel
   declare createdAt: string
   declare updatedAt: string
@@ -36,7 +36,7 @@ export default class QuestionDto extends BaseModelDto {
     this.userId = question.userId
     this.type = question.type
     this.questionText = question.questionText
-    this.questionImage = question.questionImage
+    this.questionImagePath = question.questionImagePath
     this.difficultyLevel = question.difficultyLevel
     // this.createdAt = question.createdAt.toISO()!
     // this.updatedAt = question.updatedAt.toISO()!
