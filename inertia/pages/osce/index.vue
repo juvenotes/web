@@ -2,7 +2,8 @@
 import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { ArrowLeft, Stethoscope } from 'lucide-vue-next'
+import { Stethoscope } from 'lucide-vue-next'
+import { PaperType } from '#enums/exam_type'
 
 defineOptions({ layout: DashLayout })
 
@@ -12,9 +13,10 @@ interface Props {
 
 defineProps<Props>()
 
-function goBack() {
-  window.history.back()
-}
+const getOscePaperCount = (concept: ConceptDto) =>
+  concept.pastPapers?.filter((paper) => paper.paperType === PaperType.OSCE).length ?? 0
+
+const breadcrumbItems = [{ label: 'OSCEs' }]
 </script>
 
 <template>
@@ -27,15 +29,7 @@ function goBack() {
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <div class="flex items-start gap-4">
-        <button
-          @click="goBack"
-          class="flex items-center gap-2 text-primary hover:text-primary/70 transition-colors"
-        >
-          <ArrowLeft class="h-5 w-5" />
-          <span class="text-sm font-medium">Go Back</span>
-        </button>
-      </div>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
       <div class="flex items-start gap-4 mt-4">
         <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
@@ -70,17 +64,12 @@ function goBack() {
             {{ concept.title }}
           </h2>
 
-          <!-- <div class="flex items-center gap-2 text-sm text-muted-foreground">
+          <div class="flex items-center gap-2 text-sm text-muted-foreground">
             <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
-              {{ concept.pastPapers?.filter((p) => p.paperType === PaperType.OSCE).length ?? 0 }}
-              {{
-                (concept.pastPapers?.filter((p) => p.paperType === PaperType.OSCE).length ?? 0) ===
-                1
-                  ? 'paper'
-                  : 'papers'
-              }}
+              {{ getOscePaperCount(concept) }}
+              {{ getOscePaperCount(concept) === 1 ? 'paper' : 'papers' }}
             </span>
-          </div> -->
+          </div>
 
           <div
             class="flex items-center text-sm text-primary font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"

@@ -6,16 +6,7 @@ import { computed, ref, watchEffect } from 'vue'
 import MdxContent from '~/components/MdxContent.vue'
 
 import DashLayout from '~/layouts/DashLayout.vue'
-import {
-  Home,
-  BookOpen,
-  ChevronRight,
-  Network,
-  HelpCircle,
-  Circle,
-  Award,
-  ArrowLeft,
-} from 'lucide-vue-next'
+import { BookOpen, Network, HelpCircle, Circle, Award } from 'lucide-vue-next'
 
 defineOptions({ layout: DashLayout })
 
@@ -24,15 +15,34 @@ const props = defineProps<{
   children: ConceptDto[]
   questions: QuestionDto[]
   content: string | null
+  parentConcepts?: ConceptDto[]
 }>()
 
 const children = ref(props.children)
 const questions = ref(props.questions)
 const content = computed(() => props.content || '')
 
-const goBack = () => {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => {
+  const items = [{ label: 'Concepts', href: '/concepts' }]
+
+  // Add parent concepts if they exist
+  if (props.parentConcepts?.length) {
+    props.parentConcepts.forEach((parent: ConceptDto) => {
+      items.push({
+        label: parent.title,
+        href: `/concepts/${parent.slug}`,
+      })
+    })
+  }
+
+  // Add current concept
+  items.push({
+    label: props.concept.title,
+    href: ''
+  })
+
+  return items
+})
 
 const getLastEditDate = computed(() => {
   return new Date(
@@ -62,25 +72,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
   <AppHead :title="`${concept.title}`" description="All available concepts in Juvenotes" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Modern Breadcrumbs -->
-    <nav
-      class="flex items-center gap-3 text-sm text-muted-foreground bg-white/50 p-3 rounded-lg border shadow-md"
-    >
-      <button
-        @click="goBack"
-        class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-      >
-        <ArrowLeft class="h-4 w-4" />
-        Back
-      </button>
-      <ChevronRight class="h-4 w-4 text-muted-foreground/50" />
-      <Home class="h-4 w-4" />
-      <Link href="/concepts" class="hover:text-primary transition-colors flex items-center gap-2">
-        <BookOpen class="h-4 w-4" />
-        Concepts
-      </Link>
-      <ChevronRight class="h-4 w-4 text-muted-foreground/50" />
-      <span class="text-foreground font-medium">{{ concept.title }}</span>
-    </nav>
+    <BreadcrumbTrail :items="breadcrumbItems" />
 
     <div class="space-y-8">
       <!-- Enhanced Title Section -->

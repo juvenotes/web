@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, ArrowLeft, Clock } from 'lucide-vue-next'
+import { FileText, Clock } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 defineOptions({ layout: DashLayout })
@@ -22,9 +22,11 @@ const lastEditDate = computed(() => {
   ).toLocaleDateString()
 })
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => [
+  { label: 'OSCEs', href: '/osce' },
+  { label: props.concept.title, href: `/osce/${props.concept.slug}` },
+  { label: props.paper.title }
+])
 </script>
 
 <template>
@@ -38,15 +40,7 @@ function goBack() {
       />
 
       <!-- Navigation -->
-      <nav class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-        <button
-          @click="goBack"
-          class="flex items-center gap-2 text-primary hover:text-primary/70 transition-colors"
-        >
-          <ArrowLeft class="h-5 w-5" />
-          <span class="text-sm font-medium">Back to OSCEs</span>
-        </button>
-      </nav>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
       <div class="flex items-start gap-4 mt-4">
         <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
@@ -100,7 +94,7 @@ function goBack() {
             <!-- OSCE Parts -->
             <div class="pl-10 space-y-4">
               <div
-                v-for="(part, partIndex) in question.osceParts"
+                v-for="(part, partIndex) in question.stations"
                 :key="part.id"
                 class="relative pl-4 border-l-2 border-primary/20 py-3"
               >

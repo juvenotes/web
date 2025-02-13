@@ -195,7 +195,7 @@ export default class ManageOsceController {
       .where('paper_type', PaperType.OSCE)
       .preload('concept')
       .preload('questions', (query) => {
-        query.orderBy('id', 'asc').preload('osceParts')
+        query.orderBy('id', 'asc').preload('stations')
       })
       .firstOrFail()
 
@@ -251,7 +251,7 @@ export default class ManageOsceController {
         for (const part of data.parts) {
           await trx
             .insertQuery()
-            .table('osce_parts')
+            .table('stations')
             .insert({
               question_id: question.id,
               part_text: part.partText,
@@ -277,7 +277,7 @@ export default class ManageOsceController {
     const question = await Question.query()
       .where('slug', params.questionSlug)
       .preload('pastPaper')
-      .preload('osceParts')
+      .preload('stations')
       .firstOrFail()
 
     if (question.type !== QuestionType.OSCE) {
@@ -306,13 +306,13 @@ export default class ManageOsceController {
           .save()
 
         // Delete existing parts
-        await trx.from('osce_parts').where('question_id', question.id).delete()
+        await trx.from('stations').where('question_id', question.id).delete()
 
         // Create new parts
         for (const part of data.parts) {
           await trx
             .insertQuery()
-            .table('osce_parts')
+            .table('stations')
             .insert({
               question_id: question.id,
               part_text: part.partText,

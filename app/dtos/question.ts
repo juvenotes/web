@@ -6,7 +6,7 @@ import ConceptDto from '#dtos/concept'
 import McqChoiceDto from '#dtos/mcq_choice'
 import SaqPartDto from '#dtos/saq_part'
 import PastPaperDto from '#dtos/past_paper'
-import OscePartDto from './osce_part.js'
+import StationDto from './station.js'
 
 export default class QuestionDto extends BaseModelDto {
   declare id: number
@@ -21,7 +21,7 @@ export default class QuestionDto extends BaseModelDto {
   declare concepts: ConceptDto[]
   declare choices: McqChoiceDto[]
   declare parts: SaqPartDto[]
-  declare osceParts: OscePartDto[]
+  declare stations: StationDto[]
   declare slug: any
   declare pastPaperId: number | null
   declare pastPaper: PastPaperDto | null
@@ -44,7 +44,7 @@ export default class QuestionDto extends BaseModelDto {
     this.concepts = ConceptDto.fromArray(question.concepts)
     this.choices = McqChoiceDto.fromArray(question.choices)
     this.parts = SaqPartDto.fromArray(question.parts)
-    this.osceParts = OscePartDto.fromArray(question.osceParts)
+    this.stations = StationDto.fromArray(question.stations)
     this.slug = question.slug
     this.pastPaperId = question.pastPaperId
     this.pastPaper = question.pastPaper && new PastPaperDto(question.pastPaper)

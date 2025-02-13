@@ -119,7 +119,7 @@ function goBack() {
         <div class="flex flex-col sm:flex-row gap-2">
           <Button @click="showAddOsceDialog = true" class="flex items-center gap-2">
             <Plus class="h-4 w-4" />
-            Add OSCE Question
+            Add OSCE Station
           </Button>
           <Button variant="outline" @click="showEditPaperDialog = true">
             <Pencil class="h-4 w-4 mr-2" />Edit Paper
@@ -168,10 +168,10 @@ function goBack() {
               </Button>
             </div>
 
-                        <!-- OSCE Parts -->
+            <!-- OSCE Parts -->
             <div class="pl-6 sm:pl-10 space-y-3 sm:space-y-4">
               <div
-                v-for="(part, index) in question.osceParts"
+                v-for="(part, index) in question.stations"
                 :key="part.id"
                 class="relative pl-4 border-l-2 border-primary/20 py-3"
               >
@@ -180,20 +180,24 @@ function goBack() {
                   <div class="space-y-2">
                     <div class="flex items-center gap-2">
                       <span class="font-medium text-sm sm:text-base">Part {{ index + 1 }}</span>
-                      <span class="text-xs sm:text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                      <span
+                        class="text-xs sm:text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary"
+                      >
                         {{ part.marks }} marks
                       </span>
                     </div>
                     <p class="text-sm sm:text-base">{{ part.partText }}</p>
                   </div>
                 </div>
-            
+
                 <!-- Expected Answer -->
                 <div class="mt-3 bg-muted/50 rounded-lg p-3">
                   <p class="text-sm font-medium text-muted-foreground">Expected Answer:</p>
-                  <div class="mt-2 text-sm sm:text-base whitespace-pre-wrap">{{ part.expectedAnswer }}</div>
+                  <div class="mt-2 text-sm sm:text-base whitespace-pre-wrap">
+                    {{ part.expectedAnswer }}
+                  </div>
                 </div>
-            
+
                 <!-- Part Image if present -->
                 <div v-if="part.imagePath" class="mt-3">
                   <img
