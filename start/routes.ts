@@ -275,7 +275,7 @@ router
     router.get('/:conceptSlug/:paperSlug', [ManageOsceController, 'viewOscePaper'])
     router.post('/', [ManageOsceController, 'store'])
     router.post('/:conceptSlug/:paperSlug/questions', [ManageOsceController, 'addQuestion'])
-    router.put('/:conceptSlug/:paperSlug/questions/:questionSlug', [
+    router.put('/:conceptSlug/:paperSlug/questions/:questionSlug/osce', [
       ManageOsceController,
       'updateQuestion',
     ])

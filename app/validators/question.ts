@@ -105,7 +105,7 @@ export const createOsceQuestionValidator = vine.compile(
 export const updateOsceQuestionValidator = vine.compile(
   vine.object({
     questionText: vine.string().trim().minLength(1),
-    questionImage: vine.string().nullable().optional(),
+    questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.OSCE),
     parts: vine.array(oscePartSchema).minLength(1).maxLength(5),
   })

@@ -168,22 +168,40 @@ function goBack() {
               </Button>
             </div>
 
-            <!-- OSCE Parts -->
+                        <!-- OSCE Parts -->
             <div class="pl-6 sm:pl-10 space-y-3 sm:space-y-4">
               <div
-                v-for="part in question.osceParts"
+                v-for="(part, index) in question.osceParts"
                 :key="part.id"
-                class="relative pl-4 border-l-2 border-primary/20"
+                class="relative pl-4 border-l-2 border-primary/20 py-3"
               >
-                <p class="font-medium">{{ part.partText }}</p>
-                <p class="text-muted-foreground mt-1">{{ part.expectedAnswer }}</p>
-                <img
-                  v-if="part.imagePath"
-                  :src="part.imagePath"
-                  :alt="part.partText"
-                  class="mt-2 max-w-full h-auto rounded-lg"
-                />
-                <p class="text-xs text-primary mt-2">{{ part.marks }} marks</p>
+                <!-- Part Text -->
+                <div class="flex justify-between items-start">
+                  <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                      <span class="font-medium text-sm sm:text-base">Part {{ index + 1 }}</span>
+                      <span class="text-xs sm:text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                        {{ part.marks }} marks
+                      </span>
+                    </div>
+                    <p class="text-sm sm:text-base">{{ part.partText }}</p>
+                  </div>
+                </div>
+            
+                <!-- Expected Answer -->
+                <div class="mt-3 bg-muted/50 rounded-lg p-3">
+                  <p class="text-sm font-medium text-muted-foreground">Expected Answer:</p>
+                  <div class="mt-2 text-sm sm:text-base whitespace-pre-wrap">{{ part.expectedAnswer }}</div>
+                </div>
+            
+                <!-- Part Image if present -->
+                <div v-if="part.imagePath" class="mt-3">
+                  <img
+                    :src="part.imagePath"
+                    :alt="`Part ${index + 1} image`"
+                    class="max-w-full h-auto rounded-lg border"
+                  />
+                </div>
               </div>
             </div>
           </div>

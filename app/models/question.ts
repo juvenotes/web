@@ -17,6 +17,9 @@ export default class Question extends BaseModel {
   declare userId: number
 
   @column()
+  declare slug: string
+
+  @column()
   declare type: QuestionType
 
   @column()
@@ -50,7 +53,6 @@ export default class Question extends BaseModel {
 
   @hasMany(() => SaqPart)
   declare parts: HasMany<typeof SaqPart>
-  slug: any
 
   @column()
   declare pastPaperId: number | null

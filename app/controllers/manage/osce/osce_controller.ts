@@ -195,7 +195,7 @@ export default class ManageOsceController {
       .where('paper_type', PaperType.OSCE)
       .preload('concept')
       .preload('questions', (query) => {
-        query.orderBy('id', 'asc')
+        query.orderBy('id', 'asc').preload('osceParts')
       })
       .firstOrFail()
 
@@ -231,7 +231,7 @@ export default class ManageOsceController {
           .save()
 
         // Handle question image upload if present
-        let questionImageUrl = data.questionImage || null
+        let questionImageUrl = data.questionImagePath || null
 
         // Create question
         const [question] = await trx
@@ -300,7 +300,7 @@ export default class ManageOsceController {
         await question
           .merge({
             questionText: data.questionText,
-            questionImage: data.questionImage || null,
+            questionImagePath: data.questionImagePath || null,
           })
           .useTransaction(trx)
           .save()

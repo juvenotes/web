@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
-import { Label } from '~/components/ui/label'
-import { Input } from '~/components/ui/input'
-import { Textarea } from '~/components/ui/textarea'
-import { Trash2, Plus } from 'lucide-vue-next'
+import { Trash2, Plus, Loader2 } from 'lucide-vue-next'
 import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
 import { ref } from 'vue'
+import axios from 'axios'
 
 interface ImageInputEvent extends Event {
   target: HTMLInputElement
@@ -34,7 +31,7 @@ const form = useForm({
   questionText: props.question.questionText,
   type: QuestionType.OSCE as const,
   questionImagePath: props.question.questionImagePath || '',
-  parts: props.question.parts.map((part) => ({
+  parts: props.question.osceParts.map((part) => ({
     partText: part.partText,
     expectedAnswer: part.expectedAnswer,
     marks: part.marks,
@@ -53,7 +50,11 @@ async function handleImageUpload(file: File, type: 'question' | 'part', index?: 
       uploadingPartImage.value = index
     }
 
-    const { data } = await axios.post('/api/upload/image', formData)
+    const { data } = await axios.post('/api/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
 
     if (type === 'question') {
       form.questionImagePath = data
@@ -80,12 +81,14 @@ function removeImage(type: 'question' | 'part', index?: number) {
 }
 
 function addPart() {
-  form.parts.push({
-    partText: '',
-    expectedAnswer: '',
-    marks: 1,
-    imagePath: '',
-  })
+  if (form.parts.length < 5) {
+    form.parts.push({
+      partText: '',
+      expectedAnswer: '',
+      marks: 1,
+      imagePath: '',
+    })
+  }
 }
 
 const removePart = (index: number) => {
@@ -110,7 +113,9 @@ const handleSubmit = () => {
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-      <DialogHeader class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b">
+      <DialogHeader
+        class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto"
+      >
         <DialogTitle class="text-lg sm:text-xl">Edit OSCE Question</DialogTitle>
       </DialogHeader>
 
@@ -168,16 +173,56 @@ const handleSubmit = () => {
             </div>
           </div>
 
-          <!-- Parts with Images -->
-          <div class="space-y-4">
-            <!-- ...existing parts header... -->
+          <!-- OSCE Parts -->
+          <div class="space-y-3 sm:space-y-4">
+            <div class="flex items-center justify-between">
+              <Label class="text-sm sm:text-base">Parts ({{ form.parts.length }}/5)</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                class="h-8 sm:h-9"
+                @click="addPart"
+                :disabled="form.parts.length >= 5"
+              >
+                <Plus class="h-4 w-4 mr-2" />Add Part
+              </Button>
+            </div>
 
             <div
               v-for="(part, index) in form.parts"
               :key="index"
-              class="space-y-4 bg-muted/50 p-4 rounded-lg relative"
+              class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
-              <!-- ...existing part fields... -->
+              <div class="flex items-center justify-between">
+                <Label>Part {{ index + 1 }}</Label>
+                <Button
+                  v-if="form.parts.length > 1"
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  @click="removePart(index)"
+                >
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div class="space-y-2">
+                <Input v-model="part.partText" placeholder="Question part" />
+              </div>
+
+              <div class="space-y-2">
+                <Textarea
+                  v-model="part.expectedAnswer"
+                  placeholder="Expected answer"
+                  rows="4"
+                  class="resize-y min-h-[100px]"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <Input v-model="part.marks" type="number" min="1" placeholder="Marks" />
+              </div>
 
               <div class="space-y-2">
                 <Label>Image (Optional)</Label>

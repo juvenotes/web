@@ -54,7 +54,11 @@ async function handleImageUpload(file: File, type: 'question' | 'part', index?: 
       uploadingPartImage.value = index
     }
 
-    const { data } = await axios.post('/api/upload/image', formData)
+    const { data } = await axios.post('/api/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
 
     if (type === 'question') {
       form.questionImagePath = data
