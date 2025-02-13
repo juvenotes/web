@@ -7,7 +7,7 @@ import User from './user.js'
 import McqChoice from './mcq_choice.js'
 import SaqPart from './saq_part.js'
 import PastPaper from './past_paper.js'
-import Station from './osce_part.js'
+import Station from './station.js'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })

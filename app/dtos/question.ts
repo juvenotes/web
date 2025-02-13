@@ -6,7 +6,7 @@ import ConceptDto from '#dtos/concept'
 import McqChoiceDto from '#dtos/mcq_choice'
 import SaqPartDto from '#dtos/saq_part'
 import PastPaperDto from '#dtos/past_paper'
-import StationDto from './osce_part.js'
+import StationDto from './station.js'
 
 export default class QuestionDto extends BaseModelDto {
   declare id: number
