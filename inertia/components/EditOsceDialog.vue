@@ -43,6 +43,12 @@ async function handleImageUpload(file: File, type: 'question' | 'part', index?: 
   const formData = new FormData()
   formData.append('image', file)
 
+  formData.append('context[folder]', 'osce')
+  formData.append(
+    'context[subFolder]',
+    `paper-${props.paper.id}${type === 'part' ? `/question-${props.question.id}` : ''}`
+  )
+
   try {
     if (type === 'question') {
       isUploadingQuestionImage.value = true

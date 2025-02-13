@@ -5,6 +5,8 @@ export default class UploadImageController {
   async store({ request, response }: HttpContext) {
     try {
       const file = request.file('image')
+      const context = request.input('context', {})
+
       if (!file) {
         return response.status(400).json({ error: 'No file uploaded' })
       }
@@ -15,7 +17,11 @@ export default class UploadImageController {
         })
       }
 
-      const url = await CloudinaryService.uploadImage(file.tmpPath!)
+      const url = await CloudinaryService.uploadImage(file.tmpPath!, {
+        folder: context.folder || 'uploads',
+        subFolder: context.subFolder,
+      })
+
       return url
     } catch (error) {
       console.error('Upload failed:', error)

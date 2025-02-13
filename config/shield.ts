@@ -9,7 +9,13 @@ const shieldConfig = defineConfig({
     enabled: true,
     directives: {
       defaultSrc: ["'self'", '@viteDevUrl'],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", '@viteDevUrl','http://www.freeprivacypolicy.com'],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        '@viteDevUrl',
+        'http://www.freeprivacypolicy.com',
+      ],
       styleSrc: ["'self'", "'unsafe-inline'", '@viteDevUrl', 'https://fonts.bunny.net'],
       imgSrc: ["'self'", 'data:', 'blob:', '*'],
       connectSrc: ["'self'", 'ws:', 'wss:', '@viteHmrUrl'],
@@ -19,7 +25,6 @@ const shieldConfig = defineConfig({
     },
     reportOnly: false,
   },
-
 
   /**
    * Configure CSRF protection options. Refer documentation
