@@ -42,12 +42,24 @@ const closeOnClickOutside = (event: MouseEvent) => {
   }
 }
 
+const handleResize = () => {
+  isSidebarCollapsed.value = window.innerWidth < 1024 // Collapse on small screens, open on large
+}
+
 onMounted(() => {
   document.addEventListener('click', closeOnClickOutside)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', closeOnClickOutside)
+})
+onMounted(() => {
+  handleResize() // Set initial state based on screen size
+  window.addEventListener('resize', handleResize) // Listen for screen size changes
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
