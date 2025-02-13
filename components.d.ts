@@ -23,6 +23,7 @@ declare module 'vue' {
     BreadcrumbList: typeof import('./inertia/components/ui/breadcrumb/BreadcrumbList.vue')['default']
     BreadcrumbPage: typeof import('./inertia/components/ui/breadcrumb/BreadcrumbPage.vue')['default']
     BreadcrumbSeparator: typeof import('./inertia/components/ui/breadcrumb/BreadcrumbSeparator.vue')['default']
+    BreadcrumbTrail: typeof import('./inertia/components/BreadcrumbTrail.vue')['default']
     Button: typeof import('./inertia/components/ui/button/Button.vue')['default']
     Checkbox: typeof import('./inertia/components/ui/checkbox/Checkbox.vue')['default']
     CookieConsent: typeof import('./inertia/components/CookieConsent.vue')['default']

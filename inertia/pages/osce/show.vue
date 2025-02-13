@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, ArrowLeft, Calendar, AlertCircle } from 'lucide-vue-next'
+import { FileText, Calendar, AlertCircle } from 'lucide-vue-next'
 import { PaperType } from '#enums/exam_type'
 
 defineOptions({ layout: DashLayout })
@@ -41,9 +41,10 @@ const papersByYear = computed(() => {
   )
 })
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => [
+  { label: 'OSCEs', href: '/osce' },
+  { label: props.concept.title }
+])
 </script>
 
 <template>
@@ -56,15 +57,7 @@ function goBack() {
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <div class="flex items-start justify-between">
-        <button
-          @click="goBack"
-          class="flex items-center gap-2 text-primary hover:text-primary/70 transition-colors"
-        >
-          <ArrowLeft class="h-5 w-5" />
-          <span class="text-sm font-medium">Back to OSCEs</span>
-        </button>
-      </div>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
       <div class="flex items-start gap-4 mt-4">
         <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">

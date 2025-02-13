@@ -2,7 +2,7 @@
 import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, ArrowLeft } from 'lucide-vue-next'
+import { FileText } from 'lucide-vue-next'
 
 defineOptions({ layout: DashLayout })
 
@@ -11,30 +11,18 @@ interface Props {
 }
 
 defineProps<Props>()
-
-function goBack() {
-  window.history.back()
-}
 </script>
 
 <template>
   <AppHead title="Past Papers" description="Access past examination papers" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-    <!-- Header Section with Go Back Button -->
+    <!-- Header with Breadcrumb -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <div class="flex items-start gap-4">
-        <button
-          @click="goBack"
-          class="flex items-center gap-2 text-primary hover:text-primary/70 transition-colors"
-        >
-          <ArrowLeft class="h-5 w-5" />
-          <span class="text-sm font-medium">Go Back</span>
-        </button>
-      </div>
+      <BreadcrumbTrail :items="[{ label: 'Papers' }]" />
 
       <div class="flex items-start gap-4 mt-4">
         <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
