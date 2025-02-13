@@ -15,34 +15,12 @@ const saqPartSchema = vine.object({
   marks: vine.number().min(0).max(100),
 })
 
-// export const createQuestionValidator = vine.compile(
-//   vine.object({
-//     questionText: vine.string().minLength(3),
-//     type: vine.enum(Object.values(QuestionType)),
-
-//     // MCQ specific
-//     choices: vine
-//       .array(
-//         vine.object({
-//           choiceText: vine.string().minLength(1),
-//           isCorrect: vine.boolean(),
-//           explanation: vine.string().optional(),
-//         })
-//       )
-//       .optional(),
-
-//     // SAQ specific
-//     parts: vine
-//       .array(
-//         vine.object({
-//           partText: vine.string().minLength(1),
-//           expectedAnswer: vine.string().minLength(1),
-//           marks: vine.number().min(1),
-//         })
-//       )
-//       .optional(),
-//   })
-// )
+const oscePartSchema = vine.object({
+  partText: vine.string().trim().minLength(1),
+  expectedAnswer: vine.string().trim().minLength(1).maxLength(5000),
+  marks: vine.number().min(1),
+  imagePath: vine.string().nullable().optional(),
+})
 
 export const createMcqQuestionValidator = vine.compile(
   vine.object({
@@ -112,5 +90,23 @@ export const updateQuestionValidator = vine.compile(
     question_text: vine.string().minLength(3).maxLength(1000).optional(),
     choices: vine.array(mcqChoiceSchema).optional(),
     parts: vine.array(saqPartSchema).optional(),
+  })
+)
+
+export const createOsceQuestionValidator = vine.compile(
+  vine.object({
+    questionText: vine.string().trim().minLength(1),
+    questionImagePath: vine.string().nullable().optional(),
+    type: vine.literal(QuestionType.OSCE),
+    parts: vine.array(oscePartSchema).minLength(1).maxLength(5),
+  })
+)
+
+export const updateOsceQuestionValidator = vine.compile(
+  vine.object({
+    questionText: vine.string().trim().minLength(1),
+    questionImagePath: vine.string().nullable().optional(),
+    type: vine.literal(QuestionType.OSCE),
+    parts: vine.array(oscePartSchema).minLength(1).maxLength(5),
   })
 )

@@ -33,6 +33,8 @@ const ManageUsersController = () => import('#controllers/manage/users/index_cont
 const UploadImageController = () => import('#controllers/api/upload_image_controller')
 const ManageInstitutionsController = () =>
   import('#controllers/manage/institutions/index_controller')
+const IndexOsceController = () => import('#controllers/osce/osce_controller')
+const ManageOsceController = () => import('#controllers/manage/osce/osce_controller')
 
 // test crash route
 router.get('/crash', () => {
@@ -243,15 +245,47 @@ router
 
 //* UPLOAD IMAGE -> CLOUDINARY
 router.post('/api/upload-image', [UploadImageController, 'store'])
-
 router.get('/test/upload', ({ inertia }) => {
   return inertia.render('test/upload')
 })
 
+//* MANAGE INSTITUTIONS
 router
   .group(() => {
     router.get('/', [ManageInstitutionsController, 'index'])
     router.get('/:id', [ManageInstitutionsController, 'show'])
   })
   .prefix('/manage/institutions')
+  .use(middleware.auth())
+
+//* OSCE: VIEW
+router
+  .group(() => {
+    router.get('/', [IndexOsceController, 'index'])
+    router.get('/:slug', [IndexOsceController, 'show'])
+    router.get('/:conceptSlug/:paperSlug', [IndexOsceController, 'viewPaper'])
+  })
+  .prefix('/osce')
+  .use(middleware.auth())
+
+//* OSCE: MANAGE
+router
+  .group(() => {
+    router.get('/', [ManageOsceController, 'index'])
+    router.get('/:slug', [ManageOsceController, 'show'])
+    router.get('/:conceptSlug/:paperSlug', [ManageOsceController, 'viewOscePaper'])
+    router.post('/', [ManageOsceController, 'store'])
+    router.post('/:conceptSlug/:paperSlug/questions', [ManageOsceController, 'addQuestion'])
+    router.put('/:conceptSlug/:paperSlug/questions/:questionSlug/osce', [
+      ManageOsceController,
+      'updateQuestion',
+    ])
+    router.delete('/:conceptSlug/:paperSlug/questions/:questionSlug', [
+      ManageOsceController,
+      'deleteQuestion',
+    ])
+    router.patch('/:paperSlug', [ManageOsceController, 'update'])
+    router.delete('/:conceptSlug/:paperSlug', [ManageOsceController, 'destroy'])
+  })
+  .prefix('/manage/osce')
   .use(middleware.auth())

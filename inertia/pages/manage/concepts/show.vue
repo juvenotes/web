@@ -42,6 +42,7 @@ const showNewChildDialog = ref(false)
 const form = useForm({
   title: props.concept.title,
   isTerminal: props.concept.isTerminal,
+  hasOsce: props.concept?.hasOsce ?? false,
 })
 
 const contentForm = useForm({
@@ -187,8 +188,24 @@ const handleDelete = () => {
                 id="edit-terminal"
                 class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
               />
-              <Label for="edit-terminal">Is Terminal Concept</Label>
+              <Label for="edit-terminal">Is a Terminal Concept</Label>
             </div>
+            <p v-if="form.isTerminal" class="text-sm text-muted-foreground">
+              A terminal concept is a topic that has notes in it.
+            </p>
+            <div class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                v-model="form.hasOsce"
+                id="has-osce"
+                class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
+              />
+              <Label for="has-osce">Has OSCE</Label>
+            </div>
+
+            <p v-if="form.hasOsce" class="text-sm text-muted-foreground">
+              This concept will appear in the OSCE section and can have OSCE papers attached.
+            </p>
 
             <Button type="submit" :disabled="form.processing">
               {{ form.processing ? 'Saving...' : 'Save Changes' }}

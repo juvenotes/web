@@ -3,6 +3,7 @@ import AppLayout from '~/layouts/AppLayout.vue'
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import { Button } from '~/components/ui/button'
+import axios from 'axios'
 
 defineOptions({ layout: AppLayout })
 
@@ -10,7 +11,7 @@ const form = useForm({
   image: null as File | null,
 })
 
-const result = ref('')
+const uploadedUrl = ref('')
 const error = ref('')
 const isUploading = ref(false)
 
@@ -18,7 +19,7 @@ const handleFileChange = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
     form.image = input.files[0]
-    error.value = '' // Clear any previous errors
+    error.value = ''
   }
 }
 
@@ -32,28 +33,19 @@ async function handleSubmit(e: Event) {
 
   const formData = new FormData()
   formData.append('image', form.image)
-  
+
   isUploading.value = true
   error.value = ''
 
   try {
-    const response = await fetch('/api/upload-image', {
-      method: 'POST',
-      body: formData,
+    const { data } = await axios.post('/api/upload-image', formData, {
       headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Upload failed')
-    }
-
-    result.value = `<img src="${data.url}" class="max-w-sm rounded-lg shadow-md">`
+    uploadedUrl.value = data
     form.reset()
-
   } catch (err) {
     console.error('Upload error:', err)
     error.value = err instanceof Error ? err.message : 'Upload failed'
@@ -89,7 +81,20 @@ async function handleSubmit(e: Event) {
         {{ error }}
       </div>
 
-      <div v-if="result" v-html="result" class="mt-4" />
+      <div v-if="uploadedUrl" class="mt-4 space-y-4">
+        <div class="break-all">
+          <p class="text-sm text-muted-foreground">Uploaded URL:</p>
+          <p class="font-mono bg-muted p-2 rounded">{{ uploadedUrl }}</p>
+        </div>
+        
+        <div class="border rounded-lg overflow-hidden">
+          <img 
+            :src="uploadedUrl" 
+            :alt="form.image?.name || 'Uploaded image'" 
+            class="max-w-full h-auto"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>

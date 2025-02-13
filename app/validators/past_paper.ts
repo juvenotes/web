@@ -45,3 +45,34 @@ export const updatePastPaperValidator = vine.compile(
     metadata: metadataSchema.optional(),
   })
 )
+
+export const createOscePaperValidator = vine.compile(
+  vine.object({
+    title: vine.string().trim().minLength(3).maxLength(255),
+    year: vine.string().regex(/^\d{4}$/),
+    examType: vine.enum(Object.values(ExamType)),
+    conceptId: vine.number(),
+    questionImage: vine
+      .file({
+        size: '5mb',
+        extnames: ['jpg', 'png', 'jpeg'],
+      })
+      .optional(),
+    parts: vine
+      .array(
+        vine.object({
+          partText: vine.string().trim().minLength(3),
+          expectedAnswer: vine.string().trim().minLength(3),
+          marks: vine.number().min(1),
+          image: vine
+            .file({
+              size: '5mb',
+              extnames: ['jpg', 'png', 'jpeg'],
+            })
+            .optional(),
+        })
+      )
+      .optional(),
+    metadata: metadataSchema.optional(),
+  })
+)

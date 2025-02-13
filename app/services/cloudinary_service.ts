@@ -7,13 +7,25 @@ cloudinary.config({
   api_secret: env.get('CLOUDINARY_API_SECRET'),
 })
 
+type UploadContext = {
+  folder?: string
+  subFolder?: string
+}
+
 export class CloudinaryService {
-  static async uploadImage(file: string) {
+  private static getUploadPath({ folder = 'uploads', subFolder }: UploadContext) {
+    return subFolder ? `${folder}/${subFolder}` : folder
+  }
+
+  static async uploadImage(file: string, context: UploadContext = {}) {
     try {
+      const uploadPath = this.getUploadPath(context)
+
       const result = await cloudinary.uploader.upload(file, {
         resource_type: 'auto',
         format: 'webp',
         transformation: [{ quality: 'auto' }, { fetch_format: 'webp' }],
+        folder: uploadPath,
       })
       return result.secure_url
     } catch (error) {
