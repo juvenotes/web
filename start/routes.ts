@@ -35,6 +35,7 @@ const ManageInstitutionsController = () =>
   import('#controllers/manage/institutions/index_controller')
 const IndexOsceController = () => import('#controllers/osce/osce_controller')
 const ManageOsceController = () => import('#controllers/manage/osce/osce_controller')
+const CiteController = () => import('#controllers/api/cite_controller')
 
 // test crash route
 router.get('/crash', () => {
@@ -244,10 +245,12 @@ router
   .use(middleware.auth())
 
 //* UPLOAD IMAGE -> CLOUDINARY
-router.post('/api/upload-image', [UploadImageController, 'store'])
-router.get('/test/upload', ({ inertia }) => {
-  return inertia.render('test/upload')
-})
+router.post('/api/upload-image', [UploadImageController, 'store']).use(middleware.auth())
+router
+  .get('/test/upload', ({ inertia }) => {
+    return inertia.render('test/upload')
+  })
+  .use(middleware.auth())
 
 //* MANAGE INSTITUTIONS
 router
@@ -288,4 +291,12 @@ router
     router.delete('/:conceptSlug/:paperSlug', [ManageOsceController, 'destroy'])
   })
   .prefix('/manage/osce')
+  .use(middleware.auth())
+
+//* CITE -> CITATION_JS
+router.post('/api/cite', [CiteController, 'store']).use(middleware.auth())
+router
+  .get('/test/cite', ({ inertia }) => {
+    return inertia.render('test/cite')
+  })
   .use(middleware.auth())
