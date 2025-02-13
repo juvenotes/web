@@ -4,7 +4,7 @@ import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Clock } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 defineOptions({ layout: DashLayout })
 
@@ -27,6 +27,15 @@ const breadcrumbItems = computed(() => [
   { label: props.concept.title, href: `/osce/${props.concept.slug}` },
   { label: props.paper.title }
 ])
+
+// Track visibility of answers for each question and part
+const showAnswers = ref<boolean[][]>(props.questions.map(() =>
+  new Array(props.questions.length).fill(false)
+))
+
+const toggleAnswer = (questionIndex: number, partIndex: number) => {
+  showAnswers.value[questionIndex][partIndex] = !showAnswers.value[questionIndex][partIndex]
+}
 </script>
 
 <template>
@@ -67,18 +76,18 @@ const breadcrumbItems = computed(() => [
     <div class="space-y-4">
       <template v-if="questions.length">
         <div
-          v-for="(question, index) in questions"
-          :key="question.id"
-          class="p-6 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow"
+        v-for="(question, questionIndex) in questions"
+        :key="question.id"
+        class="p-6 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow"
         >
           <div class="space-y-4">
             <!-- Question Header -->
             <div class="flex gap-3">
               <span
-                class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-sm font-medium"
+              class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-sm font-medium"
               >
-                Q{{ index + 1 }}
-              </span>
+              Q{{ questionIndex + 1 }}
+            </span>
               <p class="text-base text-foreground">{{ question.questionText }}</p>
             </div>
 
@@ -86,7 +95,7 @@ const breadcrumbItems = computed(() => [
             <div v-if="question.questionImagePath" class="flex justify-center">
               <img
                 :src="question.questionImagePath"
-                :alt="`Question ${index + 1} image`"
+                :alt="`Question ${questionIndex + 1} image`"
                 class="max-w-full h-auto rounded-lg border shadow-sm max-h-[400px] object-contain"
               />
             </div>
@@ -114,9 +123,16 @@ const breadcrumbItems = computed(() => [
                 </div>
 
                 <!-- Expected Answer -->
-                <div class="mt-3 bg-muted/50 rounded-lg p-4">
-                  <p class="text-sm font-medium text-muted-foreground">Expected Answer:</p>
-                  <div class="mt-2 text-base whitespace-pre-wrap">{{ part.expectedAnswer }}</div>
+                <button @click="toggleAnswer(questionIndex, partIndex)"
+                  class="mt-3 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium transition hover:bg-primary/80">
+                  {{ showAnswers[questionIndex][partIndex] ? "Hide Answer" : "Show Answer" }}
+                </button>
+                <div v-if="showAnswers[questionIndex][partIndex]"
+                  class="mt-3 bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-4">
+                  <p class="text-sm font-semibold text-muted-foreground">Expected Answer:</p>
+                  <div class="mt-2 text-md text-gray-800 leading-relaxed whitespace-pre-wrap">
+                    {{ part.expectedAnswer }}
+                  </div>
                 </div>
 
                 <!-- Part Image if present -->
