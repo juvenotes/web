@@ -100,7 +100,7 @@ function goBack() {
             <!-- OSCE Parts -->
             <div class="pl-10 space-y-4">
               <div
-                v-for="(part, partIndex) in question.osceParts"
+                v-for="(part, partIndex) in question.stations"
                 :key="part.id"
                 class="relative pl-4 border-l-2 border-primary/20 py-3"
               >

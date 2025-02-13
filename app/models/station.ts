@@ -3,7 +3,7 @@ import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import Question from './question.js'
 
-export default class OscePart extends BaseModel {
+export default class Station extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 

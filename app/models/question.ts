@@ -7,7 +7,7 @@ import User from './user.js'
 import McqChoice from './mcq_choice.js'
 import SaqPart from './saq_part.js'
 import PastPaper from './past_paper.js'
-import OscePart from './osce_part.js'
+import Station from './osce_part.js'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })
@@ -40,8 +40,8 @@ export default class Question extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @hasMany(() => OscePart)
-  declare osceParts: HasMany<typeof OscePart>
+  @hasMany(() => Station)
+  declare stations: HasMany<typeof Station>
 
   @manyToMany(() => Concept, {
     pivotTable: 'concept_questions',

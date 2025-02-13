@@ -64,7 +64,7 @@ export default class OsceController {
       .where('paper_type', PaperType.OSCE)
       .preload('concept')
       .preload('questions', (query) => {
-        query.orderBy('id', 'asc').preload('osceParts')
+        query.orderBy('id', 'asc').preload('stations')
       })
       .firstOrFail()
 

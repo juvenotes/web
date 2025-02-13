@@ -5,6 +5,8 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, ArrowLeft, Calendar, AlertCircle } from 'lucide-vue-next'
+import { PaperType } from '#enums/exam_type'
+import { QuestionType } from '#enums/question_types'
 
 defineOptions({ layout: DashLayout })
 
@@ -15,10 +17,17 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const hasPapers = computed(() => props.papers.length > 0)
+const oscePapers = computed(() =>
+  props.papers.filter((paper) => paper.paperType === PaperType.OSCE)
+)
+const hasPapers = computed(() => oscePapers.value.length > 0)
+
+function getStationCount(paper: PastPaperDto): number {
+  return paper.questions?.filter((q) => q.type === QuestionType.OSCE).length ?? 0
+}
 
 const papersByYear = computed(() => {
-  return props.papers.reduce(
+  return oscePapers.value.reduce(
     (acc, paper) => {
       const year = paper.year
       if (!acc[year]) acc[year] = []
@@ -91,9 +100,7 @@ function goBack() {
                 <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
                   OSCE
                 </span>
-                <span class="text-muted-foreground">
-                  {{ paper.questions?.length ?? 0 }} stations
-                </span>
+                <span class="text-muted-foreground"> {{ getStationCount(paper) }} stations </span>
               </div>
 
               <div

@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { ArrowLeft, Stethoscope } from 'lucide-vue-next'
+import { PaperType } from '#enums/exam_type'
 
 defineOptions({ layout: DashLayout })
 
@@ -11,6 +12,9 @@ interface Props {
 }
 
 defineProps<Props>()
+
+const getOscePaperCount = (concept: ConceptDto) =>
+  concept.pastPapers?.filter((paper) => paper.paperType === PaperType.OSCE).length ?? 0
 
 function goBack() {
   window.history.back()
@@ -70,17 +74,12 @@ function goBack() {
             {{ concept.title }}
           </h2>
 
-          <!-- <div class="flex items-center gap-2 text-sm text-muted-foreground">
+          <div class="flex items-center gap-2 text-sm text-muted-foreground">
             <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
-              {{ concept.pastPapers?.filter((p) => p.paperType === PaperType.OSCE).length ?? 0 }}
-              {{
-                (concept.pastPapers?.filter((p) => p.paperType === PaperType.OSCE).length ?? 0) ===
-                1
-                  ? 'paper'
-                  : 'papers'
-              }}
+              {{ getOscePaperCount(concept) }}
+              {{ getOscePaperCount(concept) === 1 ? 'paper' : 'papers' }}
             </span>
-          </div> -->
+          </div>
 
           <div
             class="flex items-center text-sm text-primary font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"

@@ -15,7 +15,7 @@ const saqPartSchema = vine.object({
   marks: vine.number().min(0).max(100),
 })
 
-const oscePartSchema = vine.object({
+const stationSchema = vine.object({
   partText: vine.string().trim().minLength(1),
   expectedAnswer: vine.string().trim().minLength(1).maxLength(5000),
   marks: vine.number().min(1),
@@ -98,7 +98,7 @@ export const createOsceQuestionValidator = vine.compile(
     questionText: vine.string().trim().minLength(1),
     questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.OSCE),
-    parts: vine.array(oscePartSchema).minLength(1).maxLength(5),
+    parts: vine.array(stationSchema).minLength(1).maxLength(5),
   })
 )
 
@@ -107,6 +107,6 @@ export const updateOsceQuestionValidator = vine.compile(
     questionText: vine.string().trim().minLength(1),
     questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.OSCE),
-    parts: vine.array(oscePartSchema).minLength(1).maxLength(5),
+    parts: vine.array(stationSchema).minLength(1).maxLength(5),
   })
 )

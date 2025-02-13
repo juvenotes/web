@@ -31,7 +31,7 @@ const form = useForm({
   questionText: props.question.questionText,
   type: QuestionType.OSCE as const,
   questionImagePath: props.question.questionImagePath || '',
-  parts: props.question.osceParts.map((part) => ({
+  parts: props.question.stations.map((part) => ({
     partText: part.partText,
     expectedAnswer: part.expectedAnswer,
     marks: part.marks,

@@ -195,7 +195,7 @@ export default class ManageOsceController {
       .where('paper_type', PaperType.OSCE)
       .preload('concept')
       .preload('questions', (query) => {
-        query.orderBy('id', 'asc').preload('osceParts')
+        query.orderBy('id', 'asc').preload('stations')
       })
       .firstOrFail()
 
@@ -277,7 +277,7 @@ export default class ManageOsceController {
     const question = await Question.query()
       .where('slug', params.questionSlug)
       .preload('pastPaper')
-      .preload('osceParts')
+      .preload('stations')
       .firstOrFail()
 
     if (question.type !== QuestionType.OSCE) {
