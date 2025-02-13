@@ -261,8 +261,9 @@ router
 //* OSCE: VIEW
 router
   .group(() => {
-    router.get('/', [IndexOsceController, 'view'])
+    router.get('/', [IndexOsceController, 'index'])
     router.get('/:slug', [IndexOsceController, 'show'])
+    router.get('/:conceptSlug/:paperSlug', [IndexOsceController, 'viewPaper'])
   })
   .prefix('/osce')
   .use(middleware.auth())
