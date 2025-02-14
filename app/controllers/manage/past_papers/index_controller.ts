@@ -18,6 +18,7 @@ import {
   updateMcqQuestionValidator,
   updateSaqQuestionValidator,
 } from '#validators/question'
+import { PaperType } from '#enums/exam_type'
 
 export default class ManagePastPapersController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -43,7 +44,9 @@ export default class ManagePastPapersController {
       .where('level', 0)
       .select(['id', 'title', 'slug'])
       .preload('pastPapers', (query) => {
-        query.select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+        query
+          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
       })
 
     logger.info({
@@ -75,6 +78,7 @@ export default class ManagePastPapersController {
       .preload('pastPapers', (query) => {
         query
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
           .orderBy('year', 'desc')
           .preload('questions', (questionsQuery) => {
             questionsQuery
@@ -115,6 +119,7 @@ export default class ManagePastPapersController {
 
     const paper = await PastPaper.query()
       .where('slug', params.paperSlug)
+      .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
       .preload('concept')
       .preload('questions', (query) => {
         query.orderBy('id', 'asc').preload('choices').preload('parts')

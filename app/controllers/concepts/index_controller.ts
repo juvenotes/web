@@ -7,7 +7,7 @@ export default class IndexController {
   /**
    * Show root level concepts
    */
-  async index({ inertia, logger, auth }: HttpContext) {
+  async index({ inertia, logger, auth, bouncer }: HttpContext) {
     const context = { controller: 'ConceptsIndexController', action: 'index' }
     logger.info({ ...context, message: 'Fetching root level concepts' })
 
@@ -24,15 +24,18 @@ export default class IndexController {
       userId: auth.user?.id,
     })
 
+    const canManage = await bouncer.allows('canManage')
+
     return inertia.render('concepts/index', {
       concepts: ConceptDto.fromArray(concepts),
+      canManage,
     })
   }
 
   /**
    * Show single concept with its children
    */
-  async show({ params, inertia, logger, auth }: HttpContext) {
+  async show({ params, inertia, logger, auth, bouncer }: HttpContext) {
     const context = {
       controller: 'ConceptsIndexController',
       action: 'show',
@@ -67,11 +70,14 @@ export default class IndexController {
       userId: auth.user?.id,
     })
 
+    const canManage = await bouncer.allows('canManage')
+
     return inertia.render('concepts/show', {
       concept: new ConceptDto(concept),
       children: concept.children ? ConceptDto.fromArray(concept.children) : [],
       questions: concept.questions ? QuestionDto.fromArray(concept.questions) : [],
       content: concept.knowledgeBlock,
+      canManage,
     })
   }
 

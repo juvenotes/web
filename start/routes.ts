@@ -183,7 +183,7 @@ router
 router.get('/papers', [IndexPapersController, 'index']).use(middleware.auth())
 router.get('/papers/:slug', [IndexPapersController, 'show']).use(middleware.auth())
 router
-  .get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'paper'])
+  .get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'view'])
   .use(middleware.auth())
 
 // LEGAL -> TERMS
