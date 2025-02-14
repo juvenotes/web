@@ -7,7 +7,7 @@ import QuestionDto from '#dtos/question'
 import PastPaper from '#models/past_paper'
 
 export default class OsceController {
-  async index({ inertia, logger }: HttpContext) {
+  async index({ inertia, logger, bouncer }: HttpContext) {
     const context = { controller: 'OsceController', action: 'view' }
     logger.info({ ...context, message: 'Fetching concepts with OSCE papers' })
 
@@ -28,12 +28,23 @@ export default class OsceController {
       message: 'Retrieved concepts with OSCE papers',
     })
 
+    const canManage = await bouncer.allows('canManage')
+
     return inertia.render('osce/index', {
       concepts: ConceptDto.fromArray(concepts),
+      canManage,
     })
   }
 
-  async show({ inertia, params }: HttpContext) {
+  async show({ inertia, params, bouncer, logger, auth }: HttpContext) {
+    const context = {
+      controller: 'OsceController',
+      action: 'show',
+      conceptSlug: params.slug,
+      userId: auth.user?.id,
+    }
+    logger.info({ ...context, message: 'Fetching concept with OSCE papers' })
+
     const concept = await Concept.query()
       .where('slug', params.slug)
       .preload('pastPapers', (query) => {
@@ -41,20 +52,30 @@ export default class OsceController {
       })
       .firstOrFail()
 
+    logger.info({
+      ...context,
+      message: 'Found OSCE paper details',
+    })
+
+    const canManage = await bouncer.allows('canManage')
+
     return inertia.render('osce/show', {
       concept: new ConceptDto(concept),
       papers: concept.pastPapers ? PastPaperDto.fromArray(concept.pastPapers) : [],
+      canManage,
     })
   }
 
   /**
    * View OSCE paper details
    */
-  async viewPaper({ params, inertia, logger }: HttpContext) {
+  async viewPaper({ params, inertia, logger, bouncer, auth }: HttpContext) {
     const context = {
       controller: 'OsceController',
       action: 'viewPaper',
+      conceptSlug: params.conceptSlug,
       paperSlug: params.paperSlug,
+      userId: auth.user?.id,
     }
 
     logger.info({ ...context, message: 'Fetching OSCE paper details' })
@@ -76,10 +97,13 @@ export default class OsceController {
       message: 'Found OSCE paper details',
     })
 
+    const canManage = await bouncer.allows('canManage')
+
     return inertia.render('osce/view', {
       paper: new PastPaperDto(paper),
       concept: new ConceptDto(paper.concept),
       questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
+      canManage,
     })
   }
 }

@@ -2,12 +2,13 @@
 import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText } from 'lucide-vue-next'
+import { FileText, Settings } from 'lucide-vue-next'
 
 defineOptions({ layout: DashLayout })
 
 interface Props {
   concepts: ConceptDto[]
+  canManage: boolean
 }
 
 defineProps<Props>()
@@ -24,17 +25,29 @@ defineProps<Props>()
 
       <BreadcrumbTrail :items="[{ label: 'Papers' }]" />
 
-      <div class="flex items-start gap-4 mt-4">
-        <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-          <FileText class="h-6 w-6 text-primary" />
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+        <!-- Title section -->
+        <div class="flex items-start gap-4 flex-1">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
+            <FileText class="h-6 w-6 text-primary" />
+          </div>
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-foreground">Past Papers</h1>
+            <p class="text-base text-muted-foreground/90 max-w-2xl">
+              Access and practice with previous examination papers organized by subjects
+            </p>
+          </div>
         </div>
 
-        <div class="space-y-2">
-          <h1 class="text-2xl font-bold text-foreground">Past Papers</h1>
-          <p class="text-base text-muted-foreground/90 max-w-2xl">
-            Access and practice with previous examination papers organized by subjects
-          </p>
-        </div>
+        <!-- Manage button -->
+        <Link
+          v-if="canManage"
+          href="/manage/papers"
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+        >
+          <Settings class="h-4 w-4" />
+          <span class="text-sm font-medium">Edit</span>
+        </Link>
       </div>
     </div>
 

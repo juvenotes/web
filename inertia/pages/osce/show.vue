@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Calendar, AlertCircle } from 'lucide-vue-next'
+import { FileText, Calendar, AlertCircle, Settings } from 'lucide-vue-next'
 import { PaperType } from '#enums/exam_type'
 
 defineOptions({ layout: DashLayout })
@@ -12,6 +12,7 @@ defineOptions({ layout: DashLayout })
 interface Props {
   concept: ConceptDto
   papers: PastPaperDto[]
+  canManage: boolean
 }
 
 const props = defineProps<Props>()
@@ -59,14 +60,28 @@ const breadcrumbItems = computed(() => [
 
       <BreadcrumbTrail :items="breadcrumbItems" />
 
-      <div class="flex items-start gap-4 mt-4">
-        <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-          <FileText class="h-6 w-6 text-primary" />
+      <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
+        <div class="flex items-start gap-4">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10 shrink-0">
+            <FileText class="h-6 w-6 text-primary" />
+          </div>
+          <div class="min-w-0 flex-1">
+            <h1 class="text-xl sm:text-2xl font-bold text-foreground truncate">
+              {{ concept.title }}
+            </h1>
+            <p class="text-sm text-muted-foreground">OSCE Practice Papers</p>
+          </div>
         </div>
-        <div class="space-y-1">
-          <h1 class="text-2xl font-bold text-foreground">{{ concept.title }}</h1>
-          <p class="text-sm text-muted-foreground">OSCE Practice Papers</p>
-        </div>
+
+        <!-- Manage button -->
+        <Link
+          v-if="canManage"
+          :href="`/manage/osce/${concept.slug}`"
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+        >
+          <Settings class="h-4 w-4" />
+          <span class="text-sm font-medium">Edit</span>
+        </Link>
       </div>
     </div>
 

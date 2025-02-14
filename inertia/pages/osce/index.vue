@@ -2,13 +2,14 @@
 import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { Stethoscope } from 'lucide-vue-next'
+import { Stethoscope, Settings } from 'lucide-vue-next'
 import { PaperType } from '#enums/exam_type'
 
 defineOptions({ layout: DashLayout })
 
 interface Props {
   concepts: ConceptDto[]
+  canManage: boolean
 }
 
 defineProps<Props>()
@@ -31,17 +32,29 @@ const breadcrumbItems = [{ label: 'OSCEs' }]
 
       <BreadcrumbTrail :items="breadcrumbItems" />
 
-      <div class="flex items-start gap-4 mt-4">
-        <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-          <Stethoscope class="h-6 w-6 text-primary" />
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+        <!-- Title section -->
+        <div class="flex items-start gap-4 flex-1">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
+            <Stethoscope class="h-6 w-6 text-primary" />
+          </div>
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-foreground">OSCE Papers</h1>
+            <p class="text-base text-muted-foreground/90 max-w-2xl">
+              Practice with previous Objective Structured Clinical Examination papers
+            </p>
+          </div>
         </div>
 
-        <div class="space-y-2">
-          <h1 class="text-2xl font-bold text-foreground">OSCE Papers</h1>
-          <p class="text-base text-muted-foreground/90 max-w-2xl">
-            Practice with previous Objective Structured Clinical Examination papers
-          </p>
-        </div>
+        <!-- Manage button -->
+        <Link
+          v-if="canManage"
+          href="/manage/osce"
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+        >
+          <Settings class="h-4 w-4" />
+          <span class="text-sm font-medium">Edit</span>
+        </Link>
       </div>
     </div>
 

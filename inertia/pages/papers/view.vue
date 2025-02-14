@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Circle, CheckCircle, XCircle } from 'lucide-vue-next'
+import { FileText, Circle, CheckCircle, XCircle, Settings } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 
 defineOptions({ layout: DashLayout })
@@ -12,6 +12,7 @@ interface Props {
   paper: PastPaperDto
   concept: ConceptDto
   questions: QuestionDto[]
+  canManage: boolean
 }
 
 const props = defineProps<Props>()
@@ -54,20 +55,35 @@ const getLastEditDate = computed(() => {
       <BreadcrumbTrail :items="breadcrumbItems" />
 
       <!-- Paper Info -->
-      <div class="mt-4 flex items-center gap-4">
-        <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-          <FileText class="h-6 w-6 text-primary" />
-        </div>
-        <div>
-          <h1 class="text-2xl font-bold text-foreground">{{ paper.title }}</h1>
-          <div class="flex items-center gap-3 mt-1">
-            <span class="text-sm text-muted-foreground">{{ concept.title }}</span>
-            <span class="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
-              {{ paper.examType.toUpperCase() }}
-            </span>
-            <span class="text-sm text-muted-foreground">{{ paper.year }}</span>
+      <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
+        <div class="flex items-start gap-4">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10 shrink-0">
+            <FileText class="h-6 w-6 text-primary" />
+          </div>
+          <div class="min-w-0 flex-1">
+            <h1 class="text-xl sm:text-2xl font-bold text-foreground truncate">
+              {{ paper.title }}
+            </h1>
+            <div class="flex flex-wrap items-center gap-2 mt-1">
+              <span class="text-sm text-muted-foreground truncate max-w-[200px]">
+                {{ concept.title }}
+              </span>
+              <span class="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
+                {{ paper.examType.toUpperCase() }}
+              </span>
+              <span class="text-sm text-muted-foreground">{{ paper.year }}</span>
+            </div>
           </div>
         </div>
+        <!-- Manage button -->
+        <Link
+          v-if="canManage"
+          :href="`/manage/papers/${concept.slug}/${paper.slug}`"
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+        >
+          <Settings class="h-4 w-4" />
+          <span class="text-sm font-medium">Edit</span>
+        </Link>
       </div>
     </div>
 
