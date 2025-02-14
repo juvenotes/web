@@ -73,7 +73,7 @@ export default class IndexController {
     })
   }
 
-  async paper({ params, inertia, logger, auth }: HttpContext) {
+  async view({ params, inertia, logger, auth }: HttpContext) {
     const context = {
       controller: 'PapersIndexController',
       action: 'paper',
@@ -105,7 +105,7 @@ export default class IndexController {
       userId: auth.user?.id,
     })
 
-    return inertia.render('papers/paper', {
+    return inertia.render('papers/view', {
       paper: new PastPaperDto(paper),
       concept: new ConceptDto(paper.concept),
       questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
