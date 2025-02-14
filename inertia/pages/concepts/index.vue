@@ -2,52 +2,54 @@
 import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { BookOpen, ArrowLeft } from 'lucide-vue-next'
+import { BookOpen, Settings } from 'lucide-vue-next'
 
 defineOptions({ layout: DashLayout })
 
 interface Props {
   concepts: ConceptDto[]
+  canManage: boolean
 }
 
 defineProps<Props>()
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = [{ label: 'Concepts' }]
 </script>
 
 <template>
   <AppHead title="All available concepts" description="All available concepts in Juvenotes" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-    <!-- Header Section with Go Back Button -->
+    <!-- Header Section -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <div class="flex items-start gap-4">
-        <!-- Go Back Button -->
-        <button
-          @click="goBack"
-          class="flex items-center gap-2 text-primary hover:text-primary/70 transition-colors"
+      <BreadcrumbTrail :items="breadcrumbItems" />
+
+      <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+        <div class="flex items-start gap-4 flex-1">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
+            <BookOpen class="h-6 w-6 text-primary" />
+          </div>
+
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-foreground">Medical Concepts</h1>
+            <p class="text-base text-muted-foreground/90 max-w-2xl">
+              Explore our comprehensive collection of medical concepts organized by topics
+            </p>
+          </div>
+        </div>
+
+        <!-- Manage button -->
+        <Link
+          v-if="canManage"
+          href="/manage/concepts"
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
         >
-          <ArrowLeft class="h-5 w-5" />
-          <span class="text-sm font-medium">Go Back</span>
-        </button>
-      </div>
-
-      <div class="flex items-start gap-4 mt-4">
-        <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-          <BookOpen class="h-6 w-6 text-primary" />
-        </div>
-
-        <div class="space-y-2">
-          <h1 class="text-2xl font-bold text-foreground">Medical Concepts</h1>
-          <p class="text-base text-muted-foreground/90 max-w-2xl">
-            Explore our comprehensive collection of medical concepts organized by topics
-          </p>
-        </div>
+          <Settings class="h-4 w-4" />
+          <span class="text-sm font-medium">Edit</span>
+        </Link>
       </div>
     </div>
 

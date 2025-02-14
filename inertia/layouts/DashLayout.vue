@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Search as SearchIcon,
+  Stethoscope,
 } from 'lucide-vue-next'
 import { Twitter, Instagram, Linkedin } from 'lucide-vue-next'
 import UserDto from '#dtos/user'
@@ -31,6 +32,7 @@ const sidebarLinks = [
   { name: 'Dashboard', href: '/learn', icon: Home },
   { name: 'Concepts', href: '/concepts', icon: BookOpen },
   { name: 'Papers', href: '/papers', icon: FileText },
+  { name: 'Osces', href: '/osce', icon: Stethoscope },
 ]
 
 const closeOnClickOutside = (event: MouseEvent) => {
@@ -40,12 +42,24 @@ const closeOnClickOutside = (event: MouseEvent) => {
   }
 }
 
+const handleResize = () => {
+  isSidebarCollapsed.value = window.innerWidth < 1024 // Collapse on small screens, open on large
+}
+
 onMounted(() => {
   document.addEventListener('click', closeOnClickOutside)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', closeOnClickOutside)
+})
+onMounted(() => {
+  handleResize() // Set initial state based on screen size
+  window.addEventListener('resize', handleResize) // Listen for screen size changes
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
@@ -61,6 +75,9 @@ onUnmounted(() => {
             <button class="lg:hidden" @click="isSidebarCollapsed = !isSidebarCollapsed">
               <MenuIcon class="h-6 w-6" />
             </button>
+            <Link href="/learn" class="block md:hidden">
+            <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
+            </Link>
             <Link href="/learn" class="hidden md:block">
               <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
             </Link>

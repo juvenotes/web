@@ -16,7 +16,7 @@ defineProps<Props>()
 <template>
   <AppHead title="Manage Past Papers" description="Manage examination papers" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-    <!-- Header -->
+    <!-- Header with Breadcrumb -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
@@ -54,6 +54,13 @@ defineProps<Props>()
           >
             {{ concept.title }}
           </h2>
+
+          <div class="flex items-center gap-2 text-sm text-muted-foreground">
+            <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
+              {{ concept.pastPapers?.length ?? 0 }}
+              {{ (concept.pastPapers?.length ?? 0) === 1 ? 'paper' : 'papers' }}
+            </span>
+          </div>
 
           <div
             class="flex items-center text-sm text-primary font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"

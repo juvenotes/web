@@ -4,6 +4,7 @@ defineOptions({ layout: AppLayout })
 </script>
 
 <template>
+  <AppHead title="Terms of Service" description="Juvenotes Terms of Service" />
   <div class="max-w-4xl mx-auto py-12 px-4">
     <h1 class="text-3xl font-bold mb-8">Terms and Conditions</h1>
 

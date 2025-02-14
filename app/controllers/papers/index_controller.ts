@@ -1,13 +1,13 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Concept from '#models/concept'
 import ConceptDto from '#dtos/concept'
-// import QuestionDto from '#dtos/question'
 import PastPaperDto from '#dtos/past_paper'
 import PastPaper from '#models/past_paper'
 import QuestionDto from '#dtos/question'
+import { PaperType } from '#enums/exam_type'
 
 export default class IndexController {
-  async index({ inertia, logger, auth }: HttpContext) {
+  async index({ inertia, logger, auth, bouncer }: HttpContext) {
     const context = { controller: 'PapersIndexController', action: 'index' }
     logger.info({ ...context, message: 'Fetching root level concepts with papers' })
 
@@ -17,6 +17,7 @@ export default class IndexController {
       .preload('pastPapers', (query) => {
         query
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
           .orderBy('year', 'desc')
       })
 
@@ -28,12 +29,15 @@ export default class IndexController {
       userId: auth.user?.id,
     })
 
+    const canManage = await bouncer.allows('canManage')
+
     return inertia.render('papers/index', {
       concepts: ConceptDto.fromArray(concepts),
+      canManage,
     })
   }
 
-  async show({ params, inertia, logger, auth }: HttpContext) {
+  async show({ params, inertia, logger, auth, bouncer }: HttpContext) {
     const context = {
       controller: 'PapersIndexController',
       action: 'show',
@@ -47,6 +51,7 @@ export default class IndexController {
       .preload('pastPapers', (query) => {
         query
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
           .orderBy('year', 'desc')
           .preload('questions', (questionsQuery) => {
             questionsQuery
@@ -67,14 +72,17 @@ export default class IndexController {
       userId: auth.user?.id,
     })
 
+    const canManage = await bouncer.allows('canManage')
+
     return inertia.render('papers/show', {
       concept: new ConceptDto(concept),
       papers: concept.pastPapers ? PastPaperDto.fromArray(concept.pastPapers) : [],
       questions: concept.pastPapers?.flatMap((paper) => paper.questions) ?? [],
+      canManage,
     })
   }
 
-  async paper({ params, inertia, logger, auth }: HttpContext) {
+  async view({ params, inertia, logger, auth, bouncer }: HttpContext) {
     const context = {
       controller: 'PapersIndexController',
       action: 'paper',
@@ -85,6 +93,7 @@ export default class IndexController {
 
     const paper = await PastPaper.query()
       .where('slug', params.paperSlug)
+      .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
       .preload('concept')
       .preload('questions', (query) => {
         query
@@ -106,10 +115,13 @@ export default class IndexController {
       userId: auth.user?.id,
     })
 
-    return inertia.render('papers/paper', {
+    const canManage = await bouncer.allows('canManage')
+
+    return inertia.render('papers/view', {
       paper: new PastPaperDto(paper),
       concept: new ConceptDto(paper.concept),
       questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
+      canManage,
     })
   }
 }

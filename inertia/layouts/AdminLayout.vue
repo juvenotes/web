@@ -4,12 +4,13 @@ import AdminSearch from '~/components/AdminSearch.vue'
 import {
   LayoutDashboard,
   BookOpen,
-  // FileQuestion,
+  School,
   FileText,
   Users,
   // Settings,
   Menu,
-  X, // Add X icon for close button
+  Stethoscope,
+  X,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type UserDto from '#dtos/user'
@@ -24,9 +25,10 @@ const isSidebarOpen = ref(false) // Default closed for mobile
 const menuItems = [
   { name: 'Dashboard', href: '/manage', icon: LayoutDashboard },
   { name: 'Concepts', href: '/manage/concepts', icon: BookOpen },
-  // { name: 'Questions', href: '/manage/questions', icon: FileQuestion },
   { name: 'Papers', href: '/manage/papers', icon: FileText },
+  { name: 'Osce', href: '/manage/osce', icon: Stethoscope },
   { name: 'Users', href: '/manage/users', icon: Users },
+  { name: 'Institutions', href: '/manage/institutions', icon: School },
   // { name: 'Settings', href: '/manage/settings', icon: Settings },
 ]
 </script>

@@ -150,7 +150,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             <span
               class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium shrink-0"
             >
-              {{ paper.examType }}
+              {{ paper.examType.toUpperCase()}}
             </span>
             <span class="shrink-0">{{ paper.year }}</span>
           </div>

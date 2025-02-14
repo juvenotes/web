@@ -1,7 +1,8 @@
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import type { DateTime } from 'luxon'
-import type { ManyToMany } from '@adonisjs/lucid/types/relations'
+import type { HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import Course from './course.js'
+import InstitutionCourse from './institution_course.js'
 import { InstitutionType } from '#enums/institution_type'
 import { CountryCode } from '#enums/countries'
 
@@ -29,6 +30,9 @@ export default class Institution extends BaseModel {
     pivotColumns: ['education_level_id', 'is_active'],
   })
   declare courses: ManyToMany<typeof Course>
+
+  @hasMany(() => InstitutionCourse)
+  declare institutionCourses: HasMany<typeof InstitutionCourse>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

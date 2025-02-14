@@ -4,16 +4,22 @@ import { computed } from 'vue'
 import ConceptDto from '#dtos/concept'
 import PastPaperDto from '#dtos/past_paper'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, ArrowLeft, Calendar } from 'lucide-vue-next'
+import { FileText, Calendar, AlertCircle, Settings } from 'lucide-vue-next'
 
 defineOptions({ layout: DashLayout })
 
 interface Props {
   concept: ConceptDto
   papers: PastPaperDto[]
+  canManage: boolean
 }
 
 const props = defineProps<Props>()
+
+const breadcrumbItems = computed(() => [
+  { label: 'Papers', href: '/papers' },
+  { label: props.concept.title },
+])
 
 const hasPapers = computed(() => props.papers.length > 0)
 
@@ -28,10 +34,6 @@ const papersByYear = computed(() => {
     {} as Record<string, PastPaperDto[]>
   )
 })
-
-function goBack() {
-  window.history.back()
-}
 </script>
 
 <template>
@@ -44,24 +46,28 @@ function goBack() {
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <div class="flex items-start justify-between">
-        <button
-          @click="goBack"
-          class="flex items-center gap-2 text-primary hover:text-primary/70 transition-colors"
-        >
-          <ArrowLeft class="h-5 w-5" />
-          <span class="text-sm font-medium">Back to Subjects</span>
-        </button>
-      </div>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
-      <div class="flex items-start gap-4 mt-4">
-        <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-          <FileText class="h-6 w-6 text-primary" />
+      <div class="flex items-start justify-between mt-4">
+        <div class="flex items-start gap-4">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
+            <FileText class="h-6 w-6 text-primary" />
+          </div>
+          <div class="space-y-1">
+            <h1 class="text-2xl font-bold text-foreground">{{ concept.title }}</h1>
+            <p class="text-sm text-muted-foreground">Past Examination Papers</p>
+          </div>
         </div>
-        <div class="space-y-1">
-          <h1 class="text-2xl font-bold text-foreground">{{ concept.title }}</h1>
-          <p class="text-sm text-muted-foreground">Past Examination Papers</p>
-        </div>
+
+        <!-- Add manage button -->
+        <Link
+          v-if="canManage"
+          :href="`/manage/papers/${concept.slug}`"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10"
+        >
+          <Settings class="h-4 w-4" />
+          <span class="text-sm font-medium">Edit</span>
+        </Link>
       </div>
     </div>
 
@@ -89,7 +95,7 @@ function goBack() {
 
               <div class="flex items-center gap-3 text-sm">
                 <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
-                  {{ paper.examType }}
+                  {{ paper.examType.toUpperCase() }}
                 </span>
                 <span class="text-muted-foreground">
                   {{ paper.questions?.length ?? 0 }} questions

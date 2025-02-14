@@ -33,6 +33,9 @@ export default class Concept extends BaseModel {
   declare level: number
 
   @column()
+  declare hasOsce: boolean
+
+  @column()
   declare metadata: any
 
   @column.dateTime({ autoCreate: true })

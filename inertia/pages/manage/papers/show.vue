@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, Plus, ArrowLeft } from 'lucide-vue-next'
+import { FileText, Plus } from 'lucide-vue-next'
 import CreatePaperDialog from '~/components/CreatePaperDialog.vue'
 
 defineOptions({ layout: AdminLayout })
@@ -14,12 +14,13 @@ interface Props {
   papers: PastPaperDto[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => [
+  { label: 'Papers', href: '/papers' },
+  { label: props.concept.title },
+])
 </script>
 
 <template>
@@ -32,10 +33,7 @@ function goBack() {
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <button @click="goBack" class="flex items-center gap-2 text-primary hover:text-primary/70">
-        <ArrowLeft class="h-5 w-5" />
-        <span class="text-sm font-medium">Back to Units</span>
-      </button>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
       <div class="flex items-start justify-between mt-4">
         <div class="flex items-start gap-4">
@@ -68,7 +66,10 @@ function goBack() {
             <h3 class="text-lg font-semibold text-foreground">{{ paper.title }}</h3>
             <div class="flex items-center gap-3 text-sm">
               <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
-                {{ paper.examType }}
+                {{ paper.examType.toUpperCase() }}
+              </span>
+              <span class="text-muted-foreground">
+                {{ paper.questions?.length ?? 0 }} questions
               </span>
               <span class="text-muted-foreground">{{ paper.year }}</span>
             </div>
