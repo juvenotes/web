@@ -75,6 +75,9 @@ onUnmounted(() => {
             <button class="lg:hidden" @click="isSidebarCollapsed = !isSidebarCollapsed">
               <MenuIcon class="h-6 w-6" />
             </button>
+            <Link href="/learn" class="block md:hidden">
+            <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
+            </Link>
             <Link href="/learn" class="hidden md:block">
               <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
             </Link>
