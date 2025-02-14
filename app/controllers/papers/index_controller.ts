@@ -4,6 +4,7 @@ import ConceptDto from '#dtos/concept'
 import PastPaperDto from '#dtos/past_paper'
 import PastPaper from '#models/past_paper'
 import QuestionDto from '#dtos/question'
+import { PaperType } from '#enums/exam_type'
 
 export default class IndexController {
   async index({ inertia, logger, auth }: HttpContext) {
@@ -16,6 +17,7 @@ export default class IndexController {
       .preload('pastPapers', (query) => {
         query
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
           .orderBy('year', 'desc')
       })
 
@@ -46,6 +48,7 @@ export default class IndexController {
       .preload('pastPapers', (query) => {
         query
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
           .orderBy('year', 'desc')
           .preload('questions', (questionsQuery) => {
             questionsQuery
@@ -84,6 +87,7 @@ export default class IndexController {
 
     const paper = await PastPaper.query()
       .where('slug', params.paperSlug)
+      .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
       .preload('concept')
       .preload('questions', (query) => {
         query
