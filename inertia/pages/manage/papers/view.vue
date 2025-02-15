@@ -150,7 +150,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             <span
               class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium shrink-0"
             >
-              {{ paper.examType.toUpperCase()}}
+              {{ paper.examType.toUpperCase() }}
             </span>
             <span class="shrink-0">{{ paper.year }}</span>
           </div>
@@ -163,6 +163,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
         </div>
         <!-- Add Questions Buttons -->
         <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <ToggleUrl />
           <Button class="w-full sm:w-auto" @click="showAddMcqDialog = true">
             <Plus class="h-4 w-4 mr-2" />Add MCQ
           </Button>

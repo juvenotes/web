@@ -22,18 +22,20 @@ defineProps<Props>()
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
+      <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
+        <div class="flex items-start gap-4 mt-4">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
+            <Stethoscope class="h-6 w-6 text-primary" />
+          </div>
 
-      <div class="flex items-start gap-4 mt-4">
-        <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-          <Stethoscope class="h-6 w-6 text-primary" />
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-foreground">OSCE Papers</h1>
+            <p class="text-base text-muted-foreground/90 max-w-2xl">
+              Manage OSCE examination papers organized by subjects
+            </p>
+          </div>
         </div>
-
-        <div class="space-y-2">
-          <h1 class="text-2xl font-bold text-foreground">OSCE Papers</h1>
-          <p class="text-base text-muted-foreground/90 max-w-2xl">
-            Manage OSCE examination papers organized by subjects
-          </p>
-        </div>
+        <ToggleUrl />
       </div>
     </div>
 
@@ -58,8 +60,13 @@ defineProps<Props>()
 
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
             <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
-              {{ concept.pastPapers?.filter(p => p.paperType === PaperType.OSCE).length ?? 0 }}
-              {{ (concept.pastPapers?.filter(p => p.paperType === PaperType.OSCE).length ?? 0) === 1 ? 'paper' : 'papers' }}
+              {{ concept.pastPapers?.filter((p) => p.paperType === PaperType.OSCE).length ?? 0 }}
+              {{
+                (concept.pastPapers?.filter((p) => p.paperType === PaperType.OSCE).length ?? 0) ===
+                1
+                  ? 'paper'
+                  : 'papers'
+              }}
             </span>
           </div>
 

@@ -117,6 +117,7 @@ function goBack() {
 
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-2">
+          <ToggleUrl />
           <Button @click="showAddOsceDialog = true" class="flex items-center gap-2">
             <Plus class="h-4 w-4" />
             Add OSCE Station

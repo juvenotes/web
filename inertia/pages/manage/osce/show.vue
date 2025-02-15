@@ -50,7 +50,7 @@ function goBack() {
             <p class="text-sm text-muted-foreground">Manage OSCE Papers</p>
           </div>
         </div>
-
+        <ToggleUrl />
         <Button @click="isCreateDialogOpen = true" class="flex items-center gap-2">
           <Plus class="h-4 w-4" />
           Add OSCE Paper
@@ -86,9 +86,6 @@ function goBack() {
     <div v-else class="text-center p-8 bg-white rounded-xl border">
       <p class="text-muted-foreground">No OSCE papers added yet. Click "Add OSCE" to create one.</p>
     </div>
-    <CreateOscePaperDialog
-      v-model:open="isCreateDialogOpen"
-      :concept="concept"
-    />
+    <CreateOscePaperDialog v-model:open="isCreateDialogOpen" :concept="concept" />
   </div>
 </template>

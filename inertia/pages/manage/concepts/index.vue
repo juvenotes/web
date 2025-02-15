@@ -45,6 +45,7 @@ const handleNewParent = () => {
         <Plus class="h-4 w-4 mr-2" />
         Add Root Concept
       </Button>
+      <ToggleUrl />
     </div>
 
     <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

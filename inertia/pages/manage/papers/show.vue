@@ -45,7 +45,7 @@ const breadcrumbItems = computed(() => [
             <p class="text-sm text-muted-foreground">Manage Past Papers</p>
           </div>
         </div>
-
+        <ToggleUrl />
         <Button @click="isCreateDialogOpen = true" class="flex items-center gap-2">
           <Plus class="h-4 w-4" />
           Add Paper

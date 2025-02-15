@@ -127,6 +127,7 @@ const handleDelete = () => {
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 class="text-2xl sm:text-3xl font-bold truncate">{{ concept.title }}</h1>
         <div class="flex flex-wrap gap-2">
+          <ToggleUrl />
           <!-- Only show Add buttons for non-terminal concepts -->
           <template v-if="!concept.isTerminal">
             <Button variant="outline" @click="showNewChildDialog = true" class="w-full sm:w-auto">
