@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, ArrowLeft, Clock, Plus, Upload, Pencil, Trash2 } from 'lucide-vue-next'
+import { FileText, Clock, Plus, Upload, Pencil, Trash2 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import AddMcqQuestionDialog from '~/components/AddMcqDialog.vue'
 import AddSaqQuestionDialog from '~/components/AddSaqDialog.vue'
@@ -95,9 +95,11 @@ function handleEditQuestion(question: QuestionDto) {
   }
 }
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => [
+  { label: 'Papers', href: '/manage/papers' },
+  { label: props.concept.title, href: `/manage/papers/${props.concept.slug}` },
+  { label: props.paper.title },
+])
 
 const lastEditDate = computed(() => {
   return new Date(
@@ -120,17 +122,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
     <!-- Paper Header -->
     <div class="mb-4 sm:mb-8 space-y-4 sm:space-y-6">
       <!-- Navigation -->
-      <nav class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-        <button
-          @click="goBack"
-          class="flex items-center gap-1 sm:gap-2 text-primary hover:text-primary/70 transition-colors"
-        >
-          <ArrowLeft class="h-4 w-4" />
-          Back to Papers
-        </button>
-        <span>/</span>
-        <span class="truncate max-w-[200px] sm:max-w-none">{{ paper.title }}</span>
-      </nav>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
       <!-- Paper Info -->
       <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">

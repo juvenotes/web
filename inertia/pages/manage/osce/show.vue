@@ -3,10 +3,10 @@ import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { ArrowLeft, FileText, Plus } from 'lucide-vue-next'
+import { FileText, Plus } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
 import CreateOscePaperDialog from '~/components/CreateOscePaperDialog.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 defineOptions({ layout: AdminLayout })
 
@@ -14,12 +14,13 @@ interface Props {
   concept: ConceptDto
   papers: PastPaperDto[]
 }
-defineProps<Props>()
+const props = defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => [
+  { label: 'OSCEs', href: '/manage/osce' },
+  { label: props.concept.title },
+])
 </script>
 
 <template>
@@ -35,10 +36,7 @@ function goBack() {
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <button @click="goBack" class="flex items-center gap-2 text-primary hover:text-primary/70">
-        <ArrowLeft class="h-5 w-5" />
-        <span class="text-sm font-medium">Back to OSCEs</span>
-      </button>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
       <div class="mt-4 flex flex-col sm:flex-row gap-4">
         <!-- Title section -->
