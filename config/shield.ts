@@ -9,16 +9,10 @@ const shieldConfig = defineConfig({
     enabled: true,
     directives: {
       defaultSrc: ["'self'", '@viteDevUrl'],
-      scriptSrc: [
-        "'self'",
-        "'unsafe-inline'",
-        "'unsafe-eval'",
-        '@viteDevUrl',
-        'http://www.freeprivacypolicy.com',
-      ],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'http://www.freeprivacypolicy.com'],
       styleSrc: ["'self'", "'unsafe-inline'", '@viteDevUrl', 'https://fonts.bunny.net'],
       imgSrc: ["'self'", 'data:', 'blob:', '*'],
-      connectSrc: ["'self'", 'ws:', 'wss:', '@viteHmrUrl'],
+      connectSrc: ["'self'", 'ws:', 'wss:'],
       frameSrc: ["'self'", '*.youtube.com', 'www.youtube.com'],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://fonts.bunny.net'],
       mediaSrc: ["'self'", 'data:', '*'],

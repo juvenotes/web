@@ -4,10 +4,8 @@ import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
 import { computed, ref, watchEffect } from 'vue'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import MdxContent from '~/components/MdxContent.vue'
-import KnowledgeEditor from '~/components/KnowledgeEditor.vue'
 import { toast } from 'vue-sonner'
-import { Plus, ArrowLeft } from 'lucide-vue-next'
+import { Plus, ArrowLeft, Pencil, Trash2 } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -22,6 +20,7 @@ const children = ref(props.children)
 const questions = ref(props.questions)
 const content = computed(() => props.content || '')
 const showContentEditor = ref(false)
+const showAddMcqDialog = ref(false)
 
 const toggleContentEditor = () => {
   showContentEditor.value = !showContentEditor.value
@@ -36,8 +35,10 @@ watchEffect(() => {
   questions.value = props.questions
 })
 
+const showEditMcqDialog = ref(false)
 const showEditDialog = ref(false)
 const showNewChildDialog = ref(false)
+const selectedQuestion = ref<QuestionDto | null>(null)
 
 const form = useForm({
   title: props.concept.title,
@@ -58,6 +59,26 @@ const newChildForm = useForm({
 const updateContent = (value: string) => {
   console.log('Content updated:', value)
   contentForm.knowledgeBlock = value
+}
+
+function handleEditQuestion(question: QuestionDto) {
+  showEditMcqDialog.value = true
+  selectedQuestion.value = question
+}
+
+function handleDeleteQuestion(question: QuestionDto) {
+  if (!confirm('Are you sure you want to delete this question?')) return
+
+  const form = useForm({})
+  form.delete(`/manage/concepts/${concept.slug}/questions/${question.slug}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      toast.success('Question deleted successfully')
+    },
+    onError: () => {
+      toast.error('Failed to delete question')
+    },
+  })
 }
 
 const handleSubmit = () => {
@@ -127,6 +148,7 @@ const handleDelete = () => {
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 class="text-2xl sm:text-3xl font-bold truncate">{{ concept.title }}</h1>
         <div class="flex flex-wrap gap-2">
+          <ToggleUrl />
           <!-- Only show Add buttons for non-terminal concepts -->
           <template v-if="!concept.isTerminal">
             <Button variant="outline" @click="showNewChildDialog = true" class="w-full sm:w-auto">
@@ -255,9 +277,15 @@ const handleDelete = () => {
       <div v-if="concept.isTerminal" class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h2 class="text-xl sm:text-2xl font-bold">Content</h2>
-          <Button variant="outline" @click="toggleContentEditor" class="w-full sm:w-auto">
-            {{ showContentEditor ? 'Hide Editor' : 'Edit Content' }}
-          </Button>
+          <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+            <Button variant="outline" @click="toggleContentEditor" class="w-full sm:w-auto">
+              {{ showContentEditor ? 'Hide Editor' : 'Edit Content' }}
+            </Button>
+            <Button variant="outline" @click="showAddMcqDialog = true" class="w-full sm:w-auto">
+              <Plus class="h-4 w-4 mr-2" />
+              Add MCQ
+            </Button>
+          </div>
         </div>
 
         <form v-if="showContentEditor" @submit.prevent="handleContentSubmit" class="space-y-4">
@@ -278,31 +306,89 @@ const handleDelete = () => {
       <!-- Questions -->
       <div v-if="questions?.length" class="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
         <h2 class="text-xl sm:text-2xl font-bold">Practice Questions</h2>
-        <div v-for="question in questions" :key="question.id" class="space-y-4">
-          <div class="p-4 rounded-lg border">
-            <p class="font-medium">{{ question.questionText }}</p>
+        <div v-for="(question, index) in questions" :key="question.id" class="space-y-4">
+          <div class="p-6 bg-white rounded-xl border shadow-sm">
+            <!-- Question Header -->
+            <div class="flex items-start justify-between">
+              <div class="flex gap-3 items-start">
+                <span class="flex-none px-2 py-1 bg-primary/10 text-primary rounded-lg font-medium">
+                  Q{{ index + 1 }}
+                </span>
+                <p class="text-foreground">{{ question.questionText }}</p>
+              </div>
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-2">
+                <Button variant="ghost" size="sm" @click="handleEditQuestion(question)">
+                  <Pencil class="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
+                  <Trash2 class="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            </div>
 
             <!-- MCQ Choices -->
-            <div v-if="question.choices?.length" class="mt-4 space-y-2">
+            <div v-if="question.choices?.length" class="mt-4 pl-10 space-y-3">
               <div
                 v-for="choice in question.choices"
                 :key="choice.id"
-                class="flex items-start gap-2"
+                class="flex items-start gap-3 p-3 rounded-lg border"
               >
-                <span>{{ choice.choiceText }}</span>
+                <div
+                  class="h-4 w-4 mt-1 rounded-full border"
+                  :class="{ 'bg-primary border-primary': choice.isCorrect }"
+                />
+                <div class="space-y-2">
+                  <span class="text-sm text-muted-foreground">{{ choice.choiceText }}</span>
+                  <p
+                    v-if="choice.isCorrect && choice.explanation"
+                    class="text-sm text-muted-foreground mt-1"
+                  >
+                    <span class="font-medium">Explanation:</span> {{ choice.explanation }}
+                  </p>
+                </div>
               </div>
             </div>
 
             <!-- SAQ Parts -->
-            <div v-if="question.parts?.length" class="mt-4 space-y-4">
-              <div v-for="part in question.parts" :key="part.id" class="border-l-2 pl-4">
-                <p class="font-medium">{{ part.partText }}</p>
-                <p class="font-medium">{{ part.expectedAnswer }}</p>
-                <p class="text-sm text-muted-foreground mt-2">Marks: {{ part.marks }}</p>
+            <div v-if="question.parts?.length" class="mt-4 pl-10 space-y-4">
+              <div
+                v-for="(part, partIndex) in question.parts"
+                :key="part.id"
+                class="relative pl-4 border-l-2 border-primary/20 py-3"
+              >
+                <div class="space-y-3">
+                  <!-- Part Header -->
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium">Part {{ partIndex + 1 }}</span>
+                    <span
+                      class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium"
+                    >
+                      {{ part.marks }} marks
+                    </span>
+                  </div>
+
+                  <!-- Part Text -->
+                  <p class="text-foreground">{{ part.partText }}</p>
+
+                  <!-- Expected Answer -->
+                  <div class="mt-2 bg-muted/50 rounded-lg p-3">
+                    <p class="text-sm font-medium text-muted-foreground">Expected Answer:</p>
+                    <div class="mt-2 text-sm whitespace-pre-wrap">{{ part.expectedAnswer }}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <AddMcqToConceptDialog v-model:open="showAddMcqDialog" :concept="concept" />
+        <EditMcqInConceptDialog
+          v-if="selectedQuestion"
+          v-model:open="showEditMcqDialog"
+          :concept="concept"
+          :question="selectedQuestion"
+        />
       </div>
     </div>
   </div>

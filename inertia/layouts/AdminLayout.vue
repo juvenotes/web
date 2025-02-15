@@ -72,13 +72,17 @@ const menuItems = [
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
       >
+        <!-- Sidebar navigation -->
         <nav class="p-4 space-y-2">
           <Link
             v-for="item in menuItems"
             :key="item.name"
             :href="item.href"
-            class="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors"
-            :class="{ 'bg-accent': $page.url.startsWith(item.href) }"
+            class="flex items-center gap-2 p-2 rounded-lg text-foreground transition-colors"
+            :class="{
+              'bg-accent': $page.url === item.href,
+              'hover:bg-accent/10': $page.url !== item.href,
+            }"
             @click="isSidebarOpen = false"
           >
             <component :is="item.icon" class="w-5 h-5" />

@@ -154,21 +154,13 @@ router
     router.post('/', [ManageConceptsController, 'store'])
     router.put('/:slug', [ManageConceptsController, 'update'])
     router.put('/:slug/content', [ManageConceptsController, 'updateContent'])
+    router.post('/:slug/questions/mcq', [ManageConceptsController, 'addMcq'])
+    router.put('/:conceptSlug/questions/:questionSlug/mcq', [ManageConceptsController, 'updateMcq'])
+    router.delete('/:conceptSlug/questions/:questionSlug', [ManageConceptsController, 'deleteMcq'])
     router.delete('/:slug', [ManageConceptsController, 'destroy'])
   })
   .prefix('/manage/concepts')
   .use(middleware.auth())
-
-//* QUESTIONS -> MANAGE
-// router
-//   .group(() => {
-//     router.get('/', [ManageQuestionsController, 'index'])
-//     router.get('/:slug', [ManageQuestionsController, 'show'])
-//     router.post('/', [ManageQuestionsController, 'store'])
-//     router.put('/:slug', [ManageQuestionsController, 'update'])
-//     router.delete('/:slug', [ManageQuestionsController, 'destroy'])
-//   })
-//   .prefix('/manage/questions')
 
 //* AUTH -> GOOGLE
 router
