@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, ArrowLeft, Clock, Plus, Pencil, Trash2 } from 'lucide-vue-next'
+import { FileText, Clock, Plus, Pencil, Trash2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { useForm } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
@@ -65,9 +65,11 @@ async function handleDeleteQuestion(question: QuestionDto) {
   })
 }
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => [
+  { label: 'OSCEs', href: '/manage/osce' },
+  { label: props.concept.title, href: `/manage/osce/${props.concept.slug}` },
+  { label: props.paper.title },
+])
 </script>
 
 <template>
@@ -77,17 +79,7 @@ function goBack() {
     <!-- Paper Header -->
     <div class="mb-4 sm:mb-8 space-y-4 sm:space-y-6">
       <!-- Navigation -->
-      <nav class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-        <button
-          @click="goBack"
-          class="flex items-center gap-1 sm:gap-2 text-primary hover:text-primary/70"
-        >
-          <ArrowLeft class="h-4 w-4" />
-          Back to OSCEs
-        </button>
-        <span>/</span>
-        <span class="truncate max-w-[200px] sm:max-w-none">{{ paper.title }}</span>
-      </nav>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
       <!-- Paper Info -->
       <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
@@ -117,6 +109,7 @@ function goBack() {
 
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-2">
+          <ToggleUrl />
           <Button @click="showAddOsceDialog = true" class="flex items-center gap-2">
             <Plus class="h-4 w-4" />
             Add OSCE Station

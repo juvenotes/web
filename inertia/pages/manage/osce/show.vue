@@ -3,10 +3,9 @@ import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { ArrowLeft, FileText, Plus } from 'lucide-vue-next'
+import { FileText, Plus } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
-import CreateOscePaperDialog from '~/components/CreateOscePaperDialog.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 defineOptions({ layout: AdminLayout })
 
@@ -14,12 +13,13 @@ interface Props {
   concept: ConceptDto
   papers: PastPaperDto[]
 }
-defineProps<Props>()
+const props = defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => [
+  { label: 'OSCEs', href: '/manage/osce' },
+  { label: props.concept.title },
+])
 </script>
 
 <template>
@@ -35,14 +35,12 @@ function goBack() {
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <button @click="goBack" class="flex items-center gap-2 text-primary hover:text-primary/70">
-        <ArrowLeft class="h-5 w-5" />
-        <span class="text-sm font-medium">Back to OSCEs</span>
-      </button>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
-      <div class="flex items-start justify-between mt-4">
-        <div class="flex items-start gap-4">
-          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
+      <div class="mt-4 flex flex-col sm:flex-row gap-4">
+        <!-- Title section -->
+        <div class="flex items-start gap-4 flex-1">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10 shrink-0">
             <FileText class="h-6 w-6 text-primary" />
           </div>
           <div class="space-y-1">
@@ -51,10 +49,17 @@ function goBack() {
           </div>
         </div>
 
-        <Button @click="isCreateDialogOpen = true" class="flex items-center gap-2">
-          <Plus class="h-4 w-4" />
-          Add OSCE Paper
-        </Button>
+        <!-- Action buttons -->
+        <div class="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-4">
+          <ToggleUrl />
+          <Button
+            @click="isCreateDialogOpen = true"
+            class="flex items-center justify-center gap-2 w-full sm:w-auto"
+          >
+            <Plus class="h-4 w-4" />
+            Add OSCE Paper
+          </Button>
+        </div>
       </div>
     </div>
 
@@ -86,9 +91,6 @@ function goBack() {
     <div v-else class="text-center p-8 bg-white rounded-xl border">
       <p class="text-muted-foreground">No OSCE papers added yet. Click "Add OSCE" to create one.</p>
     </div>
-    <CreateOscePaperDialog
-      v-model:open="isCreateDialogOpen"
-      :concept="concept"
-    />
+    <CreateOscePaperDialog v-model:open="isCreateDialogOpen" :concept="concept" />
   </div>
 </template>
