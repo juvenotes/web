@@ -40,7 +40,7 @@ const handleNewParent = () => {
   <AppHead title="Manage concepts" description="Manage concepts in Juvenotes" />
   <div class="container mx-auto px-4 py-8">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-      <h1 class="text-2xl font-bold">Concepts In Medicine</h1>
+      <h1 class="text-2xl font-bold">Concepts In MBHCB</h1>
       <Button variant="outline" @click="showNewParentDialog = true" class="w-full sm:w-auto">
         <Plus class="h-4 w-4 mr-2" />
         Add Root Concept

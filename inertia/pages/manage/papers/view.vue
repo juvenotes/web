@@ -209,7 +209,15 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                   class="h-3 w-3 sm:h-4 sm:w-4 mt-1 rounded-full border"
                   :class="{ 'bg-primary border-primary': choice.isCorrect }"
                 />
-                <span class="text-sm text-muted-foreground">{{ choice.choiceText }}</span>
+                <div class="space-y-2">
+                  <span class="text-sm text-muted-foreground">{{ choice.choiceText }}</span>
+                  <p
+                    v-if="choice.isCorrect && choice.explanation"
+                    class="text-sm text-muted-foreground mt-1"
+                  >
+                    <span class="font-medium">Explanation:</span> {{ choice.explanation }}
+                  </p>
+                </div>
               </div>
             </div>
 
