@@ -18,7 +18,7 @@ const props = defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
 const breadcrumbItems = computed(() => [
-  { label: 'Papers', href: '/papers' },
+  { label: 'Papers', href: '/manage/papers' },
   { label: props.concept.title },
 ])
 </script>
@@ -35,9 +35,10 @@ const breadcrumbItems = computed(() => [
 
       <BreadcrumbTrail :items="breadcrumbItems" />
 
-      <div class="flex items-start justify-between mt-4">
-        <div class="flex items-start gap-4">
-          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
+      <div class="mt-4 flex flex-col sm:flex-row gap-4">
+        <!-- Title section -->
+        <div class="flex items-start gap-4 flex-1">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10 shrink-0">
             <FileText class="h-6 w-6 text-primary" />
           </div>
           <div class="space-y-1">
@@ -45,11 +46,18 @@ const breadcrumbItems = computed(() => [
             <p class="text-sm text-muted-foreground">Manage Past Papers</p>
           </div>
         </div>
-        <ToggleUrl />
-        <Button @click="isCreateDialogOpen = true" class="flex items-center gap-2">
-          <Plus class="h-4 w-4" />
-          Add Paper
-        </Button>
+
+        <!-- Action buttons -->
+        <div class="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-4">
+          <ToggleUrl />
+          <Button
+            @click="isCreateDialogOpen = true"
+            class="flex items-center justify-center gap-2 w-full sm:w-auto"
+          >
+            <Plus class="h-4 w-4" />
+            Add Paper
+          </Button>
+        </div>
       </div>
     </div>
 

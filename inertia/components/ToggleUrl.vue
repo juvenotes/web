@@ -20,7 +20,7 @@ const toggleUrl = computed(() => {
         <Link
           v-if="isAdmin"
           :href="toggleUrl"
-          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+          class="inline-flex h-9 items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
         >
           <Eye class="h-4 w-4" />
           <span class="text-sm font-medium">View</span>
