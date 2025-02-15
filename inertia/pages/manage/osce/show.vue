@@ -5,7 +5,6 @@ import type PastPaperDto from '#dtos/past_paper'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { FileText, Plus } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
-import CreateOscePaperDialog from '~/components/CreateOscePaperDialog.vue'
 import { computed, ref } from 'vue'
 
 defineOptions({ layout: AdminLayout })

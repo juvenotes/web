@@ -4,8 +4,6 @@ import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
 import { computed, ref, watchEffect } from 'vue'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import MdxContent from '~/components/MdxContent.vue'
-import KnowledgeEditor from '~/components/KnowledgeEditor.vue'
 import { toast } from 'vue-sonner'
 import { Plus, ArrowLeft } from 'lucide-vue-next'
 

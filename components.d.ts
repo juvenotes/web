@@ -7,10 +7,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AddCitationDialog: typeof import('./inertia/components/AddCitationDialog.vue')['default']
-    AddMcqDialog: typeof import('./inertia/components/AddMcqDialog.vue')['default']
-    AddOsceDialog: typeof import('./inertia/components/AddOsceDialog.vue')['default']
-    AddSaqDialog: typeof import('./inertia/components/AddSaqDialog.vue')['default']
+    AddCitationDialog: typeof import('./inertia/components/dialogs/AddCitationDialog.vue')['default']
+    AddMcqDialog: typeof import('./inertia/components/dialogs/AddMcqDialog.vue')['default']
+    AddOsceDialog: typeof import('./inertia/components/dialogs/AddOsceDialog.vue')['default']
+    AddSaqDialog: typeof import('./inertia/components/dialogs/AddSaqDialog.vue')['default']
     AdminSearch: typeof import('./inertia/components/AdminSearch.vue')['default']
     Alert: typeof import('./inertia/components/ui/alert/Alert.vue')['default']
     AlertDescription: typeof import('./inertia/components/ui/alert/AlertDescription.vue')['default']
@@ -27,8 +27,8 @@ declare module 'vue' {
     Button: typeof import('./inertia/components/ui/button/Button.vue')['default']
     Checkbox: typeof import('./inertia/components/ui/checkbox/Checkbox.vue')['default']
     CookieConsent: typeof import('./inertia/components/CookieConsent.vue')['default']
-    CreateOscePaperDialog: typeof import('./inertia/components/CreateOscePaperDialog.vue')['default']
-    CreatePaperDialog: typeof import('./inertia/components/CreatePaperDialog.vue')['default']
+    CreateOscePaperDialog: typeof import('./inertia/components/dialogs/CreateOscePaperDialog.vue')['default']
+    CreatePaperDialog: typeof import('./inertia/components/dialogs/CreatePaperDialog.vue')['default']
     Dialog: typeof import('./inertia/components/ui/dialog/Dialog.vue')['default']
     DialogClose: typeof import('./inertia/components/ui/dialog/DialogClose.vue')['default']
     DialogContent: typeof import('./inertia/components/ui/dialog/DialogContent.vue')['default']
@@ -52,10 +52,10 @@ declare module 'vue' {
     DropdownMenuSubContent: typeof import('./inertia/components/ui/dropdown-menu/DropdownMenuSubContent.vue')['default']
     DropdownMenuSubTrigger: typeof import('./inertia/components/ui/dropdown-menu/DropdownMenuSubTrigger.vue')['default']
     DropdownMenuTrigger: typeof import('./inertia/components/ui/dropdown-menu/DropdownMenuTrigger.vue')['default']
-    EditMcqDialog: typeof import('./inertia/components/EditMcqDialog.vue')['default']
-    EditOsceDialog: typeof import('./inertia/components/EditOsceDialog.vue')['default']
-    EditPaperDialog: typeof import('./inertia/components/EditPaperDialog.vue')['default']
-    EditSaqDialog: typeof import('./inertia/components/EditSaqDialog.vue')['default']
+    EditMcqDialog: typeof import('./inertia/components/dialogs/EditMcqDialog.vue')['default']
+    EditOsceDialog: typeof import('./inertia/components/dialogs/EditOsceDialog.vue')['default']
+    EditPaperDialog: typeof import('./inertia/components/dialogs/EditPaperDialog.vue')['default']
+    EditSaqDialog: typeof import('./inertia/components/dialogs/EditSaqDialog.vue')['default']
     FormControl: typeof import('./inertia/components/ui/form/FormControl.vue')['default']
     FormDescription: typeof import('./inertia/components/ui/form/FormDescription.vue')['default']
     FormItem: typeof import('./inertia/components/ui/form/FormItem.vue')['default']
@@ -98,6 +98,6 @@ declare module 'vue' {
     TooltipContent: typeof import('./inertia/components/ui/tooltip/TooltipContent.vue')['default']
     TooltipProvider: typeof import('./inertia/components/ui/tooltip/TooltipProvider.vue')['default']
     TooltipTrigger: typeof import('./inertia/components/ui/tooltip/TooltipTrigger.vue')['default']
-    UploadMcqsDialog: typeof import('./inertia/components/UploadMcqsDialog.vue')['default']
+    UploadMcqsDialog: typeof import('./inertia/components/dialogs/UploadMcqsDialog.vue')['default']
   }
 }
