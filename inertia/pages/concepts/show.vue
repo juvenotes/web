@@ -72,9 +72,6 @@ const getCorrectAnswer = (question: QuestionDto) => {
 <template>
   <AppHead :title="`${concept.title}`" description="All available concepts in Juvenotes" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-    <!-- Modern Breadcrumbs -->
-    <BreadcrumbTrail :items="breadcrumbItems" />
-
     <div class="space-y-8">
       <!-- Enhanced Title Section -->
       <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
