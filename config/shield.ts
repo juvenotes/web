@@ -32,6 +32,7 @@ const shieldConfig = defineConfig({
         'https://*.statsig.com',
         'https://prodregistryv2.org',
         'https://prodregistryv2.org/v1/rgstr',
+        'https://umami.analytics.juvenotes.com/api/send',
       ],
       frameSrc: ["'self'", '*.youtube.com', 'www.youtube.com'],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://fonts.bunny.net'],
