@@ -8,9 +8,18 @@ const shieldConfig = defineConfig({
   csp: {
     enabled: true,
     directives: {
-      defaultSrc: ["'self'", '@viteDevUrl'],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'http://www.freeprivacypolicy.com'],
-      styleSrc: ["'self'", "'unsafe-inline'", '@viteDevUrl', 'https://fonts.bunny.net'],
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        'http://www.freeprivacypolicy.com',
+        'https://www.freeprivacypolicy.com',
+        'https://umami.analytics.juvenotes.com/script.js',
+        'https://www.google-analytics.com',
+        'https://www.googletagmanager.com',
+      ],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.bunny.net'],
       imgSrc: ["'self'", 'data:', 'blob:', '*'],
       connectSrc: ["'self'", 'ws:', 'wss:'],
       frameSrc: ["'self'", '*.youtube.com', 'www.youtube.com'],
