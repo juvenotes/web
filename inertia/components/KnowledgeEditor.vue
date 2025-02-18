@@ -15,8 +15,6 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { Youtube } from '@tiptap/extension-youtube'
-// import BubbleMenu from '@tiptap/extension-bubble-menu'
-// // import { FileHandler } from '@tiptap-pro/extension-file-handler'
 import {
   Bold,
   Italic,
