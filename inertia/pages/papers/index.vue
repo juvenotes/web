@@ -3,6 +3,8 @@ import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Settings } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { TrainingLevel } from '#enums/training_level'
 
 defineOptions({ layout: DashLayout })
 
@@ -11,7 +13,14 @@ interface Props {
   canManage: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const selectedLevel = ref<TrainingLevel | null>(null)
+
+const filteredConcepts = computed(() => {
+  if (!selectedLevel.value) return props.concepts
+  return props.concepts.filter((c) => c.trainingLevel === selectedLevel.value)
+})
 </script>
 
 <template>
@@ -51,10 +60,15 @@ defineProps<Props>()
       </div>
     </div>
 
+    <!-- Filter Section -->
+    <div class="flex justify-end">
+      <ToggleTrainingLevel v-model="selectedLevel" />
+    </div>
+
     <!-- Papers Grid -->
     <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
       <Link
-        v-for="concept in concepts"
+        v-for="concept in filteredConcepts"
         :key="concept.id"
         :href="`/papers/${concept.slug}`"
         class="group relative overflow-hidden rounded-xl bg-white/90 p-5 border border-white/20 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 outline outline-1 outline-[#d3d3d3a1]"
