@@ -13,7 +13,7 @@ export default class IndexController {
 
     const concepts = await Concept.query()
       .where('level', 0)
-      .select(['id', 'title', 'slug', 'level'])
+      .select(['id', 'title', 'slug', 'level', 'training_level'])
       .preload('pastPapers', (query) => {
         query
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
