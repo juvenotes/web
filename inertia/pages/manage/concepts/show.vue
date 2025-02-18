@@ -5,7 +5,7 @@ import type QuestionDto from '#dtos/question'
 import { computed, ref, watchEffect } from 'vue'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { toast } from 'vue-sonner'
-import { Plus, ArrowLeft, Pencil, Trash2 } from 'lucide-vue-next'
+import { Plus, Pencil, Trash2 } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -13,6 +13,7 @@ const props = defineProps<{
   concept: ConceptDto
   children: ConceptDto[]
   questions: QuestionDto[]
+  parentConcepts?: ConceptDto[]
   content: string | null
 }>()
 
@@ -26,9 +27,27 @@ const toggleContentEditor = () => {
   showContentEditor.value = !showContentEditor.value
 }
 
-const goBack = () => {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => {
+  const items = [{ label: 'Concepts', href: '/manage/concepts' }]
+
+  // Add parent concepts if they exist
+  if (props.parentConcepts?.length) {
+    props.parentConcepts.forEach((parent: ConceptDto) => {
+      items.push({
+        label: parent.title,
+        href: `/manage/concepts/${parent.slug}`,
+      })
+    })
+  }
+
+  // Add current concept
+  items.push({
+    label: props.concept.title,
+    href: '',
+  })
+
+  return items
+})
 
 watchEffect(() => {
   children.value = props.children
@@ -96,18 +115,7 @@ const handleDelete = () => {
     description="Manage a specific concept in Juvenotes"
   />
   <div class="container mx-auto px-4 py-4 sm:py-8">
-    <nav class="flex flex-wrap items-center gap-2 mb-4 sm:mb-6 text-sm">
-      <button
-        @click="goBack"
-        class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-      >
-        <ArrowLeft class="h-4 w-4" />
-        <span class="hidden sm:inline">Back</span>
-      </button>
-      <Link href="/manage/concepts">Concepts</Link>
-      <span>/</span>
-      <span class="truncate max-w-[200px]">{{ concept.title }}</span>
-    </nav>
+    <BreadcrumbTrail :items="breadcrumbItems" />
 
     <div class="space-y-6 sm:space-y-8">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
