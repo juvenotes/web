@@ -163,7 +163,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             <Pencil class="h-4 w-4 mr-2" />Edit Paper
           </Button>
           <Button variant="destructive" class="w-full sm:w-auto" @click="handleDeletePaper">
-            <Trash2 class="h-4 w-4 mr-2" />Delete Paper
+            <Trash2 class="h-4 w-4 mr-2" />Delete
           </Button>
         </div>
       </div>
@@ -243,31 +243,6 @@ const selectedQuestion = ref<QuestionDto | null>(null)
       </div>
     </div>
   </div>
-
-  <!-- Dialogs -->
-  <AddMcqQuestionDialog v-model:open="showAddMcqDialog" :paper="paper" :concept="concept" />
-  <AddSaqQuestionDialog v-model:open="showAddSaqDialog" :paper="paper" :concept="concept" />
-  <UploadMcqsDialog
-    v-model:open="showUploadDialog"
-    :paper="paper"
-    :concept="concept"
-    @parse-progress="onParseProgress"
-  />
-  <EditMcqDialog
-    v-if="selectedQuestion?.isMcq"
-    v-model:open="showEditMcqDialog"
-    :paper="paper"
-    :concept="concept"
-    :question="selectedQuestion"
-  />
-  <EditSaqDialog
-    v-if="selectedQuestion?.isSaq"
-    v-model:open="showEditSaqDialog"
-    :paper="paper"
-    :concept="concept"
-    :question="selectedQuestion"
-  />
-  <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
   <!-- Progress Overlay -->
   <div
     v-if="parsingStatus.isProcessing"
@@ -306,4 +281,29 @@ const selectedQuestion = ref<QuestionDto | null>(null)
     </Button>
     <Button @click="showAddSaqDialog = true"> <Plus class="h-4 w-4 mr-2" />Add SAQ </Button>
   </div>
+
+  <!-- Dialogs -->
+  <AddMcqDialog v-model:open="showAddMcqDialog" :paper="paper" :concept="concept" />
+  <AddSaqDialog v-model:open="showAddSaqDialog" :paper="paper" :concept="concept" />
+  <UploadMcqsDialog
+    v-model:open="showUploadDialog"
+    :paper="paper"
+    :concept="concept"
+    @parse-progress="onParseProgress"
+  />
+  <EditMcqDialog
+    v-if="selectedQuestion?.isMcq"
+    v-model:open="showEditMcqDialog"
+    :paper="paper"
+    :concept="concept"
+    :question="selectedQuestion"
+  />
+  <EditSaqDialog
+    v-if="selectedQuestion?.isSaq"
+    v-model:open="showEditSaqDialog"
+    :paper="paper"
+    :concept="concept"
+    :question="selectedQuestion"
+  />
+  <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
 </template>
