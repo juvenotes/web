@@ -42,7 +42,7 @@ export default class ManagePastPapersController {
 
     const concepts = await Concept.query()
       .where('level', 0)
-      .select(['id', 'title', 'slug'])
+      .select(['id', 'title', 'slug', 'training_level'])
       .preload('pastPapers', (query) => {
         query
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])

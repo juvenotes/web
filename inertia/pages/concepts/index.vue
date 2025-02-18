@@ -3,15 +3,24 @@ import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { BookOpen, Settings } from 'lucide-vue-next'
+import { TrainingLevel } from '#enums/training_level'
+import { ref, computed } from 'vue'
 
 defineOptions({ layout: DashLayout })
+
+const selectedLevel = ref<TrainingLevel | null>(null)
+
+const filteredConcepts = computed(() => {
+  if (!selectedLevel.value) return props.concepts
+  return props.concepts.filter((c) => c.trainingLevel === selectedLevel.value)
+})
 
 interface Props {
   concepts: ConceptDto[]
   canManage: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 const breadcrumbItems = [{ label: 'Concepts' }]
 </script>
@@ -41,22 +50,28 @@ const breadcrumbItems = [{ label: 'Concepts' }]
           </div>
         </div>
 
-        <!-- Manage button -->
-        <Link
-          v-if="canManage"
-          href="/manage/concepts"
-          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
-        >
-          <Settings class="h-4 w-4" />
-          <span class="text-sm font-medium">Edit</span>
-        </Link>
+        <div class="flex items-center gap-2">
+          <Link
+            v-if="canManage"
+            href="/manage/concepts"
+            class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+          >
+            <Settings class="h-4 w-4" />
+            <span class="text-sm font-medium">Edit</span>
+          </Link>
+        </div>
       </div>
+    </div>
+
+        <!-- Filter Section -->
+        <div class="flex justify-end">
+      <ToggleTrainingLevel v-model="selectedLevel" />
     </div>
 
     <!-- Concepts Grid -->
     <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
       <Link
-        v-for="concept in concepts"
+        v-for="concept in filteredConcepts"
         :key="concept.id"
         :href="`/concepts/${concept.slug}`"
         class="group relative overflow-hidden rounded-xl bg-white/90 p-5 border border-white/20 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 outline outline-1 outline-[#d3d3d3a1]"
