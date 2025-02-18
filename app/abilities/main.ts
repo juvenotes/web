@@ -14,8 +14,13 @@
 
 import { Bouncer } from '@adonisjs/bouncer'
 import type User from '#models/user'
+import { Role } from '#enums/roles'
 
 // Users must be logged in to view questions
 export const viewQuestions = Bouncer.ability((user: User | null) => {
   return user !== null
+})
+
+export const canManage = Bouncer.ability((user: User | null) => {
+  return !!user && [Role.EDITOR, Role.ADMIN].includes(user.roleId)
 })

@@ -25,6 +25,7 @@ export const createConceptValidator = vine.compile(
     title: vine.string().trim().minLength(2).maxLength(255),
     parentId: vine.string().trim().nullable(),
     isTerminal: vine.boolean(),
+    hasOsce: vine.boolean().optional(),
     metadata: metadataSchema.optional(),
   })
 )
@@ -33,6 +34,7 @@ export const updateConceptValidator = vine.compile(
   vine.object({
     title: vine.string().minLength(3).optional(),
     isTerminal: vine.boolean().optional(),
+    hasOsce: vine.boolean().optional(),
     metadata: metadataSchema.optional(),
   })
 )

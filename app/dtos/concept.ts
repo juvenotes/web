@@ -25,6 +25,7 @@ export default class ConceptDto extends BaseModelDto {
   declare hasChildren: boolean
   declare isRoot: boolean
   declare isRootLevel: boolean
+  declare hasOsce: boolean
 
   constructor(concept?: Concept) {
     super()
@@ -50,5 +51,6 @@ export default class ConceptDto extends BaseModelDto {
     this.hasChildren = concept.hasChildren
     this.isRoot = concept.isRoot
     this.isRootLevel = concept.isRootLevel
+    this.hasOsce = concept.hasOsce
   }
 }

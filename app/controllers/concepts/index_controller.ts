@@ -7,38 +7,41 @@ export default class IndexController {
   /**
    * Show root level concepts
    */
-  async index({ inertia, logger, auth }: HttpContext) {
-    logger.info('concepts:index:start', {
-      operation: 'fetch_root_concepts',
-      filters: { parent_id: null },
-      userId: auth.user?.id,
-    })
+  async index({ inertia, logger, auth, bouncer }: HttpContext) {
+    const context = { controller: 'ConceptsIndexController', action: 'index' }
+    logger.info({ ...context, message: 'Fetching root level concepts' })
 
     const concepts = await Concept.query()
       .whereNull('parent_id')
       .orderBy('level', 'asc')
       .select(['id', 'title', 'slug', 'is_terminal', 'level'])
 
-    logger.info('concepts:index:complete', {
-      operation: 'fetch_root_concepts',
-      count: concepts.length,
-      levels: concepts.map((c) => c.level),
+    logger.info({
+      ...context,
+      conceptsCount: concepts.length,
+      levelsCount: new Set(concepts.map((c) => c.level)).size,
+      message: 'Retrieved root level concepts',
       userId: auth.user?.id,
     })
 
+    const canManage = await bouncer.allows('canManage')
+
     return inertia.render('concepts/index', {
       concepts: ConceptDto.fromArray(concepts),
+      canManage,
     })
   }
 
   /**
    * Show single concept with its children
    */
-  async show({ params, inertia, logger, auth }: HttpContext) {
-    logger.info('concepts:show:start', {
-      operation: 'fetch_concept',
-      filters: { slug: params.slug },
-    })
+  async show({ params, inertia, logger, auth, bouncer }: HttpContext) {
+    const context = {
+      controller: 'ConceptsIndexController',
+      action: 'show',
+      conceptSlug: params.slug,
+    }
+    logger.info({ ...context, message: 'Fetching concept and related data' })
 
     const concept = await Concept.query()
       .where('slug', params.slug)
@@ -58,42 +61,50 @@ export default class IndexController {
       })
       .firstOrFail()
 
-    logger.info('concepts:show:complete', {
-      operation: 'fetch_concept',
-      concept: {
-        id: concept.id,
-        title: concept.title,
-        childrenCount: concept.children?.length ?? 0,
-        questionsCount: concept.questions?.length ?? 0,
-      },
+    logger.info({
+      ...context,
+      conceptTitle: concept.title,
+      childrenCount: concept.children?.length ?? 0,
+      questionsCount: concept.questions?.length ?? 0,
+      message: 'Retrieved concept with children and questions',
       userId: auth.user?.id,
     })
+
+    const canManage = await bouncer.allows('canManage')
 
     return inertia.render('concepts/show', {
       concept: new ConceptDto(concept),
       children: concept.children ? ConceptDto.fromArray(concept.children) : [],
       questions: concept.questions ? QuestionDto.fromArray(concept.questions) : [],
       content: concept.knowledgeBlock,
+      canManage,
     })
   }
 
   async search({ request, response, logger, auth }: HttpContext) {
-    const query = request.input('q', '')
+    const context = {
+      controller: 'ConceptsIndexController',
+      action: 'search',
+      query: request.input('q', ''),
+    }
 
-    if (!query || query.length < 2) {
+    if (!context.query || context.query.length < 2) {
+      logger.info({
+        ...context,
+        message: 'Search skipped - query too short',
+        userId: auth.user?.id,
+      })
       return response.json([])
     }
 
-    logger.info('concepts:search:start', {
-      query,
-      userId: auth.user?.id,
-    })
+    logger.info({ ...context, message: 'Searching concepts' })
 
-    const results = await Concept.searchConceptByTitle(request.input('q', ''))
+    const results = await Concept.searchConceptByTitle(context.query)
 
-    logger.info('concepts:search:complete', {
-      query,
-      count: results.length,
+    logger.info({
+      ...context,
+      resultsCount: results.length,
+      message: 'Search completed',
       userId: auth.user?.id,
     })
 

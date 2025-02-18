@@ -4,7 +4,7 @@ defineOptions({ layout: AppLayout })
 </script>
 
 <template>
-  <AppHead title="Our privacy policies" description="Juvenotes privacy policies" />
+  <AppHead title="Our privacy policies" description="Juvenotes Privacy Policies" />
   <div class="max-w-4xl mx-auto py-12 px-4">
     <h1 class="text-3xl font-bold mb-8">Privacy Policy</h1>
 

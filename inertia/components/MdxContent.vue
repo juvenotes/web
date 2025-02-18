@@ -2,6 +2,7 @@
 import { ref, watchEffect } from 'vue'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
@@ -18,6 +19,7 @@ watchEffect(async () => {
     .use(remarkParse)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
+    .use(remarkGfm) 
     .use(rehypeHighlight)
     .use(rehypeStringify)
     .process(props.content)
@@ -27,19 +29,19 @@ watchEffect(async () => {
 </script>
 <template>
   <div
-    class="prose dark:prose-invert max-w-none notion-like prose-headings:font-medium prose-headings:text-foreground/90 prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground/90 prose-code:text-primary/90 prose-code:bg-primary/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-white/10"
+    class="prose dark:prose-invert max-w-none notion-like"
     v-html="html"
   />
 </template>
 
 <style>
 .notion-like {
-  /* Base styles */
-  --notion-spacing: 1.5em;
-  --notion-font: 'Inter', system-ui, -apple-system, sans-serif;
-  --notion-transition: all 0.2s ease;
+  --notion-spacing: 1.75em;
+  --notion-font: 'Inter', sans-serif;
+  --notion-transition: all 0.2s ease-in-out;
   font-family: var(--notion-font);
-  line-height: 1.8;
+  line-height: 1.9;
+  font-size: 1.05em;
 
   /* Block spacing */
   & > * + * {
@@ -51,125 +53,131 @@ watchEffect(async () => {
   & h2,
   & h3,
   & h4 {
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.3;
-    margin-top: calc(var(--notion-spacing) * 2);
-    margin-bottom: calc(var(--notion-spacing) * 0.5);
     transition: var(--notion-transition);
-
-    &:hover {
-      color: hsl(var(--primary));
-      transform: translateX(4px);
-    }
+    position: relative;
+    padding-bottom: 0.3em;
   }
 
   & h1 {
-    font-size: 2.5em;
+    font-size: 2.3em;
+    border-bottom: 2px solid hsl(var(--primary) / 0.4);
   }
   & h2 {
-    font-size: 1.75em;
+    font-size: 1.8em;
+    border-bottom: 1px solid hsl(var(--primary) / 0.3);
   }
   & h3 {
-    font-size: 1.35em;
+    font-size: 1.5em;
+  }
+  & h4 {
+    font-size: 1.3em;
   }
 
   /* Lists */
   & ul,
   & ol {
-    padding-left: 1.5em;
-    margin: var(--notion-spacing) 0;
+    padding-left: 1.75em;
   }
 
   & li {
-    margin: calc(var(--notion-spacing) * 0.3) 0;
+    margin: calc(var(--notion-spacing) * 0.4) 0;
     transition: var(--notion-transition);
-    padding-left: 0.5em;
     position: relative;
-
-    &:hover {
-      transform: translateX(4px);
-      color: hsl(var(--foreground));
-    }
+    padding-left: 0.6em;
 
     &::before {
-      content: '';
+      content: '•';
       position: absolute;
       left: -1em;
-      top: 0.7em;
-      width: 4px;
-      height: 4px;
-      background: hsl(var(--primary));
-      border-radius: 50%;
-      opacity: 0.7;
+      font-size: 1.2em;
+      color: hsl(var(--primary));
     }
   }
 
   /* Blockquotes */
   & blockquote {
-    border-left: 3px solid hsl(var(--primary));
-    padding: 1em 1.2em;
-    background: hsl(var(--primary) / 0.05);
+    border-left: 4px solid hsl(var(--primary));
+    padding: 1.2em;
+    background: hsl(var(--primary) / 0.08);
     border-radius: 0.8em;
-    margin: var(--notion-spacing) 0;
+    font-style: italic;
     transition: var(--notion-transition);
-
-    &:hover {
-      background: hsl(var(--primary) / 0.08);
-      transform: translateX(4px);
-    }
   }
 
-  /* Code blocks */
+  /* Code Blocks */
   & pre {
-    padding: 1.2em;
+    padding: 1.4em;
     border-radius: 1em;
-    margin: var(--notion-spacing) 0;
-    font-size: 0.95em;
+    font-size: 1em;
     transition: var(--notion-transition);
     border: 1px solid hsl(var(--border));
+    background: hsl(var(--muted) / 0.1);
+    overflow-x: auto;
+  }
 
-    &:hover {
-      border-color: hsl(var(--primary) / 0.3);
-      box-shadow: 0 4px 20px -4px hsl(var(--primary) / 0.1);
-    }
+  & code {
+    font-family: 'Fira Code', monospace;
+    padding: 0.2em 0.4em;
+    border-radius: 5px;
+    background: hsl(var(--primary) / 0.1);
+    font-size: 0.95em;
   }
 
   /* Links */
   & a {
+    color: hsl(var(--primary));
+    font-weight: 500;
     position: relative;
     text-decoration: none;
-    color: hsl(var(--primary));
     transition: var(--notion-transition);
 
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: currentColor;
-      transform: scaleX(0);
-      transition: transform 0.2s ease;
-    }
-
-    &:hover::after {
-      transform: scaleX(1);
+    &:hover {
+      text-decoration: underline;
     }
   }
 
   /* Images */
   & img {
-    border-radius: 1em;
+    border-radius: 0.8em;
     margin: var(--notion-spacing) 0;
     transition: var(--notion-transition);
-    border: 1px solid transparent;
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+  }
 
-    &:hover {
-      transform: scale(1.01);
-      border-color: hsl(var(--primary) / 0.2);
-      box-shadow: 0 4px 20px -4px hsl(var(--primary) / 0.15);
-    }
+  /* Tables */
+  & table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--notion-spacing) 0;
+    font-size: 0.95em;
+  }
+
+  & th,
+  & td {
+    border: 1px solid hsl(var(--border));
+    padding: 0.8em;
+    text-align: left;
+  }
+
+  & th {
+    background: hsl(var(--muted));
+    font-weight: 600;
+  }
+
+  & tr:nth-child(even) {
+    background: hsl(var(--muted) / 0.2);
+  }
+
+  & tr:hover {
+    background: hsl(var(--accent));
+  }
+
+   /* Make tables responsive */
+   & .table-wrapper {
+    overflow-x: auto;
+    max-width: 100%;
   }
 }
 </style>

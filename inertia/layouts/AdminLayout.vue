@@ -4,12 +4,13 @@ import AdminSearch from '~/components/AdminSearch.vue'
 import {
   LayoutDashboard,
   BookOpen,
-  // FileQuestion,
+  School,
   FileText,
   Users,
   // Settings,
   Menu,
-  X, // Add X icon for close button
+  Stethoscope,
+  X,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type UserDto from '#dtos/user'
@@ -24,9 +25,10 @@ const isSidebarOpen = ref(false) // Default closed for mobile
 const menuItems = [
   { name: 'Dashboard', href: '/manage', icon: LayoutDashboard },
   { name: 'Concepts', href: '/manage/concepts', icon: BookOpen },
-  // { name: 'Questions', href: '/manage/questions', icon: FileQuestion },
   { name: 'Papers', href: '/manage/papers', icon: FileText },
+  { name: 'Osce', href: '/manage/osce', icon: Stethoscope },
   { name: 'Users', href: '/manage/users', icon: Users },
+  { name: 'Institutions', href: '/manage/institutions', icon: School },
   // { name: 'Settings', href: '/manage/settings', icon: Settings },
 ]
 </script>
@@ -70,13 +72,17 @@ const menuItems = [
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
       >
+        <!-- Sidebar navigation -->
         <nav class="p-4 space-y-2">
           <Link
             v-for="item in menuItems"
             :key="item.name"
             :href="item.href"
-            class="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors"
-            :class="{ 'bg-accent': $page.url.startsWith(item.href) }"
+            class="flex items-center gap-2 p-2 rounded-lg text-foreground transition-colors"
+            :class="{
+              'bg-accent': $page.url === item.href,
+              'hover:bg-accent/10': $page.url !== item.href,
+            }"
             @click="isSidebarOpen = false"
           >
             <component :is="item.icon" class="w-5 h-5" />

@@ -24,11 +24,11 @@ const emit = defineEmits<{
 const form = useForm({
   questionText: props.question.questionText,
   type: QuestionType.SAQ as const,
-  parts: props.question.parts.map(part => ({
+  parts: props.question.parts.map((part) => ({
     partText: part.partText,
     expectedAnswer: part.expectedAnswer,
-    marks: part.marks
-  }))
+    marks: part.marks,
+  })),
 })
 
 const addPart = () => {
@@ -44,19 +44,24 @@ const removePart = (index: number) => {
 }
 
 const handleSubmit = () => {
-  form.put(`/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/${props.question.slug}/saq`, {
-    preserveScroll: true,
-    onSuccess: () => {
-      emit('update:open', false)
-    },
-  })
+  form.put(
+    `/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/${props.question.slug}/saq`,
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        emit('update:open', false)
+      },
+    }
+  )
 }
 </script>
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-      <DialogHeader class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto">
+      <DialogHeader
+        class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto"
+      >
         <DialogTitle class="text-lg sm:text-xl">Edit SAQ</DialogTitle>
       </DialogHeader>
 
@@ -76,13 +81,7 @@ const handleSubmit = () => {
           <div class="space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between">
               <Label class="text-sm sm:text-base">Parts ({{ form.parts.length }}/5)</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm" 
-                class="h-8 sm:h-9"
-                @click="addPart"
-              >
+              <Button type="button" variant="outline" size="sm" class="h-8 sm:h-9" @click="addPart">
                 <Plus class="h-4 w-4 mr-2" />Add Part
               </Button>
             </div>
@@ -106,26 +105,20 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <Input
-                  v-model="part.partText"
-                  placeholder="Question part"
-                />
+                <Input v-model="part.partText" placeholder="Question part" />
               </div>
 
               <div class="space-y-2">
-                <Input
+                <Textarea
                   v-model="part.expectedAnswer"
-                  placeholder="Expected answer"
+                  :placeholder="'Expected answer can include lists:\n- Point 1\n- Point 2\n- Point 3'"
+                  rows="4"
+                  class="resize-y min-h-[100px]"
                 />
               </div>
 
               <div class="space-y-2">
-                <Input
-                  v-model="part.marks"
-                  type="number"
-                  min="1"
-                  placeholder="Marks"
-                />
+                <Input v-model="part.marks" type="number" min="1" placeholder="Marks" />
               </div>
             </div>
           </div>

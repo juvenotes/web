@@ -7,6 +7,7 @@ import User from './user.js'
 import McqChoice from './mcq_choice.js'
 import SaqPart from './saq_part.js'
 import PastPaper from './past_paper.js'
+import Station from './station.js'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })
@@ -14,6 +15,9 @@ export default class Question extends BaseModel {
 
   @column()
   declare userId: number
+
+  @column()
+  declare slug: string
 
   @column()
   declare type: QuestionType
@@ -24,6 +28,9 @@ export default class Question extends BaseModel {
   @column()
   declare difficultyLevel: DifficultyLevel
 
+  @column()
+  declare questionImagePath: string | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -32,6 +39,9 @@ export default class Question extends BaseModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @hasMany(() => Station)
+  declare stations: HasMany<typeof Station>
 
   @manyToMany(() => Concept, {
     pivotTable: 'concept_questions',
@@ -43,7 +53,6 @@ export default class Question extends BaseModel {
 
   @hasMany(() => SaqPart)
   declare parts: HasMany<typeof SaqPart>
-  slug: any
 
   @column()
   declare pastPaperId: number | null

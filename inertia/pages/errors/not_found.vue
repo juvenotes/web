@@ -4,7 +4,6 @@ defineProps<{
   status: number
   message: string
 }>()
-import { Button } from '~/components/ui/button'
 defineOptions({ layout: ErrorLayout })
 </script>
 

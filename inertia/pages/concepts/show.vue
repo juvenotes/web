@@ -6,16 +6,7 @@ import { computed, ref, watchEffect } from 'vue'
 import MdxContent from '~/components/MdxContent.vue'
 
 import DashLayout from '~/layouts/DashLayout.vue'
-import {
-  Home,
-  BookOpen,
-  ChevronRight,
-  Network,
-  HelpCircle,
-  Circle,
-  Award,
-  ArrowLeft,
-} from 'lucide-vue-next'
+import { BookOpen, Network, HelpCircle, Circle, Award, Settings } from 'lucide-vue-next'
 
 defineOptions({ layout: DashLayout })
 
@@ -24,15 +15,35 @@ const props = defineProps<{
   children: ConceptDto[]
   questions: QuestionDto[]
   content: string | null
+  parentConcepts?: ConceptDto[]
+  canManage: boolean
 }>()
 
 const children = ref(props.children)
 const questions = ref(props.questions)
 const content = computed(() => props.content || '')
 
-const goBack = () => {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => {
+  const items = [{ label: 'Concepts', href: '/concepts' }]
+
+  // Add parent concepts if they exist
+  if (props.parentConcepts?.length) {
+    props.parentConcepts.forEach((parent: ConceptDto) => {
+      items.push({
+        label: parent.title,
+        href: `/concepts/${parent.slug}`,
+      })
+    })
+  }
+
+  // Add current concept
+  items.push({
+    label: props.concept.title,
+    href: '',
+  })
+
+  return items
+})
 
 const getLastEditDate = computed(() => {
   return new Date(
@@ -61,37 +72,41 @@ const getCorrectAnswer = (question: QuestionDto) => {
 <template>
   <AppHead :title="`${concept.title}`" description="All available concepts in Juvenotes" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-    <!-- Modern Breadcrumbs -->
-    <nav
-      class="flex items-center gap-3 text-sm text-muted-foreground bg-white/50 p-3 rounded-lg border shadow-md"
-    >
-      <button
-        @click="goBack"
-        class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-      >
-        <ArrowLeft class="h-4 w-4" />
-        Back
-      </button>
-      <ChevronRight class="h-4 w-4 text-muted-foreground/50" />
-      <Home class="h-4 w-4" />
-      <Link href="/concepts" class="hover:text-primary transition-colors flex items-center gap-2">
-        <BookOpen class="h-4 w-4" />
-        Concepts
-      </Link>
-      <ChevronRight class="h-4 w-4 text-muted-foreground/50" />
-      <span class="text-foreground font-medium">{{ concept.title }}</span>
-    </nav>
-
     <div class="space-y-8">
       <!-- Enhanced Title Section -->
-      <div
-        class="relative overflow-hidden bg-gradient-to-br from-primary/5 via-primary/10 to-transparent p-6 rounded-2xl border"
-      >
-        <h1
-          class="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
-        >
-          {{ concept.title }}
-        </h1>
+      <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
+        <div
+          class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+        />
+
+        <BreadcrumbTrail :items="breadcrumbItems" />
+
+        <div class="mt-4 flex flex-col sm:flex-row sm:items-start gap-4 justify-between">
+          <div class="flex items-start gap-4">
+            <div class="p-3 rounded-xl bg-primary/5 border border-primary/10 shrink-0">
+              <BookOpen class="h-6 w-6 text-primary" />
+            </div>
+            <div class="space-y-1">
+              <h1 class="text-2xl font-bold text-foreground">{{ concept.title }}</h1>
+              <div
+                v-if="concept.metadata?.lastEditedBy || concept.createdAt"
+                class="text-sm text-muted-foreground"
+              >
+                Last edited {{ getLastEditDate }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Manage button -->
+          <Link
+            v-if="canManage"
+            :href="`/manage/concepts/${concept.slug}`"
+            class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+          >
+            <Settings class="h-4 w-4" />
+            <span class="text-sm font-medium">Edit</span>
+          </Link>
+        </div>
       </div>
 
       <!-- Modernized Child Concepts Grid -->
@@ -117,17 +132,11 @@ const getCorrectAnswer = (question: QuestionDto) => {
           </Link>
         </div>
       </div>
-      <div
-        v-if="concept.metadata?.lastEditedBy || concept.createdAt"
-        class="text-sm text-muted-foreground"
-      >
-        Last edited on {{ getLastEditDate }}
-      </div>
 
       <!-- Enhanced Main Content -->
       <div
         v-if="content"
-        class="prose prose-primary max-w-none prose-headings:text-foreground prose-p:text-muted-foreground"
+        class="prose prose-primary max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-video:mx-auto prose-video:w-full"
       >
         <MdxContent :content="content" />
       </div>
@@ -197,3 +206,51 @@ const getCorrectAnswer = (question: QuestionDto) => {
     </div>
   </div>
 </template>
+<style>
+/* Video Container Styles */
+.prose iframe {
+  aspect-ratio: 16/9;
+  width: 100%;
+  max-width: 100%;
+  margin: 2rem auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  position: relative;
+  z-index: 10;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 768px) {
+  .prose iframe {
+    max-width: 80%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .prose iframe {
+    max-width: 70%;
+  }
+}
+
+/* YouTube specific wrapper */
+.prose .youtube-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: visible;
+  margin: 2rem auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.prose .youtube-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  z-index: 20;
+}
+</style>

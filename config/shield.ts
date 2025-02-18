@@ -8,18 +8,38 @@ const shieldConfig = defineConfig({
   csp: {
     enabled: true,
     directives: {
-      defaultSrc: ["'self'", '@viteDevUrl'],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", '@viteDevUrl','http://www.freeprivacypolicy.com'],
-      styleSrc: ["'self'", "'unsafe-inline'", '@viteDevUrl', 'https://fonts.bunny.net'],
-      imgSrc: ["'self'", 'data:', 'blob:', '*'],
-      connectSrc: ["'self'", 'ws:', 'wss:', '@viteHmrUrl'],
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        'http://www.freeprivacypolicy.com',
+        'https://www.freeprivacypolicy.com',
+        'https://umami.analytics.juvenotes.com',
+        'https://www.google-analytics.com',
+        'https://www.googletagmanager.com',
+        'https://cdn.tailwindcss.com',
+        'https://cdn.jsdelivr.net',
+        'https://*.statsig.com',
+        'https://prodregistryv2.org',
+      ],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.bunny.net'],
+      imgSrc: ["'self'", 'data:', 'blob:', '*', 'https://www.brevo.com/'],
+      connectSrc: [
+        "'self'",
+        'ws:',
+        'wss:',
+        'https://*.statsig.com',
+        'https://prodregistryv2.org',
+        'https://prodregistryv2.org/v1/rgstr',
+        'https://umami.analytics.juvenotes.com/api/send',
+      ],
       frameSrc: ["'self'", '*.youtube.com', 'www.youtube.com'],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://fonts.bunny.net'],
       mediaSrc: ["'self'", 'data:', '*'],
     },
     reportOnly: false,
   },
-
 
   /**
    * Configure CSRF protection options. Refer documentation

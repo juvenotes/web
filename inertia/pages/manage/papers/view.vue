@@ -3,14 +3,8 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, ArrowLeft, Clock, Plus, Upload, Pencil, Trash2 } from 'lucide-vue-next'
+import { FileText, Clock, Plus, Upload, Pencil, Trash2 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
-import AddMcqQuestionDialog from '~/components/AddMcqDialog.vue'
-import AddSaqQuestionDialog from '~/components/AddSaqDialog.vue'
-import UploadMcqsDialog from '~/components/UploadMcqsDialog.vue'
-import EditMcqDialog from '~/components/EditMcqDialog.vue'
-import EditSaqDialog from '~/components/EditSaqDialog.vue'
-import EditPaperDialog from '~/components/EditPaperDialog.vue'
 import { toast } from 'vue-sonner'
 import { useForm } from '@inertiajs/vue3'
 
@@ -95,9 +89,11 @@ function handleEditQuestion(question: QuestionDto) {
   }
 }
 
-function goBack() {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => [
+  { label: 'Papers', href: '/manage/papers' },
+  { label: props.concept.title, href: `/manage/papers/${props.concept.slug}` },
+  { label: props.paper.title },
+])
 
 const lastEditDate = computed(() => {
   return new Date(
@@ -120,17 +116,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
     <!-- Paper Header -->
     <div class="mb-4 sm:mb-8 space-y-4 sm:space-y-6">
       <!-- Navigation -->
-      <nav class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-        <button
-          @click="goBack"
-          class="flex items-center gap-1 sm:gap-2 text-primary hover:text-primary/70 transition-colors"
-        >
-          <ArrowLeft class="h-4 w-4" />
-          Back to Papers
-        </button>
-        <span>/</span>
-        <span class="truncate max-w-[200px] sm:max-w-none">{{ paper.title }}</span>
-      </nav>
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
       <!-- Paper Info -->
       <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
@@ -150,7 +136,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             <span
               class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium shrink-0"
             >
-              {{ paper.examType }}
+              {{ paper.examType.toUpperCase() }}
             </span>
             <span class="shrink-0">{{ paper.year }}</span>
           </div>
@@ -163,6 +149,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
         </div>
         <!-- Add Questions Buttons -->
         <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <ToggleUrl />
           <Button class="w-full sm:w-auto" @click="showAddMcqDialog = true">
             <Plus class="h-4 w-4 mr-2" />Add MCQ
           </Button>
@@ -222,7 +209,15 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                   class="h-3 w-3 sm:h-4 sm:w-4 mt-1 rounded-full border"
                   :class="{ 'bg-primary border-primary': choice.isCorrect }"
                 />
-                <span class="text-sm text-muted-foreground">{{ choice.choiceText }}</span>
+                <div class="space-y-2">
+                  <span class="text-sm text-muted-foreground">{{ choice.choiceText }}</span>
+                  <p
+                    v-if="choice.isCorrect && choice.explanation"
+                    class="text-sm text-muted-foreground mt-1"
+                  >
+                    <span class="font-medium">Explanation:</span> {{ choice.explanation }}
+                  </p>
+                </div>
               </div>
             </div>
 
