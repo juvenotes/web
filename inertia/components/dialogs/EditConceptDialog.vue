@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type ConceptDto from '#dtos/concept'
+import { TrainingLevel, TrainingLevelLabels } from '#enums/training_level'
 import { useForm } from '@inertiajs/vue3'
 
 const props = defineProps<{
@@ -15,10 +16,12 @@ const form = useForm({
   title: props.concept.title,
   isTerminal: props.concept.isTerminal,
   hasOsce: props.concept?.hasOsce ?? false,
+  trainingLevel: props.concept.trainingLevel,
 })
 
 const handleSubmit = () => {
   form.put(`/manage/concepts/${props.concept.slug}`, {
+    preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
     },
@@ -28,18 +31,15 @@ const handleSubmit = () => {
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="w-[95vw] max-w-[800px] sm:w-[90vw]">
+    <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>Edit Concept</DialogTitle>
       </DialogHeader>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form @submit.prevent="handleSubmit" class="space-y-6">
         <div class="space-y-2">
           <Label>Title</Label>
-          <Input v-model="form.title" />
-          <p v-if="form.errors.title" class="text-sm text-destructive">
-            {{ form.errors.title }}
-          </p>
+          <Input v-model="form.title" :error="form.errors.title" />
         </div>
 
         <div class="flex items-center space-x-2">
@@ -49,12 +49,10 @@ const handleSubmit = () => {
             id="edit-terminal"
             class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
           />
-          <Label for="edit-terminal">Is a Terminal Concept</Label>
+          <Label for="edit-terminal">Is Terminal Concept</Label>
         </div>
-        <p v-if="form.isTerminal" class="text-sm text-muted-foreground">
-          A terminal concept is a topic that has notes in it.
-        </p>
-        <div class="flex items-center space-x-2">
+
+        <div v-if="concept.isRoot" class="flex items-center space-x-2">
           <input
             type="checkbox"
             v-model="form.hasOsce"
@@ -64,11 +62,25 @@ const handleSubmit = () => {
           <Label for="has-osce">Has OSCE</Label>
         </div>
 
-        <p v-if="form.hasOsce" class="text-sm text-muted-foreground">
-          This concept will appear in the OSCE section and can have OSCE papers attached.
-        </p>
+        <div v-if="concept.isRoot" class="space-y-2">
+          <Label for="training-level">Training Level</Label>
+          <select
+            id="training-level"
+            v-model="form.trainingLevel"
+            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            :class="{ 'border-red-500': form.errors.trainingLevel }"
+          >
+            <option value="">Select training level</option>
+            <option v-for="level in Object.values(TrainingLevel)" :key="level" :value="level">
+              {{ TrainingLevelLabels[level] }}
+            </option>
+          </select>
+          <span v-if="form.errors.trainingLevel" class="text-sm text-red-500">
+            {{ form.errors.trainingLevel }}
+          </span>
+        </div>
 
-        <Button type="submit" :disabled="form.processing">
+        <Button type="submit" :disabled="form.processing" class="w-full">
           {{ form.processing ? 'Saving...' : 'Save Changes' }}
         </Button>
       </form>

@@ -3,6 +3,7 @@ import Concept from '#models/concept'
 import UserDto from '#dtos/user'
 import QuestionDto from '#dtos/question'
 import PastPaperDto from '#dtos/past_paper'
+import { TrainingLevel } from '#enums/training_level'
 
 export default class ConceptDto extends BaseModelDto {
   declare id: number
@@ -26,6 +27,7 @@ export default class ConceptDto extends BaseModelDto {
   declare isRoot: boolean
   declare isRootLevel: boolean
   declare hasOsce: boolean
+  declare trainingLevel: TrainingLevel | null
 
   constructor(concept?: Concept) {
     super()
@@ -52,5 +54,6 @@ export default class ConceptDto extends BaseModelDto {
     this.isRoot = concept.isRoot
     this.isRootLevel = concept.isRootLevel
     this.hasOsce = concept.hasOsce
+    this.trainingLevel = concept.trainingLevel
   }
 }

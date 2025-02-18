@@ -260,17 +260,16 @@ const handleDelete = () => {
             </div>
           </div>
         </div>
-        <EditConceptDialog v-model:open="showEditDialog" :concept="concept" />
-
-        <NewChildConceptDialog v-model:open="showNewChildDialog" :parent-id="concept.slug" />
-        <AddMcqToConceptDialog v-model:open="showAddMcqDialog" :concept="concept" />
-        <EditMcqInConceptDialog
-          v-if="selectedQuestion"
-          v-model:open="showEditMcqDialog"
-          :concept="concept"
-          :question="selectedQuestion"
-        />
       </div>
     </div>
   </div>
+  <EditConceptDialog v-model:open="showEditDialog" :concept="concept" />
+  <NewChildConceptDialog v-model:open="showNewChildDialog" :parent-id="concept.slug" />
+  <AddMcqToConceptDialog v-model:open="showAddMcqDialog" :concept="concept" />
+  <EditMcqInConceptDialog
+    v-if="selectedQuestion"
+    v-model:open="showEditMcqDialog"
+    :concept="concept"
+    :question="selectedQuestion"
+  />
 </template>

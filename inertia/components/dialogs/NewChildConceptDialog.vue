@@ -15,6 +15,7 @@ const form = useForm({
   title: '',
   parentId: props.parentId,
   isTerminal: false,
+  hasOsce: false,
 })
 
 const handleSubmit = () => {

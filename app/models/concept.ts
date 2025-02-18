@@ -4,6 +4,7 @@ import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relat
 import Question from './question.js'
 import User from './user.js'
 import PastPaper from './past_paper.js'
+import { TrainingLevel } from '#enums/training_level'
 // import { Searchable } from '@foadonis/magnify'
 // import { compose } from '@adonisjs/core/helpers'
 
@@ -34,6 +35,9 @@ export default class Concept extends BaseModel {
 
   @column()
   declare hasOsce: boolean
+
+  @column()
+  declare trainingLevel: TrainingLevel | null
 
   @column()
   declare metadata: any
