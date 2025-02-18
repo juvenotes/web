@@ -27,7 +27,7 @@ export default class ManageConceptsController {
     const concepts = await Concept.query()
       .whereNull('parent_id')
       .orderBy('level', 'asc')
-      .select(['id', 'title', 'slug', 'is_terminal', 'level'])
+      .select(['id', 'title', 'slug', 'is_terminal', 'level', 'training_level'])
 
     logger.info({
       ...context,
