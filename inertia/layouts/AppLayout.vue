@@ -9,7 +9,7 @@ defineProps<{
   user: UserDto | null | undefined
 }>()
 
-const logoPath = '/images/logo.png'
+const logoPath = '/images/logo.webp'
 </script>
 
 <template>

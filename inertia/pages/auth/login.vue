@@ -24,7 +24,7 @@ const form = useForm({
       <div class="bg-card rounded-xl shadow-lg p-8 space-y-6">
         <!-- Header -->
         <div class="text-center space-y-2">
-          <img src="/public/images/logo.png" alt="Juvenotes" class="h-12 mx-auto mb-4" />
+          <img src="/public/images/logo.webp" alt="Juvenotes" class="h-12 mx-auto mb-4" />
           <h1 class="text-2xl font-semibold">Welcome back</h1>
           <p class="text-sm text-muted-foreground">
             New to Juvenotes?

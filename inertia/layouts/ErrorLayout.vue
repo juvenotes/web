@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
 
-const logoPath = '/images/logo.png'
+const logoPath = '/images/logo.webp'
 </script>
 
 <template>

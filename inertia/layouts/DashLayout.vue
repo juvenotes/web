@@ -23,7 +23,7 @@ defineProps<{
   user: UserDto | null | undefined
 }>()
 
-const logoPath = '/images/logo.png'
+const logoPath = '/images/logo.webp'
 const isMenuOpen = ref(false)
 const isSidebarCollapsed = ref(true)
 const isSearchOpen = ref(false) // State to manage search modal visibility
