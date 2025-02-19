@@ -123,6 +123,7 @@ declare module 'vue' {
     ToastProvider: typeof import('./inertia/components/ui/toast/ToastProvider.vue')['default']
     ToastTitle: typeof import('./inertia/components/ui/toast/ToastTitle.vue')['default']
     ToastViewport: typeof import('./inertia/components/ui/toast/ToastViewport.vue')['default']
+    ToggleStudyLevel: typeof import('./inertia/components/ToggleStudyLevel.vue')['default']
     ToggleTrainingLevel: typeof import('./inertia/components/ToggleTrainingLevel.vue')['default']
     ToggleUrl: typeof import('./inertia/components/ToggleUrl.vue')['default']
     Tooltip: typeof import('./inertia/components/ui/tooltip/Tooltip.vue')['default']

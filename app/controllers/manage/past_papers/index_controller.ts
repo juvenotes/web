@@ -47,6 +47,7 @@ export default class ManagePastPapersController {
         query
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
           .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
+          .orderBy('year', 'desc')
       })
 
     logger.info({
@@ -77,7 +78,7 @@ export default class ManagePastPapersController {
       .where('slug', params.slug)
       .preload('pastPapers', (query) => {
         query
-          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug', 'study_level'])
           .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
           .orderBy('year', 'desc')
           .preload('questions', (questionsQuery) => {
@@ -165,7 +166,7 @@ export default class ManagePastPapersController {
     return response.redirect().toPath(`/manage/papers/${concept.slug}/${paper.slug}`)
   }
 
-  async update({ params, request, response, bouncer }: HttpContext) {
+  async update({ params, request, response, bouncer, session }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
 
     if (await bouncer.with(PastPaperPolicy).denies('update', paper)) {
@@ -175,6 +176,7 @@ export default class ManagePastPapersController {
     const payload = await request.validateUsing(updatePastPaperValidator)
     await paper.merge(payload).save()
 
+    session.flash('success', 'Paper updated successfully')
     return response.redirect().back()
   }
 

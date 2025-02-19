@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
+import { Plus, Trash2 } from 'lucide-vue-next'
 
 const props = defineProps<{
   open: boolean

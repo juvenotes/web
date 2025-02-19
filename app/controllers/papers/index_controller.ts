@@ -50,7 +50,7 @@ export default class IndexController {
       .select(['id', 'title', 'slug', 'level'])
       .preload('pastPapers', (query) => {
         query
-          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug', 'study_level'])
           .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
           .orderBy('year', 'desc')
           .preload('questions', (questionsQuery) => {

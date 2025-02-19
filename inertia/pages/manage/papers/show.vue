@@ -5,6 +5,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { FileText, Plus } from 'lucide-vue-next'
+import { StudyLevel } from '#enums/study_level'
 
 defineOptions({ layout: AdminLayout })
 
@@ -15,6 +16,13 @@ interface Props {
 
 const props = defineProps<Props>()
 const isCreateDialogOpen = ref(false)
+
+const selectedStudyLevel = ref<StudyLevel | null>(null)
+
+const filteredPapers = computed(() => {
+  if (!selectedStudyLevel.value) return props.papers
+  return props.papers.filter((p) => p.studyLevel === selectedStudyLevel.value)
+})
 
 const breadcrumbItems = computed(() => [
   { label: 'Papers', href: '/manage/papers' },
@@ -60,11 +68,15 @@ const breadcrumbItems = computed(() => [
       </div>
     </div>
 
+    <div class="flex justify-end mb-4">
+      <ToggleStudyLevel v-model="selectedStudyLevel" :papers="papers"  />
+    </div>
+
     <!-- Papers List -->
-    <div v-if="papers.length" class="space-y-4">
+    <div v-if="filteredPapers.length" class="space-y-4">
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link
-          v-for="paper in papers"
+          v-for="paper in filteredPapers"
           :key="paper.id"
           :href="`/manage/papers/${concept.slug}/${paper.slug}`"
           class="group relative overflow-hidden rounded-xl bg-white p-5 border hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"

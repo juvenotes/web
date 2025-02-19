@@ -64,17 +64,16 @@ const handleSubmit = () => {
 
         <div v-if="concept.isRoot" class="space-y-2">
           <Label for="training-level">Training Level</Label>
-          <select
-            id="training-level"
-            v-model="form.trainingLevel"
-            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            :class="{ 'border-red-500': form.errors.trainingLevel }"
-          >
-            <option value="">Select training level</option>
-            <option v-for="level in Object.values(TrainingLevel)" :key="level" :value="level">
-              {{ TrainingLevelLabels[level] }}
-            </option>
-          </select>
+          <Select v-model="form.trainingLevel">
+            <SelectTrigger :class="{ 'border-red-500': form.errors.trainingLevel }">
+              <SelectValue placeholder="Select training level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="level in Object.values(TrainingLevel)" :key="level" :value="level">
+                {{ TrainingLevelLabels[level] }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
           <span v-if="form.errors.trainingLevel" class="text-sm text-red-500">
             {{ form.errors.trainingLevel }}
           </span>

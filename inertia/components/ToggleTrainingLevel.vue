@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { TrainingLevel, TrainingLevelLabels } from '#enums/training_level'
 
-const props = defineProps<{
+defineProps<{
   modelValue: TrainingLevel | null
 }>()
 
@@ -27,7 +27,7 @@ const options = [
           ? 'bg-background text-foreground shadow-sm'
           : 'text-muted-foreground hover:text-foreground',
       ]"
-      @click="$emit('update:modelValue', option.value)"
+      @click="emit('update:modelValue', option.value)"
     >
       {{ option.label }}
     </button>
