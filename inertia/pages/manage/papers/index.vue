@@ -47,8 +47,8 @@ const filteredConcepts = computed(() => {
       </div>
     </div>
 
-        <!-- Filter Section -->
-        <div class="flex justify-end">
+    <!-- Filter Section -->
+    <div class="flex justify-end">
       <ToggleTrainingLevel v-model="selectedLevel" />
     </div>
 

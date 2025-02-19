@@ -29,32 +29,39 @@ const breadcrumbItems = [{ label: 'Concepts' }]
   <AppHead title="All available concepts" description="All available concepts in Juvenotes" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header Section -->
-    <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
+    <div class="relative p-4 sm:p-6 lg:p-8 bg-white/50 rounded-2xl border shadow-sm">
+      <!-- Adjusted padding -->
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
       <BreadcrumbTrail :items="breadcrumbItems" />
 
-      <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-        <div class="flex items-start gap-4 flex-1">
-          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-            <BookOpen class="h-6 w-6 text-primary" />
+      <div class="mt-4 flex flex-col sm:flex-row sm:items-start gap-4">
+        <!-- Improved gap and alignment -->
+        <div class="flex items-start gap-3 sm:gap-4 flex-1">
+          <!-- Adjusted gap for mobile -->
+          <div class="p-2 sm:p-3 rounded-xl bg-primary/5 border border-primary/10">
+            <!-- Smaller icon container on mobile -->
+            <BookOpen class="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <!-- Responsive icon size -->
           </div>
 
-          <div class="space-y-2">
-            <h1 class="text-2xl font-bold text-foreground">Medical Concepts</h1>
-            <p class="text-base text-muted-foreground/90 max-w-2xl">
-              Explore our comprehensive collection of medical concepts organized by topics
+          <div class="space-y-1 sm:space-y-2">
+            <!-- Adjusted spacing -->
+            <h1 class="text-xl sm:text-2xl font-bold text-foreground">Medical Concepts</h1>
+            <p class="text-sm sm:text-base text-muted-foreground/90 max-w-2xl">
+              Explore medical concepts organized by topics
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 mt-4 sm:mt-0">
+          <!-- Added margin top for mobile -->
           <Link
             v-if="canManage"
             href="/manage/concepts"
-            class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+            class="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
           >
             <Settings class="h-4 w-4" />
             <span class="text-sm font-medium">Edit</span>
@@ -63,13 +70,13 @@ const breadcrumbItems = [{ label: 'Concepts' }]
       </div>
     </div>
 
-        <!-- Filter Section -->
-        <div class="flex justify-end">
+    <!-- Filter Section -->
+    <div class="flex justify-end px-4 sm:px-0">
       <ToggleTrainingLevel v-model="selectedLevel" />
     </div>
 
     <!-- Concepts Grid -->
-    <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-3 sm:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       <Link
         v-for="concept in filteredConcepts"
         :key="concept.id"

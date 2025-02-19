@@ -5,7 +5,7 @@ import AdminLayout from '~/layouts/AdminLayout.vue'
 import { TrainingLevel, TrainingLevelLabels } from '#enums/training_level'
 import { ref, computed } from 'vue'
 import { toast } from 'vue-sonner'
-import { Plus } from 'lucide-vue-next'
+import { Plus, FileText } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -46,11 +46,25 @@ const handleNewParent = () => {
 
 <template>
   <AppHead title="Manage concepts" description="Manage concepts in Juvenotes" />
-  <div class="container mx-auto px-4 py-8">
-    <div class="flex flex-col gap-4 mb-6">
-      <!-- Header row -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 class="text-2xl font-bold">Concepts In MBHCB</h1>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <!-- Header with Breadcrumb -->
+    <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
+      <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
+        <div class="flex items-start gap-4 mt-4">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
+            <FileText class="h-6 w-6 text-primary" />
+          </div>
+
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-foreground">Manage Concepts</h1>
+            <p class="text-base text-muted-foreground/90 max-w-2xl">
+              Create and manage concepts for different subjects
+            </p>
+          </div>
+        </div>
         <div class="flex flex-wrap items-center gap-2">
           <Button variant="outline" @click="showNewParentDialog = true" class="w-full sm:w-auto">
             <Plus class="h-4 w-4 mr-2" />

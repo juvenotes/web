@@ -26,16 +26,16 @@ const filteredConcepts = computed(() => {
 <template>
   <AppHead title="Past Papers" description="Access past examination papers" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-    <!-- Header with Breadcrumb -->
+    <!-- Header with breadcrumbs -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <BreadcrumbTrail :items="[{ label: 'Papers' }]" />
+      <BreadcrumbTrail :items="[{ label: 'Papers' }]" class="mb-6" />
 
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-        <!-- Title section -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:gap-6">
+        <!-- Title section - adjusted gap and padding -->
         <div class="flex items-start gap-4 flex-1">
           <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
             <FileText class="h-6 w-6 text-primary" />
