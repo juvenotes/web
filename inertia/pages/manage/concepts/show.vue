@@ -5,7 +5,7 @@ import type QuestionDto from '#dtos/question'
 import { computed, ref, watchEffect } from 'vue'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { toast } from 'vue-sonner'
-import { Plus, ArrowLeft, Pencil, Trash2 } from 'lucide-vue-next'
+import { Plus, Pencil, Trash2, BookOpen } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -13,6 +13,7 @@ const props = defineProps<{
   concept: ConceptDto
   children: ConceptDto[]
   questions: QuestionDto[]
+  parentConcepts?: ConceptDto[]
   content: string | null
 }>()
 
@@ -26,9 +27,27 @@ const toggleContentEditor = () => {
   showContentEditor.value = !showContentEditor.value
 }
 
-const goBack = () => {
-  window.history.back()
-}
+const breadcrumbItems = computed(() => {
+  const items = [{ label: 'Concepts', href: '/manage/concepts' }]
+
+  // Add parent concepts if they exist
+  if (props.parentConcepts?.length) {
+    props.parentConcepts.forEach((parent: ConceptDto) => {
+      items.push({
+        label: parent.title,
+        href: `/manage/concepts/${parent.slug}`,
+      })
+    })
+  }
+
+  // Add current concept
+  items.push({
+    label: props.concept.title,
+    href: '',
+  })
+
+  return items
+})
 
 watchEffect(() => {
   children.value = props.children
@@ -40,20 +59,8 @@ const showEditDialog = ref(false)
 const showNewChildDialog = ref(false)
 const selectedQuestion = ref<QuestionDto | null>(null)
 
-const form = useForm({
-  title: props.concept.title,
-  isTerminal: props.concept.isTerminal,
-  hasOsce: props.concept?.hasOsce ?? false,
-})
-
 const contentForm = useForm({
   knowledgeBlock: typeof props.content === 'string' ? props.content : '',
-})
-
-const newChildForm = useForm({
-  title: '',
-  parentId: props.concept.slug,
-  isTerminal: false,
 })
 
 const updateContent = (value: string) => {
@@ -70,37 +77,13 @@ function handleDeleteQuestion(question: QuestionDto) {
   if (!confirm('Are you sure you want to delete this question?')) return
 
   const form = useForm({})
-  form.delete(`/manage/concepts/${concept.slug}/questions/${question.slug}`, {
+  form.delete(`/manage/concepts/${props.concept.slug}/questions/${question.slug}`, {
     preserveScroll: true,
     onSuccess: () => {
       toast.success('Question deleted successfully')
     },
     onError: () => {
       toast.error('Failed to delete question')
-    },
-  })
-}
-
-const handleSubmit = () => {
-  form.put(`/manage/concepts/${props.concept.slug}`, {
-    onSuccess: () => {
-      showEditDialog.value = false
-    },
-    onError: (errors) => {
-      console.error('Form errors:', errors)
-    },
-  })
-}
-
-const handleNewChild = () => {
-  newChildForm.post('/manage/concepts', {
-    onSuccess: () => {
-      showNewChildDialog.value = false
-      newChildForm.reset()
-    },
-    onError: (errors) => {
-      toast.error('Failed to create child concept')
-      console.error('Form errors:', errors)
     },
   })
 }
@@ -120,6 +103,7 @@ const handleContentSubmit = () => {
 
 const handleDelete = () => {
   if (confirm('Are you sure you want to delete this concept?')) {
+    const form = useForm({})
     form.delete(`/manage/concepts/${props.concept.slug}`)
   }
 }
@@ -131,25 +115,27 @@ const handleDelete = () => {
     description="Manage a specific concept in Juvenotes"
   />
   <div class="container mx-auto px-4 py-4 sm:py-8">
-    <nav class="flex flex-wrap items-center gap-2 mb-4 sm:mb-6 text-sm">
-      <button
-        @click="goBack"
-        class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-      >
-        <ArrowLeft class="h-4 w-4" />
-        <span class="hidden sm:inline">Back</span>
-      </button>
-      <Link href="/manage/concepts">Concepts</Link>
-      <span>/</span>
-      <span class="truncate max-w-[200px]">{{ concept.title }}</span>
-    </nav>
+    <!-- Enhanced Title Section -->
+    <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
+      
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
-    <div class="space-y-6 sm:space-y-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 class="text-2xl sm:text-3xl font-bold truncate">{{ concept.title }}</h1>
+      <div class="mt-4 flex flex-col sm:flex-row sm:items-start gap-4 justify-between mb-8">
+        <div class="flex items-start gap-4">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10 shrink-0">
+            <BookOpen class="h-6 w-6 text-primary" />
+          </div>
+          <div class="space-y-1">
+            <h1 class="text-2xl font-bold text-foreground">{{ concept.title }}</h1>
+            <p class="text-sm text-muted-foreground">Manage concept content and structure</p>
+          </div>
+        </div>
+
         <div class="flex flex-wrap gap-2">
           <ToggleUrl />
-          <!-- Only show Add buttons for non-terminal concepts -->
           <template v-if="!concept.isTerminal">
             <Button variant="outline" @click="showNewChildDialog = true" class="w-full sm:w-auto">
               <Plus class="h-4 w-4 mr-2" />
@@ -166,7 +152,7 @@ const handleDelete = () => {
       </div>
 
       <!-- Info Grid -->
-      <div v-if="!concept.isTerminal" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div v-if="!concept.isTerminal" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-6">
         <div class="p-4 rounded-lg border">
           <span class="text-sm text-muted-foreground"
             ><b>{{ concept.title }} </b> is example of a parent concept here. All others are child
@@ -186,92 +172,6 @@ const handleDelete = () => {
           <h3 class="text-lg font-semibold">{{ child.title }}</h3>
         </Link>
       </div>
-
-      <!-- edit dialog -->
-      <Dialog :open="showEditDialog" @update:open="showEditDialog = $event">
-        <DialogContent class="w-[95vw] max-w-[800px] sm:w-[90vw]">
-          <DialogHeader>
-            <DialogTitle>Edit Concept</DialogTitle>
-          </DialogHeader>
-
-          <form @submit.prevent="handleSubmit" class="space-y-4">
-            <div class="space-y-2">
-              <Label>Title</Label>
-              <Input v-model="form.title" />
-              <p v-if="form.errors.title" class="text-sm text-destructive">
-                {{ form.errors.title }}
-              </p>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                v-model="form.isTerminal"
-                id="edit-terminal"
-                class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
-              />
-              <Label for="edit-terminal">Is a Terminal Concept</Label>
-            </div>
-            <p v-if="form.isTerminal" class="text-sm text-muted-foreground">
-              A terminal concept is a topic that has notes in it.
-            </p>
-            <div class="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                v-model="form.hasOsce"
-                id="has-osce"
-                class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
-              />
-              <Label for="has-osce">Has OSCE</Label>
-            </div>
-
-            <p v-if="form.hasOsce" class="text-sm text-muted-foreground">
-              This concept will appear in the OSCE section and can have OSCE papers attached.
-            </p>
-
-            <Button type="submit" :disabled="form.processing">
-              {{ form.processing ? 'Saving...' : 'Save Changes' }}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <!-- New Child Dialog -->
-      <Dialog :open="showNewChildDialog" @update:open="showNewChildDialog = $event">
-        <DialogContent class="w-[95vw] max-w-[800px] sm:w-[90vw]">
-          <DialogHeader>
-            <DialogTitle>Add Child Concept</DialogTitle>
-          </DialogHeader>
-
-          <form @submit.prevent="handleNewChild" class="space-y-4">
-            <div class="space-y-2">
-              <Label for="child-title">Title</Label>
-              <Input
-                id="child-title"
-                v-model="newChildForm.title"
-                :class="{ 'border-destructive': newChildForm.errors.title }"
-              />
-              <p v-if="newChildForm.errors.title" class="text-sm text-destructive">
-                {{ newChildForm.errors.title }}
-              </p>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                v-model="newChildForm.isTerminal"
-                id="child-terminal"
-                class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
-              />
-              <Label for="child-terminal">Is Terminal Concept</Label>
-            </div>
-
-            <Button type="submit" :disabled="newChildForm.processing">
-              {{ newChildForm.processing ? 'Creating...' : 'Create Concept' }}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       <!-- Terminal Content Section -->
       <div v-if="concept.isTerminal" class="space-y-4">
@@ -381,15 +281,16 @@ const handleDelete = () => {
             </div>
           </div>
         </div>
-
-        <AddMcqToConceptDialog v-model:open="showAddMcqDialog" :concept="concept" />
-        <EditMcqInConceptDialog
-          v-if="selectedQuestion"
-          v-model:open="showEditMcqDialog"
-          :concept="concept"
-          :question="selectedQuestion"
-        />
       </div>
     </div>
   </div>
+  <EditConceptDialog v-model:open="showEditDialog" :concept="concept" />
+  <NewChildConceptDialog v-model:open="showNewChildDialog" :parent-id="concept.slug" />
+  <AddMcqToConceptDialog v-model:open="showAddMcqDialog" :concept="concept" />
+  <EditMcqInConceptDialog
+    v-if="selectedQuestion"
+    v-model:open="showEditMcqDialog"
+    :concept="concept"
+    :question="selectedQuestion"
+  />
 </template>

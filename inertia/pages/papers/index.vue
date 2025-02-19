@@ -3,6 +3,8 @@ import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Settings } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { TrainingLevel } from '#enums/training_level'
 
 defineOptions({ layout: DashLayout })
 
@@ -11,22 +13,29 @@ interface Props {
   canManage: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const selectedLevel = ref<TrainingLevel | null>(null)
+
+const filteredConcepts = computed(() => {
+  if (!selectedLevel.value) return props.concepts
+  return props.concepts.filter((c) => c.trainingLevel === selectedLevel.value)
+})
 </script>
 
 <template>
   <AppHead title="Past Papers" description="Access past examination papers" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-    <!-- Header with Breadcrumb -->
+    <!-- Header with breadcrumbs -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <BreadcrumbTrail :items="[{ label: 'Papers' }]" />
+      <BreadcrumbTrail :items="[{ label: 'Papers' }]" class="mb-6" />
 
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-        <!-- Title section -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:gap-6">
+        <!-- Title section - adjusted gap and padding -->
         <div class="flex items-start gap-4 flex-1">
           <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
             <FileText class="h-6 w-6 text-primary" />
@@ -51,10 +60,15 @@ defineProps<Props>()
       </div>
     </div>
 
+    <!-- Filter Section -->
+    <div class="flex justify-end">
+      <ToggleTrainingLevel v-model="selectedLevel" />
+    </div>
+
     <!-- Papers Grid -->
     <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
       <Link
-        v-for="concept in concepts"
+        v-for="concept in filteredConcepts"
         :key="concept.id"
         :href="`/papers/${concept.slug}`"
         class="group relative overflow-hidden rounded-xl bg-white/90 p-5 border border-white/20 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 outline outline-1 outline-[#d3d3d3a1]"

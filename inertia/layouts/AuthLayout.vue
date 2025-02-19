@@ -4,7 +4,7 @@ defineProps<{
   messages: Record<string, string | Record<string, string>>
 }>()
 
-const logoPath = '/images/logo.png'
+const logoPath = '/images/logo.webp'
 </script>
 
 <template>

@@ -1,5 +1,7 @@
 import vine from '@vinejs/vine'
 import { ExamType, PaperType } from '#enums/exam_type'
+import { StudyLevel } from '#enums/study_level'
+// import { StudyLevel } from '#enums/study_level'
 
 const metadataSchema = vine
   .object({
@@ -28,6 +30,7 @@ export const createPastPaperValidator = vine.compile(
     examType: vine.enum(Object.values(ExamType)),
     paperType: vine.enum(Object.values(PaperType)),
     conceptId: vine.number(),
+    studyLevel: vine.enum(Object.values(StudyLevel)).optional(),
     metadata: metadataSchema.optional(),
   })
 )
@@ -42,6 +45,7 @@ export const updatePastPaperValidator = vine.compile(
       .optional(),
     examType: vine.enum(Object.values(ExamType)).optional(),
     type: vine.enum(['mcq', 'saq', 'mixed']).optional(),
+    studyLevel: vine.enum(Object.values(StudyLevel)).optional(),
     metadata: metadataSchema.optional(),
   })
 )

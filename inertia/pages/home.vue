@@ -13,13 +13,13 @@ const props = defineProps<{
 defineOptions({ layout: AppLayout })
 const features = [
   {
-    icon: 'bookpile.png',
+    icon: 'bookpile.webp',
     title: 'Comprehensive Resources',
     desc: 'Access a wide range of study materials',
   },
-  { icon: 'papers.png', title: 'Past Papers', desc: 'Practice with previous exam papers' },
-  { icon: 'path.png', title: 'Custom Learning Paths', desc: 'Personalized study journey' },
-  { icon: 'handshake.png', title: 'Active Community', desc: 'Learn together with peers' },
+  { icon: 'papers.webp', title: 'Past Papers', desc: 'Practice with previous exam papers' },
+  { icon: 'path.webp', title: 'Custom Learning Paths', desc: 'Personalized study journey' },
+  { icon: 'handshake.webp', title: 'Active Community', desc: 'Learn together with peers' },
 ]
 
 const statsDisplay = [
@@ -106,7 +106,7 @@ onMounted(() => {
         <div class="container mx-auto px-6 text-center">
           <div class="flex items-center justify-center gap-4">
             <h1 class="text-3xl font-bold text-gray-800">WELCOME TO JUVENOTES</h1>
-            <img src="/public/images/pen.png" alt="Study Resources" class="w-16 h-16" />
+            <img src="/public/images/pen.webp" alt="Study Resources" class="w-16 h-16" />
           </div>
 
           <h2 class="text-xl font-semibold text-[#55A9C4] mb-4">Study Smart, Excel Easy!</h2>
@@ -151,7 +151,7 @@ onMounted(() => {
       <section
         class="py-16 relative bg-cover bg-center bg-no-repeat"
         :style="{
-          backgroundImage: 'url(\'/images/dashboard.png\')',
+          backgroundImage: 'url(\'/images/dashboard.webp\')',
         }"
       >
         <div class="absolute inset-0 bg-black/50"></div>

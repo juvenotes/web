@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEditor, EditorContent } from '@tiptap/vue-3'
+import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from 'tiptap-markdown'
 import { FontFamily } from '@tiptap/extension-font-family'
@@ -15,7 +15,6 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { Youtube } from '@tiptap/extension-youtube'
-// import { FileHandler } from '@tiptap-pro/extension-file-handler'
 import {
   Bold,
   Italic,
@@ -394,6 +393,43 @@ const addYoutubeVideo = () => {
       </button>
     </div>
 
+    <!-- Bubble-menu -->
+     <BubbleMenu
+      :editor="editor"
+      v-if="editor"
+    >
+      <div class="bubble-menu">
+        <button type="button" @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">
+          Bold
+        </button>
+        <button type="button" @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">
+          Italic
+        </button>
+        <button type="button" @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">
+          Strike
+        </button>
+      </div>
+    </BubbleMenu>
+
+    <!-- Floating menu -->
+    <FloatingMenu
+     :editor="editor" 
+     :tippy-options="{ duration: 100 }" 
+     v-if="editor">
+
+      <div class="floating-menu">
+        <button type="button" @click="editor.chain().focus().toggleHeading({ level: 1 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+          H1
+        </button>
+        <button type="button" @click="editor.chain().focus().toggleHeading({ level: 2 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
+          H2
+        </button>
+        <button type="button" @click="editor.chain().focus().toggleBulletList().run()" :class="{ 'is-active': editor.isActive('bulletList') }">
+          Bullet list
+        </button>
+      </div>
+    </FloatingMenu>
+
     <!-- Editor Content -->
     <EditorContent
       v-if="editor"
@@ -477,55 +513,5 @@ const addYoutubeVideo = () => {
 .editor-image[data-uploading] {
   opacity: 0.5;
   cursor: wait;
-}
-.ProseMirror table {
-  border-collapse: collapse;
-  margin: 0;
-  overflow: hidden;
-  table-layout: fixed;
-  width: 100%;
-}
-
-.ProseMirror td,
-.ProseMirror th {
-  border: 2px solid #ced4da;
-  box-sizing: border-box;
-  min-width: 1em;
-  padding: 3px 5px;
-  position: relative;
-  vertical-align: top;
-}
-
-.ProseMirror th {
-  background-color: #f8f9fa;
-  font-weight: bold;
-  text-align: left;
-}
-
-.ProseMirror .selectedCell:after {
-  background: rgba(200, 200, 255, 0.4);
-  content: '';
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: 2;
-}
-
-.ProseMirror .column-resize-handle {
-  background-color: #adb5bd;
-  bottom: -2px;
-  position: absolute;
-  right: -2px;
-  pointer-events: none;
-  top: 0;
-  width: 4px;
-}
-
-.ProseMirror.resize-cursor {
-  cursor: ew-resize;
-  cursor: col-resize;
 }
 </style>

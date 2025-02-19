@@ -5,6 +5,7 @@ import Question from './question.js'
 import { ExamType, PaperType } from '#enums/exam_type'
 import Concept from './concept.js'
 import User from './user.js'
+import { StudyLevel } from '#enums/study_level'
 
 export default class PastPaper extends BaseModel {
   @column({ isPrimary: true })
@@ -30,6 +31,9 @@ export default class PastPaper extends BaseModel {
 
   @column()
   declare paperType: PaperType
+
+  @column()
+  declare studyLevel: StudyLevel | null
 
   @column()
   declare metadata: {

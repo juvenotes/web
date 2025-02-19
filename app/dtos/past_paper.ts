@@ -4,6 +4,7 @@ import { ExamType, PaperType } from '#enums/exam_type'
 import UserDto from '#dtos/user'
 import QuestionDto from '#dtos/question'
 import ConceptDto from '#dtos/concept'
+import { StudyLevel } from '#enums/study_level'
 
 export default class PastPaperDto extends BaseModelDto {
   declare id: number
@@ -15,6 +16,7 @@ export default class PastPaperDto extends BaseModelDto {
   declare metadata: any
   declare examType: ExamType
   declare paperType: PaperType
+  declare studyLevel: StudyLevel | null
   declare createdAt: string
   declare updatedAt: string
   declare user: UserDto | null
@@ -33,6 +35,7 @@ export default class PastPaperDto extends BaseModelDto {
     this.year = pastPaper.year
     this.examType = pastPaper.examType
     this.paperType = pastPaper.paperType
+    this.studyLevel = pastPaper.studyLevel
     this.metadata = pastPaper.metadata
     // this.createdAt = pastPaper.createdAt.toISO()!
     // this.updatedAt = pastPaper.updatedAt.toISO()!

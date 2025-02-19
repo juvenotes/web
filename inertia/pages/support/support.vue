@@ -12,7 +12,7 @@ defineOptions({ layout: AppLayout })
     <div class="wrapper">
         <div class="welcome-section"
             :style="{
-               backgroundImage: 'url(\'/images/dashboard.png\')',
+               backgroundImage: 'url(\'/images/dashboard.webp\')',
             }"
         >
             <h1>WELCOME TO JUVENOTES SUPPORT</h1>
@@ -79,7 +79,7 @@ defineOptions({ layout: AppLayout })
     }
      div .welcome-section{
         background-color: rgba(0, 0, 0, 0.5);
-        /* background-image: url('public/images/dashboard.png'); */
+        /* background-image: url('public/images/dashboard.webp'); */
         background-size: cover;
         background-position: center;
         width: 100%;

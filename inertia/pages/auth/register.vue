@@ -27,7 +27,7 @@ const handleSubmit = () => {
       <div class="bg-white rounded-lg shadow p-8">
         <!-- Header -->
         <div class="text-center mb-8">
-          <img src="/public/images/logo.png" alt="Juvenotes" class="h-10 mx-auto mb-6" />
+          <img src="/public/images/logo.webp" alt="Juvenotes" class="h-10 mx-auto mb-6" />
           <h1 class="text-xl font-medium mb-2">Create your account</h1>
           <p class="text-sm text-muted-foreground">
             Already have an account?

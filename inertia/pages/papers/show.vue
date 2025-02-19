@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import ConceptDto from '#dtos/concept'
 import PastPaperDto from '#dtos/past_paper'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Calendar, AlertCircle, Settings } from 'lucide-vue-next'
+import { StudyLevel } from '#enums/study_level'
 
 defineOptions({ layout: DashLayout })
 
@@ -23,8 +24,14 @@ const breadcrumbItems = computed(() => [
 
 const hasPapers = computed(() => props.papers.length > 0)
 
+const selectedStudyLevel = ref<StudyLevel | null>(null)
+
 const papersByYear = computed(() => {
-  return props.papers.reduce(
+  const filtered = selectedStudyLevel.value
+    ? props.papers.filter((p) => p.studyLevel === selectedStudyLevel.value)
+    : props.papers
+
+  return filtered.reduce(
     (acc, paper) => {
       const year = paper.year
       if (!acc[year]) acc[year] = []
@@ -69,6 +76,10 @@ const papersByYear = computed(() => {
           <span class="text-sm font-medium">Edit</span>
         </Link>
       </div>
+    </div>
+
+    <div class="flex justify-end">
+      <ToggleStudyLevel v-model="selectedStudyLevel" :papers="papers"  />
     </div>
 
     <!-- Papers by Year -->
