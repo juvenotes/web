@@ -5,7 +5,7 @@ import type QuestionDto from '#dtos/question'
 import { computed, ref, watchEffect } from 'vue'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { toast } from 'vue-sonner'
-import { Plus, Pencil, Trash2 } from 'lucide-vue-next'
+import { Plus, Pencil, Trash2, BookOpen } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -115,14 +115,27 @@ const handleDelete = () => {
     description="Manage a specific concept in Juvenotes"
   />
   <div class="container mx-auto px-4 py-4 sm:py-8">
-    <BreadcrumbTrail :items="breadcrumbItems" />
+    <!-- Enhanced Title Section -->
+    <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
+      
+      <BreadcrumbTrail :items="breadcrumbItems" />
 
-    <div class="space-y-6 sm:space-y-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 class="text-2xl sm:text-3xl font-bold truncate">{{ concept.title }}</h1>
+      <div class="mt-4 flex flex-col sm:flex-row sm:items-start gap-4 justify-between mb-8">
+        <div class="flex items-start gap-4">
+          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10 shrink-0">
+            <BookOpen class="h-6 w-6 text-primary" />
+          </div>
+          <div class="space-y-1">
+            <h1 class="text-2xl font-bold text-foreground">{{ concept.title }}</h1>
+            <p class="text-sm text-muted-foreground">Manage concept content and structure</p>
+          </div>
+        </div>
+
         <div class="flex flex-wrap gap-2">
           <ToggleUrl />
-          <!-- Only show Add buttons for non-terminal concepts -->
           <template v-if="!concept.isTerminal">
             <Button variant="outline" @click="showNewChildDialog = true" class="w-full sm:w-auto">
               <Plus class="h-4 w-4 mr-2" />
@@ -139,7 +152,7 @@ const handleDelete = () => {
       </div>
 
       <!-- Info Grid -->
-      <div v-if="!concept.isTerminal" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div v-if="!concept.isTerminal" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-6">
         <div class="p-4 rounded-lg border">
           <span class="text-sm text-muted-foreground"
             ><b>{{ concept.title }} </b> is example of a parent concept here. All others are child
