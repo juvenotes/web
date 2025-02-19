@@ -5,7 +5,7 @@ import AdminLayout from '~/layouts/AdminLayout.vue'
 import { TrainingLevel, TrainingLevelLabels } from '#enums/training_level'
 import { ref, computed } from 'vue'
 import { toast } from 'vue-sonner'
-import { Plus } from 'lucide-vue-next'
+import { Plus, FileText } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
