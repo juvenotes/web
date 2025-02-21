@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import AdminLayout from '~/layouts/AdminLayout.vue'
+import { computed, ref } from 'vue'
+import { useForm } from '@inertiajs/vue3'
 import type InstitutionDto from '#dtos/institution'
-import { computed } from 'vue'
+import { InstitutionType, InstitutionTypeLabels } from '#enums/institution_type'
+import { Loader2Icon } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -9,9 +12,16 @@ interface Props {
   institutions: InstitutionDto[]
 }
 
-const props = defineProps<Props>()
+const institutionTypes = computed(() =>
+  Object.entries(InstitutionType).map(([, value]) => ({
+    label: InstitutionTypeLabels[value],
+    value: value,
+  }))
+)
 
-// Group institutions by type
+const props = defineProps<Props>()
+const isOpen = ref(false)
+
 const institutionsByType = computed(() => {
   return props.institutions.reduce(
     (acc, institution) => {
@@ -24,23 +34,93 @@ const institutionsByType = computed(() => {
   )
 })
 
-// Format institution type for display
 const formatType = (type: string) => {
   return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
+}
+
+const form = useForm({
+  name: '',
+  institutionType: '',
+  branch: '',
+})
+
+const onSubmit = () => {
+  form.post('/manage/institutions', {
+    onSuccess: () => {
+      isOpen.value = false
+      form.reset()
+    },
+    onError: (errors) => {
+      console.error('Form submission failed:', errors)
+    },
+  })
 }
 </script>
 
 <template>
-  <AppHead title="Institutions" description="Manage institutions" />
-  <div class="p-4 sm:p-8 max-w-7xl mx-auto">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Institution Management</h1>
-      <div class="px-4 py-2 bg-primary/10 rounded-lg self-start sm:self-auto">
-        <span class="text-primary font-medium">{{ institutions.length }} total institutions</span>
-      </div>
+  <AppHead title="All available institutions" description="Institutions" />
+  <div class="container py-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">Institutions</h1>
+
+      <Sheet v-model:open="isOpen">
+        <SheetTrigger asChild>
+          <Button>Add Institution</Button>
+        </SheetTrigger>
+
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Add New Institution</SheetTitle>
+            <SheetDescription>
+              Create a new institution to manage courses and programs.
+            </SheetDescription>
+          </SheetHeader>
+
+          <form @submit.prevent="onSubmit" class="space-y-4 mt-4">
+            <div class="space-y-2">
+              <label>Name</label>
+              <Input v-model="form.name" type="text" required />
+            </div>
+
+            <div class="space-y-2">
+              <label>Type</label>
+              <Select v-model="form.institutionType">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="type in institutionTypes"
+                    :key="type.value"
+                    :value="type.value"
+                  >
+                    {{ type.label }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div class="space-y-2">
+              <label>Branch (Optional)</label>
+              <Input v-model="form.branch" type="text" />
+            </div>
+
+            <SheetFooter>
+              <Button
+                type="submit"
+                :disabled="form.processing || !form.name || !form.institutionType"
+                class="gap-2"
+              >
+                <Loader2Icon v-if="form.processing" class="h-4 w-4 animate-spin" />
+                {{ form.processing ? 'Creating...' : 'Create Institution' }}
+              </Button>
+            </SheetFooter>
+          </form>
+        </SheetContent>
+      </Sheet>
     </div>
 
-    <!-- Group institutions by type -->
+    <!-- Institutions List -->
     <div v-for="(institutions, type) in institutionsByType" :key="type" class="mb-8">
       <h2 class="text-xl font-semibold text-gray-700 mb-4">{{ formatType(type) }}</h2>
 

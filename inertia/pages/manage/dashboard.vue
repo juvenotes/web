@@ -2,7 +2,7 @@
 import { Link } from '@inertiajs/vue3'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import type StatsDto from '#dtos/stats'
-import { BookOpen, FileText, School, FileQuestion } from 'lucide-vue-next'
+import { BookOpen, FileText, Stethoscope, FileQuestion } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 defineOptions({ layout: AdminLayout })
@@ -27,16 +27,16 @@ const statItems: Array<{
 
 const quickLinks = [
   {
-    title: 'Manage Concepts',
-    description: 'Create and organize learning content',
+    title: 'Concepts',
+    description: 'Create and organize concepts',
     href: '/manage/concepts',
     icon: BookOpen,
   },
   {
-    title: 'Institutions',
-    description: 'Create and manage institutions',
-    href: '/manage/institutions',
-    icon: School,
+    title: 'OSCE',
+    description: 'Create and manage OSCEs',
+    href: '/manage/osce',
+    icon: Stethoscope,
   },
   {
     title: 'Past Papers',

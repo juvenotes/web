@@ -3,6 +3,11 @@ export enum InstitutionType {
   COLLEGE = 'college',
   POLYTECHNIC = 'polytechnic',
   INSTITUTE = 'institute',
-  ACADEMY = 'academy',
-  SCHOOL = 'school',
+}
+
+export const InstitutionTypeLabels = {
+  [InstitutionType.UNIVERSITY]: 'University',
+  [InstitutionType.COLLEGE]: 'College',
+  [InstitutionType.POLYTECHNIC]: 'Polytechnic',
+  [InstitutionType.INSTITUTE]: 'Institute',
 }

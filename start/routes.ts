@@ -249,6 +249,10 @@ router
   .group(() => {
     router.get('/', [ManageInstitutionsController, 'index'])
     router.get('/:id', [ManageInstitutionsController, 'show'])
+    router.post('/', [ManageInstitutionsController, 'store'])
+    router.put('/:id', [ManageInstitutionsController, 'update'])
+    router.put('/:id/courses', [ManageInstitutionsController, 'updateCourses'])
+    router.delete('/:id', [ManageInstitutionsController, 'destroy'])
   })
   .prefix('/manage/institutions')
   .use(middleware.auth())
