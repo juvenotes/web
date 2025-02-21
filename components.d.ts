@@ -75,6 +75,7 @@ declare module 'vue' {
     EditOsceDialog: typeof import('./inertia/components/dialogs/EditOsceDialog.vue')['default']
     EditPaperDialog: typeof import('./inertia/components/dialogs/EditPaperDialog.vue')['default']
     EditSaqDialog: typeof import('./inertia/components/dialogs/EditSaqDialog.vue')['default']
+    ExplanationEditor: typeof import('./inertia/components/ExplanationEditor.vue')['default']
     FormControl: typeof import('./inertia/components/ui/form/FormControl.vue')['default']
     FormDescription: typeof import('./inertia/components/ui/form/FormDescription.vue')['default']
     FormItem: typeof import('./inertia/components/ui/form/FormItem.vue')['default']
@@ -131,5 +132,6 @@ declare module 'vue' {
     TooltipProvider: typeof import('./inertia/components/ui/tooltip/TooltipProvider.vue')['default']
     TooltipTrigger: typeof import('./inertia/components/ui/tooltip/TooltipTrigger.vue')['default']
     UploadMcqsDialog: typeof import('./inertia/components/dialogs/UploadMcqsDialog.vue')['default']
+    ViewExplanation: typeof import('./inertia/components/ViewExplanation.vue')['default']
   }
 }
