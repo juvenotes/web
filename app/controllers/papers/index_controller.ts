@@ -53,12 +53,9 @@ export default class IndexController {
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug', 'study_level'])
           .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
           .orderBy('year', 'desc')
-        // .preload('questions', (questionsQuery) => {
-        //   questionsQuery
-        //     .select(['id', 'type', 'question_text', 'difficulty_level', 'past_paper_id'])
-        //     .preload('choices')
-        //     .preload('parts')
-        // })
+          .preload('questions', (questionsQuery) => {
+            questionsQuery.select(['id', 'past_paper_id'])
+          })
       })
       .firstOrFail()
 
