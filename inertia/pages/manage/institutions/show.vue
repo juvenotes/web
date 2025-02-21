@@ -77,9 +77,12 @@ const onCoursesSubmit = () => {
 
 const deleteForm = useForm({})
 const onDelete = () => {
-  if (confirm('Are you sure you want to delete this institution?')) {
-    deleteForm.delete(`/manage/institutions/${props.institution.id}`)
-  }
+  deleteForm.delete(`/manage/institutions/${props.institution.id}`, {
+    onSuccess: () => {
+      isDeleteOpen.value = false
+      window.location.href = '/manage/institutions'
+    },
+  })
 }
 
 // Helper to check if a course is available for a specific education level
@@ -138,8 +141,8 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem 
-                        v-for="type in institutionTypes" 
+                      <SelectItem
+                        v-for="type in institutionTypes"
                         :key="type.value"
                         :value="type.value"
                       >
@@ -166,9 +169,7 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
               </div>
 
               <SheetFooter>
-                <Button type="submit" :loading="editForm.processing">
-                  Save Changes
-                </Button>
+                <Button type="submit" :loading="editForm.processing"> Save Changes </Button>
               </SheetFooter>
             </form>
           </SheetContent>
@@ -195,7 +196,9 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
                   <div class="flex items-center justify-between">
                     <h3 class="font-semibold text-foreground">{{ level.name }}</h3>
                     <span class="text-xs text-muted-foreground">
-                      {{ coursesForm.courses.filter((c) => c.educationLevelId === level.id).length }}
+                      {{
+                        coursesForm.courses.filter((c) => c.educationLevelId === level.id).length
+                      }}
                       selected
                     </span>
                   </div>
@@ -287,7 +290,9 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
           <div>
             <p class="text-sm text-gray-600">Total Courses</p>
             <p class="text-xl font-semibold text-primary">
-              {{ Object.values(coursesByLevel).reduce((sum, level) => sum + level.courses.length, 0) }}
+              {{
+                Object.values(coursesByLevel).reduce((sum, level) => sum + level.courses.length, 0)
+              }}
             </p>
           </div>
         </div>
@@ -338,8 +343,13 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" @click="isDeleteOpen = false">Cancel</Button>
-          <Button variant="destructive" :loading="false" @click="onDelete">
-            Delete
+          <Button
+            variant="destructive"
+            :disabled="deleteForm.processing"
+            :loading="deleteForm.processing"
+            @click="onDelete"
+          >
+            {{ deleteForm.processing ? 'Deleting...' : 'Delete' }}
           </Button>
         </DialogFooter>
       </DialogContent>
