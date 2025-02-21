@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { Textarea } from '~/components/ui/textarea'
 import { useForm } from '@inertiajs/vue3'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
@@ -214,8 +209,17 @@ function handleSubmit() {
               </div>
 
               <div class="space-y-2">
+                <!-- <Textarea
+                  v-model="part.expectedAnswer"
+                  :placeholder="'Expected answer can include lists:\n- Point 1\n- Point 2\n- Point 3'"
+                  rows="4"
+                  class="resize-y min-h-[100px]"
+                /> -->
                 <Label>Expected Answer</Label>
-                <Textarea v-model="part.expectedAnswer" rows="3" />
+                <ExplanationEditor
+                  v-model="part.expectedAnswer"
+                  placeholder="Enter expected answer"
+                />
               </div>
 
               <div class="space-y-2">

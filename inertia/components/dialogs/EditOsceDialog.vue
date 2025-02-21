@@ -218,11 +218,16 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <Textarea
+                <!-- <Textarea
                   v-model="part.expectedAnswer"
-                  placeholder="Expected answer"
+                  :placeholder="'Expected answer can include lists:\n- Point 1\n- Point 2\n- Point 3'"
                   rows="4"
                   class="resize-y min-h-[100px]"
+                /> -->
+                <Label>Expected Answer</Label>
+                <ExplanationEditor
+                  v-model="part.expectedAnswer"
+                  placeholder="Enter expected answer"
                 />
               </div>
 
