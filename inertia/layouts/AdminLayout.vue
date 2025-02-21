@@ -4,7 +4,7 @@ import AdminSearch from '~/components/AdminSearch.vue'
 import {
   LayoutDashboard,
   BookOpen,
-  School,
+  // School,
   FileText,
   Users,
   // Settings,
@@ -28,7 +28,7 @@ const menuItems = [
   { name: 'Papers', href: '/manage/papers', icon: FileText },
   { name: 'Osce', href: '/manage/osce', icon: Stethoscope },
   { name: 'Users', href: '/manage/users', icon: Users },
-  { name: 'Institutions', href: '/manage/institutions', icon: School },
+  // { name: 'Institutions', href: '/manage/institutions', icon: School },
   // { name: 'Settings', href: '/manage/settings', icon: Settings },
 ]
 </script>
