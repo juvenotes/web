@@ -11,8 +11,23 @@ export const updateEmailValidator = vine.compile(
   })
 )
 
-export const updateProfileValidator = vine.compile(
-  vine.object({
-    fullName: vine.string().maxLength(254).optional().nullable(),
-  })
-)
+export const updateProfileValidator = (userId: number) => {
+  return vine.compile(
+    vine.object({
+      fullName: vine.string().maxLength(254).optional().nullable(),
+      username: vine
+        .string()
+        .minLength(3)
+        .maxLength(30)
+        .regex(/^[a-z0-9-]+$/)
+        .unique(async (db, value) => {
+          const exists = await db
+            .from('users')
+            .where('username', value)
+            .whereNot('id', userId)
+            .first()
+          return !exists
+        }),
+    })
+  )
+}

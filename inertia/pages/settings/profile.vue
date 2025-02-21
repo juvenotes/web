@@ -6,11 +6,12 @@ import { User, ArrowLeft } from 'lucide-vue-next'
 
 defineOptions({ layout: AppLayout })
 
-defineProps<{ user: UserDto }>()
+const props = defineProps<{ user: UserDto }>()
 
 // Profile update form
 const form = useForm({
-  fullName: '',
+  fullName: props.user.fullName || '',
+  username: props.user.username || '',
 })
 
 // Form handler
@@ -62,6 +63,22 @@ const updateProfile = () => {
             {{ form.errors.fullName }}
           </span>
         </div>
+        <!-- <div class="space-y-2">
+          <label class="text-sm font-medium">Username</label>
+          <input
+            v-model="form.username"
+            type="text"
+            class="w-full p-2 rounded-md border"
+            pattern="[a-z0-9-]+"
+            required
+          />
+          <p class="text-sm text-muted-foreground">
+            Only lowercase letters, numbers, and hyphens allowed
+          </p>
+          <span v-if="form.errors.username" class="text-sm text-destructive">
+            {{ form.errors.username }}
+          </span>
+        </div> -->
 
         <button
           type="submit"
