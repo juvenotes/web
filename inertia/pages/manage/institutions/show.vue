@@ -2,13 +2,17 @@
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import type InstitutionDto from '#dtos/institution'
-import { ArrowLeft, GraduationCap, School } from 'lucide-vue-next'
+import { ArrowLeft, GraduationCap, School, Plus, Edit, Trash2, Loader2Icon } from 'lucide-vue-next'
+import { useForm } from '@inertiajs/vue3'
+import { computed, ref } from 'vue'
+import { InstitutionType, InstitutionTypeLabels } from '#enums/institution_type'
 
 defineOptions({ layout: AdminLayout })
 
 interface Course {
   id: number
   name: string
+  educationLevels: Array<{ id: number; name: string }>
 }
 
 interface CourseLevel {
@@ -19,23 +23,246 @@ interface CourseLevel {
 interface Props {
   institution: InstitutionDto
   coursesByLevel: Record<number, CourseLevel>
+  educationLevels: Array<{ id: number; name: string }>
+  availableCourses: Array<Course>
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+const isEditOpen = ref(false)
+const isCoursesOpen = ref(false)
+const isDeleteOpen = ref(false)
+
+// Institution type options
+const institutionTypes = computed(() =>
+  Object.entries(InstitutionType).map(([_, value]) => ({
+    label: InstitutionTypeLabels[value],
+    value: value,
+  }))
+)
+
+// Edit Institution Form
+const editForm = useForm({
+  name: props.institution.name,
+  institutionType: props.institution.institutionType,
+  branch: props.institution.branch || '',
+  isActive: props.institution.isActive,
+})
+
+// Manage Courses Form
+const coursesForm = useForm({
+  courses: Object.entries(props.coursesByLevel).flatMap(([levelId, level]) =>
+    level.courses.map((course) => ({
+      courseId: course.id,
+      educationLevelId: parseInt(levelId),
+    }))
+  ),
+})
+
+// Form submission handlers
+const onEditSubmit = () => {
+  editForm.put(`/manage/institutions/${props.institution.id}`, {
+    onSuccess: () => {
+      isEditOpen.value = false
+    },
+  })
+}
+
+const onCoursesSubmit = () => {
+  coursesForm.put(`/manage/institutions/${props.institution.id}/courses`, {
+    onSuccess: () => {
+      isCoursesOpen.value = false
+    },
+  })
+}
+
+const deleteForm = useForm({})
+const onDelete = () => {
+  if (confirm('Are you sure you want to delete this institution?')) {
+    deleteForm.delete(`/manage/institutions/${props.institution.id}`)
+  }
+}
+
+// Helper to check if a course is available for a specific education level
+const isCourseAvailableForLevel = (course: Course, levelId: number) => {
+  return course.educationLevels.some((level) => level.id === levelId)
+}
+
+// Helper to get courses filtered by education level
+const getCoursesForLevel = computed(() => (levelId: number) => {
+  return props.availableCourses.filter((course) => isCourseAvailableForLevel(course, levelId))
+})
 </script>
 
 <template>
   <AppHead :title="institution.name" description="Institution details" />
   <div class="p-4 sm:p-8 max-w-7xl mx-auto space-y-6">
-    <!-- Header with Back Button -->
-    <div class="flex items-center gap-4">
-      <Link
-        href="/manage/institutions"
-        class="flex items-center gap-2 text-primary hover:text-primary/70 transition-colors"
-      >
-        <ArrowLeft class="h-5 w-5" />
-        <span class="text-sm font-medium">Back to Institutions</span>
-      </Link>
+    <!-- Header with Actions -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <Link
+          href="/manage/institutions"
+          class="flex items-center gap-2 text-primary hover:text-primary/70"
+        >
+          <ArrowLeft class="h-5 w-5" />
+          <span class="text-sm font-medium">Back</span>
+        </Link>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Edit Institution Sheet -->
+        <Sheet v-model:open="isEditOpen">
+          <SheetTrigger asChild>
+            <Button variant="outline" class="gap-2">
+              <Edit class="h-4 w-4" />
+              Edit Details
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Edit Institution</SheetTitle>
+              <SheetDescription>Update institution details</SheetDescription>
+            </SheetHeader>
+
+            <form @submit.prevent="onEditSubmit" class="space-y-4 mt-4">
+              <div class="space-y-4">
+                <div class="space-y-2">
+                  <label>Name</label>
+                  <Input v-model="editForm.name" type="text" required />
+                </div>
+
+                <div class="space-y-2">
+                  <label>Type</label>
+                  <Select v-model="editForm.institutionType">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem 
+                        v-for="type in institutionTypes" 
+                        :key="type.value"
+                        :value="type.value"
+                      >
+                        {{ type.label }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div class="space-y-2">
+                  <label>Branch</label>
+                  <Input v-model="editForm.branch" type="text" />
+                </div>
+
+                <div class="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    v-model="editForm.isActive"
+                    class="rounded border-gray-300"
+                  />
+                  <label for="isActive">Active</label>
+                </div>
+              </div>
+
+              <SheetFooter>
+                <Button type="submit" :loading="editForm.processing">
+                  Save Changes
+                </Button>
+              </SheetFooter>
+            </form>
+          </SheetContent>
+        </Sheet>
+
+        <!-- Manage Courses Sheet -->
+        <Sheet v-model:open="isCoursesOpen">
+          <SheetTrigger asChild>
+            <Button class="gap-2">
+              <Plus class="h-4 w-4" />
+              Manage Courses
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent class="sm:max-w-xl">
+            <SheetHeader>
+              <SheetTitle>Manage Courses</SheetTitle>
+              <SheetDescription>Add or remove courses for this institution</SheetDescription>
+            </SheetHeader>
+
+            <form @submit.prevent="onCoursesSubmit" class="mt-6">
+              <div class="space-y-6 max-h-[60vh] overflow-y-auto pr-4">
+                <div v-for="level in educationLevels" :key="level.id" class="space-y-4">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-foreground">{{ level.name }}</h3>
+                    <span class="text-xs text-muted-foreground">
+                      {{ coursesForm.courses.filter((c) => c.educationLevelId === level.id).length }}
+                      selected
+                    </span>
+                  </div>
+
+                  <div class="grid grid-cols-1 gap-2 pl-2">
+                    <label
+                      v-for="course in getCoursesForLevel(level.id)"
+                      :key="`${level.id}-${course.id}`"
+                      class="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-lg cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        :id="`course-${course.id}-${level.id}`"
+                        :checked="
+                          coursesForm.courses.some(
+                            (c) => c.courseId === course.id && c.educationLevelId === level.id
+                          )
+                        "
+                        @change="
+                          (e: Event) => {
+                            const target = e.target as HTMLInputElement
+                            if (!target) return
+
+                            if (target.checked) {
+                              coursesForm.courses.push({
+                                courseId: course.id,
+                                educationLevelId: level.id,
+                              })
+                            } else {
+                              const idx = coursesForm.courses.findIndex(
+                                (c) => c.courseId === course.id && c.educationLevelId === level.id
+                              )
+                              if (idx > -1) coursesForm.courses.splice(idx, 1)
+                            }
+                          }
+                        "
+                        class="rounded border-input"
+                      />
+                      <div class="flex flex-col">
+                        <span class="text-sm font-medium">{{ course.name }}</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 border-t pt-4">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm text-muted-foreground">
+                    {{ coursesForm.courses.length }} courses selected
+                  </p>
+                  <Button type="submit" :disabled="coursesForm.processing" class="gap-2">
+                    <Loader2Icon v-if="coursesForm.processing" class="h-4 w-4 animate-spin" />
+                    {{ coursesForm.processing ? 'Saving...' : 'Save Changes' }}
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </SheetContent>
+        </Sheet>
+
+        <!-- Delete Button -->
+        <Button variant="destructive" class="gap-2" @click="isDeleteOpen = true">
+          <Trash2 class="h-4 w-4" />
+          Delete
+        </Button>
+      </div>
     </div>
 
     <!-- Institution Info Card -->
@@ -60,9 +287,7 @@ defineProps<Props>()
           <div>
             <p class="text-sm text-gray-600">Total Courses</p>
             <p class="text-xl font-semibold text-primary">
-              {{
-                Object.values(coursesByLevel).reduce((sum, level) => sum + level.courses.length, 0)
-              }}
+              {{ Object.values(coursesByLevel).reduce((sum, level) => sum + level.courses.length, 0) }}
             </p>
           </div>
         </div>
@@ -101,5 +326,23 @@ defineProps<Props>()
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <Dialog v-model:open="isDeleteOpen">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete Institution</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete this institution? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" @click="isDeleteOpen = false">Cancel</Button>
+          <Button variant="destructive" :loading="false" @click="onDelete">
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
