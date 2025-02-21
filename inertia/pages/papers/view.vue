@@ -175,12 +175,21 @@ const getLastEditDate = computed(() => {
               </button>
 
               <!-- Explanation Section for Each Part -->
-              <div
+              <!-- <div
                 v-if="showAnswer[part.id]"
                 class="mt-4 p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]"
               >
                 <p class="text-base text-muted-foreground text-[#1F2937] font-medium">
                   <strong>Explanation:</strong> {{ part.expectedAnswer }}
+                </p>
+              </div> -->
+              <div
+                v-if="showAnswer[part.id]"
+                class="mt-4 p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]"
+              >
+                <p class="text-base text-muted-foreground text-[#1F2937] font-medium">
+                  <strong>Explanation:</strong>
+                  <ViewExplanation :content="part.expectedAnswer" />
                 </p>
               </div>
             </div>
@@ -190,3 +199,27 @@ const getLastEditDate = computed(() => {
     </div>
   </div>
 </template>
+<style scoped>
+.explanation-content {
+  :deep(ol) {
+    list-style-type: decimal;
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+
+  :deep(ul) {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+
+  :deep(li) {
+    margin-bottom: 0.25rem;
+  }
+
+  :deep(hr) {
+    margin: 1rem 0;
+    border-top: 1px dashed #a8d3e7;
+  }
+}
+</style>
