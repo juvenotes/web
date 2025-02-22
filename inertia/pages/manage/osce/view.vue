@@ -187,7 +187,7 @@ const breadcrumbItems = computed(() => [
                 <div class="mt-3 bg-muted/50 rounded-lg p-3">
                   <p class="text-sm font-medium text-muted-foreground">Expected Answer:</p>
                   <div class="mt-2 text-sm sm:text-base whitespace-pre-wrap">
-                    {{ part.expectedAnswer }}
+                    <ViewExplanation :content="part.expectedAnswer" />
                   </div>
                 </div>
 

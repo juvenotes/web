@@ -129,7 +129,12 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <Input v-model="choice.explanation" placeholder="Explanation (optional)" />
+                <!-- <Input v-model="choice.explanation" placeholder="Explanation (optional)" /> -->
+                <Label>Expected Answer</Label>
+                <ExplanationEditor
+                  v-model="choice.explanation"
+                  placeholder="Explanation (optional)"
+                />
               </div>
             </div>
           </div>

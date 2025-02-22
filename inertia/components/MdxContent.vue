@@ -17,9 +17,9 @@ const html = ref('')
 watchEffect(async () => {
   const result = await unified()
     .use(remarkParse)
+    .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
-    .use(remarkGfm) 
     .use(rehypeHighlight)
     .use(rehypeStringify)
     .process(props.content)
@@ -28,10 +28,7 @@ watchEffect(async () => {
 })
 </script>
 <template>
-  <div
-    class="prose dark:prose-invert max-w-none notion-like"
-    v-html="html"
-  />
+  <div class="prose dark:prose-invert max-w-none notion-like" v-html="html" />
 </template>
 
 <style>
@@ -126,15 +123,16 @@ watchEffect(async () => {
   }
 
   /* Links */
-  & a {
+  :deep(a:not([class])) {
     color: hsl(var(--primary));
+    text-decoration: underline;
+    text-decoration-thickness: 0.1em;
+    text-underline-offset: 0.2em;
+    transition: color 0.2s ease-in-out;
     font-weight: 500;
-    position: relative;
-    text-decoration: none;
-    transition: var(--notion-transition);
 
     &:hover {
-      text-decoration: underline;
+      color: hsl(var(--primary) / 0.8);
     }
   }
 

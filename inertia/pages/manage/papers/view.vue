@@ -215,7 +215,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                     v-if="choice.isCorrect && choice.explanation"
                     class="text-sm text-muted-foreground mt-1"
                   >
-                    <span class="font-medium">Explanation:</span> {{ choice.explanation }}
+                    <span class="font-medium">Explanation:</span> <ViewExplanation :content="choice.explanation" />
                   </p>
                 </div>
               </div>
