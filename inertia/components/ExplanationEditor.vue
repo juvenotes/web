@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import { Link } from '@tiptap/extension-link'
 import { Markdown } from 'tiptap-markdown'
-import { List, ListOrdered, Bold, Italic } from 'lucide-vue-next'
+import { List, ListOrdered, Bold, Italic, Link as LinkIcon } from 'lucide-vue-next'
 
 const props = defineProps<{
   modelValue: string
@@ -15,6 +16,13 @@ const editor = useEditor({
   content: props.modelValue,
   extensions: [
     StarterKit,
+    Link.configure({
+      openOnClick: true,
+      HTMLAttributes: {
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      },
+    }),
     Markdown.configure({
       html: true,
       tightLists: true,
@@ -30,6 +38,17 @@ const editor = useEditor({
     emit('update:modelValue', editor.storage.markdown.getMarkdown())
   },
 })
+
+const addLink = () => {
+  const url = prompt('Enter URL:')
+  if (url) {
+    editor.value
+      ?.chain()
+      .focus()
+      .setLink({ href: url, target: '_blank', rel: 'noopener noreferrer' })
+      .run()
+  }
+}
 
 const toolbar = [
   {
@@ -52,6 +71,11 @@ const toolbar = [
     title: 'Numbered List',
     action: () => editor.value?.chain().focus().toggleOrderedList().run(),
   },
+  {
+    icon: LinkIcon,
+    title: 'Add Link',
+    action: addLink,
+  },
 ]
 </script>
 
@@ -72,9 +96,6 @@ const toolbar = [
     </div>
 
     <!-- Editor Content -->
-    <EditorContent 
-      :editor="editor" 
-      class="p-3"
-    />
+    <EditorContent :editor="editor" class="p-3" />
   </div>
 </template>

@@ -149,7 +149,7 @@ const getLastEditDate = computed(() => {
                 <strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}
               </p>
               <p class="mt-2 text-base text-muted-foreground text-[#1F2937] font-medium">
-                <strong>Explanation:</strong> {{ getCorrectAnswer(question)?.explanation }}
+                <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
               </p>
             </div>
           </div>

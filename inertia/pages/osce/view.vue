@@ -148,7 +148,7 @@ const toggleAnswer = (questionIndex: number, partIndex: number) => {
                 >
                   <p class="text-sm font-semibold text-muted-foreground">Expected Answer:</p>
                   <div class="mt-2 text-md text-gray-800 leading-relaxed whitespace-pre-wrap">
-                    {{ part.expectedAnswer }}
+                    <ViewExplanation :content="part.expectedAnswer" />
                   </div>
                 </div>
 

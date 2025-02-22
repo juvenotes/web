@@ -16,7 +16,7 @@ watchEffect(async () => {
   const result = await unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkRehype)
+    .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeStringify)
     .process(props.content)
 
@@ -45,6 +45,17 @@ watchEffect(async () => {
 
   :deep(li) {
     margin-bottom: 0.25rem;
+  }
+
+  :deep(a) {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: hsl(var(--primary) / 0.8);
+    }
   }
 }
 </style>
