@@ -30,10 +30,10 @@ const breadcrumbItems = [{ label: 'OSCEs' }]
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
 
-      <BreadcrumbTrail :items="breadcrumbItems" />
+      <BreadcrumbTrail :items="breadcrumbItems" class="mb-6" />
 
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-        <!-- Title section -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:gap-6">
+        <!-- Title section - adjusted gap and padding -->
         <div class="flex items-start gap-4 flex-1">
           <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
             <Stethoscope class="h-6 w-6 text-primary" />
@@ -41,7 +41,7 @@ const breadcrumbItems = [{ label: 'OSCEs' }]
           <div class="space-y-2">
             <h1 class="text-2xl font-bold text-foreground">OSCE Papers</h1>
             <p class="text-base text-muted-foreground/90 max-w-2xl">
-              Practice with previous Objective Structured Clinical Examination papers
+              Access and practice with previous Objective Structured Clinical Examination papers
             </p>
           </div>
         </div>
