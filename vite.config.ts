@@ -17,16 +17,13 @@ export default defineConfig({
     {
       enforce: 'pre',
       ...mdx({
-        /* jsxImportSource: …, otherOptions… */
         providerImportSource: '@mdx-js/vue',
         remarkPlugins: [remarkGfm],
         rehypePlugins: [rehypeHighlight],
       }),
     },
     adonisjs({ entrypoints: ['inertia/app/app.ts'], reload: ['resources/views/**/*.edge'] }),
-    inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.ts' } }),
     vue(),
-    adonisjs({ entrypoints: ['inertia/app/app.ts'], reload: ['resources/views/**/*.edge'] }),
     Components({
       dirs: ['inertia/components'],
       dts: true,
@@ -41,8 +38,6 @@ export default defineConfig({
   /**
    * Define aliases for importing modules from
    * your frontend code
-   * for example
-   * import Header from `~/components/Button.tsx`
    */
   resolve: {
     alias: {
