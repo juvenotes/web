@@ -2,7 +2,7 @@
 import { useForm } from '@inertiajs/vue3'
 import type QuestionDto from '#dtos/question'
 import { toast } from 'vue-sonner'
-import { watch } from 'vue'
+import { watch, onMounted } from 'vue'
 
 const props = defineProps<{
   open: boolean
@@ -21,11 +21,20 @@ const feedbackTargets = [
 ]
 
 const form = useForm({
-  questionId: String(props.question?.id) || '', // Convert to string since props.question.id is undefined initially
+  questionId: '',
   feedbackText: '',
   feedbackTarget: '',
   feedbackSource: '',
 })
+
+// Function to initialize/reset form
+const initializeForm = () => {
+  form.questionId = props.question ? String(props.question.id) : ''
+  form.feedbackText = ''
+  form.feedbackTarget = ''
+  form.feedbackSource = ''
+  form.clearErrors()
+}
 
 // Watch for changes to props.question and update questionId
 watch(() => props.question, (newQuestion) => {
@@ -33,6 +42,21 @@ watch(() => props.question, (newQuestion) => {
     form.questionId = String(newQuestion.id)
   }
 }, { immediate: true })
+
+// Watch dialog open state
+watch(() => props.open, (isOpen) => {
+  if (isOpen && props.question) {
+    // When dialog opens, ensure form is reset
+    initializeForm()
+  }
+})
+
+// Initialize form on component mount
+onMounted(() => {
+  if (props.question) {
+    initializeForm()
+  }
+})
 
 const handleSubmit = () => {
   if (!props.question) return
@@ -42,12 +66,11 @@ const handleSubmit = () => {
     return
   }
 
-  // Add type casting to ensure number
   form.post(`/questions/${props.question.id}/feedback`, {
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
-      form.reset()
+      initializeForm()
       toast.success('Feedback submitted successfully')
     },
     onError: (errors) => {
