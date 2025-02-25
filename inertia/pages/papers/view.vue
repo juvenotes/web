@@ -26,24 +26,24 @@ const breadcrumbItems = computed(() => [
 const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
 const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
 
-const feedbackDialog = ref({
-  isOpen: false,
-  question: null as QuestionDto | null,
-})
+// const feedbackDialog = ref({
+//   isOpen: false,
+//   question: null as QuestionDto | null,
+// })
 
-const openFeedbackDialog = (question: QuestionDto) => {
-  feedbackDialog.value = {
-    isOpen: true,
-    question,
-  }
-}
+// const openFeedbackDialog = (question: QuestionDto) => {
+//   feedbackDialog.value = {
+//     isOpen: true,
+//     question,
+//   }
+// }
 
-const closeFeedbackDialog = () => {
-  feedbackDialog.value = {
-    isOpen: false,
-    question: null,
-  }
-}
+// const closeFeedbackDialog = () => {
+//   feedbackDialog.value = {
+//     isOpen: false,
+//     question: null,
+//   }
+// }
 
 const handleChoiceSelect = (questionId: number, choiceId: number) => {
   selectedAnswers.value[questionId] = choiceId
@@ -67,11 +67,11 @@ const getLastEditDate = computed(() => {
 
 <template>
   <AppHead :title="paper.title" :description="`Questions for ${paper.title}`" />
-  <FeedbackDialog
+  <!-- <FeedbackDialog
     v-model:open="feedbackDialog.isOpen"
     :question="feedbackDialog.question"
     @close="closeFeedbackDialog"
-  />
+  /> -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header section -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
@@ -179,14 +179,14 @@ const getLastEditDate = computed(() => {
                 <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
               </p>
             </div>
-            <Button
+            <!-- <Button
               v-if="showAnswer[question.id]"
               class="mt-4 flex items-center gap-2"
               @click="openFeedbackDialog(question)"
             >
               <MessageSquare class="h-4 w-4" />
               <span>Provide Feedback</span>
-            </Button>
+            </Button> -->
           </div>
 
           <!-- SAQ Section -->
@@ -219,7 +219,7 @@ const getLastEditDate = computed(() => {
                   <ViewExplanation :content="part.expectedAnswer" />
                 </p>
               </div>
-              <Button
+              <!-- <Button
                 v-if="showAnswer[question.id]"
                 variant="ghost"
                 class="mt-4 flex items-center gap-2"
@@ -227,7 +227,7 @@ const getLastEditDate = computed(() => {
               >
                 <MessageSquare class="h-4 w-4" />
                 <span>Provide Feedback</span>
-              </Button>
+              </Button> -->
             </div>
           </div>
         </div>

@@ -10,11 +10,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "~/components",
-    "composables": "~/composables",
-    "utils": "~/lib/utils",
-    "ui": "~/components/ui",
-    "lib": "~/lib"
+    "components": "inertia/components",
+    "composables": "inertia/composables",
+    "utils": "inertia/lib/utils",
+    "ui": "inertia/components/ui",
+    "lib": "inertia/lib"
   },
   "iconLibrary": "lucide"
 }
