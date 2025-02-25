@@ -18,6 +18,12 @@ export default class QuestionFeedback extends BaseModel {
   declare feedbackText: string
 
   @column()
+  declare feedbackTarget: string
+
+  @column()
+  declare feedbackSource: string
+
+  @column()
   declare isResolved: boolean
 
   @column.dateTime()

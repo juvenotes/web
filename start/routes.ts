@@ -36,6 +36,7 @@ const ManageInstitutionsController = () =>
 const IndexOsceController = () => import('#controllers/osce/osce_controller')
 const ManageOsceController = () => import('#controllers/manage/osce/osce_controller')
 const CiteController = () => import('#controllers/api/cite_controller')
+const QuestionFeedbackController = () => import('#controllers/papers/question_feedback_controller')
 
 // test crash route
 router.get('/crash', () => {
@@ -296,3 +297,6 @@ router
     return inertia.render('test/cite')
   })
   .use(middleware.auth())
+
+// Question Feedback Routes
+router.post('/questions/:id/feedback', [QuestionFeedbackController, 'store']).use(middleware.auth())

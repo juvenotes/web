@@ -14,6 +14,8 @@ export default class extends BaseSchema {
         .inTable('questions')
         .onDelete('CASCADE')
       table.text('feedback_text').notNullable()
+      table.text('feedback_target').notNullable()
+      table.text('feedback_source').notNullable()
       table.boolean('is_resolved').defaultTo(false)
       table.timestamp('resolved_at', { useTz: true }).nullable()
       table.integer('resolved_by').unsigned().references('id').inTable('users').nullable()

@@ -66,7 +66,7 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen flex flex-col bg-background">
     <!-- Navigation -->
-    <nav class="sticky top-0 z-[100] w-screen border-b bg-background/95 backdrop-blur">
+    <nav class="sticky top-0 z-[40] w-screen border-b bg-background/95 backdrop-blur">
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
           <!-- Left section -->
@@ -76,7 +76,7 @@ onUnmounted(() => {
               <MenuIcon class="h-6 w-6" />
             </button>
             <Link href="/learn" class="block md:hidden">
-            <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
+              <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
             </Link>
             <Link href="/learn" class="hidden md:block">
               <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
@@ -170,8 +170,8 @@ onUnmounted(() => {
       />
 
       <aside
-        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col border-r bg-white z-[90] -translate-x-full lg:translate-x-0"
-        :class="[isSidebarCollapsed ? 'w-16' : 'w-64', !isSidebarCollapsed && 'translate-x-0']"
+        class="fixed lg:sticky top-16 left-0 h-screen lg:h-auto w-64 transition-all duration-300 ease-in-out overflow-y-auto border-r bg-white z-[90] lg:flex flex-col"
+        :class="[isSidebarCollapsed ? 'w-16' : 'w-64']"
       >
         <!-- Desktop Toggle Button -->
         <button
@@ -220,7 +220,7 @@ onUnmounted(() => {
         </div>
       </aside>
 
-      <main class="flex-1 p-8 overflow-auto bg-gray-50/50 relative z-0">
+      <main class="flex-1 p-8 overflow-auto bg-gray-50/50 relative z-[0]">
         <slot />
       </main>
     </div>

@@ -22,7 +22,7 @@ export default class AccountListener {
     const html = await edge.render('emails/verify_email', { user, href })
 
     await mail.send((mailer) => {
-      mailer.to(user.email).subject('[Adocasts] Please verify your email').html(html)
+      mailer.to(user.email).subject('[Juvenotes] Please verify your email').html(html)
     })
   }
 }

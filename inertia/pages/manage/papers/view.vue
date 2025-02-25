@@ -215,7 +215,8 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                     v-if="choice.isCorrect && choice.explanation"
                     class="text-sm text-muted-foreground mt-1"
                   >
-                    <span class="font-medium">Explanation:</span> <ViewExplanation :content="choice.explanation" />
+                    <span class="font-medium">Explanation:</span>
+                    <ViewExplanation :content="choice.explanation" />
                   </p>
                 </div>
               </div>
@@ -229,9 +230,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                 class="relative pl-4 border-l-2 border-primary/20"
               >
                 <p class="font-medium">{{ part.partText }}</p>
-                <div
-                  class="mt-4 p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]"
-                >
+                <div class="mt-4 p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]">
                   <p class="text-base text-muted-foreground text-[#1F2937] font-medium">
                     <strong>Explanation:</strong>
                     <ViewExplanation :content="part.expectedAnswer" />

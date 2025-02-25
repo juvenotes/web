@@ -8,6 +8,8 @@ export default class QuestionFeedbackDto extends BaseModelDto {
   declare userId: number
   declare questionId: number
   declare feedbackText: string
+  declare feedbackTarget: string
+  declare feedbackSource: string
   declare isResolved: boolean
   declare resolvedAt: string | null
   declare resolvedBy: number | null
@@ -24,11 +26,13 @@ export default class QuestionFeedbackDto extends BaseModelDto {
     this.userId = questionFeedback.userId
     this.questionId = questionFeedback.questionId
     this.feedbackText = questionFeedback.feedbackText
+    this.feedbackTarget = questionFeedback.feedbackTarget
+    this.feedbackSource = questionFeedback.feedbackSource
     this.isResolved = questionFeedback.isResolved
     this.resolvedAt = questionFeedback.resolvedAt?.toISO()!
     this.resolvedBy = questionFeedback.resolvedBy
-    this.createdAt = questionFeedback.createdAt.toISO()!
-    this.updatedAt = questionFeedback.updatedAt.toISO()!
+    // this.createdAt = questionFeedback.createdAt.toISO()!
+    // this.updatedAt = questionFeedback.updatedAt.toISO()!
     this.user = questionFeedback.user && new UserDto(questionFeedback.user)
     this.question = questionFeedback.question && new QuestionDto(questionFeedback.question)
   }

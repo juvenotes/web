@@ -110,3 +110,12 @@ export const updateOsceQuestionValidator = vine.compile(
     parts: vine.array(stationSchema).minLength(1).maxLength(5),
   })
 )
+
+export const createFeedbackValidator = vine.compile(
+  vine.object({
+    questionId: vine.number(),
+    feedbackText: vine.string().trim(),
+    feedbackTarget: vine.string().trim(),
+    feedbackSource: vine.string().trim(),
+  })
+)
