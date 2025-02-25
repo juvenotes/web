@@ -1,25 +1,26 @@
 <script setup lang="ts">
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { Trash2, Plus, Loader2 } from 'lucide-vue-next'
 import { useForm } from '@inertiajs/vue3'
+import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
-import { Plus, Trash2, Loader2 } from 'lucide-vue-next'
+import { ref, watch, onMounted } from 'vue'
 import axios from 'axios'
-import { ref } from 'vue'
-import { QuestionType } from '#enums/question_types'
+
+interface ImageInputEvent extends Event {
+  target: HTMLInputElement
+}
 
 const props = defineProps<{
   open: boolean
-  concept: ConceptDto
   paper: PastPaperDto
+  concept: ConceptDto
 }>()
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
-
-interface ImageInputEvent extends Event {
-  target: HTMLInputElement
-}
 
 const isUploadingQuestionImage = ref(false)
 const uploadingPartImage = ref<number | null>(null)
@@ -38,12 +39,44 @@ const form = useForm({
   ],
 })
 
+// Function to initialize/reset form
+const initializeForm = () => {
+  form.questionText = ''
+  form.type = QuestionType.OSCE
+  form.questionImagePath = ''
+  form.parts = [
+    {
+      partText: '',
+      expectedAnswer: '',
+      marks: 1,
+      imagePath: '',
+    },
+  ]
+  form.clearErrors()
+}
+
+// Watch dialog open state
+watch(() => props.open, (isOpen) => {
+  if (isOpen) {
+    // When dialog opens, ensure form is reset
+    initializeForm()
+  }
+})
+
+// Initialize form on component mount
+onMounted(() => {
+  initializeForm()
+})
+
 async function handleImageUpload(file: File, type: 'question' | 'part', index?: number) {
   const formData = new FormData()
   formData.append('image', file)
 
   formData.append('context[folder]', 'osce')
-  formData.append('context[subFolder]', `paper-${props.paper.id}`)
+  formData.append(
+    'context[subFolder]',
+    `paper-${props.paper.id}${type === 'part' ? '/question-new' : ''}`
+  )
 
   try {
     if (type === 'question') {
@@ -83,12 +116,14 @@ function removeImage(type: 'question' | 'part', index?: number) {
 }
 
 function addPart() {
-  form.parts.push({
-    partText: '',
-    expectedAnswer: '',
-    marks: 1,
-    imagePath: '',
-  })
+  if (form.parts.length < 5) {
+    form.parts.push({
+      partText: '',
+      expectedAnswer: '',
+      marks: 1,
+      imagePath: '',
+    })
+  }
 }
 
 function removePart(index: number) {
@@ -100,10 +135,9 @@ function removePart(index: number) {
 function handleSubmit() {
   form.post(`/manage/osce/${props.concept.slug}/${props.paper.slug}/questions`, {
     preserveScroll: true,
-    // forceFormData: true,
     onSuccess: () => {
       emit('update:open', false)
-      form.reset()
+      initializeForm()
     },
   })
 }
@@ -115,7 +149,7 @@ function handleSubmit() {
       <DialogHeader
         class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto"
       >
-        <DialogTitle>Add OSCE Question</DialogTitle>
+        <DialogTitle class="text-lg sm:text-xl">Add OSCE Question</DialogTitle>
       </DialogHeader>
       <div class="p-3 sm:p-6">
         <form @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
@@ -178,6 +212,8 @@ function handleSubmit() {
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
+                class="h-8 sm:h-9"
                 @click="addPart"
                 :disabled="form.parts.length >= 5"
               >
@@ -187,16 +223,17 @@ function handleSubmit() {
 
             <div
               v-for="(part, index) in form.parts"
-              :key="index"
+              :key="`part-${index}`"
               class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
               <!-- Part content -->
-              <div class="flex justify-end">
+              <div class="flex items-center justify-between">
+                <Label>Part {{ index + 1 }}</Label>
                 <Button
                   v-if="form.parts.length > 1"
                   type="button"
                   variant="ghost"
-                  size="icon"
+                  size="sm"
                   @click="removePart(index)"
                 >
                   <Trash2 class="h-4 w-4 text-destructive" />
@@ -204,17 +241,10 @@ function handleSubmit() {
               </div>
 
               <div class="space-y-2">
-                <Label>Part {{ index + 1 }} Text</Label>
-                <Input v-model="part.partText" />
+                <Input v-model="part.partText" placeholder="Part question" />
               </div>
 
               <div class="space-y-2">
-                <!-- <Textarea
-                  v-model="part.expectedAnswer"
-                  :placeholder="'Expected answer can include lists:\n- Point 1\n- Point 2\n- Point 3'"
-                  rows="4"
-                  class="resize-y min-h-[100px]"
-                /> -->
                 <Label>Expected Answer</Label>
                 <ExplanationEditor
                   v-model="part.expectedAnswer"
@@ -272,7 +302,7 @@ function handleSubmit() {
           </div>
 
           <div class="sticky bottom-0 pt-4 bg-background">
-            <Button type="submit" class="w-full" :disabled="form.processing">
+            <Button type="submit" class="w-full h-10 sm:h-11" :disabled="form.processing">
               {{ form.processing ? 'Adding...' : 'Add Question' }}
             </Button>
           </div>

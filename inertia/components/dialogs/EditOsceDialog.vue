@@ -6,7 +6,7 @@ import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import axios from 'axios'
 
 interface ImageInputEvent extends Event {
@@ -27,16 +27,50 @@ const emit = defineEmits<{
 const isUploadingQuestionImage = ref(false)
 const uploadingPartImage = ref<number | null>(null)
 
-const form = useForm({
-  questionText: props.question.questionText,
-  type: QuestionType.OSCE as const,
-  questionImagePath: props.question.questionImagePath || '',
-  parts: props.question.stations.map((part) => ({
+// Function to initialize/reset form
+const initializeForm = () => {
+  form.questionText = props.question.questionText
+  form.type = QuestionType.OSCE
+  form.questionImagePath = props.question.questionImagePath || ''
+  form.parts = props.question.stations.map((part) => ({
     partText: part.partText,
     expectedAnswer: part.expectedAnswer,
     marks: part.marks,
     imagePath: part.imagePath || '',
-  })),
+  }))
+  form.clearErrors()
+}
+
+const form = useForm({
+  questionText: '',
+  type: QuestionType.OSCE as const,
+  questionImagePath: '',
+  parts: [
+    {
+      partText: '',
+      expectedAnswer: '',
+      marks: 1,
+      imagePath: '',
+    },
+  ],
+})
+
+// Watch dialog open state
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen && props.question) {
+      // When dialog opens, ensure form is reset with question data
+      initializeForm()
+    }
+  }
+)
+
+// Initialize form on component mount
+onMounted(() => {
+  if (props.question) {
+    initializeForm()
+  }
 })
 
 async function handleImageUpload(file: File, type: 'question' | 'part', index?: number) {
@@ -197,7 +231,7 @@ const handleSubmit = () => {
 
             <div
               v-for="(part, index) in form.parts"
-              :key="index"
+              :key="`part-${index}`"
               class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
               <div class="flex items-center justify-between">
@@ -209,7 +243,7 @@ const handleSubmit = () => {
                   size="sm"
                   @click="removePart(index)"
                 >
-                  <Trash2 class="h-4 w-4" />
+                  <Trash2 class="h-4 w-4 text-destructive" />
                 </Button>
               </div>
 
@@ -218,12 +252,6 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <!-- <Textarea
-                  v-model="part.expectedAnswer"
-                  :placeholder="'Expected answer can include lists:\n- Point 1\n- Point 2\n- Point 3'"
-                  rows="4"
-                  class="resize-y min-h-[100px]"
-                /> -->
                 <Label>Expected Answer</Label>
                 <ExplanationEditor
                   v-model="part.expectedAnswer"
@@ -232,6 +260,7 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
+                <Label>Marks</Label>
                 <Input v-model="part.marks" type="number" min="1" placeholder="Marks" />
               </div>
 

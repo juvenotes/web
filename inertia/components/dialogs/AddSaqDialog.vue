@@ -4,6 +4,7 @@ import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
+import { watch, onMounted } from 'vue'
 
 const props = defineProps<{
   open: boolean
@@ -19,6 +20,30 @@ const form = useForm({
   questionText: '',
   type: QuestionType.SAQ as const,
   parts: [{ partText: '', expectedAnswer: '', marks: 1 }],
+})
+
+// Function to reset/initialize form
+const initializeForm = () => {
+  form.questionText = ''
+  form.type = QuestionType.SAQ
+  form.parts = [{ partText: '', expectedAnswer: '', marks: 1 }]
+  form.clearErrors()
+}
+
+// Watch dialog open state
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) {
+      // When dialog opens, ensure form is reset
+      initializeForm()
+    }
+  }
+)
+
+// Initialize form on component mount
+onMounted(() => {
+  initializeForm()
 })
 
 const addPart = () => {
@@ -38,7 +63,7 @@ const handleSubmit = () => {
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
-      form.reset()
+      initializeForm() // Use initialize instead of form.reset()
     },
   })
 }
@@ -77,7 +102,7 @@ const handleSubmit = () => {
             <!-- Part Cards -->
             <div
               v-for="(part, index) in form.parts"
-              :key="index"
+              :key="`part-${index}`"
               class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
               <div class="flex items-center justify-between">
@@ -98,12 +123,6 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <!-- <Textarea
-                  v-model="part.expectedAnswer"
-                  :placeholder="'Expected answer can include lists:\n- Point 1\n- Point 2\n- Point 3'"
-                  rows="4"
-                  class="resize-y min-h-[100px]"
-                /> -->
                 <Label>Expected Answer</Label>
                 <ExplanationEditor
                   v-model="part.expectedAnswer"

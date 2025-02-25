@@ -4,6 +4,7 @@ import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
 import { Plus, Trash2 } from 'lucide-vue-next'
+import { watch, onMounted } from 'vue'
 
 const props = defineProps<{
   open: boolean
@@ -19,6 +20,27 @@ const form = useForm({
   questionText: '',
   type: QuestionType.MCQ as const,
   choices: [{ choiceText: '', isCorrect: true, explanation: '' }],
+})
+
+// Function to reset/initialize form
+const initializeForm = () => {
+  form.questionText = ''
+  form.type = QuestionType.MCQ
+  form.choices = [{ choiceText: '', isCorrect: true, explanation: '' }]
+  form.clearErrors()
+}
+
+// Watch dialog open state
+watch(() => props.open, (isOpen) => {
+  if (isOpen) {
+    // When dialog opens, ensure form is reset
+    initializeForm()
+  }
+})
+
+// Initialize form on component mount
+onMounted(() => {
+  initializeForm()
 })
 
 const addChoice = () => {
@@ -53,7 +75,7 @@ const handleSubmit = () => {
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
-      form.reset()
+      initializeForm() // Use initialize instead of form.reset()
     },
   })
 }
@@ -95,7 +117,7 @@ const handleSubmit = () => {
 
             <div
               v-for="(choice, index) in form.choices"
-              :key="index"
+              :key="`choice-${index}`"
               class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
               <div class="flex items-center justify-between">
@@ -129,7 +151,6 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <!-- <Input v-model="choice.explanation" placeholder="Explanation (optional)" /> -->
                 <Label>Expected Answer</Label>
                 <ExplanationEditor
                   v-model="choice.explanation"

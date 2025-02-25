@@ -9,6 +9,7 @@ import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
+import { watch, onMounted } from 'vue'
 
 const props = defineProps<{
   open: boolean
@@ -21,14 +22,54 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
+// Create form with initial values
 const form = useForm({
   questionText: props.question.questionText,
   type: QuestionType.MCQ as const,
-  choices: props.question.choices.map(choice => ({
+  choices: props.question.choices.map((choice) => ({
     choiceText: choice.choiceText,
     isCorrect: choice.isCorrect,
-    explanation: choice.explanation || ''
+    explanation: choice.explanation || '',
+  })),
+})
+
+// Function to reset/initialize form with current question data
+const initializeForm = () => {
+  form.questionText = props.question.questionText
+  form.type = QuestionType.MCQ
+  form.choices = props.question.choices.map((choice) => ({
+    choiceText: choice.choiceText,
+    isCorrect: choice.isCorrect,
+    explanation: choice.explanation || '',
   }))
+  form.clearErrors()
+}
+
+// Watch for changes to the question prop
+watch(
+  () => props.question,
+  (newQuestion) => {
+    if (newQuestion) {
+      initializeForm()
+    }
+  },
+  { deep: true }
+)
+
+// Watch dialog open state
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) {
+      // When dialog opens, ensure form has latest question data
+      initializeForm()
+    }
+  }
+)
+
+// Initialize form on component mount
+onMounted(() => {
+  initializeForm()
 })
 
 const addChoice = () => {
@@ -55,19 +96,24 @@ const setCorrectChoice = (index: number) => {
 }
 
 const handleSubmit = () => {
-  form.put(`/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/${props.question.slug}/mcq`, {
-    preserveScroll: true,
-    onSuccess: () => {
-      emit('update:open', false)
-    },
-  })
+  form.put(
+    `/manage/papers/${props.concept.slug}/${props.paper.slug}/questions/${props.question.slug}/mcq`,
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        emit('update:open', false)
+      },
+    }
+  )
 }
 </script>
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-      <DialogHeader class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto">
+      <DialogHeader
+        class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto"
+      >
         <DialogTitle class="text-lg sm:text-xl">Edit MCQ</DialogTitle>
       </DialogHeader>
 
@@ -100,7 +146,7 @@ const handleSubmit = () => {
 
             <div
               v-for="(choice, index) in form.choices"
-              :key="index"
+              :key="`choice-${index}-${props.question.id}`"
               class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
               <div class="flex items-center justify-between">
