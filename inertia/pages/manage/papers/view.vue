@@ -95,10 +95,14 @@ const breadcrumbItems = computed(() => [
   { label: props.paper.title },
 ])
 
-const lastEditDate = computed(() => {
-  return new Date(
-    props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt
-  ).toLocaleDateString()
+const getLastEditDate = computed(() => {
+  const date = new Date(props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt)
+
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).format(date)
 })
 const showAddMcqDialog = ref(false)
 const showAddSaqDialog = ref(false)
@@ -144,7 +148,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             class="flex items-center gap-1 sm:gap-2 ml-8 sm:ml-10 mt-2 text-xs text-muted-foreground"
           >
             <Clock class="h-3 w-3" />
-            <span>Last edited {{ lastEditDate }}</span>
+            <span>Last edited {{ getLastEditDate }}</span>
           </div>
         </div>
         <!-- Add Questions Buttons -->
