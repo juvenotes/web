@@ -55,7 +55,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
 }
 
 const getLastEditDate = computed(() => {
-  const date = new Date(props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt)
+  const date = new Date(props.concept.metadata?.lastEditedBy?.timestamp ?? props.concept.createdAt)
 
   return new Intl.DateTimeFormat('en-GB', {
     year: 'numeric',
