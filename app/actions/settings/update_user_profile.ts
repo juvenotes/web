@@ -4,7 +4,7 @@ import { Infer } from '@vinejs/vine/types'
 
 type Params = {
   user: User
-  data: Infer<typeof updateProfileValidator>
+  data: Infer<ReturnType<typeof updateProfileValidator>>
 }
 
 export default class UpdateUserProfile {
