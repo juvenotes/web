@@ -9,6 +9,7 @@ import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
+import { watch, onMounted } from 'vue'
 
 const props = defineProps<{
   open: boolean
@@ -29,6 +30,45 @@ const form = useForm({
     expectedAnswer: part.expectedAnswer,
     marks: part.marks,
   })),
+})
+
+// Function to reset/initialize form with current question data
+const initializeForm = () => {
+  form.questionText = props.question.questionText
+  form.type = QuestionType.SAQ
+  form.parts = props.question.parts.map((part) => ({
+    partText: part.partText,
+    expectedAnswer: part.expectedAnswer,
+    marks: part.marks,
+  }))
+  form.clearErrors()
+}
+
+// Watch for changes to the question prop
+watch(
+  () => props.question,
+  (newQuestion) => {
+    if (newQuestion) {
+      initializeForm()
+    }
+  },
+  { deep: true }
+)
+
+// Watch dialog open state
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) {
+      // When dialog opens, ensure form has latest question data
+      initializeForm()
+    }
+  }
+)
+
+// Initialize form on component mount
+onMounted(() => {
+  initializeForm()
 })
 
 const addPart = () => {
@@ -88,7 +128,7 @@ const handleSubmit = () => {
 
             <div
               v-for="(part, index) in form.parts"
-              :key="index"
+              :key="`part-${index}-${props.question.id}`"
               class="p-3 sm:p-4 border rounded-lg space-y-3"
             >
               <div class="flex items-center justify-between">
@@ -109,12 +149,6 @@ const handleSubmit = () => {
               </div>
 
               <div class="space-y-2">
-                <!-- <Textarea
-                  v-model="part.expectedAnswer"
-                  :placeholder="'Expected answer can include lists:\n- Point 1\n- Point 2\n- Point 3'"
-                  rows="4"
-                  class="resize-y min-h-[100px]"
-                /> -->
                 <Label>Expected Answer</Label>
                 <ExplanationEditor
                   v-model="part.expectedAnswer"

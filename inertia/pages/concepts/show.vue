@@ -46,9 +46,13 @@ const breadcrumbItems = computed(() => {
 })
 
 const getLastEditDate = computed(() => {
-  return new Date(
-    props.concept.metadata?.lastEditedBy?.timestamp ?? props.concept.createdAt
-  ).toLocaleDateString()
+  const date = new Date(props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt)
+
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).format(date)
 })
 
 watchEffect(() => {

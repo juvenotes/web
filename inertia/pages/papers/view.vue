@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Circle, CheckCircle, XCircle, Settings } from 'lucide-vue-next'
+import { FileText, Circle, CheckCircle, XCircle, Settings, MessageSquare } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 
 defineOptions({ layout: DashLayout })
@@ -26,6 +26,25 @@ const breadcrumbItems = computed(() => [
 const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
 const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
 
+// const feedbackDialog = ref({
+//   isOpen: false,
+//   question: null as QuestionDto | null,
+// })
+
+// const openFeedbackDialog = (question: QuestionDto) => {
+//   feedbackDialog.value = {
+//     isOpen: true,
+//     question,
+//   }
+// }
+
+// const closeFeedbackDialog = () => {
+//   feedbackDialog.value = {
+//     isOpen: false,
+//     question: null,
+//   }
+// }
+
 const handleChoiceSelect = (questionId: number, choiceId: number) => {
   selectedAnswers.value[questionId] = choiceId
   showAnswer.value[questionId] = true
@@ -36,15 +55,23 @@ const getCorrectAnswer = (question: QuestionDto) => {
 }
 
 const getLastEditDate = computed(() => {
-  return new Date(
-    props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt
-  ).toLocaleDateString()
+  const date = new Date(props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt)
+
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).format(date)
 })
 </script>
 
 <template>
   <AppHead :title="paper.title" :description="`Questions for ${paper.title}`" />
-
+  <!-- <FeedbackDialog
+    v-model:open="feedbackDialog.isOpen"
+    :question="feedbackDialog.question"
+    @close="closeFeedbackDialog"
+  /> -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header section -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
@@ -152,6 +179,14 @@ const getLastEditDate = computed(() => {
                 <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
               </p>
             </div>
+            <!-- <Button
+              v-if="showAnswer[question.id]"
+              class="mt-4 flex items-center gap-2"
+              @click="openFeedbackDialog(question)"
+            >
+              <MessageSquare class="h-4 w-4" />
+              <span>Provide Feedback</span>
+            </Button> -->
           </div>
 
           <!-- SAQ Section -->
@@ -175,14 +210,6 @@ const getLastEditDate = computed(() => {
               </button>
 
               <!-- Explanation Section for Each Part -->
-              <!-- <div
-                v-if="showAnswer[part.id]"
-                class="mt-4 p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]"
-              >
-                <p class="text-base text-muted-foreground text-[#1F2937] font-medium">
-                  <strong>Explanation:</strong> {{ part.expectedAnswer }}
-                </p>
-              </div> -->
               <div
                 v-if="showAnswer[part.id]"
                 class="mt-4 p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]"
@@ -192,6 +219,15 @@ const getLastEditDate = computed(() => {
                   <ViewExplanation :content="part.expectedAnswer" />
                 </p>
               </div>
+              <!-- <Button
+                v-if="showAnswer[question.id]"
+                variant="ghost"
+                class="mt-4 flex items-center gap-2"
+                @click="openFeedbackDialog(question)"
+              >
+                <MessageSquare class="h-4 w-4" />
+                <span>Provide Feedback</span>
+              </Button> -->
             </div>
           </div>
         </div>

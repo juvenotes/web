@@ -5,6 +5,7 @@ import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
 import { ExamType, PaperType, PaperTypeLabels, ExamTypeLabels } from '#enums/exam_type'
 import { StudyLevel, StudyLevelLabels } from '#enums/study_level'
+import { watch, onMounted } from 'vue'
 
 const props = defineProps<{
   open: boolean
@@ -17,11 +18,46 @@ const emit = defineEmits<{
 }>()
 
 const form = useForm({
-  title: props.paper.title,
-  year: props.paper.year,
-  paperType: props.paper.paperType,
-  examType: props.paper.examType,
-  studyLevel: props.paper.studyLevel,
+  title: '',
+  year: '',
+  paperType: '',
+  examType: '',
+  studyLevel: '',
+})
+
+// Function to initialize/reset form
+const initializeForm = () => {
+  form.title = props.paper.title
+  form.year = props.paper.year
+  form.paperType = props.paper.paperType
+  form.examType = props.paper.examType
+  form.studyLevel = props.paper.studyLevel || StudyLevel.LEVEL_1
+  form.clearErrors()
+}
+
+// Watch for changes to props.paper
+watch(
+  () => props.paper,
+  () => {
+    initializeForm()
+  },
+  { immediate: true }
+)
+
+// Watch dialog open state
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) {
+      // When dialog opens, ensure form is reset
+      initializeForm()
+    }
+  }
+)
+
+// Initialize form on component mount
+onMounted(() => {
+  initializeForm()
 })
 
 function handleSubmit() {
@@ -29,6 +65,7 @@ function handleSubmit() {
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
+      initializeForm()
     },
     onError: (errors) => {
       console.error('Form errors:', errors)
@@ -56,7 +93,7 @@ function handleSubmit() {
         <div class="space-y-2">
           <Label>Year</Label>
           <Input v-model="form.year" :error="form.errors.year" />
-          <p class="text-sm text-muted-foreground"> (e.g. "2024") </p>
+          <p class="text-sm text-muted-foreground">(e.g. "2024")</p>
         </div>
 
         <div class="space-y-2">
