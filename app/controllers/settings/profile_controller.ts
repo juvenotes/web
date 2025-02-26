@@ -6,12 +6,18 @@ export default class ProfileController {
     return inertia.render('settings/profile')
   }
 
-  async update({ request, response, auth, session }: HttpContext) {
-    const data = await request.validateUsing(updateProfileValidator)
-    const user = auth.use('web').user!
+  async update({ request, response, auth, session, logger }: HttpContext) {
+    const user = auth.user!
+    const payload = await request.validateUsing(updateProfileValidator(user.id))
 
-    await user.merge(data).save()
-    session.flash('success', 'Your profile has been updated')
+    logger.info('updating user profile', {
+      userId: user.id,
+      fullName: payload.fullName,
+      username: payload.username,
+    })
+
+    await user.merge(payload).save()
+    session.flash('success', 'Your profile has been updated. Please refresh the page')
     return response.redirect().back()
   }
 }
