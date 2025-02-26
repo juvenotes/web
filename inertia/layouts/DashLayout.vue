@@ -170,8 +170,8 @@ onUnmounted(() => {
       />
 
       <aside
-        class="fixed lg:sticky top-16 left-0 h-screen lg:h-auto w-64 transition-all duration-300 ease-in-out overflow-y-auto border-r bg-white z-[90] lg:flex flex-col"
-        :class="[isSidebarCollapsed ? 'w-16' : 'w-64']"
+        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col border-r bg-white z-[90] -translate-x-full lg:translate-x-0"
+        :class="[isSidebarCollapsed ? 'w-16' : 'w-64', !isSidebarCollapsed && 'translate-x-0']"
       >
         <!-- Desktop Toggle Button -->
         <button
