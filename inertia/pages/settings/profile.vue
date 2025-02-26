@@ -3,20 +3,32 @@ import { Link, useForm } from '@inertiajs/vue3'
 import UserDto from '#dtos/user'
 import AppLayout from '~/layouts/AppLayout.vue'
 import { User, ArrowLeft } from 'lucide-vue-next'
+import { watch } from 'vue'
 
 defineOptions({ layout: AppLayout })
 
-defineProps<{ user: UserDto }>()
+const props = defineProps<{ user: UserDto }>()
 
 // Profile update form
 const form = useForm({
-  fullName: '',
+  fullName: props.user.fullName || '',
+  username: props.user.username || '',
 })
+
+// Watch for changes to user prop and update form values
+watch(
+  () => props.user,
+  (newUser) => {
+    form.fullName = newUser.fullName || ''
+    form.username = newUser.username || ''
+  },
+  { deep: true }
+)
 
 // Form handler
 const updateProfile = () => {
   form.put('/settings/profile', {
-    onSuccess: () => form.reset(),
+    preserveScroll: true,
   })
 }
 </script>
@@ -60,6 +72,22 @@ const updateProfile = () => {
           />
           <span v-if="form.errors.fullName" class="text-sm text-destructive">
             {{ form.errors.fullName }}
+          </span>
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Username</label>
+          <input
+            v-model="form.username"
+            type="text"
+            class="w-full p-2 rounded-md border"
+            pattern="[a-z0-9\-]+"
+            required
+          />
+          <p class="text-sm text-muted-foreground">
+            Only lowercase letters, numbers, and hyphens allowed
+          </p>
+          <span v-if="form.errors.username" class="text-sm text-destructive">
+            {{ form.errors.username }}
           </span>
         </div>
 
