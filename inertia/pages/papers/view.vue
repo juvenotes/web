@@ -115,6 +115,8 @@ const getLastEditDate = computed(() => {
       Last edited on {{ getLastEditDate }}
     </div>
 
+    <DisclaimerBanner />
+
     <!-- Questions List -->
     <div class="space-y-6">
       <div v-for="(question, index) in questions" :key="question.id" class="p-6 bg-white rounded-xl border">
