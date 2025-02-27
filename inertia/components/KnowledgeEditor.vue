@@ -129,7 +129,7 @@ const editor = useEditor({
       tightLists: true,
       bulletListMarker: '-',
       transformPastedText: true,
-      linkify: false, 
+      linkify: false,
     }),
     FontFamily,
     TextStyle,
@@ -394,37 +394,54 @@ const addYoutubeVideo = () => {
     </div>
 
     <!-- Bubble-menu -->
-     <BubbleMenu
-      :editor="editor"
-      v-if="editor"
-    >
+    <BubbleMenu :editor="editor" v-if="editor">
       <div class="bubble-menu">
-        <button type="button" @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleBold().run()"
+          :class="{ 'is-active': editor.isActive('bold') }"
+        >
           Bold
         </button>
-        <button type="button" @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleItalic().run()"
+          :class="{ 'is-active': editor.isActive('italic') }"
+        >
           Italic
         </button>
-        <button type="button" @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleStrike().run()"
+          :class="{ 'is-active': editor.isActive('strike') }"
+        >
           Strike
         </button>
       </div>
     </BubbleMenu>
 
     <!-- Floating menu -->
-    <FloatingMenu
-     :editor="editor" 
-     :tippy-options="{ duration: 100 }" 
-     v-if="editor">
-
+    <FloatingMenu :editor="editor" :tippy-options="{ duration: 100 }" v-if="editor">
       <div class="floating-menu">
-        <button type="button" @click="editor.chain().focus().toggleHeading({ level: 1 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+          :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
+        >
           H1
         </button>
-        <button type="button" @click="editor.chain().focus().toggleHeading({ level: 2 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+          :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
+        >
           H2
         </button>
-        <button type="button" @click="editor.chain().focus().toggleBulletList().run()" :class="{ 'is-active': editor.isActive('bulletList') }">
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleBulletList().run()"
+          :class="{ 'is-active': editor.isActive('bulletList') }"
+        >
           Bullet list
         </button>
       </div>
@@ -460,6 +477,23 @@ const addYoutubeVideo = () => {
   border-radius: 0.5rem;
   max-width: 100%;
   height: auto;
+}
+
+/* Add these styles for links */
+.ProseMirror a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.prose a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+/* Optional: add hover effect */
+.ProseMirror a:hover,
+.prose a:hover {
+  color: #2563eb;
 }
 
 .ProseMirror table {

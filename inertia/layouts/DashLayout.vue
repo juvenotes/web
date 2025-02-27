@@ -65,8 +65,8 @@ onUnmounted(() => {
 
 <template>
   <div class="min-h-screen flex flex-col bg-background">
-    <!-- Navigation -->
-    <nav class="sticky top-0 z-[40] w-screen border-b bg-background/95 backdrop-blur">
+    <!-- Navigation - changed from z-[100] to z-[50] -->
+    <nav class="sticky top-0 z-[50] w-screen border-b bg-background/95 backdrop-blur">
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
           <!-- Left section -->
@@ -102,9 +102,10 @@ onUnmounted(() => {
               <User class="h-4 w-4" />
             </button>
 
+            <!-- User menu dropdown - changed from z-[110] to z-[70] -->
             <div
               v-show="isMenuOpen"
-              class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white border py-1 z-[110]"
+              class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white border py-1 z-[70]"
             >
               <!-- User Info Section -->
               <div class="px-4 py-2 border-b">
@@ -145,10 +146,10 @@ onUnmounted(() => {
       </div>
     </nav>
 
-    <!-- Mobile Search Modal -->
+    <!-- Mobile Search Modal - changed from z-[120] to z-[90] -->
     <div
       v-show="isSearchOpen"
-      class="fixed inset-0 z-[120] bg-black/50 flex items-center justify-center px-4"
+      class="fixed inset-0 z-[90] bg-black/50 flex items-center justify-center px-4"
       @click.self="isSearchOpen = false"
     >
       <div class="w-full max-w-lg p-4 bg-white rounded-lg shadow-lg relative">
@@ -163,15 +164,18 @@ onUnmounted(() => {
     </div>
 
     <div class="flex-1 flex">
+      <!-- Backdrop for sidebar on mobile - changed from z-[80] to z-[25] -->
       <div
         v-show="!isSidebarCollapsed"
-        class="fixed inset-0 bg-black/20 z-[80] lg:hidden"
+        class="fixed inset-0 bg-black/20 z-[25] lg:hidden"
         @click="isSidebarCollapsed = true"
       />
 
+      <!-- Sidebar - changed from z-[90] to z-[30] -->
       <aside
-        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col border-r bg-white z-[90] -translate-x-full lg:translate-x-0"
+        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col border-r bg-white z-[30] -translate-x-full lg:translate-x-0"
         :class="[isSidebarCollapsed ? 'w-16' : 'w-64', !isSidebarCollapsed && 'translate-x-0']"
+        style="max-height: calc(100vh - 4rem);" 
       >
         <!-- Desktop Toggle Button -->
         <button
@@ -220,6 +224,7 @@ onUnmounted(() => {
         </div>
       </aside>
 
+      <!-- Main content - keeping z-[0] as is -->
       <main class="flex-1 p-8 overflow-auto bg-gray-50/50 relative z-[0]">
         <slot />
       </main>
