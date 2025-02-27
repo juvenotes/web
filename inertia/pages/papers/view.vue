@@ -175,13 +175,13 @@ const getLastEditDate = computed(() => {
             </div>
 
             <!-- Feedback Button -->
-            <Button v-if="showAnswer[question.id]" variant="outline"
+            <!-- <Button v-if="showAnswer[question.id]" variant="outline"
               class="mt-4 flex items-center gap-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 border border-blue-200 transition-all duration-200 rounded-lg px-5 py-2.5 shadow-sm hover:shadow group"
               @click="openFeedbackDialog(question)">
               <MessageSquare
                 class="h-4.5 w-4.5 opacity-75 group-hover:scale-110 group-hover:opacity-100 transition-all duration-200" />
               <span class="font-medium">Provide Feedback</span>
-            </Button>
+            </Button> -->
           </div>
 
           <!-- SAQ Section -->
@@ -213,7 +213,7 @@ const getLastEditDate = computed(() => {
                   <ViewExplanation :content="part.expectedAnswer" />
                 </p>
               </div>
-              <Button
+              <!-- <Button
                 v-if="showAnswer[question.id]"
                 variant="ghost"
                 class="mt-4 flex items-center gap-2 px-4 py-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-all"
@@ -221,7 +221,7 @@ const getLastEditDate = computed(() => {
               >
                 <MessageSquare class="h-4 w-4 text-gray-700 transition-colors" />
                 <span class="font-medium">Provide Feedback</span>
-              </Button>
+              </Button> -->
 
             </div>
           </div>
