@@ -66,7 +66,7 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen flex flex-col bg-background">
     <!-- Navigation -->
-    <nav class="sticky top-0 z-[40] w-screen border-b bg-background/95 backdrop-blur">
+    <nav class="sticky top-0 z-[100] w-screen border-b bg-background/95 backdrop-blur">
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
           <!-- Left section -->
@@ -172,6 +172,7 @@ onUnmounted(() => {
       <aside
         class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col border-r bg-white z-[90] -translate-x-full lg:translate-x-0"
         :class="[isSidebarCollapsed ? 'w-16' : 'w-64', !isSidebarCollapsed && 'translate-x-0']"
+        style="max-height: calc(100vh - 4rem);" 
       >
         <!-- Desktop Toggle Button -->
         <button
