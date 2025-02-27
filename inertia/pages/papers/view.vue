@@ -26,24 +26,24 @@ const breadcrumbItems = computed(() => [
 const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
 const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
 
-// const feedbackDialog = ref({
-//   isOpen: false,
-//   question: null as QuestionDto | null,
-// })
+const feedbackDialog = ref({
+  isOpen: false,
+  question: null as QuestionDto | null,
+})
 
-// const openFeedbackDialog = (question: QuestionDto) => {
-//   feedbackDialog.value = {
-//     isOpen: true,
-//     question,
-//   }
-// }
+const openFeedbackDialog = (question: QuestionDto) => {
+  feedbackDialog.value = {
+    isOpen: true,
+    question,
+  }
+}
 
-// const closeFeedbackDialog = () => {
-//   feedbackDialog.value = {
-//     isOpen: false,
-//     question: null,
-//   }
-// }
+const closeFeedbackDialog = () => {
+  feedbackDialog.value = {
+    isOpen: false,
+    question: null,
+  }
+}
 
 const handleChoiceSelect = (questionId: number, choiceId: number) => {
   selectedAnswers.value[questionId] = choiceId
@@ -67,17 +67,17 @@ const getLastEditDate = computed(() => {
 
 <template>
   <AppHead :title="paper.title" :description="`Questions for ${paper.title}`" />
-  <!-- <FeedbackDialog
+  <FeedbackDialog
     v-model:open="feedbackDialog.isOpen"
     :question="feedbackDialog.question"
     @close="closeFeedbackDialog"
-  /> -->
+     />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header section -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
-      />
+       />
 
       <BreadcrumbTrail :items="breadcrumbItems" />
 
@@ -103,75 +103,67 @@ const getLastEditDate = computed(() => {
           </div>
         </div>
         <!-- Manage button -->
-        <Link
-          v-if="canManage"
-          :href="`/manage/papers/${concept.slug}/${paper.slug}`"
-          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
-        >
-          <Settings class="h-4 w-4" />
-          <span class="text-sm font-medium">Edit</span>
+        <Link v-if="canManage" :href="`/manage/papers/${concept.slug}/${paper.slug}`"
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto">
+        <Settings class="h-4 w-4" />
+        <span class="text-sm font-medium">Edit</span>
         </Link>
       </div>
     </div>
 
-    <div
-      v-if="paper.metadata?.lastEditedBy || paper.createdAt"
-      class="text-sm text-muted-foreground"
-    >
+    <div v-if="paper.metadata?.lastEditedBy || paper.createdAt" class="text-sm text-muted-foreground">
       Last edited on {{ getLastEditDate }}
     </div>
 
     <!-- Questions List -->
     <div class="space-y-6">
-      <div
-        v-for="(question, index) in questions"
-        :key="question.id"
-        class="p-6 bg-white rounded-xl border"
-      >
+      <div v-for="(question, index) in questions" :key="question.id" class="p-6 bg-white rounded-xl border">
         <!-- Question Text -->
         <div class="space-y-4">
-          <div class="flex gap-3">
-            <span class="flex-none px-2 py-1 bg-primary/10 text-primary rounded-lg font-medium">
-              Q{{ index + 1 }}
+          <div class="flex flex-col gap-2">
+            <span class="inline-block w-fit px-4 py-1.5 bg-primary/10 text-primary rounded-lg font-semibold text-lg">
+              Question {{ index + 1 }}
             </span>
-            <p class="text-foreground">{{ question.questionText }}</p>
+            <p class="text-foreground pl-1">{{ question.questionText }}</p>
           </div>
 
           <!-- MCQ Section -->
-          <div v-if="question.isMcq" class="pl-10 space-y-3">
-            <div
-              v-for="choice in question.choices"
+          <div v-if="question.isMcq" class="p-auto space-y-3">
+            <!-- Choice Options -->
+            <div v-for="choice in question.choices"
               :key="choice.id"
               :class="{
-                'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
-                'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
-                'hover:bg-slate-50': !showAnswer[question.id],
-                'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
-              }"
-              class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150"
-              @click="handleChoiceSelect(question.id, choice.id)"
-            >
+              'border-green-500': selectedAnswers[question.id] === choice.id && choice.isCorrect,
+              'border-red-500': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
+              'hover:bg-slate-50': !showAnswer[question.id],
+              'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
+            }"
+            class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150"
+            @click="handleChoiceSelect(question.id, choice.id)">
+              <!-- Icon Container -->
+            <div class="flex-shrink-0 w-5 h-5 flex items-center justify-center">
               <CheckCircle
                 v-if="showAnswer[question.id] && choice.isCorrect"
-                class="h-4 w-4 mt-1 text-green-500"
+                class="h-4 w-4 text-green-500"
               />
               <XCircle
-                v-else-if="
+                  v-else-if="
                   showAnswer[question.id] &&
                   selectedAnswers[question.id] === choice.id &&
-                  !choice.isCorrect
-                "
-                class="h-4 w-4 mt-1 text-red-500"
-              />
-              <Circle v-else class="h-4 w-4 mt-1 text-muted-foreground" />
-              <span class="text-muted-foreground">{{ choice.choiceText }}</span>
+                  !choice.isCorrect"
+                  class="h-4 w-4 text-red-500"
+                  />
+                <Circle v-else class="h-4 w-4 text-muted-foreground" />
+              </div>
+              <!-- Choice Text -->
+              <span class="text-muted-foreground flex-1">{{ choice.choiceText }}</span>
             </div>
 
-            <!-- Explanation for MCQ -->
+            <!-- Explanation Section -->
             <div
               v-if="showAnswer[question.id]"
               class="mt-4 p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]"
-            >
+              >
               <p class="text-lg font-semibold text-foreground">
                 <strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}
               </p>
@@ -179,23 +171,23 @@ const getLastEditDate = computed(() => {
                 <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
               </p>
             </div>
-            <!-- <Button
-              v-if="showAnswer[question.id]"
-              class="mt-4 flex items-center gap-2"
-              @click="openFeedbackDialog(question)"
-            >
-              <MessageSquare class="h-4 w-4" />
-              <span>Provide Feedback</span>
-            </Button> -->
+
+            <!-- Feedback Button -->
+            <Button v-if="showAnswer[question.id]" variant="outline"
+              class="mt-4 flex items-center gap-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 border border-blue-200 transition-all duration-200 rounded-lg px-5 py-2.5 shadow-sm hover:shadow group"
+              @click="openFeedbackDialog(question)">
+              <MessageSquare
+                class="h-4.5 w-4.5 opacity-75 group-hover:scale-110 group-hover:opacity-100 transition-all duration-200" />
+              <span class="font-medium">Provide Feedback</span>
+            </Button>
           </div>
 
           <!-- SAQ Section -->
           <div v-if="question.isSaq" class="pl-10 space-y-4">
             <div
               v-for="part in question.parts"
-              :key="part.id"
-              class="border-l-2 border-primary/20 pl-4"
-            >
+              :key="part.id" class="border-l-2 border-primary/20 pl-4"
+              >
               <!-- Part Text and Marks -->
               <p class="text-foreground">{{ part.partText }}</p>
               <p class="text-xs text-primary mt-1">{{ part.marks }} marks</p>
@@ -219,15 +211,16 @@ const getLastEditDate = computed(() => {
                   <ViewExplanation :content="part.expectedAnswer" />
                 </p>
               </div>
-              <!-- <Button
+              <Button
                 v-if="showAnswer[question.id]"
                 variant="ghost"
-                class="mt-4 flex items-center gap-2"
+                class="mt-4 flex items-center gap-2 px-4 py-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-all"
                 @click="openFeedbackDialog(question)"
               >
-                <MessageSquare class="h-4 w-4" />
-                <span>Provide Feedback</span>
-              </Button> -->
+                <MessageSquare class="h-4 w-4 text-gray-700 transition-colors" />
+                <span class="font-medium">Provide Feedback</span>
+              </Button>
+
             </div>
           </div>
         </div>
