@@ -260,6 +260,23 @@ const toolbar = [
       position: absolute;
       z-index: 2;
     }
+    /* Add this for links in edit mode */
+    .ProseMirror a {
+      color: #3b82f6; /* blue-500 in Tailwind */
+      text-decoration: underline;
+    }
+
+    /* Add this for links when viewing rendered content */
+    .prose a {
+      color: #3b82f6;
+      text-decoration: underline;
+    }
+
+    /* Optional: add hover effect */
+    .ProseMirror a:hover,
+    .prose a:hover {
+      color: #2563eb; /* blue-600 in Tailwind */
+    }
   }
 }
 </style>
