@@ -95,10 +95,14 @@ const breadcrumbItems = computed(() => [
   { label: props.paper.title },
 ])
 
-const lastEditDate = computed(() => {
-  return new Date(
-    props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt
-  ).toLocaleDateString()
+const getLastEditDate = computed(() => {
+  const date = new Date(props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt)
+
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).format(date)
 })
 const showAddMcqDialog = ref(false)
 const showAddSaqDialog = ref(false)
@@ -107,6 +111,11 @@ const showEditMcqDialog = ref(false)
 const showEditSaqDialog = ref(false)
 const showEditPaperDialog = ref(false)
 const selectedQuestion = ref<QuestionDto | null>(null)
+// const expandedQuestions = ref<Record<number, boolean>>({})
+
+// function toggleQuestion(id: number) {
+//   expandedQuestions.value[id] = !expandedQuestions.value[id]
+// }
 </script>
 
 <template>
@@ -144,11 +153,43 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             class="flex items-center gap-1 sm:gap-2 ml-8 sm:ml-10 mt-2 text-xs text-muted-foreground"
           >
             <Clock class="h-3 w-3" />
-            <span>Last edited {{ lastEditDate }}</span>
+            <span>Last edited {{ getLastEditDate }}</span>
           </div>
         </div>
+        <!-- Mobile: Dropdown menu -->
+        <div class="sm:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" class="w-full">
+                Actions <ChevronDown class="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" class="w-56">
+              <DropdownMenuItem @click="showAddMcqDialog = true">
+                <Plus class="mr-2 h-4 w-4" /> Add MCQ
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="showAddSaqDialog = true">
+                <Plus class="mr-2 h-4 w-4" /> Add SAQ
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="showUploadDialog = true">
+                <Upload class="mr-2 h-4 w-4" /> Upload MCQs
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem @click="showEditPaperDialog = true">
+                <Pencil class="mr-2 h-4 w-4" /> Edit Paper
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="handleDeletePaper" class="text-destructive">
+                <Trash2 class="mr-2 h-4 w-4" /> Delete Paper
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <ToggleUrl class="mt-2 w-full" />
+        </div>
+
+        <!-- Desktop: Regular buttons -->
         <!-- Add Questions Buttons -->
-        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <div class="hidden sm:flex sm:flex-row gap-2">
           <ToggleUrl />
           <Button class="w-full sm:w-auto" @click="showAddMcqDialog = true">
             <Plus class="h-4 w-4 mr-2" />Add MCQ
