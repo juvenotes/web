@@ -85,6 +85,8 @@ const toggleAnswer = (questionIndex: number, partIndex: number) => {
       </div>
     </div>
 
+    <DisclaimerBanner />
+
     <!-- Questions List -->
     <div class="space-y-4">
       <template v-if="questions.length">

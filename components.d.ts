@@ -54,6 +54,7 @@ declare module 'vue' {
     DialogScrollContent: typeof import('./inertia/components/ui/dialog/DialogScrollContent.vue')['default']
     DialogTitle: typeof import('./inertia/components/ui/dialog/DialogTitle.vue')['default']
     DialogTrigger: typeof import('./inertia/components/ui/dialog/DialogTrigger.vue')['default']
+    DisclaimerBanner: typeof import('./inertia/components/DisclaimerBanner.vue')['default']
     Drawer: typeof import('./inertia/components/ui/drawer/Drawer.vue')['default']
     DrawerContent: typeof import('./inertia/components/ui/drawer/DrawerContent.vue')['default']
     DrawerDescription: typeof import('./inertia/components/ui/drawer/DrawerDescription.vue')['default']
