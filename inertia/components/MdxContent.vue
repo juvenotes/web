@@ -138,10 +138,13 @@ watchEffect(async () => {
 
   /* Images */
   & img {
-    border-radius: 0.8em;
-    margin: var(--notion-spacing) 0;
-    transition: var(--notion-transition);
-    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+    max-width: 640px; /* Match YouTube width */
+    width: 100%;
+    height: auto;
+    margin: 1.5rem auto;
+    display: block;
+    border-radius: 0.8rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   /* Tables */

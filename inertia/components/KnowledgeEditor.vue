@@ -29,9 +29,11 @@ import {
   Heading2,
   Heading3,
   Clock,
+  Strikethrough,
 } from 'lucide-vue-next'
 import debounce from 'lodash/debounce'
 import { ref, computed, onUnmounted, onMounted } from 'vue'
+import axios from 'axios'
 
 const props = defineProps<{
   modelValue: string
@@ -86,32 +88,17 @@ const handleFileUpload = async (file: File) => {
   try {
     const formData = new FormData()
     formData.append('image', file)
+    formData.append('context[folder]', 'knowledge')
+    formData.append('context[subFolder]', 'content')
 
-    const response = await fetch('/api/upload-image', {
-      method: 'POST',
+    const { data } = await axios.post('/api/upload-image', formData, {
       headers: {
-        'Accept': 'application/json',
-        'X-CSRF-TOKEN':
-          document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        'Content-Type': 'multipart/form-data',
       },
-      body: formData,
     })
 
-    const text = await response.text()
-    console.log('Raw response:', text)
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    try {
-      const data = JSON.parse(text)
-      if (data.error) throw new Error(data.error)
-      return data.url
-    } catch (e) {
-      console.error('JSON parse error:', e)
-      throw e
-    }
+    // The API returns the URL directly as data
+    return data
   } catch (error) {
     console.error('Upload failed:', error)
     return null
@@ -141,51 +128,17 @@ const editor = useEditor({
     Image.configure({
       HTMLAttributes: {
         class: 'editor-image',
-        width: '100%',
+        width: '640px',
         height: 'auto',
       },
-    }),
+      allowBase64: true,
+      inline: false,
+    } as any),
     Table.configure({ resizable: true }),
     TableRow,
     TableCell,
     TableHeader,
     Youtube.configure({ width: 640, height: 360 }),
-    // FileHandler.configure({
-    //   allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-    //   onDrop: async (editor, files, pos) => {
-    //     console.info('File drop detected', {
-    //       action: 'file_drop',
-    //       fileCount: files.length,
-    //       position: pos,
-    //     })
-    //     for (const file of files) {
-    //       const url = await handleFileUpload(file)
-    //       if (url) {
-    //         console.info('Inserting dropped image', {
-    //           action: 'insert_dropped_image',
-    //           url,
-    //         })
-    //         editor.chain().focus().setTextSelection(pos).setImage({ src: url }).run()
-    //       }
-    //     }
-    //   },
-    //   onPaste: async (editor, files, _htmlContent) => {
-    //     console.info('File paste detected', {
-    //       action: 'file_paste',
-    //       fileCount: files.length,
-    //     })
-    //     for (const file of files) {
-    //       const url = await handleFileUpload(file)
-    //       if (url) {
-    //         console.info('Inserting pasted image', {
-    //           action: 'insert_pasted_image',
-    //           url,
-    //         })
-    //         editor.chain().focus().setImage({ src: url }).run()
-    //       }
-    //     }
-    //   },
-    // }),
   ],
   onUpdate: ({ editor }) => {
     const markdown = editor.storage.markdown.getMarkdown()
@@ -289,9 +242,40 @@ const addImage = () => {
     const file = (e.target as HTMLInputElement).files?.[0]
     if (!file) return
 
-    const url = await handleFileUpload(file)
-    if (url) {
-      editor.value?.chain().focus().setImage({ src: url }).run()
+    isUploading.value = true
+
+    // Create a temporary object URL for immediate feedback
+    const tempUrl = URL.createObjectURL(file)
+
+    // Insert temporary image with loading attribute
+    const tempImageTransaction = editor.value?.chain().focus()
+      .setImage({ 
+        src: tempUrl, 
+        'data-loading': 'true'  // Add loading attribute
+      } as any)
+      .run()
+
+    try {
+      // Upload the real image in the background
+      const url = await handleFileUpload(file)
+
+      if (url && tempImageTransaction) {
+        // Replace with the real image URL
+        editor.value?.chain().focus().setImage({ 
+          src: url, 
+          alt: file.name,
+          width: '640px', // Standard size matching YouTube
+          height: 'auto'
+        } as any).run()
+      }
+    } catch (error) {
+      console.error('Error adding image:', error)
+      if (tempImageTransaction) {
+        editor.value?.chain().focus().deleteSelection().run()
+      }
+    } finally {
+      URL.revokeObjectURL(tempUrl)
+      isUploading.value = false
     }
   }
 
@@ -394,7 +378,7 @@ const addYoutubeVideo = () => {
     </div>
 
     <!-- Bubble-menu -->
-    <BubbleMenu :editor="editor" v-if="editor">
+    <!-- <BubbleMenu :editor="editor" v-if="editor">
       <div class="bubble-menu">
         <button
           type="button"
@@ -415,37 +399,186 @@ const addYoutubeVideo = () => {
           @click="editor.chain().focus().toggleStrike().run()"
           :class="{ 'is-active': editor.isActive('strike') }"
         >
-          Strike
+          Strikethrough
+        </button>
+      </div>
+    </BubbleMenu> -->
+
+    <!-- Bubble-menu for text selection -->
+    <BubbleMenu
+      :editor="editor"
+      :tippy-options="{ duration: 100 }"
+      v-if="editor"
+      :shouldShow="
+        ({ editor }) => {
+          return !editor.isActive('image') && editor.state.selection.content().size > 0
+        }
+      "
+    >
+      <div class="bubble-menu bg-white rounded-md shadow-md border flex p-1 gap-1">
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleBold().run()"
+          :class="{ 'bg-accent': editor.isActive('bold') }"
+          class="p-1.5 rounded hover:bg-muted transition-colors"
+          title="Bold"
+        >
+          <Bold class="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleItalic().run()"
+          :class="{ 'bg-accent': editor.isActive('italic') }"
+          class="p-1.5 rounded hover:bg-muted transition-colors"
+          title="Italic"
+        >
+          <Italic class="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          @click="editor.chain().focus().toggleStrike().run()"
+          :class="{ 'bg-accent': editor.isActive('strike') }"
+          class="p-1.5 rounded hover:bg-muted transition-colors"
+          title="Strike"
+        >
+          <Strikethrough class="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          @click="addLink"
+          :class="{ 'bg-accent': editor.isActive('link') }"
+          class="p-1.5 rounded hover:bg-muted transition-colors"
+          title="Add Link"
+        >
+          <LinkIcon class="h-4 w-4" />
         </button>
       </div>
     </BubbleMenu>
 
     <!-- Floating menu -->
-    <FloatingMenu :editor="editor" :tippy-options="{ duration: 100 }" v-if="editor">
-      <div class="floating-menu">
+    <FloatingMenu
+      :editor="editor"
+      :shouldShow="
+        ({ editor, state }) => {
+          // Don't show floating menu when on an image node
+          const isImage = editor.isActive('image')
+          // Get cursor position from the selection
+          const { from } = state.selection
+          // Check if we're at an empty paragraph
+          const isEmptyParagraph = !state.doc.textBetween(from, from + 1).length
+          return !isImage && isEmptyParagraph
+        }
+      "
+      :tippy-options="{
+        duration: 100,
+        placement: 'top-start',
+        offset: [0, 8],
+      }"
+      v-if="editor"
+    >
+      <div class="floating-menu bg-white rounded-md shadow-md border flex p-1">
         <button
           type="button"
           @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
+          :class="{ 'bg-accent': editor.isActive('heading', { level: 1 }) }"
+          class="p-1.5 rounded hover:bg-muted text-sm font-medium transition-colors"
         >
           H1
         </button>
         <button
           type="button"
           @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
+          :class="{ 'bg-accent': editor.isActive('heading', { level: 2 }) }"
+          class="p-1.5 rounded hover:bg-muted text-sm font-medium transition-colors"
         >
           H2
         </button>
         <button
           type="button"
           @click="editor.chain().focus().toggleBulletList().run()"
-          :class="{ 'is-active': editor.isActive('bulletList') }"
+          :class="{ 'bg-accent': editor.isActive('bulletList') }"
+          class="p-1.5 rounded hover:bg-muted text-sm flex items-center transition-colors"
         >
-          Bullet list
+          <List class="h-4 w-4" />
+        </button>
+        <!-- Add Image Button -->
+        <button
+          type="button"
+          @click="addImage"
+          class="p-1.5 rounded hover:bg-muted text-sm flex items-center transition-colors"
+          title="Insert Image"
+        >
+          <ImageIcon class="h-4 w-4" />
         </button>
       </div>
     </FloatingMenu>
+
+    <!-- Image-specific bubble menu -->
+    <BubbleMenu
+      :editor="editor"
+      :tippy-options="{ duration: 100 }"
+      v-if="editor"
+      :shouldShow="({ editor }) => editor.isActive('image')"
+    >
+      <div class="image-bubble-menu bg-white rounded-md shadow-md border flex p-1 gap-1">
+        <!-- <button
+          type="button"
+          @click="
+            editor
+              .chain()
+              .focus()
+              .updateAttributes('image', {
+                width: '320px',
+              } as any)
+              .run()
+          "
+          class="p-1.5 rounded hover:bg-muted transition-colors"
+          title="Small size"
+        >
+          Small
+        </button>
+        <button
+          type="button"
+          @click="
+            editor
+              .chain()
+              .focus()
+              .updateAttributes('image', {
+                width: '480px',
+              } as any)
+              .run()
+          "
+          class="p-1.5 rounded hover:bg-muted transition-colors"
+          title="Medium size"
+        >
+          Medium
+        </button>
+        <button
+          type="button"
+          @click="
+            editor
+              .chain()
+              .focus()
+              .updateAttributes('image', {
+                width: '640px',
+              } as any)
+              .run()
+          "
+          class="p-1.5 rounded hover:bg-muted transition-colors"
+          title="Full width"
+        >
+          Full
+        </button> -->
+        <button
+          type="button"
+          @click="editor.chain().focus().deleteSelection().run()"
+          class="p-1.5 rounded hover:bg-destructive/20 text-destructive transition-colors"
+          title="Delete image"
+        >
+          Remove
+        </button>
+      </div>
+    </BubbleMenu>
 
     <!-- Editor Content -->
     <EditorContent
@@ -544,8 +677,59 @@ const addYoutubeVideo = () => {
   margin: 1rem auto;
   border-radius: 0.5rem;
 }
-.editor-image[data-uploading] {
+/* .editor-image[data-uploading] {
   opacity: 0.5;
   cursor: wait;
+} */
+/* Add to your existing styles */
+.editor-image[data-loading="true"] {
+  position: relative;
+  opacity: 0.7;
+  animation: pulse 1.5s infinite;
+  min-height: 200px;
+  background-color: #f0f0f0;
+  border-radius: 0.5rem;
+}
+
+.editor-image[data-loading="true"]::before {
+  content: "Uploading...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+/* Better styling for bubble and floating menus */
+.bubble-menu,
+.floating-menu,
+.image-bubble-menu {
+  z-index: 10;
+}
+
+/* Selected image styling */
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid #3b82f6;
+  border-radius: 0.5rem;
+}
+
+/* Add resize handles */
+.ProseMirror img:hover {
+  cursor: pointer;
 }
 </style>

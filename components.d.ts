@@ -123,6 +123,7 @@ declare module 'vue' {
     SheetHeader: typeof import('./inertia/components/ui/sheet/SheetHeader.vue')['default']
     SheetTitle: typeof import('./inertia/components/ui/sheet/SheetTitle.vue')['default']
     SheetTrigger: typeof import('./inertia/components/ui/sheet/SheetTrigger.vue')['default']
+    Skeleton: typeof import('./inertia/components/ui/skeleton/Skeleton.vue')['default']
     Sonner: typeof import('./inertia/components/ui/sonner/Sonner.vue')['default']
     Switch: typeof import('./inertia/components/ui/switch/Switch.vue')['default']
     Textarea: typeof import('./inertia/components/ui/textarea/Textarea.vue')['default']
