@@ -172,8 +172,8 @@ watchEffect(async () => {
     background: hsl(var(--accent));
   }
 
-   /* Make tables responsive */
-   & .table-wrapper {
+  /* Make tables responsive */
+  & .table-wrapper {
     overflow-x: auto;
     max-width: 100%;
   }

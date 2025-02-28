@@ -31,12 +31,15 @@ const initializeForm = () => {
 }
 
 // Watch dialog open state
-watch(() => props.open, (isOpen) => {
-  if (isOpen) {
-    // When dialog opens, ensure form is reset
-    initializeForm()
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) {
+      // When dialog opens, ensure form is reset
+      initializeForm()
+    }
   }
-})
+)
 
 // Initialize form on component mount
 onMounted(() => {

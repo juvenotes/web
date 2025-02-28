@@ -37,19 +37,26 @@ const initializeForm = () => {
 }
 
 // Watch for changes to props.question and update questionId
-watch(() => props.question, (newQuestion) => {
-  if (newQuestion) {
-    form.questionId = String(newQuestion.id)
-  }
-}, { immediate: true })
+watch(
+  () => props.question,
+  (newQuestion) => {
+    if (newQuestion) {
+      form.questionId = String(newQuestion.id)
+    }
+  },
+  { immediate: true }
+)
 
 // Watch dialog open state
-watch(() => props.open, (isOpen) => {
-  if (isOpen && props.question) {
-    // When dialog opens, ensure form is reset
-    initializeForm()
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen && props.question) {
+      // When dialog opens, ensure form is reset
+      initializeForm()
+    }
   }
-})
+)
 
 // Initialize form on component mount
 onMounted(() => {

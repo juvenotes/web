@@ -25,16 +25,23 @@ const declineCookies = () => {
 
 <template>
   <!-- Modal overlay for cookie consent -->
-  <div v-if="showBanner" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60 z-50">
+  <div
+    v-if="showBanner"
+    class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60 z-50"
+  >
     <div class="bg-white p-8 rounded-xl shadow-lg w-11/12 max-w-lg">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Cookie Consent</h2>
-        <button @click="declineCookies" class="text-gray-600 hover:text-gray-800 text-2xl font-semibold">
+        <button
+          @click="declineCookies"
+          class="text-gray-600 hover:text-gray-800 text-2xl font-semibold"
+        >
           &times;
         </button>
       </div>
       <p class="text-lg text-gray-600 mb-6">
-        We use cookies to improve your experience on our site. By clicking "Accept", you consent to our use of cookies.
+        We use cookies to improve your experience on our site. By clicking "Accept", you consent to
+        our use of cookies.
       </p>
       <div class="flex justify-between gap-6">
         <button
@@ -58,7 +65,7 @@ const declineCookies = () => {
 <style scoped>
 /* Custom Primary Color */
 .bg-primary {
-  background-color: #CDE5ED;
+  background-color: #cde5ed;
 }
 
 .fixed {

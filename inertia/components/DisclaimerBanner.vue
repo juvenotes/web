@@ -11,7 +11,7 @@ onMounted(() => {
   // Check if the user has previously closed the banners
   const warningClosed = localStorage.getItem('disclaimerWarningClosed') === 'true'
   const infoClosed = localStorage.getItem('disclaimerInfoClosed') === 'true'
-  
+
   // Set initial states based on saved preferences
   if (warningClosed) showWarning.value = false
   if (infoClosed) showInfo.value = false
@@ -33,20 +33,21 @@ const closeInfo = () => {
   <div class="space-y-3 mb-6">
     <!-- Warning disclaimer -->
     <Transition name="fade">
-      <div 
-        v-if="showWarning" 
+      <div
+        v-if="showWarning"
         class="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start"
       >
         <AlertTriangle class="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
         <div class="ml-3 flex-1">
           <h3 class="text-sm font-medium text-amber-800">DISCLAIMER</h3>
           <p class="mt-1 text-sm text-amber-700">
-            The information contained in this site is provided on "as is" basis with no guarantees of
-            accuracy, usefulness or timeliness. The provided contents and information are academic in nature and shall serve for information and study purposes only.
+            The information contained in this site is provided on "as is" basis with no guarantees
+            of accuracy, usefulness or timeliness. The provided contents and information are
+            academic in nature and shall serve for information and study purposes only.
           </p>
         </div>
-        <button 
-          @click="closeWarning" 
+        <button
+          @click="closeWarning"
           class="shrink-0 ml-2 text-amber-400 hover:text-amber-500 focus:outline-none"
           aria-label="Close disclaimer"
         >
@@ -57,8 +58,8 @@ const closeInfo = () => {
 
     <!-- Info disclaimer -->
     <Transition name="fade">
-      <div 
-        v-if="showInfo" 
+      <div
+        v-if="showInfo"
         class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start"
       >
         <Info class="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
@@ -69,8 +70,8 @@ const closeInfo = () => {
             kindly use the feedback button (soon available to all questions).
           </p>
         </div>
-        <button 
-          @click="closeInfo" 
+        <button
+          @click="closeInfo"
           class="shrink-0 ml-2 text-blue-400 hover:text-blue-500 focus:outline-none"
           aria-label="Close info"
         >
