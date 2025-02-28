@@ -48,12 +48,7 @@ const form = useForm({
     <div class="grid gap-3">
       <div class="space-y-2">
         <Label for="email">Email</Label>
-        <Input
-          id="email"
-          :model-value="email ?? ''"
-          type="email"
-          disabled
-        />
+        <Input id="email" :model-value="email ?? ''" type="email" disabled />
         <!-- :class="{ 'border-destructive': form.errors.email } -->
         <!-- <p v-if="form.errors.email" class="text-sm text-destructive">
           {{ form.errors.email }}

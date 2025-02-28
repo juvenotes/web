@@ -79,7 +79,7 @@ const papersByYear = computed(() => {
     </div>
 
     <div class="flex justify-end">
-      <ToggleStudyLevel v-model="selectedStudyLevel" :papers="papers"  />
+      <ToggleStudyLevel v-model="selectedStudyLevel" :papers="papers" />
     </div>
 
     <!-- Papers by Year -->

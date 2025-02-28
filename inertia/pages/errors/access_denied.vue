@@ -27,9 +27,7 @@ defineOptions({ layout: ErrorLayout })
       <div class="space-y-4">
         <p class="text-sm text-muted-foreground">You'll be redirected back in a few seconds...</p>
         <Button asChild variant="default" class="min-w-32">
-          <Link href="/learn">
-            Go Back
-          </Link>
+          <Link href="/learn"> Go Back </Link>
         </Button>
       </div>
     </div>

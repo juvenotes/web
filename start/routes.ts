@@ -22,8 +22,6 @@ const ProfileController = () => import('#controllers/settings/profile_controller
 const AccountController = () => import('#controllers/settings/account_controller')
 const IndexConceptsController = () => import('#controllers/concepts/index_controller')
 const ManageConceptsController = () => import('#controllers/manage/concepts/index_controller')
-const IndexQuestionsController = () => import('#controllers/questions/index_controller')
-// const ManageQuestionsController = () => import('#controllers/manage/questions_controller')
 const IndexPapersController = () => import('#controllers/papers/index_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
@@ -37,6 +35,8 @@ const IndexOsceController = () => import('#controllers/osce/osce_controller')
 const ManageOsceController = () => import('#controllers/manage/osce/osce_controller')
 const CiteController = () => import('#controllers/api/cite_controller')
 const QuestionFeedbackController = () => import('#controllers/papers/question_feedback_controller')
+// const ManageFeedbackController = () =>
+//   import('#controllers/manage/feedback/manage_feedback_controller')
 
 // test crash route
 router.get('/crash', () => {
@@ -129,15 +129,6 @@ router
 //* CONCEPTS -> VIEW
 router.get('/concepts', [IndexConceptsController, 'index']).use(middleware.auth())
 router.get('/concepts/:slug', [IndexConceptsController, 'show']).use(middleware.auth())
-
-//* QUESTIONS -> VIEW
-router
-  .group(() => {
-    // router.get('/', [IndexQuestionsController, 'index'])
-    router.get('/:conceptSlug', [IndexQuestionsController, 'show'])
-  })
-  .prefix('/vault')
-  .use(middleware.auth())
 
 //* MANAGEMENT DASHBOARD - ADMIN
 router
@@ -300,3 +291,8 @@ router
 
 // Question Feedback Routes
 router.post('/questions/:id/feedback', [QuestionFeedbackController, 'store']).use(middleware.auth())
+
+// router.get('/manage/feedback', [ManageFeedbackController, 'index']).use(middleware.auth())
+// router
+//   .post('/manage/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
+//   .use(middleware.auth())

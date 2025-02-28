@@ -28,71 +28,71 @@ const statsDisplay = [
   { number: `${props.stats.papers}+`, label: 'Practice Papers With Questions' },
 ]
 
-import { onMounted } from 'vue';
+import { onMounted } from 'vue'
 
 declare global {
   interface Window {
-    cookieconsent: any;
+    cookieconsent: any
   }
 }
 
 onMounted(() => {
   const script = document.createElement('script')
-  script.src = "//www.freeprivacypolicy.com/public/cookie-consent/4.2.0/cookie-consent.js"
-  script.charset = "UTF-8"
-  
+  script.src = '//www.freeprivacypolicy.com/public/cookie-consent/4.2.0/cookie-consent.js'
+  script.charset = 'UTF-8'
+
   script.onload = () => {
     window.cookieconsent.run({
-      notice_banner_type: "interstitial",
-      website_name: "Juvenotes",
-      website_privacy_policy_url: "https://juvenotes.com/privacy",
-      consent_type: "express",
+      notice_banner_type: 'interstitial',
+      website_name: 'Juvenotes',
+      website_privacy_policy_url: 'https://juvenotes.com/privacy',
+      consent_type: 'express',
       palette: {
         popup: {
-          background: "#ffffff",
-          text: "#1a1b1f",
-          border: "1px solid rgba(205, 229, 237, 0.2)"
+          background: '#ffffff',
+          text: '#1a1b1f',
+          border: '1px solid rgba(205, 229, 237, 0.2)',
         },
         button: {
-          background: "#CDE5ED",
-          text: "#1a1b1f"
-        }
+          background: '#CDE5ED',
+          text: '#1a1b1f',
+        },
       },
-      theme: "clean",
-      position: "center",
-      transition: "slide",
-      layout: "basic-header",
+      theme: 'clean',
+      position: 'center',
+      transition: 'slide',
+      layout: 'basic-header',
       layouts: {
-        "basic-header": "{{header}}{{message}}{{link}}{{compliance}}"
+        'basic-header': '{{header}}{{message}}{{link}}{{compliance}}',
       },
       layouts_message: {
-        "basic-header": "We care about your privacy and use cookies to enhance your experience."
+        'basic-header': 'We care about your privacy and use cookies to enhance your experience.',
       },
       button: {
         accept: {
-          background: "#CDE5ED",
-          text: "#1a1b1f",
-          padding: "12px 24px",
-          borderRadius: "8px"
+          background: '#CDE5ED',
+          text: '#1a1b1f',
+          padding: '12px 24px',
+          borderRadius: '8px',
         },
         reject: {
-          background: "transparent",
-          text: "#64748b",
-          padding: "12px 24px",
-          borderRadius: "8px"
-        }
+          background: 'transparent',
+          text: '#64748b',
+          padding: '12px 24px',
+          borderRadius: '8px',
+        },
       },
       language: {
         header: {
-          title: "Cookie Settings 🍪",
-          text: ""
-        }
-      }
+          title: 'Cookie Settings 🍪',
+          text: '',
+        },
+      },
     })
   }
-  
+
   document.head.appendChild(script)
-});
+})
 </script>
 
 <template>
@@ -200,8 +200,7 @@ onMounted(() => {
       </section> -->
     </main>
     <!-- <CookieConsent /> -->
-     <div>
-  </div>
+    <div></div>
   </div>
 </template>
 
@@ -253,11 +252,13 @@ onMounted(() => {
 
 .cc-btn {
   font-weight: 600 !important;
-  background-color: #55A9C4;
+  background-color: #55a9c4;
   color: #ffffff;
   padding: 12px 24px;
   border-radius: 8px;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
   border: none;
   cursor: pointer;
   flex: 1;
@@ -278,7 +279,7 @@ onMounted(() => {
 }
 
 .cc-link {
-  color: #55A9C4 !important;
+  color: #55a9c4 !important;
   text-decoration: none !important;
   display: block !important;
   text-align: center !important;
@@ -302,7 +303,7 @@ onMounted(() => {
 }
 
 .freeprivacypolicy-com---palette-dark .cc-nb-okagree {
-  background-color: #55A9C4 !important;
+  background-color: #55a9c4 !important;
 }
 
 .freeprivacypolicy-com---palette-dark .cc-nb-reject {
@@ -311,7 +312,7 @@ onMounted(() => {
 }
 
 .freeprivacypolicy-com---palette-dark .cc-cp-foot-save {
-  background-color: #55A9C4 !important;
+  background-color: #55a9c4 !important;
 }
 
 .freeprivacypolicy-com---palette-dark.freeprivacypolicy-com---nb {

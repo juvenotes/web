@@ -69,7 +69,7 @@ const breadcrumbItems = computed(() => [
     </div>
 
     <div class="flex justify-end mb-4">
-      <ToggleStudyLevel v-model="selectedStudyLevel" :papers="papers"  />
+      <ToggleStudyLevel v-model="selectedStudyLevel" :papers="papers" />
     </div>
 
     <!-- Papers List -->

@@ -30,6 +30,7 @@ watchEffect(async () => {
 
 <style scoped>
 .markdown-content {
+  /* Existing styles */
   :deep(ul) {
     list-style-type: disc;
     margin-left: 1.5rem;
@@ -40,18 +41,36 @@ watchEffect(async () => {
     margin-left: 1.5rem;
   }
 
-  :deep(li) {
-    margin-bottom: 0.25rem;
+  /* Add these styles for images and YouTube embeds */
+  :deep(img) {
+    display: block;
+    max-width: 640px; /* Match YouTube width */
+    width: 100%;
+    height: auto;
+    margin: 1.5rem auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
+  :deep(iframe) {
+    display: block;
+    max-width: 640px;
+    width: 100%;
+    height: auto;
+    margin: 1.5rem auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Link styles */
   :deep(a) {
-    color: hsl(var(--primary));
+    color: #3b82f6;
     text-decoration: underline;
     text-underline-offset: 0.2em;
     transition: color 0.2s ease-in-out;
 
     &:hover {
-      color: hsl(var(--primary) / 0.8);
+      color: #2563eb;
     }
   }
 
@@ -76,34 +95,12 @@ watchEffect(async () => {
   }
 
   :deep(th) {
-    background: hsl(var(--muted));
+    background-color: hsl(var(--muted));
     font-weight: 600;
-    border-bottom: 2px solid hsl(var(--border));
-  }
-
-  :deep(tr:not(:last-child) td) {
-    border-bottom: 1px solid hsl(var(--border));
-  }
-
-  :deep(td:not(:last-child)),
-  :deep(th:not(:last-child)) {
-    border-right: 1px solid hsl(var(--border));
   }
 
   :deep(tr:nth-child(even)) {
     background: hsl(var(--muted) / 0.2);
-  }
-
-  :deep(tr:hover) {
-    background: hsl(var(--accent) / 0.1);
-  }
-
-  /* Table responsiveness */
-  :deep(.table-wrapper) {
-    overflow-x: auto;
-    max-width: 100%;
-    margin: 1rem 0;
-    border-radius: 0.5rem;
   }
 }
 </style>
