@@ -44,7 +44,7 @@ const papersByYear = computed(() => {
 
 const breadcrumbItems = computed(() => [
   { label: 'OSCEs', href: '/osce' },
-  { label: props.concept.title }
+  { label: props.concept.title },
 ])
 </script>
 
@@ -111,9 +111,7 @@ const breadcrumbItems = computed(() => [
                 <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
                   OSCE
                 </span>
-                <span class="text-muted-foreground">
-                  A few stations
-                </span>
+                <span class="text-muted-foreground"> A few stations </span>
               </div>
               <div
                 class="flex items-center text-sm text-primary font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"

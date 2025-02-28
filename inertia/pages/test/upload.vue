@@ -86,11 +86,11 @@ async function handleSubmit(e: Event) {
           <p class="text-sm text-muted-foreground">Uploaded URL:</p>
           <p class="font-mono bg-muted p-2 rounded">{{ uploadedUrl }}</p>
         </div>
-        
+
         <div class="border rounded-lg overflow-hidden">
-          <img 
-            :src="uploadedUrl" 
-            :alt="form.image?.name || 'Uploaded image'" 
+          <img
+            :src="uploadedUrl"
+            :alt="form.image?.name || 'Uploaded image'"
             class="max-w-full h-auto"
           />
         </div>

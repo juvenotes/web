@@ -3,7 +3,7 @@ import UserDto from '#dtos/user'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { BookOpen, FileText, GraduationCap, Clock, Flame } from 'lucide-vue-next'
 // import FeatureFlagsDto from '#dtos/feature_flags'
-import StatsDto from '#dtos/stats';
+import StatsDto from '#dtos/stats'
 
 defineProps<{
   messages: Record<string, string | Record<string, string>>
@@ -86,7 +86,7 @@ defineOptions({ layout: DashLayout })
           </div>
 
           <!-- Description -->
-          <p class="text-gray-600  text-base leading-relaxed">
+          <p class="text-gray-600 text-base leading-relaxed">
             Practice with previous examination papers to enhance your preparation
           </p>
 
@@ -96,7 +96,7 @@ defineOptions({ layout: DashLayout })
               class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium"
               data-umami-event="open_past_papers_from_dashboard"
             >
-            {{ stats.papers }} Papers
+              {{ stats.papers }} Papers
             </span>
             <span class="text-sm text-gray-500">Updated Weekly</span>
           </div>
@@ -150,7 +150,7 @@ defineOptions({ layout: DashLayout })
               class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium"
               data-umami-event="open_concepts_from_dashboard"
             >
-            {{ stats.concepts }} Units
+              {{ stats.concepts }} Units
             </span>
             <span class="text-sm text-muted-foreground"
               >{{ stats.contentfulConcepts }}+ Topics</span

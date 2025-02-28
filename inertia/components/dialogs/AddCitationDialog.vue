@@ -23,14 +23,14 @@ const pages = ref('')
 const handleSubmit = () => {
   emit('submit', {
     type: type.value,
-    authors: authors.value.split(',').map(a => a.trim()),
+    authors: authors.value.split(',').map((a) => a.trim()),
     title: title.value,
     year: year.value,
     source: source.value,
     doi: doi.value,
     url: url.value,
     publisher: publisher.value,
-    pages: pages.value
+    pages: pages.value,
   })
   resetForm()
 }

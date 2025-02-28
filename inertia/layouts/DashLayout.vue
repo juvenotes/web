@@ -175,7 +175,7 @@ onUnmounted(() => {
       <aside
         class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col border-r bg-white z-[30] -translate-x-full lg:translate-x-0"
         :class="[isSidebarCollapsed ? 'w-16' : 'w-64', !isSidebarCollapsed && 'translate-x-0']"
-        style="max-height: calc(100vh - 4rem);" 
+        style="max-height: calc(100vh - 4rem)"
       >
         <!-- Desktop Toggle Button -->
         <button

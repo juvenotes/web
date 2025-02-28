@@ -2,12 +2,7 @@
 import type { ScrollAreaRootProps } from 'radix-vue'
 import type { HTMLAttributes } from 'vue'
 import { cn } from '~/lib/utils'
-import {
-  ScrollAreaCorner,
-  ScrollAreaRoot,
-
-  ScrollAreaViewport,
-} from 'radix-vue'
+import { ScrollAreaCorner, ScrollAreaRoot, ScrollAreaViewport } from 'radix-vue'
 import { computed } from 'vue'
 import ScrollBar from './ScrollBar.vue'
 

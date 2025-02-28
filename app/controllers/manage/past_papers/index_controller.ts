@@ -131,6 +131,48 @@ export default class ManagePastPapersController {
     })
   }
 
+  // async viewPaper({ params, inertia, logger, auth }: HttpContext) {
+  //   const context = {
+  //     controller: 'ManagePastPapersController',
+  //     action: 'viewPaper',
+  //     paperSlug: params.paperSlug,
+  //     userId: auth.user?.id,
+  //   }
+  //   logger.info({ ...context, message: 'fetching paper details' })
+
+  //   const paper = await PastPaper.query()
+  //     .where('slug', params.paperSlug)
+  //     .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
+  //     .preload('concept')
+  //     .preload('questions', (query) => {
+  //       query.orderBy('id', 'asc').preload('choices').preload('parts')
+  //     })
+  //     .firstOrFail()
+
+  //   // Get feedback counts for each question
+  //   const questionIds = paper.questions.map((q) => q.id)
+  //   const feedbackCounts = await db
+  //     .from('question_feedbacks')
+  //     .whereIn('question_id', questionIds)
+  //     .where('is_resolved', false)
+  //     .count('* as count')
+  //     .groupBy('question_id')
+  //     .select('question_id')
+
+  //   // Create a map of question ID to feedback count
+  //   const feedbackCountMap = {}
+  //   feedbackCounts.forEach((item) => {
+  //     feedbackCountMap[item.question_id] = Number(item.count)
+  //   })
+
+  //   return inertia.render('manage/papers/view', {
+  //     paper: new PastPaperDto(paper),
+  //     concept: new ConceptDto(paper.concept),
+  //     questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
+  //     feedbackCountMap,
+  //   })
+  // }
+
   /**
    * Store a new paper
    */

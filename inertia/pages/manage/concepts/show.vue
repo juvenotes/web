@@ -120,7 +120,7 @@ const handleDelete = () => {
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
-      
+
       <BreadcrumbTrail :items="breadcrumbItems" />
 
       <div class="mt-4 flex flex-col sm:flex-row sm:items-start gap-4 justify-between mb-8">
@@ -152,7 +152,10 @@ const handleDelete = () => {
       </div>
 
       <!-- Info Grid -->
-      <div v-if="!concept.isTerminal" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-6">
+      <div
+        v-if="!concept.isTerminal"
+        class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-6"
+      >
         <div class="p-4 rounded-lg border">
           <span class="text-sm text-muted-foreground"
             ><b>{{ concept.title }} </b> is example of a parent concept here. All others are child

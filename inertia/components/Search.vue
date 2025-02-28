@@ -50,11 +50,10 @@ watch(query, () => {
         class="w-full md:max-w-[300px] lg:max-w-[400px]"
         :class="{ 'opacity-50': isLoading }"
       />
-      <div 
-        v-if="isLoading" 
-        class="absolute right-3 top-1/2 -translate-y-1/2"
-      >
-        <div class="animate-spin h-4 w-4 border-2 border-primary/20 border-t-primary rounded-full" />
+      <div v-if="isLoading" class="absolute right-3 top-1/2 -translate-y-1/2">
+        <div
+          class="animate-spin h-4 w-4 border-2 border-primary/20 border-t-primary rounded-full"
+        />
       </div>
     </div>
 
