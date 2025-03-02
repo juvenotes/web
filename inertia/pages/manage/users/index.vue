@@ -2,6 +2,10 @@
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { useForm } from '@inertiajs/vue3'
 import UserDto from '#dtos/user'
+import { ref, watch } from 'vue'
+import { router } from '@inertiajs/vue3'
+import { Search } from 'lucide-vue-next'
+import debounce from 'lodash/debounce'
 
 defineOptions({ layout: AdminLayout })
 
@@ -14,14 +18,38 @@ interface Props {
     first_page: number
     per_page: number
   }
+  filters?: {
+    search?: string
+  }
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 const updateRole = (userId: number, event: Event) => {
   const target = event.target as HTMLSelectElement
   useForm({ roleId: Number(target.value) }).put(`/manage/users/${userId}/role`)
 }
+
+// Search functionality
+const searchQuery = ref(props.filters?.search || '')
+
+const performSearch = debounce(() => {
+  router.get(
+    '/manage/users',
+    {
+      search: searchQuery.value,
+      page: 1, // Reset to page 1 when searching
+    },
+    {
+      preserveState: true,
+      replace: true,
+    }
+  )
+}, 300)
+
+watch(searchQuery, () => {
+  performSearch()
+})
 </script>
 
 <template>
@@ -32,6 +60,17 @@ const updateRole = (userId: number, event: Event) => {
       <div class="px-4 py-2 bg-primary/10 rounded-lg self-start sm:self-auto">
         <span class="text-primary font-medium">{{ totalUsers }} total users</span>
       </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-6 relative max-w-md">
+      <Input
+        v-model="searchQuery"
+        type="search"
+        placeholder="Search users by name or email..."
+        class="pl-10"
+      />
+      <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-x-auto">

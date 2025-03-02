@@ -61,6 +61,8 @@ export default class IndexController {
       })
       .firstOrFail()
 
+    const parentConcepts = await this.getConceptParents(concept.id)
+
     logger.info({
       ...context,
       conceptTitle: concept.title,
@@ -77,6 +79,7 @@ export default class IndexController {
       children: concept.children ? ConceptDto.fromArray(concept.children) : [],
       questions: concept.questions ? QuestionDto.fromArray(concept.questions) : [],
       content: concept.knowledgeBlock,
+      parentConcepts: ConceptDto.fromArray(parentConcepts),
       canManage,
     })
   }
@@ -109,5 +112,38 @@ export default class IndexController {
     })
 
     return response.json(results)
+  }
+
+  private async getConceptParents(conceptId: number) {
+    const parents: Concept[] = []
+    let currentConcept = await Concept.query()
+      .where('id', conceptId)
+      .select(['id', 'title', 'slug', 'parent_id'])
+      .first()
+
+    // If no parent_id, return empty array
+    if (!currentConcept || currentConcept.parentId === null) {
+      return parents
+    }
+
+    // Use a simplified approach to minimize database queries
+    while (currentConcept && currentConcept.parentId !== null) {
+      // Get the parent concept
+      const parent = await Concept.query()
+        .where('id', currentConcept.parentId)
+        .select(['id', 'title', 'slug', 'parent_id'])
+        .first()
+
+      if (parent) {
+        // Add to start to maintain root->leaf order
+        parents.unshift(parent)
+        currentConcept = parent
+      } else {
+        // Break if parent not found (shouldn't happen with proper data integrity)
+        break
+      }
+    }
+
+    return parents
   }
 }

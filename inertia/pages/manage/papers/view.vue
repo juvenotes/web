@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, Clock, Plus, Upload, Pencil, Trash2 } from 'lucide-vue-next'
+import { FileText, Clock, Plus, Upload, Pencil, Trash2, ChevronDown } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import { useForm } from '@inertiajs/vue3'
@@ -128,6 +128,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
       <BreadcrumbTrail :items="breadcrumbItems" />
 
       <!-- Paper Info -->
+      <!-- Paper Header - Updated with consistent dropdown pattern -->
       <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
         <div class="space-y-1">
           <!-- Title section -->
@@ -156,18 +157,24 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             <span>Last edited {{ getLastEditDate }}</span>
           </div>
         </div>
-        <!-- Mobile: Dropdown menu -->
-        <div class="sm:hidden">
+
+        <!-- Actions Menu (Both mobile and desktop) -->
+        <div class="flex flex-col sm:flex-row gap-2">
+          <ToggleUrl class="w-full sm:w-auto" />
+
+          <!-- Primary actions as buttons -->
+          <Button class="w-full sm:w-auto" @click="showAddMcqDialog = true">
+            <Plus class="h-4 w-4 mr-2" />Add MCQ
+          </Button>
+
+          <!-- Secondary actions in dropdown -->
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" class="w-full">
-                Actions <ChevronDown class="ml-2 h-4 w-4" />
+              <Button variant="outline" class="w-full sm:w-auto">
+                More Actions <ChevronDown class="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" class="w-56">
-              <DropdownMenuItem @click="showAddMcqDialog = true">
-                <Plus class="mr-2 h-4 w-4" /> Add MCQ
-              </DropdownMenuItem>
               <DropdownMenuItem @click="showAddSaqDialog = true">
                 <Plus class="mr-2 h-4 w-4" /> Add SAQ
               </DropdownMenuItem>
@@ -183,29 +190,6 @@ const selectedQuestion = ref<QuestionDto | null>(null)
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <ToggleUrl class="mt-2 w-full" />
-        </div>
-
-        <!-- Desktop: Regular buttons -->
-        <!-- Add Questions Buttons -->
-        <div class="hidden sm:flex sm:flex-row gap-2">
-          <ToggleUrl />
-          <Button class="w-full sm:w-auto" @click="showAddMcqDialog = true">
-            <Plus class="h-4 w-4 mr-2" />Add MCQ
-          </Button>
-          <Button class="w-full sm:w-auto" @click="showAddSaqDialog = true">
-            <Plus class="h-4 w-4 mr-2" />Add SAQ
-          </Button>
-          <Button class="w-full sm:w-auto" variant="outline" @click="showUploadDialog = true">
-            <Upload class="h-4 w-4 mr-2" />Upload MCQs
-          </Button>
-          <Button variant="outline" class="w-full sm:w-auto" @click="showEditPaperDialog = true">
-            <Pencil class="h-4 w-4 mr-2" />Edit Paper
-          </Button>
-          <Button variant="destructive" class="w-full sm:w-auto" @click="handleDeletePaper">
-            <Trash2 class="h-4 w-4 mr-2" />Delete
-          </Button>
         </div>
       </div>
     </div>
@@ -264,20 +248,27 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             </div>
 
             <!-- SAQ Parts -->
-            <div v-if="question.isSaq" class="pl-6 sm:pl-10 space-y-3 sm:space-y-4">
+            <div v-if="question.isSaq" class="pl-3 sm:pl-10 space-y-2 sm:space-y-4">
               <div
                 v-for="part in question.parts"
                 :key="part.id"
-                class="relative pl-4 border-l-2 border-primary/20"
+                class="relative pl-3 sm:pl-4 border-l-2 border-primary/20"
               >
-                <p class="font-medium">{{ part.partText }}</p>
-                <div class="mt-4 p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]">
-                  <p class="text-base text-muted-foreground text-[#1F2937] font-medium">
-                    <strong>Explanation:</strong>
+                <p class="font-medium text-sm sm:text-base">{{ part.partText }}</p>
+                <div
+                  class="mt-3 sm:mt-4 p-3 sm:p-6 bg-[#CDE5ED] shadow-sm sm:shadow-md rounded-lg border border-[#A8D3E7]"
+                >
+                  <div
+                    class="text-sm sm:text-base text-muted-foreground text-[#1F2937] font-medium"
+                  >
+                    <strong class="block sm:inline mb-1 sm:mb-0">Explanation:</strong>
                     <ViewExplanation :content="part.expectedAnswer" />
-                  </p>
+                  </div>
                 </div>
-                <p class="text-xs text-primary mt-2">{{ part.marks }} marks</p>
+                <p class="text-xs text-primary mt-2 flex items-center">
+                  <span class="font-medium">{{ part.marks }}</span>
+                  <span class="ml-1">{{ part.marks === 1 ? 'mark' : 'marks' }}</span>
+                </p>
               </div>
             </div>
           </div>
