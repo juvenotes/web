@@ -55,7 +55,8 @@ const papersByYear = computed(() => {
 
       <BreadcrumbTrail :items="breadcrumbItems" />
 
-      <div class="flex items-start justify-between mt-4">
+      <!-- Update this div in show.vue -->
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mt-4 gap-4">
         <div class="flex items-start gap-4">
           <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
             <FileText class="h-6 w-6 text-primary" />
@@ -70,7 +71,7 @@ const papersByYear = computed(() => {
         <Link
           v-if="canManage"
           :href="`/manage/papers/${concept.slug}`"
-          class="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10"
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
         >
           <Settings class="h-4 w-4" />
           <span class="text-sm font-medium">Edit</span>

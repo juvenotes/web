@@ -102,7 +102,7 @@ const getLastEditDate = computed(() => {
             </div>
           </div>
         </div>
-        <!-- Manage button -->
+        <!-- Manage button - Updated to match index.vue -->
         <Link
           v-if="canManage"
           :href="`/manage/papers/${concept.slug}/${paper.slug}`"
