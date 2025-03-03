@@ -60,27 +60,39 @@ export default class UserProgressService {
    * Get user completion percentage for a paper
    */
   async getCompletionPercentage(userId: number, paperId: number) {
-    // Get total questions in paper
-    const paperQuestionsCount = await db
-      .from('questions')
-      .where('past_paper_id', paperId)
-      .count('* as total')
+    try {
+      // Get total questions in paper
+      const paperQuestionsCount = await db
+        .from('questions')
+        .where('past_paper_id', paperId)
+        .count('* as total')
 
-    const totalQuestions = Number(paperQuestionsCount[0]?.$extras.total || 0)
-    if (totalQuestions === 0) return 0
+      // More defensive approach to get the count value
+      const totalQuestions = Number(
+        paperQuestionsCount[0]?.total || paperQuestionsCount[0]?.$extras?.total || 0
+      )
 
-    // Get count of unique questions user has answered for this paper
-    const answeredQuestionsCount = await db
-      .from('user_mcq_responses as umr')
-      .join('questions as q', 'umr.question_id', 'q.id')
-      .where('q.past_paper_id', paperId)
-      .where('umr.user_id', userId)
-      .countDistinct('umr.question_id as answered')
+      if (totalQuestions === 0) return 0
 
-    const answeredQuestions = Number(answeredQuestionsCount[0]?.$extras.answered || 0)
+      // Get count of unique questions user has answered for this paper
+      const answeredQuestionsCount = await db
+        .from('user_mcq_responses as umr')
+        .join('questions as q', 'umr.question_id', 'q.id')
+        .where('q.past_paper_id', paperId)
+        .where('umr.user_id', userId)
+        .countDistinct('umr.question_id as answered')
 
-    // Calculate percentage
-    return Math.round((answeredQuestions / totalQuestions) * 100)
+      // More defensive approach for this result as well
+      const answeredQuestions = Number(
+        answeredQuestionsCount[0]?.answered || answeredQuestionsCount[0]?.$extras?.answered || 0
+      )
+
+      // Calculate percentage
+      return Math.round((answeredQuestions / totalQuestions) * 100)
+    } catch (error) {
+      console.error('Error calculating completion percentage:', error)
+      return 0 // Return 0% if there was an error
+    }
   }
 
   /**

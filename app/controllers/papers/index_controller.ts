@@ -184,15 +184,31 @@ export default class IndexController {
   }
 
   async getMyResponses({ params, response, auth }: HttpContext) {
-    if (!auth.user) return response.unauthorized()
+    if (!auth.user) {
+      return response.unauthorized()
+    }
 
+    const userId = auth.user.id
+    const paperId = params.paperId
+
+    // Get user responses
     const responses = await UserMcqResponse.query()
-      .where('user_id', auth.user.id)
-      .whereIn(
-        'question_id',
-        db.from('questions').select('id').where('past_paper_id', params.paperId)
-      )
+      .where('user_id', userId)
+      .whereIn('question_id', db.from('questions').select('id').where('past_paper_id', paperId))
 
-    return response.json({ responses })
+    // Get progress information
+    const progress = await this.userProgressService.getPaperProgress(userId, paperId)
+
+    // Get completion percentage
+    const completionPercentage = await this.userProgressService.getCompletionPercentage(
+      userId,
+      paperId
+    )
+
+    return response.json({
+      responses,
+      progress,
+      completionPercentage,
+    })
   }
 }

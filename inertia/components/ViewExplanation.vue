@@ -3,6 +3,7 @@ import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
+import rehypeRaw from 'rehype-raw' 
 import rehypeStringify from 'rehype-stringify'
 import { ref, watchEffect } from 'vue'
 
@@ -17,6 +18,7 @@ watchEffect(async () => {
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw) 
     .use(rehypeStringify)
     .process(props.content)
 
@@ -84,6 +86,9 @@ watchEffect(async () => {
     border: 2px solid hsl(var(--border));
     border-radius: 0.5rem;
     overflow: hidden;
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   :deep(th),

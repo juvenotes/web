@@ -13,9 +13,8 @@ import {
   MessageSquare,
   Users,
   ArrowRight,
-  Clock,
 } from 'lucide-vue-next'
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, reactive } from 'vue'
 import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
@@ -40,34 +39,6 @@ const breadcrumbItems = computed(() => [
 
 const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
 const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
-
-// Continue from last question logic
-// const continueFromLastQuestion = () => {
-//   console.log('Continue function called', props.progress)
-
-//   if (!props.progress?.lastQuestionId) {
-//     console.log('No lastQuestionId to continue from')
-//     return
-//   }
-
-//   const questionIndex = props.questions.findIndex((q) => q.id === props.progress.lastQuestionId)
-
-//   console.log('Found question at index:', questionIndex, 'with ID:', props.progress.lastQuestionId)
-
-//   if (questionIndex === -1) return
-
-//   // Add a slightly longer timeout to ensure DOM is ready
-//   setTimeout(() => {
-//     const element = document.getElementById(`question-${props.progress.lastQuestionId}`)
-//     console.log('Found element:', element)
-
-//     if (element) {
-//       element.scrollIntoView({ behavior: 'smooth' })
-//       element.classList.add('highlight-question')
-//       setTimeout(() => element.classList.remove('highlight-question'), 2000)
-//     }
-//   }, 500) // Increased from 300ms to 500ms for reliability
-// }
 
 // Record answer to the server
 async function recordResponse(questionId: number, choiceId: number, isCorrect: boolean) {
@@ -121,63 +92,102 @@ const handleChoiceSelect = (questionId: number, choiceId: number) => {
   const choice = question?.choices.find((c) => c.id === choiceId)
 
   if (question && choice) {
-    recordResponse(questionId, choiceId, choice.isCorrect)
+    recordResponse(questionId, choiceId, choice.isCorrect).then(() => {
+      updateProgress()
+    })
   }
 }
 
-// Mark all questions user has previously answered
-// const initializeUserAnswers = async () => {
-//   if (!props.progress?.attemptCount) return
+const paperProgress = reactive({
+  completionPercentage: props.completionPercentage,
+  progress: props.progress,
+  attemptCount: props.attemptCount,
+})
 
-//   try {
-//     console.log('Fetching user responses')
-//     const response = await axios.get(`/api/papers/${props.paper.id}/my-responses`)
-//     console.log('Received responses:', response.data)
+const hasAttemptedPaper = computed(() => paperProgress.completionPercentage > 0)
 
-//     if (response.data.responses?.length) {
-//       response.data.responses.forEach((item) => {
-//         const question = props.questions.find((q) => q.id === item.questionId)
-//         if (!question) return
+const attemptCountText = computed(() =>
+  hasAttemptedPaper.value
+    ? 'You have attempted questions in this paper'
+    : 'You have not attempted any questions yet'
+)
 
-//         // Convert letter (A, B, C) back to choice ID
-//         const choiceIndex = item.selectedOption.charCodeAt(0) - 65
-//         if (question.choices[choiceIndex]) {
-//           selectedAnswers.value[question.id] = question.choices[choiceIndex].id
-//           showAnswer.value[question.id] = true
-//         }
-//       })
+// Continue from last question function
+const continueFromLastQuestion = () => {
+  // Early return if no progress or lastQuestionId
+  if (!paperProgress.progress || !paperProgress.progress.lastQuestionId) {
+    return
+  }
 
-//       console.log('Initialized selected answers:', selectedAnswers.value)
-//     }
-//   } catch (error) {
-//     console.error('Failed to fetch user responses:', error)
-//   }
-// }
+  // Store the ID in a local constant - TypeScript will better track this
+  const lastQuestionId = paperProgress.progress.lastQuestionId
 
-// Call this on component mount
-// onMounted(() => {
-//   if ((props.progress?.attemptCount ?? 0) > 0) {
-//     initializeUserAnswers()
-//   }
-// })
+  const questionIndex = props.questions.findIndex((q) => q.id === lastQuestionId)
 
-// const hasAttemptedPaper = computed(
-//   () =>
-//     !!props.progress &&
-//     typeof props.progress.attemptCount === 'number' &&
-//     props.progress.attemptCount > 0
-// )
+  if (questionIndex === -1) return
 
-// const attemptCountText = computed(() => {
-//   if (!props.progress) return ''
-//   return props.progress.attemptCount > 0
-//     ? `You have attempted this paper before (${props.progress.attemptCount} times)`
-//     : 'You have not attempted this paper yet'
-// })
+  // Use the local constant in the timeout function
+  setTimeout(() => {
+    const element = document.getElementById(`question-${lastQuestionId}`)
+
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+      element.classList.add('highlight-question')
+      setTimeout(() => element.classList.remove('highlight-question'), 2000)
+    }
+  }, 500)
+}
+
+// Initialize user answers from saved responses
+const initializeUserAnswers = async () => {
+  if (!paperProgress.progress?.attemptCount) return
+
+  try {
+    const response = await axios.get(`/api/papers/${props.paper.id}/my-responses`)
+
+    if (response.data.responses?.length) {
+      response.data.responses.forEach((item: { questionId: number; selectedOption: string }) => {
+        const question = props.questions.find((q) => q.id === item.questionId)
+        if (!question) return
+
+        // Convert letter (A, B, C) back to choice ID
+        const choiceIndex = item.selectedOption.charCodeAt(0) - 65
+        if (question.choices[choiceIndex]) {
+          selectedAnswers.value[question.id] = question.choices[choiceIndex].id
+          showAnswer.value[question.id] = true
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Failed to fetch user responses:', error)
+  }
+}
+
+// Function to update progress data
+const updateProgress = async () => {
+  try {
+    const response = await axios.get(`/api/papers/${props.paper.id}/my-responses`)
+    if (response.data) {
+      paperProgress.completionPercentage = response.data.completionPercentage || 0
+      if (response.data.progress) {
+        paperProgress.progress = response.data.progress
+      }
+    }
+  } catch (error) {
+    console.error('Failed to update progress:', error)
+  }
+}
 
 const getCorrectAnswer = (question: QuestionDto) => {
   return question.choices.find((choice) => choice.isCorrect)
 }
+
+// Call this on component mount
+onMounted(() => {
+  if ((paperProgress.progress?.attemptCount ?? 0) > 0) {
+    initializeUserAnswers()
+  }
+})
 
 const getLastEditDate = computed(() => {
   const date = new Date(props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt)
@@ -197,7 +207,7 @@ const getLastEditDate = computed(() => {
     :question="feedbackDialog.question"
     @close="closeFeedbackDialog"
   />
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+  <div class="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header section -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
       <div
@@ -273,47 +283,63 @@ const getLastEditDate = computed(() => {
 
     <DisclaimerBanner />
 
-    <!-- <div class="bg-white p-6 rounded-xl border mb-6">
-      <div v-if="progress" class="flex items-center gap-2 mb-4">
+    <div class="bg-white p-6 rounded-xl border mb-6">
+      <div v-if="paperProgress.progress" class="flex items-center gap-2 mb-4">
         <CheckCircle v-if="hasAttemptedPaper" class="h-5 w-5 text-green-500" />
         <XCircle v-else class="h-5 w-5 text-amber-500" />
         <span class="font-medium">{{ attemptCountText }}</span>
       </div>
 
-      <div v-if="completionPercentage > 0" class="p-4 bg-white rounded-xl border mb-4">
+      <div
+        v-if="paperProgress.completionPercentage > 0"
+        class="p-4 bg-white rounded-xl border mb-4"
+      >
         <div class="flex justify-between items-center mb-2">
           <span class="font-medium text-sm">Your progress</span>
-          <span class="text-sm font-semibold">{{ completionPercentage }}%</span>
+          <span class="text-sm font-semibold">{{ paperProgress.completionPercentage }}%</span>
         </div>
 
         <div class="h-2.5 bg-gray-200 rounded-full">
           <div
             class="h-2.5 bg-primary rounded-full transition-all duration-300"
-            :style="{ width: `${completionPercentage}%` }"
+            :style="{ width: `${paperProgress.completionPercentage}%` }"
             :class="{
-              'bg-amber-500': completionPercentage < 25,
-              'bg-orange-500': completionPercentage >= 25 && completionPercentage < 50,
-              'bg-blue-500': completionPercentage >= 50 && completionPercentage < 75,
-              'bg-green-500': completionPercentage >= 75,
+              'bg-amber-500': paperProgress.completionPercentage < 25,
+              'bg-orange-500':
+                paperProgress.completionPercentage >= 25 && paperProgress.completionPercentage < 50,
+              'bg-blue-500':
+                paperProgress.completionPercentage >= 50 && paperProgress.completionPercentage < 75,
+              'bg-green-500': paperProgress.completionPercentage >= 75,
             }"
           ></div>
         </div>
 
         <div class="mt-2 flex justify-between items-center text-xs text-muted-foreground">
           <span
-            >{{ Math.round((completionPercentage * questions.length) / 100) }} of
+            >{{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of
             {{ questions.length }} questions</span
           >
 
           <span
-            v-if="completionPercentage === 100"
+            v-if="paperProgress.completionPercentage === 100"
             class="text-green-600 font-medium flex items-center gap-1"
           >
             <CheckCircle class="h-3.5 w-3.5" /> Complete
           </span>
         </div>
       </div>
-    </div> -->
+    </div>
+
+    <!-- Add this Continue button back in -->
+    <Button
+      v-if="paperProgress.progress?.lastQuestionId"
+      variant="default"
+      class="flex items-center gap-1.5"
+      @click="continueFromLastQuestion"
+    >
+      <ArrowRight class="h-4 w-4" />
+      Continue where you left off
+    </Button>
 
     <!-- Questions List -->
     <div class="space-y-6">
@@ -321,7 +347,7 @@ const getLastEditDate = computed(() => {
         v-for="(question, index) in questions"
         :key="question.id"
         :id="`question-${question.id}`"
-        class="p-6 bg-white rounded-xl border"
+        class="p-4 sm:p-6 bg-white rounded-xl border"
       >
         <!-- Question Text -->
         <div class="space-y-4">
@@ -372,7 +398,7 @@ const getLastEditDate = computed(() => {
             <!-- Explanation Section -->
             <div
               v-if="showAnswer[question.id]"
-              class="mt-4 p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]"
+              class="mt-4 p-3 sm:p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]"
             >
               <p class="text-lg font-semibold text-foreground">
                 <strong>Correct Answer:</strong> {{ getCorrectAnswer(question)?.choiceText }}
@@ -383,17 +409,21 @@ const getLastEditDate = computed(() => {
             </div>
 
             <!-- Feedback Button -->
-            <!-- <Button v-if="showAnswer[question.id]" variant="outline"
+            <Button
+              v-if="showAnswer[question.id]"
+              variant="outline"
               class="mt-4 flex items-center gap-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 border border-blue-200 transition-all duration-200 rounded-lg px-5 py-2.5 shadow-sm hover:shadow group"
-              @click="openFeedbackDialog(question)">
+              @click="openFeedbackDialog(question)"
+            >
               <MessageSquare
-                class="h-4.5 w-4.5 opacity-75 group-hover:scale-110 group-hover:opacity-100 transition-all duration-200" />
+                class="h-4.5 w-4.5 opacity-75 group-hover:scale-110 group-hover:opacity-100 transition-all duration-200"
+              />
               <span class="font-medium">Provide Feedback</span>
-            </Button> -->
+            </Button>
           </div>
 
           <!-- SAQ Section -->
-          <div v-if="question.isSaq" class="pl-10 space-y-4">
+          <div v-if="question.isSaq" class="pl-2 sm:pl-10 space-y-4">
             <div
               v-for="part in question.parts"
               :key="part.id"
@@ -415,26 +445,79 @@ const getLastEditDate = computed(() => {
               <!-- Explanation Section for Each Part -->
               <div
                 v-if="showAnswer[part.id]"
-                class="mt-4 p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]"
+                class="mt-4 p-3 sm:p-6 bg-[#CDE5ED] shadow-md rounded-lg border border-[#A8D3E7]"
               >
                 <p class="text-base text-muted-foreground text-[#1F2937] font-medium">
                   <strong>Explanation:</strong>
                   <ViewExplanation :content="part.expectedAnswer" />
                 </p>
               </div>
-              <!-- <Button
-                v-if="showAnswer[question.id]"
-                variant="ghost"
-                class="mt-4 flex items-center gap-2 px-4 py-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-all"
+              <!-- Feedback Button -->
+              <Button
+                v-if="showAnswer[part.id]"
+                variant="outline"
+                class="mt-4 flex items-center gap-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 border border-blue-200 transition-all duration-200 rounded-lg px-5 py-2.5 shadow-sm hover:shadow group"
                 @click="openFeedbackDialog(question)"
               >
                 <MessageSquare class="h-4 w-4 text-gray-700 transition-colors" />
                 <span class="font-medium">Provide Feedback</span>
-              </Button> -->
+              </Button>
             </div>
           </div>
         </div>
       </div>
+    </div>
+    <!-- Add at the end of your component, before closing </div> -->
+    <div
+      v-if="paperProgress.completionPercentage > 0"
+      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 border border-primary/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl"
+    >
+      <div class="w-10 h-10 relative">
+        <svg class="w-10 h-10 -rotate-90 transform">
+          <circle
+            class="text-gray-200"
+            stroke-width="3"
+            stroke="currentColor"
+            fill="transparent"
+            r="16"
+            cx="20"
+            cy="20"
+          />
+          <circle
+            class="text-primary"
+            stroke-width="3"
+            :stroke-dasharray="100.5"
+            :stroke-dashoffset="100.5 - paperProgress.completionPercentage"
+            stroke-linecap="round"
+            stroke="currentColor"
+            fill="transparent"
+            r="16"
+            cx="20"
+            cy="20"
+          />
+        </svg>
+        <span class="absolute inset-0 flex items-center justify-center text-xs font-medium">
+          {{ Math.round(paperProgress.completionPercentage) }}%
+        </span>
+      </div>
+
+      <div class="flex flex-col">
+        <span class="text-sm font-medium">Your progress</span>
+        <span class="text-xs text-muted-foreground">
+          {{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of
+          {{ questions.length }}
+        </span>
+      </div>
+
+      <Button
+        v-if="paperProgress.progress?.lastQuestionId"
+        size="sm"
+        variant="ghost"
+        @click="continueFromLastQuestion"
+      >
+        <ArrowRight class="h-4 w-4 mr-1" />
+        Continue
+      </Button>
     </div>
   </div>
 </template>

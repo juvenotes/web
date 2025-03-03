@@ -36,6 +36,8 @@ export default class UserPaperProgress extends BaseModel {
   @belongsTo(() => PastPaper)
   declare paper: BelongsTo<typeof PastPaper>
 
-  @belongsTo(() => Question)
+  @belongsTo(() => Question, {
+    foreignKey: 'lastQuestionId',
+  })
   declare lastQuestion: BelongsTo<typeof Question>
 }
