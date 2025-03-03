@@ -166,8 +166,10 @@ router
 //* PAST PAPERS -> VIEW
 router.get('/papers', [IndexPapersController, 'index']).use(middleware.auth())
 router.get('/papers/:slug', [IndexPapersController, 'show']).use(middleware.auth())
+router.get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'view'])
+router.post('/api/papers/record-response', [IndexPapersController, 'recordResponse'])
 router
-  .get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'view'])
+  .get('/api/papers/:paperId/my-responses', [IndexPapersController, 'getMyResponses'])
   .use(middleware.auth())
 
 // LEGAL -> TERMS

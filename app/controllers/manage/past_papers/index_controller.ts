@@ -325,7 +325,6 @@ export default class ManagePastPapersController {
     try {
       const content = await fs.readFile(file.tmpPath!, 'utf-8')
       const parsedQuestions = MCQParser.parse(content)
-      console.log('Parsed Questions:', parsedQuestions)
 
       logger.info('questions parsed', {
         count: parsedQuestions.length,

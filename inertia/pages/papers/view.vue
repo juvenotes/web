@@ -2,9 +2,21 @@
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
+import type UserPaperProgressDto from '#dtos/user_paper_progress'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Circle, CheckCircle, XCircle, Settings, MessageSquare } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import {
+  FileText,
+  Circle,
+  CheckCircle,
+  XCircle,
+  Settings,
+  MessageSquare,
+  Users,
+  ArrowRight,
+  Clock,
+} from 'lucide-vue-next'
+import { computed, ref, onMounted } from 'vue'
+import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
 
@@ -13,6 +25,9 @@ interface Props {
   concept: ConceptDto
   questions: QuestionDto[]
   canManage: boolean
+  progress: UserPaperProgressDto | null
+  attemptCount: number
+  completionPercentage: number
 }
 
 const props = defineProps<Props>()
@@ -25,6 +40,58 @@ const breadcrumbItems = computed(() => [
 
 const selectedAnswers = ref<Record<number, number | null>>({}) // to track selected answers
 const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
+
+// Continue from last question logic
+// const continueFromLastQuestion = () => {
+//   console.log('Continue function called', props.progress)
+
+//   if (!props.progress?.lastQuestionId) {
+//     console.log('No lastQuestionId to continue from')
+//     return
+//   }
+
+//   const questionIndex = props.questions.findIndex((q) => q.id === props.progress.lastQuestionId)
+
+//   console.log('Found question at index:', questionIndex, 'with ID:', props.progress.lastQuestionId)
+
+//   if (questionIndex === -1) return
+
+//   // Add a slightly longer timeout to ensure DOM is ready
+//   setTimeout(() => {
+//     const element = document.getElementById(`question-${props.progress.lastQuestionId}`)
+//     console.log('Found element:', element)
+
+//     if (element) {
+//       element.scrollIntoView({ behavior: 'smooth' })
+//       element.classList.add('highlight-question')
+//       setTimeout(() => element.classList.remove('highlight-question'), 2000)
+//     }
+//   }, 500) // Increased from 300ms to 500ms for reliability
+// }
+
+// Record answer to the server
+async function recordResponse(questionId: number, choiceId: number, isCorrect: boolean) {
+  try {
+    // Find the question and determine the index of the selected choice
+    const question = props.questions.find((q) => q.id === questionId)
+    if (!question) return
+
+    const choiceIndex = question.choices.findIndex((c) => c.id === choiceId)
+    if (choiceIndex === -1) return
+
+    // Convert index to letter (0 → 'A', 1 → 'B', etc.)
+    const letterChoice = String.fromCharCode(65 + choiceIndex)
+
+    await axios.post('/api/papers/record-response', {
+      paperId: props.paper.id,
+      questionId,
+      choiceId: letterChoice, // Now sending 'A', 'B', etc. instead of numeric ID
+      isCorrect,
+    })
+  } catch (error) {
+    console.error('Failed to record response', error)
+  }
+}
 
 const feedbackDialog = ref({
   isOpen: false,
@@ -48,7 +115,65 @@ const closeFeedbackDialog = () => {
 const handleChoiceSelect = (questionId: number, choiceId: number) => {
   selectedAnswers.value[questionId] = choiceId
   showAnswer.value[questionId] = true
+
+  // Get the selected choice to determine if it's correct
+  const question = props.questions.find((q) => q.id === questionId)
+  const choice = question?.choices.find((c) => c.id === choiceId)
+
+  if (question && choice) {
+    recordResponse(questionId, choiceId, choice.isCorrect)
+  }
 }
+
+// Mark all questions user has previously answered
+// const initializeUserAnswers = async () => {
+//   if (!props.progress?.attemptCount) return
+
+//   try {
+//     console.log('Fetching user responses')
+//     const response = await axios.get(`/api/papers/${props.paper.id}/my-responses`)
+//     console.log('Received responses:', response.data)
+
+//     if (response.data.responses?.length) {
+//       response.data.responses.forEach((item) => {
+//         const question = props.questions.find((q) => q.id === item.questionId)
+//         if (!question) return
+
+//         // Convert letter (A, B, C) back to choice ID
+//         const choiceIndex = item.selectedOption.charCodeAt(0) - 65
+//         if (question.choices[choiceIndex]) {
+//           selectedAnswers.value[question.id] = question.choices[choiceIndex].id
+//           showAnswer.value[question.id] = true
+//         }
+//       })
+
+//       console.log('Initialized selected answers:', selectedAnswers.value)
+//     }
+//   } catch (error) {
+//     console.error('Failed to fetch user responses:', error)
+//   }
+// }
+
+// Call this on component mount
+// onMounted(() => {
+//   if ((props.progress?.attemptCount ?? 0) > 0) {
+//     initializeUserAnswers()
+//   }
+// })
+
+// const hasAttemptedPaper = computed(
+//   () =>
+//     !!props.progress &&
+//     typeof props.progress.attemptCount === 'number' &&
+//     props.progress.attemptCount > 0
+// )
+
+// const attemptCountText = computed(() => {
+//   if (!props.progress) return ''
+//   return props.progress.attemptCount > 0
+//     ? `You have attempted this paper before (${props.progress.attemptCount} times)`
+//     : 'You have not attempted this paper yet'
+// })
 
 const getCorrectAnswer = (question: QuestionDto) => {
   return question.choices.find((choice) => choice.isCorrect)
@@ -99,18 +224,43 @@ const getLastEditDate = computed(() => {
                 {{ paper.examType.toUpperCase() }}
               </span>
               <span class="text-sm text-muted-foreground">{{ paper.year }}</span>
+              <span class="flex items-center gap-1 text-sm text-muted-foreground">
+                <Users class="h-3 w-3" />
+                {{ attemptCount }} {{ attemptCount === 1 ? 'attempt' : 'attempts' }}
+              </span>
             </div>
+            <!-- <div
+              v-if="progress?.lastVisitedAt"
+              class="flex items-center gap-1 mt-1 text-xs text-muted-foreground"
+            >
+              <Clock class="h-3 w-3" />
+              Last visited {{ new Date(progress.lastVisitedAt).toLocaleDateString() }}
+            </div> -->
           </div>
         </div>
-        <!-- Manage button - Updated to match index.vue -->
-        <Link
-          v-if="canManage"
-          :href="`/manage/papers/${concept.slug}/${paper.slug}`"
-          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
-        >
-          <Settings class="h-4 w-4" />
-          <span class="text-sm font-medium">Edit</span>
-        </Link>
+        <!-- Action buttons -->
+        <div class="flex flex-wrap gap-2">
+          <!-- Continue button -->
+          <!-- <Button
+            v-if="progress?.lastQuestionId"
+            variant="default"
+            class="flex items-center gap-1.5"
+            @click="continueFromLastQuestion"
+          >
+            <ArrowRight class="h-4 w-4" />
+            Continue where you left off
+          </Button> -->
+
+          <!-- Manage button -->
+          <Link
+            v-if="canManage"
+            :href="`/manage/papers/${concept.slug}/${paper.slug}`"
+            class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
+          >
+            <Settings class="h-4 w-4" />
+            <span class="text-sm font-medium">Edit</span>
+          </Link>
+        </div>
       </div>
     </div>
 
@@ -123,11 +273,54 @@ const getLastEditDate = computed(() => {
 
     <DisclaimerBanner />
 
+    <!-- <div class="bg-white p-6 rounded-xl border mb-6">
+      <div v-if="progress" class="flex items-center gap-2 mb-4">
+        <CheckCircle v-if="hasAttemptedPaper" class="h-5 w-5 text-green-500" />
+        <XCircle v-else class="h-5 w-5 text-amber-500" />
+        <span class="font-medium">{{ attemptCountText }}</span>
+      </div>
+
+      <div v-if="completionPercentage > 0" class="p-4 bg-white rounded-xl border mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <span class="font-medium text-sm">Your progress</span>
+          <span class="text-sm font-semibold">{{ completionPercentage }}%</span>
+        </div>
+
+        <div class="h-2.5 bg-gray-200 rounded-full">
+          <div
+            class="h-2.5 bg-primary rounded-full transition-all duration-300"
+            :style="{ width: `${completionPercentage}%` }"
+            :class="{
+              'bg-amber-500': completionPercentage < 25,
+              'bg-orange-500': completionPercentage >= 25 && completionPercentage < 50,
+              'bg-blue-500': completionPercentage >= 50 && completionPercentage < 75,
+              'bg-green-500': completionPercentage >= 75,
+            }"
+          ></div>
+        </div>
+
+        <div class="mt-2 flex justify-between items-center text-xs text-muted-foreground">
+          <span
+            >{{ Math.round((completionPercentage * questions.length) / 100) }} of
+            {{ questions.length }} questions</span
+          >
+
+          <span
+            v-if="completionPercentage === 100"
+            class="text-green-600 font-medium flex items-center gap-1"
+          >
+            <CheckCircle class="h-3.5 w-3.5" /> Complete
+          </span>
+        </div>
+      </div>
+    </div> -->
+
     <!-- Questions List -->
     <div class="space-y-6">
       <div
         v-for="(question, index) in questions"
         :key="question.id"
+        :id="`question-${question.id}`"
         class="p-6 bg-white rounded-xl border"
       >
         <!-- Question Text -->
@@ -246,6 +439,22 @@ const getLastEditDate = computed(() => {
   </div>
 </template>
 <style scoped>
+.highlight-question {
+  animation: highlight 1.5s ease-in-out;
+}
+
+@keyframes highlight {
+  0%,
+  100% {
+    box-shadow: none;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(var(--color-primary), 0.4);
+    transform: scale(1.02);
+  }
+}
+
 .explanation-content {
   :deep(ol) {
     list-style-type: decimal;

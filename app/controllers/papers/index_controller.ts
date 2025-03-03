@@ -5,8 +5,16 @@ import PastPaperDto from '#dtos/past_paper'
 import PastPaper from '#models/past_paper'
 import QuestionDto from '#dtos/question'
 import { PaperType } from '#enums/exam_type'
+import UserProgressService from '#services/progress_service'
+import UserPaperProgress from '#models/user_paper_progress'
+import { inject } from '@adonisjs/core'
+import UserMcqResponse from '#models/user_mcq_response'
+import db from '@adonisjs/lucid/services/db'
 
+@inject()
 export default class IndexController {
+  constructor(private userProgressService: UserProgressService) {}
+
   async index({ inertia, logger, auth, bouncer }: HttpContext) {
     const context = { controller: 'PapersIndexController', action: 'index' }
     logger.info({ ...context, message: 'Fetching root level concepts with papers' })
@@ -104,10 +112,36 @@ export default class IndexController {
       })
       .firstOrFail()
 
+    // Get attempt count
+    const attemptCountResult = await UserPaperProgress.query()
+      .where('paper_id', paper.id)
+      .countDistinct('user_id')
+
+    const attemptCount = Number(attemptCountResult[0]?.$extras.count || 0)
+
+    let progress = null
+    let completionPercentage = 0
+
+    if (auth.user) {
+      // Record paper view
+      await this.userProgressService.recordPaperView(auth.user.id, paper.id)
+
+      // Get existing progress
+      progress = await this.userProgressService.getPaperProgress(auth.user.id, paper.id)
+
+      // Get completion percentage
+      completionPercentage = await this.userProgressService.getCompletionPercentage(
+        auth.user.id,
+        paper.id
+      )
+    }
+
     logger.info({
       ...context,
       paperTitle: paper.title,
       questionsCount: paper.questions?.length ?? 0,
+      attemptsCount: attemptCount,
+      completionPercentage,
       message: 'Retrieved paper with questions',
       userId: auth.user?.id,
     })
@@ -119,6 +153,46 @@ export default class IndexController {
       concept: new ConceptDto(paper.concept),
       questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
       canManage,
+      progress,
+      attemptCount,
+      completionPercentage,
     })
+  }
+
+  async recordResponse({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const {
+      paperId,
+      questionId,
+      choiceId: selectedOption,
+      isCorrect,
+    } = request.only(['paperId', 'questionId', 'choiceId', 'isCorrect'])
+
+    // Pass the selected option (now a letter) to your service
+    await this.userProgressService.recordQuestionAttempt(
+      auth.user.id,
+      paperId,
+      questionId,
+      selectedOption, // This is now 'A', 'B', 'C', etc.
+      isCorrect
+    )
+
+    return response.ok({ success: true })
+  }
+
+  async getMyResponses({ params, response, auth }: HttpContext) {
+    if (!auth.user) return response.unauthorized()
+
+    const responses = await UserMcqResponse.query()
+      .where('user_id', auth.user.id)
+      .whereIn(
+        'question_id',
+        db.from('questions').select('id').where('past_paper_id', params.paperId)
+      )
+
+    return response.json({ responses })
   }
 }
