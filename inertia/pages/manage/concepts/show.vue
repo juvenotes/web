@@ -64,7 +64,6 @@ const contentForm = useForm({
 })
 
 const updateContent = (value: string) => {
-  console.log('Content updated:', value)
   contentForm.knowledgeBlock = value
 }
 
