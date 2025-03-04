@@ -176,6 +176,9 @@ router
   .post('/api/papers/record-saq-response', [IndexPapersController, 'recordSaqResponse'])
   .use(middleware.auth())
 router
+  .post('/api/papers/record-osce-response', [IndexPapersController, 'recordOsceResponse'])
+  .use(middleware.auth())
+router
   .get('/api/papers/:paperId/my-responses', [IndexPapersController, 'getMyResponses'])
   .use(middleware.auth())
 

@@ -18,7 +18,7 @@ export default class extends BaseSchema {
         .integer('station_id')
         .unsigned()
         .references('id')
-        .inTable('osce_stations')
+        .inTable('stations')
         .onDelete('CASCADE')
       table.string('action').defaultTo('viewed') // Just tracking that they viewed it
 

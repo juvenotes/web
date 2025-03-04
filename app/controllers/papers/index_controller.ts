@@ -196,6 +196,24 @@ export default class IndexController {
     return response.ok({ success: true })
   }
 
+  async recordOsceResponse({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const { paperId, questionId, stationId } = request.only(['paperId', 'questionId', 'stationId'])
+
+    // Record that the user viewed this OSCE station
+    await this.userProgressService.recordOsceStationView(
+      auth.user.id,
+      paperId,
+      questionId,
+      stationId
+    )
+
+    return response.ok({ success: true })
+  }
+
   async getMyResponses({ params, response, auth }: HttpContext) {
     if (!auth.user) {
       return response.unauthorized()
