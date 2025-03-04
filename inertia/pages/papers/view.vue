@@ -67,16 +67,19 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
 // Record SAQ viewing as progress
 const handleSaqPartView = (questionId: number, partId: number) => {
   showAnswer.value[partId] = true
-  
-  axios.post('/api/papers/record-saq-response', {
-    paperId: props.paper.id,
-    questionId,
-    partId
-  }).then(() => {
-    updateProgress()
-  }).catch(error => {
-    console.error('Failed to record SAQ response', error)
-  })
+
+  axios
+    .post('/api/papers/record-saq-response', {
+      paperId: props.paper.id,
+      questionId,
+      partId,
+    })
+    .then(() => {
+      updateProgress()
+    })
+    .catch((error) => {
+      console.error('Failed to record SAQ response', error)
+    })
 }
 
 const feedbackDialog = ref({
@@ -266,15 +269,15 @@ const getLastEditDate = computed(() => {
         <!-- Action buttons -->
         <div class="flex flex-wrap gap-2">
           <!-- Continue button -->
-          <!-- <Button
-            v-if="progress?.lastQuestionId"
+          <Button
+            v-if="paperProgress.progress?.lastQuestionId"
             variant="default"
             class="flex items-center gap-1.5"
             @click="continueFromLastQuestion"
           >
             <ArrowRight class="h-4 w-4" />
             Continue where you left off
-          </Button> -->
+          </Button>
 
           <!-- Manage button -->
           <Link
@@ -344,17 +347,6 @@ const getLastEditDate = computed(() => {
         </div>
       </div>
     </div>
-
-    <!-- Add this Continue button back in -->
-    <Button
-      v-if="paperProgress.progress?.lastQuestionId"
-      variant="default"
-      class="flex items-center gap-1.5"
-      @click="continueFromLastQuestion"
-    >
-      <ArrowRight class="h-4 w-4" />
-      Continue where you left off
-    </Button>
 
     <!-- Questions List -->
     <div class="space-y-6">
@@ -482,7 +474,7 @@ const getLastEditDate = computed(() => {
         </div>
       </div>
     </div>
-    <!-- Add at the end of your component, before closing </div> -->
+    <!-- The progress floating icon -->
     <div
       v-if="paperProgress.completionPercentage > 0"
       class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 border border-primary/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl"
@@ -534,6 +526,74 @@ const getLastEditDate = computed(() => {
         Continue
       </Button>
     </div>
+    <!-- The progress floating icon - with enhanced mobile responsiveness -->
+    <!-- <div
+      v-if="paperProgress.completionPercentage > 0"
+      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg border border-primary/20 z-50 transition-all duration-300 hover:shadow-xl"
+      :class="{
+        'p-2 sm:p-4': true,
+        'w-14 h-14 sm:w-auto sm:h-auto': true,
+        'flex sm:flex-row flex-col items-center sm:gap-3 gap-1': true,
+      }"
+    >
+      <div class="w-8 h-8 sm:w-10 sm:h-10 relative">
+        <svg class="w-full h-full -rotate-90 transform">
+          <circle
+            class="text-gray-200"
+            stroke-width="3"
+            stroke="currentColor"
+            fill="transparent"
+            r="16"
+            cx="20"
+            cy="20"
+          />
+          <circle
+            class="text-primary"
+            stroke-width="3"
+            :stroke-dasharray="100.5"
+            :stroke-dashoffset="100.5 - paperProgress.completionPercentage"
+            stroke-linecap="round"
+            stroke="currentColor"
+            fill="transparent"
+            r="16"
+            cx="20"
+            cy="20"
+          />
+        </svg>
+        <span class="absolute inset-0 flex items-center justify-center text-xs font-medium">
+          {{ Math.round(paperProgress.completionPercentage) }}%
+        </span>
+      </div>
+
+      <div class="hidden sm:flex flex-col">
+        <span class="text-sm font-medium">Your progress</span>
+        <span class="text-xs text-muted-foreground">
+          {{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of
+          {{ questions.length }}
+        </span>
+      </div>
+
+      <Button
+        v-if="paperProgress.progress?.lastQuestionId"
+        size="sm"
+        variant="ghost"
+        class="hidden sm:flex"
+        @click="continueFromLastQuestion"
+      >
+        <ArrowRight class="h-4 w-4 mr-1" />
+        Continue
+      </Button>
+
+      <Button
+        v-if="paperProgress.progress?.lastQuestionId"
+        size="icon"
+        variant="ghost"
+        class="sm:hidden absolute -top-2 -right-2 h-6 w-6 bg-primary text-white rounded-full p-1"
+        @click="continueFromLastQuestion"
+      >
+        <ArrowRight class="h-4 w-4" />
+      </Button>
+    </div> -->
   </div>
 </template>
 <style scoped>

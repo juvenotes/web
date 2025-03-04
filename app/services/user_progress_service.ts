@@ -63,13 +63,22 @@ export default class UserProgressService {
    * Record user viewing an SAQ part answer
    */
   async recordSaqPartView(userId: number, paperId: number, questionId: number, partId: number) {
-    // Record the specific part view
-    await UserSaqResponse.create({
-      userId,
-      questionId,
-      partId,
-      answerText: 'viewed', // Just recording that it was viewed
-    })
+    // First check if the user has already viewed this part
+    const existingView = await UserSaqResponse.query()
+      .where('userId', userId)
+      .where('questionId', questionId)
+      .where('partId', partId)
+      .first()
+
+    // Only create a new view record if it doesn't already exist
+    if (!existingView) {
+      await UserSaqResponse.create({
+        userId,
+        questionId,
+        partId,
+        answerText: 'viewed', // Just recording that it was viewed
+      })
+    }
 
     // Find existing progress record
     const existingProgress = await UserPaperProgress.query()
@@ -107,13 +116,22 @@ export default class UserProgressService {
     questionId: number,
     stationId: number
   ) {
-    // Record the specific station view
-    await UserOsceResponse.create({
-      userId,
-      questionId,
-      stationId,
-      action: 'viewed', // Just recording that it was viewed
-    })
+    // First check if the user has already viewed this station
+    const existingView = await UserOsceResponse.query()
+      .where('userId', userId)
+      .where('questionId', questionId)
+      .where('stationId', stationId)
+      .first()
+
+    // Only create a new view record if it doesn't already exist
+    if (!existingView) {
+      await UserOsceResponse.create({
+        userId,
+        questionId,
+        stationId,
+        action: 'viewed', // Just recording that it was viewed
+      })
+    }
 
     // Find existing progress record
     const existingProgress = await UserPaperProgress.query()

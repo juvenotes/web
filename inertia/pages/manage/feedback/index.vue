@@ -80,6 +80,7 @@ function markAsResolved(feedbackId: number) {
 </script>
 
 <template>
+  <AppHead title="Manage feedback" description="Manage feedback for all questions" />
   <!-- Header and filter controls -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
