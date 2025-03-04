@@ -64,6 +64,21 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
   }
 }
 
+// Record SAQ viewing as progress
+const handleSaqPartView = (questionId: number, partId: number) => {
+  showAnswer.value[partId] = true
+  
+  axios.post('/api/papers/record-saq-response', {
+    paperId: props.paper.id,
+    questionId,
+    partId
+  }).then(() => {
+    updateProgress()
+  }).catch(error => {
+    console.error('Failed to record SAQ response', error)
+  })
+}
+
 const feedbackDialog = ref({
   isOpen: false,
   question: null as QuestionDto | null,
@@ -436,7 +451,7 @@ const getLastEditDate = computed(() => {
               <!-- Show Answer Button for Each Part -->
               <button
                 v-if="!showAnswer[part.id]"
-                @click="showAnswer[part.id] = true"
+                @click="handleSaqPartView(question.id, part.id)"
                 class="mt-3 text-primary font-semibold text-sm rounded-lg p-2 bg-[#CDE5ED]"
               >
                 Show Answer
