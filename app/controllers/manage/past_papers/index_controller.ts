@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Concept from '#models/concept'
 import PastPaper from '#models/past_paper'
+import QuestionFeedback from '#models/question_feedback'
 import ConceptDto from '#dtos/concept'
 import PastPaperDto from '#dtos/past_paper'
 import QuestionDto from '#dtos/question'
@@ -19,6 +20,7 @@ import {
   updateSaqQuestionValidator,
 } from '#validators/question'
 import { PaperType } from '#enums/exam_type'
+import QuestionFeedbackDto from '#dtos/question_feedback'
 
 export default class ManagePastPapersController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -106,6 +108,7 @@ export default class ManagePastPapersController {
   /**
    * Show a specific paper for management
    */
+
   async viewPaper({ params, inertia, logger, auth }: HttpContext) {
     const context = {
       controller: 'ManagePastPapersController',
@@ -114,20 +117,51 @@ export default class ManagePastPapersController {
       userId: auth.user?.id,
     }
     logger.info({ ...context, message: 'fetching paper details' })
-
     const paper = await PastPaper.query()
       .where('slug', params.paperSlug)
-      .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
       .preload('concept')
       .preload('questions', (query) => {
         query.orderBy('id', 'asc').preload('choices').preload('parts')
       })
       .firstOrFail()
 
+    // Get feedback counts for each question
+    const questionIds = paper.questions.map((q) => q.id)
+    const feedbackCounts = await db
+      .from('question_feedbacks')
+      .whereIn('question_id', questionIds)
+      .where('is_resolved', false)
+      .count('* as count')
+      .groupBy('question_id')
+      .select('question_id')
+
+    // Get actual feedback for each question
+    const questionFeedback = await QuestionFeedback.query()
+      .whereIn('questionId', questionIds)
+      .preload('user')
+      .orderBy('createdAt', 'desc')
+
+    // Create maps for counts and feedback items with proper type definitions
+    const feedbackCountMap: Record<number, number> = {}
+    feedbackCounts.forEach((item) => {
+      feedbackCountMap[item.question_id] = Number(item.count)
+    })
+
+    // Organize feedback by question with proper type definition
+    const questionFeedbackMap: Record<number, QuestionFeedbackDto[]> = {}
+    questionFeedback.forEach((item) => {
+      if (!questionFeedbackMap[item.questionId]) {
+        questionFeedbackMap[item.questionId] = []
+      }
+      questionFeedbackMap[item.questionId].push(new QuestionFeedbackDto(item))
+    })
+
     return inertia.render('manage/papers/view', {
       paper: new PastPaperDto(paper),
       concept: new ConceptDto(paper.concept),
       questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
+      feedbackCountMap,
+      questionFeedbackMap,
     })
   }
 
@@ -149,27 +183,10 @@ export default class ManagePastPapersController {
   //     })
   //     .firstOrFail()
 
-  //   // Get feedback counts for each question
-  //   const questionIds = paper.questions.map((q) => q.id)
-  //   const feedbackCounts = await db
-  //     .from('question_feedbacks')
-  //     .whereIn('question_id', questionIds)
-  //     .where('is_resolved', false)
-  //     .count('* as count')
-  //     .groupBy('question_id')
-  //     .select('question_id')
-
-  //   // Create a map of question ID to feedback count
-  //   const feedbackCountMap = {}
-  //   feedbackCounts.forEach((item) => {
-  //     feedbackCountMap[item.question_id] = Number(item.count)
-  //   })
-
   //   return inertia.render('manage/papers/view', {
   //     paper: new PastPaperDto(paper),
   //     concept: new ConceptDto(paper.concept),
   //     questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
-  //     feedbackCountMap,
   //   })
   // }
 

@@ -35,8 +35,8 @@ const IndexOsceController = () => import('#controllers/osce/osce_controller')
 const ManageOsceController = () => import('#controllers/manage/osce/osce_controller')
 const CiteController = () => import('#controllers/api/cite_controller')
 const QuestionFeedbackController = () => import('#controllers/papers/question_feedback_controller')
-// const ManageFeedbackController = () =>
-//   import('#controllers/manage/feedback/manage_feedback_controller')
+const ManageFeedbackController = () =>
+  import('#controllers/manage/feedback/manage_feedback_controller')
 
 // test crash route
 router.get('/crash', () => {
@@ -304,7 +304,10 @@ router
 // Question Feedback Routes
 router.post('/questions/:id/feedback', [QuestionFeedbackController, 'store']).use(middleware.auth())
 
-// router.get('/manage/feedback', [ManageFeedbackController, 'index']).use(middleware.auth())
-// router
-//   .post('/manage/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
-//   .use(middleware.auth())
+router.get('/manage/feedback', [ManageFeedbackController, 'index']).use(middleware.auth())
+router
+  .post('/manage/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
+  .use(middleware.auth())
+router
+  .post('/api/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
+  .use(middleware.auth())

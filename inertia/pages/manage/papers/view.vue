@@ -3,10 +3,13 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, Clock, Plus, Upload, Pencil, Trash2, ChevronDown } from 'lucide-vue-next'
+import { FileText, Clock, Plus, Upload, Pencil, Trash2, ChevronDown, MessageSquare } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import { useForm } from '@inertiajs/vue3'
+import QuestionFeedbackDto from '#dtos/question_feedback'
+import axios from 'axios'
+import { router } from '@inertiajs/vue3'
 
 defineOptions({ layout: AdminLayout })
 
@@ -14,6 +17,8 @@ interface Props {
   paper: PastPaperDto
   concept: ConceptDto
   questions: QuestionDto[]
+  feedbackCountMap: Record<number, number>
+  questionFeedbackMap: Record<number, QuestionFeedbackDto[]>
 }
 
 const props = defineProps<Props>()
@@ -87,6 +92,20 @@ function handleEditQuestion(question: QuestionDto) {
     showEditSaqDialog.value = true
     selectedQuestion.value = question
   }
+}
+
+function markFeedbackAsResolved(feedbackId: number) {
+  axios
+    .post(`/api/feedback/${feedbackId}/resolve`)
+    .then(() => {
+      toast.success('Feedback marked as resolved')
+      // Reload just the feedback data
+      router.reload({ only: ['feedbackCountMap', 'questionFeedbackMap'] })
+    })
+    .catch((error) => {
+      console.error('Failed to mark feedback as resolved:', error)
+      toast.error('Failed to mark feedback as resolved')
+    })
 }
 
 const breadcrumbItems = computed(() => [
@@ -221,6 +240,10 @@ const selectedQuestion = ref<QuestionDto | null>(null)
               <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
                 <Trash2 class="h-4 w-4 text-destructive" />
               </Button>
+              <Badge v-if="feedbackCountMap?.[question.id]" variant="outline" class="bg-amber-50">
+                <MessageSquare class="h-3.5 w-3.5 mr-1.5 text-amber-500" />
+                {{ feedbackCountMap?.[question.id] }}
+              </Badge>
             </div>
 
             <!-- MCQ Choices -->
@@ -271,6 +294,46 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                 </p>
               </div>
             </div>
+            <Collapsible v-if="feedbackCountMap?.[question.id]">
+              <CollapsibleTrigger class="flex items-center gap-2 text-sm mt-2 text-amber-600">
+                <MessageSquare class="h-4 w-4" />
+                {{ feedbackCountMap[question.id] }} feedback items
+                <ChevronDown class="h-4 w-4" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div class="mt-3 space-y-3 border-t pt-3">
+                  <div
+                    v-for="feedback in questionFeedbackMap[question.id]"
+                    :key="feedback.id"
+                    class="p-3 rounded-md bg-amber-50/50 border border-amber-100"
+                  >
+                    <div class="flex justify-between">
+                      <Badge>{{ feedback.feedbackTarget }}</Badge>
+                      <Button
+                        v-if="!feedback.isResolved"
+                        @click="markFeedbackAsResolved(feedback.id)"
+                        size="sm"
+                        variant="outline"
+                        class="h-7"
+                      >
+                        Mark Resolved
+                      </Button>
+                      <Badge v-else variant="outline" class="bg-green-50 text-green-600">
+                        Resolved
+                      </Badge>
+                    </div>
+                    <p class="mt-2 text-sm">{{ feedback.feedbackText }}</p>
+                    <div class="mt-1 text-xs text-muted-foreground">
+                      <p>Source: {{ feedback.feedbackSource }}</p>
+                      <p>
+                        By {{ feedback.user?.username || 'Anonymous' }} •
+                        {{ new Date(feedback.createdAt).toLocaleDateString() }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </div>
       </template>
