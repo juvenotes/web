@@ -70,6 +70,11 @@ export default class Question extends BaseModel {
     return this.type === QuestionType.SAQ
   }
 
+  @computed()
+  get isOsce() {
+    return this.type === QuestionType.OSCE
+  }
+
   // @computed()
   // get totalMarks() {
   //   if (this.isSaq && this.parts) {

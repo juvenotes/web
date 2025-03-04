@@ -5,7 +5,7 @@ import PastPaperDto from '#dtos/past_paper'
 import PastPaper from '#models/past_paper'
 import QuestionDto from '#dtos/question'
 import { PaperType } from '#enums/exam_type'
-import UserProgressService from '#services/progress_service'
+import UserProgressService from '#services/user_progress_service'
 import UserPaperProgress from '#models/user_paper_progress'
 import { inject } from '@adonisjs/core'
 import UserMcqResponse from '#models/user_mcq_response'
@@ -178,6 +178,37 @@ export default class IndexController {
       questionId,
       selectedOption, // This is now 'A', 'B', 'C', etc.
       isCorrect
+    )
+
+    return response.ok({ success: true })
+  }
+
+  async recordSaqResponse({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const { paperId, questionId, partId } = request.only(['paperId', 'questionId', 'partId'])
+
+    // Record that the user viewed this SAQ part
+    await this.userProgressService.recordSaqPartView(auth.user.id, paperId, questionId, partId)
+
+    return response.ok({ success: true })
+  }
+
+  async recordOsceResponse({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const { paperId, questionId, stationId } = request.only(['paperId', 'questionId', 'stationId'])
+
+    // Record that the user viewed this OSCE station
+    await this.userProgressService.recordOsceStationView(
+      auth.user.id,
+      paperId,
+      questionId,
+      stationId
     )
 
     return response.ok({ success: true })
