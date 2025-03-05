@@ -3,6 +3,7 @@ import User from '#models/user'
 import { Role } from '#enums/roles'
 import sendWelcomeEmail from '#actions/auth/registration_emails/send_welcome_email'
 import { SESSION_KEYS } from '#constants/session'
+import { generateUsername } from '#utils/generate_username'
 
 export default class GoogleSignupController {
   private async handleLogin(
@@ -31,6 +32,19 @@ export default class GoogleSignupController {
     googleUser: any,
     { auth, response, session, logger }: HttpContext
   ) {
+    // Generate a unique username
+    let username = generateUsername()
+    let exists = true
+
+    while (exists) {
+      const existing = await User.findBy('username', username)
+      if (!existing) {
+        exists = false
+      } else {
+        username = generateUsername()
+      }
+    }
+
     const newUser = await User.create({
       email: googleUser.email,
       provider: 'google',
@@ -39,6 +53,7 @@ export default class GoogleSignupController {
       password: '',
       fullName: googleUser.name,
       avatar_url: googleUser.avatarUrl,
+      username,
     })
 
     await auth.use('web').login(newUser)
