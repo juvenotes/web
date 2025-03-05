@@ -8,6 +8,7 @@ export default class UserMcqResponseDto extends BaseModelDto {
   declare userId: number
   declare questionId: number
   declare selectedOption: string
+  declare choiceId: number
   declare isCorrect: boolean
   declare createdAt: string
   declare user: UserDto | null
@@ -21,8 +22,9 @@ export default class UserMcqResponseDto extends BaseModelDto {
     this.userId = userMcqResponse.userId
     this.questionId = userMcqResponse.questionId
     this.selectedOption = userMcqResponse.selectedOption
+    this.choiceId = userMcqResponse.choiceId
     this.isCorrect = userMcqResponse.isCorrect
-    // this.createdAt = userMcqResponse.createdAt.toISO()!
+    this.createdAt = userMcqResponse.createdAt.toISO()!
     this.user = userMcqResponse.user && new UserDto(userMcqResponse.user)
     this.question = userMcqResponse.question && new QuestionDto(userMcqResponse.question)
   }

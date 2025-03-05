@@ -3,6 +3,7 @@ import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from './user.js'
 import Question from './question.js'
+import McqChoice from './mcq_choice.js'
 
 export default class UserMcqResponse extends BaseModel {
   @column({ isPrimary: true })
@@ -18,6 +19,9 @@ export default class UserMcqResponse extends BaseModel {
   declare selectedOption: string
 
   @column()
+  declare choiceId: number
+
+  @column()
   declare isCorrect: boolean
 
   @column.dateTime({ autoCreate: true })
@@ -28,4 +32,9 @@ export default class UserMcqResponse extends BaseModel {
 
   @belongsTo(() => Question)
   declare question: BelongsTo<typeof Question>
+
+  @belongsTo(() => McqChoice, {
+    foreignKey: 'choiceId',
+  })
+  declare choice: BelongsTo<typeof McqChoice>
 }

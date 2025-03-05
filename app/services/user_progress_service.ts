@@ -15,20 +15,21 @@ export default class UserProgressService {
   }
 
   /**
-   * Record question attempt and update last question
+   * Record mcq question attempt and update last question
    */
-  async recordQuestionAttempt(
+  async recordMcqAttempt(
     userId: number,
     paperId: number,
     questionId: number,
-    selectedOption: string,
+    choiceId: number,
     isCorrect: boolean
   ) {
     // Record the specific response
     await UserMcqResponse.create({
       userId,
       questionId,
-      selectedOption,
+      choiceId, // Store the actual choice ID
+      selectedOption: '',
       isCorrect,
     })
 

@@ -61,6 +61,7 @@ export const updateMcqQuestionValidator = vine.compile(
     choices: vine
       .array(
         vine.object({
+          id: vine.number().optional(),
           choiceText: vine.string().trim().minLength(1),
           isCorrect: vine.boolean(),
           explanation: vine.string().nullable().optional(),
@@ -76,6 +77,7 @@ export const updateSaqQuestionValidator = vine.compile(
     parts: vine
       .array(
         vine.object({
+          id: vine.number().optional(),
           partText: vine.string().trim().minLength(1),
           expectedAnswer: vine.string().trim().minLength(1),
           marks: vine.number().min(1),

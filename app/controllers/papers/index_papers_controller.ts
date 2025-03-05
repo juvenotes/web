@@ -159,24 +159,24 @@ export default class IndexController {
     })
   }
 
-  async recordResponse({ request, auth, response }: HttpContext) {
+  async recordMcqResponse({ request, auth, response }: HttpContext) {
     if (!auth.user) {
       return response.unauthorized()
     }
 
-    const {
-      paperId,
-      questionId,
-      choiceId: selectedOption,
-      isCorrect,
-    } = request.only(['paperId', 'questionId', 'choiceId', 'isCorrect'])
+    const { paperId, questionId, choiceId, isCorrect } = request.only([
+      'paperId',
+      'questionId',
+      'choiceId',
+      'isCorrect',
+    ])
 
     // Pass the selected option (now a letter) to your service
-    await this.userProgressService.recordQuestionAttempt(
+    await this.userProgressService.recordMcqAttempt(
       auth.user.id,
       paperId,
       questionId,
-      selectedOption, // This is now 'A', 'B', 'C', etc.
+      choiceId,
       isCorrect
     )
 
