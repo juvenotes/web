@@ -79,4 +79,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   MEILISEARCH_HOST: Env.schema.string({ format: 'host' }),
   MEILISEARCH_API_KEY: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for Redis
+  |----------------------------------------------------------
+  */
+  REDIS_HOST: Env.schema.string({ format: 'host' }),
+  REDIS_PORT: Env.schema.number(),
 })
