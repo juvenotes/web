@@ -21,6 +21,7 @@ import {
 } from '#validators/question'
 import { PaperType } from '#enums/exam_type'
 import QuestionFeedbackDto from '#dtos/question_feedback'
+import { ResponseStatus } from '#enums/response_status'
 
 export default class ManagePastPapersController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -480,11 +481,20 @@ export default class ManagePastPapersController {
               responseCount: Number(responsesExist.count),
             })
 
-            // Update the responses to these choices to mark them as obsolete
-            // This requires adding a status column to user_mcq_responses
-            // await trx.from('user_mcq_responses')
-            //   .whereIn('choice_id', choicesToRemove)
-            //   .update({ status: 'obsolete' })
+            // Update affected responses - save choice text and mark as obsolete
+            for (const choiceId of choicesToRemove) {
+              const choice = existingChoices.get(choiceId)!
+
+              await trx.from('user_mcq_responses').where('choice_id', choiceId).update({
+                status: ResponseStatus.OBSOLETE,
+                original_choice_text: choice.choiceText,
+              })
+            }
+
+            logger.info('Updated user responses for removed choices', {
+              questionId: question.id,
+              obsoleteResponseCount: Number(responsesExist.count),
+            })
           }
 
           // Remove the choices
@@ -588,15 +598,23 @@ export default class ManagePastPapersController {
               responseCount: Number(responsesExist.count),
             })
 
-            // You can uncomment this if you want to add a 'status' column to mark responses as obsolete
-            // await trx.from('user_saq_responses')
-            //   .whereIn('part_id', partsToRemove)
-            //   .update({ status: 'obsolete' })
+            // Update affected responses - save part text and mark as obsolete
+            for (const partId of partsToRemove) {
+              const part = existingParts.get(partId)!
+
+              await trx.from('user_saq_responses').where('part_id', partId).update({
+                status: ResponseStatus.OBSOLETE,
+                original_part_text: part.partText,
+              })
+            }
+
+            logger.info('Updated user responses for removed parts', {
+              questionId: question.id,
+              obsoleteResponseCount: Number(responsesExist.count),
+            })
           }
 
-          // Remove parts that are no longer needed
-          await trx.from('user_saq_responses').whereIn('part_id', partsToRemove).delete()
-
+          // Delete part from database
           await trx.from('saq_parts').whereIn('id', partsToRemove).delete()
         }
       })
