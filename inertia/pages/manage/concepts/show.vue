@@ -64,7 +64,6 @@ const contentForm = useForm({
 })
 
 const updateContent = (value: string) => {
-  console.log('Content updated:', value)
   contentForm.knowledgeBlock = value
 }
 
@@ -143,9 +142,11 @@ const handleDelete = () => {
             </Button>
           </template>
           <Button variant="outline" @click="showEditDialog = true" class="w-full sm:w-auto">
+            <Pencil class="h-4 w-4 mr-2" />
             Edit
           </Button>
           <Button variant="destructive" @click="handleDelete" class="w-full sm:w-auto">
+            <Trash2 class="h-4 w-4 mr-2" />
             Delete
           </Button>
         </div>

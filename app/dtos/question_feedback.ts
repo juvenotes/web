@@ -31,8 +31,8 @@ export default class QuestionFeedbackDto extends BaseModelDto {
     this.isResolved = questionFeedback.isResolved
     this.resolvedAt = questionFeedback.resolvedAt?.toISO()!
     this.resolvedBy = questionFeedback.resolvedBy
-    // this.createdAt = questionFeedback.createdAt.toISO()!
-    // this.updatedAt = questionFeedback.updatedAt.toISO()!
+    this.createdAt = questionFeedback.createdAt.toISO()!
+    this.updatedAt = questionFeedback.updatedAt.toISO()!
     this.user = questionFeedback.user && new UserDto(questionFeedback.user)
     this.question = questionFeedback.question && new QuestionDto(questionFeedback.question)
   }

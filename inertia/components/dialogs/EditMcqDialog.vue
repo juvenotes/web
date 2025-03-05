@@ -27,6 +27,7 @@ const form = useForm({
   questionText: props.question.questionText,
   type: QuestionType.MCQ as const,
   choices: props.question.choices.map((choice) => ({
+    id: choice.id,
     choiceText: choice.choiceText,
     isCorrect: choice.isCorrect,
     explanation: choice.explanation || '',
@@ -38,6 +39,7 @@ const initializeForm = () => {
   form.questionText = props.question.questionText
   form.type = QuestionType.MCQ
   form.choices = props.question.choices.map((choice) => ({
+    id: choice.id,
     choiceText: choice.choiceText,
     isCorrect: choice.isCorrect,
     explanation: choice.explanation || '',
@@ -74,7 +76,7 @@ onMounted(() => {
 
 const addChoice = () => {
   if (form.choices.length < 5) {
-    form.choices.push({ choiceText: '', isCorrect: false, explanation: '' })
+    form.choices.push({ id: 0, choiceText: '', isCorrect: false, explanation: '' })
   }
 }
 

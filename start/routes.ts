@@ -20,23 +20,26 @@ const EmailVerificationsController = () => import('#controllers/auth/email_verif
 const ForgotPasswordController = () => import('#controllers/auth/forgot_password_controller')
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
-const IndexConceptsController = () => import('#controllers/concepts/index_controller')
-const ManageConceptsController = () => import('#controllers/manage/concepts/index_controller')
-const IndexPapersController = () => import('#controllers/papers/index_controller')
+const IndexConceptsController = () => import('#controllers/concepts/index_concepts_controller')
+const ManageConceptsController = () =>
+  import('#controllers/manage/concepts/manage_concepts_controller')
+const IndexPapersController = () => import('#controllers/papers/index_papers_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
-const ManagePapersController = () => import('#controllers/manage/past_papers/index_controller')
-const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
-const ManageUsersController = () => import('#controllers/manage/users/index_controller')
+const ManagePapersController = () =>
+  import('#controllers/manage/past_papers/manage_papers_controller')
+const ManagementDashboardController = () =>
+  import('#controllers/manage/dashboard/manage_dashboard_controller')
+const ManageUsersController = () => import('#controllers/manage/users/manage_users_controller')
 const UploadImageController = () => import('#controllers/api/upload_image_controller')
 const ManageInstitutionsController = () =>
-  import('#controllers/manage/institutions/index_controller')
+  import('#controllers/manage/institutions/manage_institutions_controller')
 const IndexOsceController = () => import('#controllers/osce/osce_controller')
-const ManageOsceController = () => import('#controllers/manage/osce/osce_controller')
+const ManageOsceController = () => import('#controllers/manage/osce/manage_osce_controller')
 const CiteController = () => import('#controllers/api/cite_controller')
 const QuestionFeedbackController = () => import('#controllers/papers/question_feedback_controller')
-// const ManageFeedbackController = () =>
-//   import('#controllers/manage/feedback/manage_feedback_controller')
+const ManageFeedbackController = () =>
+  import('#controllers/manage/feedback/manage_feedback_controller')
 
 // test crash route
 router.get('/crash', () => {
@@ -169,6 +172,18 @@ router.get('/papers/:slug', [IndexPapersController, 'show']).use(middleware.auth
 router
   .get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'view'])
   .use(middleware.auth())
+router
+  .post('/api/papers/record-response', [IndexPapersController, 'recordMcqResponse'])
+  .use(middleware.auth())
+router
+  .post('/api/papers/record-saq-response', [IndexPapersController, 'recordSaqResponse'])
+  .use(middleware.auth())
+router
+  .post('/api/papers/record-osce-response', [IndexPapersController, 'recordOsceResponse'])
+  .use(middleware.auth())
+router
+  .get('/api/papers/:paperId/my-responses', [IndexPapersController, 'getMyResponses'])
+  .use(middleware.auth())
 
 // LEGAL -> TERMS
 router.get('/terms', [TermsController, 'handle']).as('legal.terms')
@@ -222,11 +237,27 @@ router
 
 //* CONCEPTS -> SEARCH
 router.get('/api/concepts/search', [IndexConceptsController, 'search']).use(middleware.auth())
+// router
+//   .get('/api/concepts/recent-searches', [IndexConceptsController, 'recentSearches'])
+//   .use(middleware.auth())
+// router.get('/api/concepts/store-selected-concept', [
+//   IndexConceptsController,
+//   'storeSelectedConcept',
+// ])
 
 //* MANAGE CONCEPTS -> SEARCH
 router
   .get('/api/manage/concepts/search', [ManageConceptsController, 'search'])
   .use(middleware.auth())
+// router
+//   .get('/api/manage/concepts/recent-searches', [ManageConceptsController, 'recentSearches'])
+//   .use(middleware.auth())
+// router
+//   .get('/api/manage/concepts/store-selected-concept', [
+//     ManageConceptsController,
+//     'storeSelectedConcept',
+//   ])
+//   .use(middleware.auth())
 
 //* UPLOAD IMAGE -> CLOUDINARY
 router.post('/api/upload-image', [UploadImageController, 'store']).use(middleware.auth())
@@ -292,7 +323,10 @@ router
 // Question Feedback Routes
 router.post('/questions/:id/feedback', [QuestionFeedbackController, 'store']).use(middleware.auth())
 
-// router.get('/manage/feedback', [ManageFeedbackController, 'index']).use(middleware.auth())
-// router
-//   .post('/manage/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
-//   .use(middleware.auth())
+router.get('/manage/feedback', [ManageFeedbackController, 'index']).use(middleware.auth())
+router
+  .post('/manage/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
+  .use(middleware.auth())
+router
+  .post('/api/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
+  .use(middleware.auth())
