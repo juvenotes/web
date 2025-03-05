@@ -26,6 +26,7 @@ const form = useForm({
   questionText: props.question.questionText,
   type: QuestionType.SAQ as const,
   parts: props.question.parts.map((part) => ({
+    id: part.id,
     partText: part.partText,
     expectedAnswer: part.expectedAnswer,
     marks: part.marks,
@@ -37,6 +38,7 @@ const initializeForm = () => {
   form.questionText = props.question.questionText
   form.type = QuestionType.SAQ
   form.parts = props.question.parts.map((part) => ({
+    id: part.id,
     partText: part.partText,
     expectedAnswer: part.expectedAnswer,
     marks: part.marks,
@@ -73,7 +75,7 @@ onMounted(() => {
 
 const addPart = () => {
   if (form.parts.length < 5) {
-    form.parts.push({ partText: '', expectedAnswer: '', marks: 1 })
+    form.parts.push({ id: 0, partText: '', expectedAnswer: '', marks: 1 })
   }
 }
 

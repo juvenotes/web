@@ -43,20 +43,10 @@ const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explan
 // Record answer to the server
 async function recordResponse(questionId: number, choiceId: number, isCorrect: boolean) {
   try {
-    // Find the question and determine the index of the selected choice
-    const question = props.questions.find((q) => q.id === questionId)
-    if (!question) return
-
-    const choiceIndex = question.choices.findIndex((c) => c.id === choiceId)
-    if (choiceIndex === -1) return
-
-    // Convert index to letter (0 → 'A', 1 → 'B', etc.)
-    const letterChoice = String.fromCharCode(65 + choiceIndex)
-
     await axios.post('/api/papers/record-response', {
       paperId: props.paper.id,
       questionId,
-      choiceId: letterChoice, // Now sending 'A', 'B', etc. instead of numeric ID
+      choiceId,
       isCorrect,
     })
   } catch (error) {

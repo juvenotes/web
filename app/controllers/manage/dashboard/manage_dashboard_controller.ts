@@ -4,7 +4,7 @@ import Question from '#models/question'
 import PastPaper from '#models/past_paper'
 import StatsDto from '#dtos/stats'
 
-export default class ManagementDashboardController {
+export default class ManageDashboardController {
   async index({ inertia, bouncer }: HttpContext) {
     await bouncer.with('AdminDashboardPolicy').authorize('view')
 

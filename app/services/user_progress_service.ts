@@ -5,6 +5,9 @@ import { DateTime } from 'luxon'
 import PastPaper from '#models/past_paper'
 import { QuestionType } from '#enums/question_types'
 import UserOsceResponse from '#models/user_osce_response'
+import { ResponseStatus } from '#enums/response_status'
+import McqChoice from '#models/mcq_choice'
+import SaqPart from '#models/saq_part'
 
 export default class UserProgressService {
   /**
@@ -15,21 +18,26 @@ export default class UserProgressService {
   }
 
   /**
-   * Record question attempt and update last question
+   * Record mcq question attempt and update last question
    */
-  async recordQuestionAttempt(
+  async recordMcqAttempt(
     userId: number,
     paperId: number,
     questionId: number,
-    selectedOption: string,
+    choiceId: number,
     isCorrect: boolean
   ) {
-    // Record the specific response
+    // Get the choice to store its text for historical record
+    const choice = await McqChoice.findOrFail(choiceId)
+
     await UserMcqResponse.create({
       userId,
       questionId,
-      selectedOption,
+      choiceId,
+      selectedOption: '', // Optional: calculate based on choice position
       isCorrect,
+      status: ResponseStatus.ACTIVE,
+      originalChoiceText: choice.choiceText, // Store current text
     })
 
     // Find existing progress record
@@ -63,6 +71,9 @@ export default class UserProgressService {
    * Record user viewing an SAQ part answer
    */
   async recordSaqPartView(userId: number, paperId: number, questionId: number, partId: number) {
+    // Get the part to store its text for historical record
+    const part = await SaqPart.findOrFail(partId)
+
     // First check if the user has already viewed this part
     const existingView = await UserSaqResponse.query()
       .where('userId', userId)
@@ -77,6 +88,8 @@ export default class UserProgressService {
         questionId,
         partId,
         answerText: 'viewed', // Just recording that it was viewed
+        status: ResponseStatus.ACTIVE, // Add the status enum
+        originalPartText: part.partText, // Store current text for historical reference
       })
     }
 

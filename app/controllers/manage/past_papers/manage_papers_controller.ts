@@ -21,6 +21,7 @@ import {
 } from '#validators/question'
 import { PaperType } from '#enums/exam_type'
 import QuestionFeedbackDto from '#dtos/question_feedback'
+import { ResponseStatus } from '#enums/response_status'
 
 export default class ManagePastPapersController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -396,10 +397,10 @@ export default class ManagePastPapersController {
 
   async updateMcq({ params, request, response, auth, session, logger }: HttpContext) {
     try {
-      // Load question with pastPaper relationship
       const question = await Question.query()
         .where('slug', params.questionSlug)
         .preload('pastPaper')
+        .preload('choices')
         .firstOrFail()
 
       if (!question.isMcq) {
@@ -409,7 +410,7 @@ export default class ManagePastPapersController {
       const data = await request.validateUsing(updateMcqQuestionValidator)
 
       await db.transaction(async (trx) => {
-        // Update paper metadata
+        // Update metadata and question text
         await question.pastPaper
           .merge({
             metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
@@ -417,7 +418,6 @@ export default class ManagePastPapersController {
           .useTransaction(trx)
           .save()
 
-        // Update question
         await question
           .merge({
             questionText: data.questionText,
@@ -425,17 +425,96 @@ export default class ManagePastPapersController {
           .useTransaction(trx)
           .save()
 
-        // Update choices
-        await trx.from('mcq_choices').where('question_id', question.id).delete()
+        // Create maps for tracking changes
+        const existingChoices = new Map(question.choices.map((choice) => [choice.id, choice]))
+        const updatedChoiceIds = new Set()
+        const correctnessChanged = new Map()
 
-        await trx.table('mcq_choices').insert(
-          data.choices.map((choice) => ({
-            question_id: question.id,
-            choice_text: choice.choiceText,
-            is_correct: choice.isCorrect,
-            explanation: choice.explanation ?? null,
-          }))
+        // Update existing and add new choices
+        for (const choiceData of data.choices) {
+          if (choiceData.id !== undefined && existingChoices.has(choiceData.id)) {
+            // Update existing choice
+            const existingChoice = existingChoices.get(choiceData.id)!
+
+            // Track if correctness changed
+            if (existingChoice.isCorrect !== choiceData.isCorrect) {
+              correctnessChanged.set(existingChoice.id, choiceData.isCorrect)
+            }
+
+            await trx
+              .from('mcq_choices')
+              .where('id', existingChoice.id)
+              .update({
+                choice_text: choiceData.choiceText,
+                is_correct: choiceData.isCorrect,
+                explanation: choiceData.explanation ?? null,
+              })
+            updatedChoiceIds.add(existingChoice.id)
+          } else {
+            // Insert new choice
+            await trx.table('mcq_choices').insert({
+              question_id: question.id,
+              choice_text: choiceData.choiceText,
+              is_correct: choiceData.isCorrect,
+              explanation: choiceData.explanation ?? null,
+            })
+          }
+        }
+
+        // Handle deleted choices
+        const choicesToRemove = [...existingChoices.keys()].filter(
+          (id) => !updatedChoiceIds.has(id)
         )
+
+        if (choicesToRemove.length > 0) {
+          // Check for user responses to these choices
+          const responsesExist = await trx
+            .from('user_mcq_responses')
+            .whereIn('choice_id', choicesToRemove)
+            .count('* as count')
+            .first()
+
+          if (responsesExist && Number(responsesExist.count) > 0) {
+            logger.warn('MCQ choices with user responses are being removed', {
+              questionId: question.id,
+              choicesToRemove,
+              responseCount: Number(responsesExist.count),
+            })
+
+            // Update affected responses - save choice text and mark as obsolete
+            for (const choiceId of choicesToRemove) {
+              const choice = existingChoices.get(choiceId)!
+
+              await trx.from('user_mcq_responses').where('choice_id', choiceId).update({
+                status: ResponseStatus.OBSOLETE,
+                original_choice_text: choice.choiceText,
+              })
+            }
+
+            logger.info('Updated user responses for removed choices', {
+              questionId: question.id,
+              obsoleteResponseCount: Number(responsesExist.count),
+            })
+          }
+
+          // Remove the choices
+          await trx.from('mcq_choices').whereIn('id', choicesToRemove).delete()
+        }
+
+        // Update user response correctness for choices that changed status
+        if (correctnessChanged.size > 0) {
+          for (const [choiceId, newCorrectness] of correctnessChanged.entries()) {
+            await trx
+              .from('user_mcq_responses')
+              .where('choice_id', choiceId)
+              .update({ is_correct: newCorrectness })
+          }
+
+          logger.info('Updated correctness for user responses', {
+            questionId: question.id,
+            changedChoices: [...correctnessChanged.keys()],
+          })
+        }
       })
 
       session.flash('success', 'MCQ updated successfully')
@@ -450,6 +529,7 @@ export default class ManagePastPapersController {
     const question = await Question.query()
       .where('slug', params.questionSlug)
       .preload('pastPaper')
+      .preload('parts') // Preload existing parts
       .firstOrFail()
 
     if (!question.isSaq) {
@@ -460,6 +540,7 @@ export default class ManagePastPapersController {
       const data = await request.validateUsing(updateSaqQuestionValidator)
 
       await db.transaction(async (trx) => {
+        // Update metadata and question text
         await question.pastPaper
           .merge({
             metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
@@ -474,15 +555,68 @@ export default class ManagePastPapersController {
           .useTransaction(trx)
           .save()
 
-        await trx.from('saq_parts').where('question_id', question.id).delete()
-        await trx.table('saq_parts').insert(
-          data.parts.map((part: { partText: string; expectedAnswer: string; marks: number }) => ({
-            question_id: question.id,
-            part_text: part.partText,
-            expected_answer: part.expectedAnswer,
-            marks: part.marks,
-          }))
-        )
+        // Create a map of existing parts by ID for quick lookup
+        const existingParts = new Map(question.parts.map((part) => [part.id, part]))
+        const updatedPartIds = new Set()
+
+        // Process each part - update existing or create new
+        for (const partData of data.parts) {
+          if (partData.id && existingParts.has(partData.id)) {
+            // Update existing part
+            await trx.from('saq_parts').where('id', partData.id).update({
+              part_text: partData.partText,
+              expected_answer: partData.expectedAnswer,
+              marks: partData.marks,
+            })
+            updatedPartIds.add(partData.id)
+          } else {
+            // Insert new part
+            await trx.table('saq_parts').insert({
+              question_id: question.id,
+              part_text: partData.partText,
+              expected_answer: partData.expectedAnswer,
+              marks: partData.marks,
+            })
+          }
+        }
+
+        // Handle deleted parts - parts that weren't included in the update
+        const partsToRemove = [...existingParts.keys()].filter((id) => !updatedPartIds.has(id))
+
+        if (partsToRemove.length > 0) {
+          // Check if user responses exist for these parts
+          const responsesExist = await trx
+            .from('user_saq_responses')
+            .whereIn('part_id', partsToRemove)
+            .count('* as count')
+            .first()
+
+          if (responsesExist && Number(responsesExist.count) > 0) {
+            logger.warn('Removing SAQ parts with user responses', {
+              questionId: question.id,
+              partsRemoved: partsToRemove,
+              responseCount: Number(responsesExist.count),
+            })
+
+            // Update affected responses - save part text and mark as obsolete
+            for (const partId of partsToRemove) {
+              const part = existingParts.get(partId)!
+
+              await trx.from('user_saq_responses').where('part_id', partId).update({
+                status: ResponseStatus.OBSOLETE,
+                original_part_text: part.partText,
+              })
+            }
+
+            logger.info('Updated user responses for removed parts', {
+              questionId: question.id,
+              obsoleteResponseCount: Number(responsesExist.count),
+            })
+          }
+
+          // Delete part from database
+          await trx.from('saq_parts').whereIn('id', partsToRemove).delete()
+        }
       })
 
       session.flash('success', 'SAQ updated successfully')

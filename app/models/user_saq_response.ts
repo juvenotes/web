@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { ResponseStatus } from '#enums/response_status'
 import User from './user.js'
 import Question from './question.js'
 import SaqPart from './saq_part.js'
@@ -19,7 +20,13 @@ export default class UserSaqResponse extends BaseModel {
   declare partId: number
 
   @column()
-  declare answerText: string // This will just store 'viewed'
+  declare answerText: string
+
+  @column()
+  declare status: ResponseStatus
+
+  @column()
+  declare originalPartText: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
