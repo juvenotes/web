@@ -184,6 +184,84 @@ export default class ManageConceptsController {
     return response.json(results)
   }
 
+  // async search({ request, response, bouncer, logger, auth }: HttpContext) {
+  //   await bouncer.with('ConceptPolicy').authorize('view')
+
+  //   const context = {
+  //     controller: 'ManageConceptsController',
+  //     action: 'search',
+  //     query: request.input('q', ''),
+  //     userId: auth.user?.id,
+  //   }
+
+  //   if (!context.query || context.query.length < 2) {
+  //     return response.json([])
+  //   }
+
+  //   logger.info({ ...context, message: 'Searching concepts' })
+
+  //   let results
+  //   const userId = auth.user!.id
+
+  //   // Try to get cached results with admin context
+  //   results = await this.searchCacheService.getCachedResults(context.query, 'admin')
+
+  //   // If no cached results, perform the database query
+  //   if (!results) {
+  //     results = await Concept.searchConceptByTitle(context.query, 5, true)
+
+  //     // Cache the results
+  //     await this.searchCacheService.cacheResults(context.query, results, 'admin')
+
+  //     logger.info({
+  //       ...context,
+  //       resultsCount: results.length,
+  //       message: 'Admin search completed and cached',
+  //     })
+  //   } else {
+  //     logger.info({
+  //       ...context,
+  //       resultsCount: results.length,
+  //       message: 'Admin search returned from cache',
+  //     })
+  //   }
+
+  //   // Store this as a recent search for the admin
+  //   await this.searchCacheService.storeRecentSearch(userId, context.query, 'admin')
+
+  //   return response.json(results)
+  // }
+
+  // // fetch recent admin searches
+  // async recentSearches({ response, auth, bouncer }: HttpContext) {
+  //   await bouncer.with('ConceptPolicy').authorize('view')
+
+  //   if (!auth.user) {
+  //     return response.unauthorized()
+  //   }
+
+  //   const recentSearches = await this.searchCacheService.getRecentSearches(auth.user.id, 'admin')
+  //   return response.json(recentSearches)
+  // }
+
+  // async storeSelectedConcept({ request, response, auth, bouncer }: HttpContext) {
+  //   await bouncer.with('ConceptPolicy').authorize('view')
+
+  //   if (!auth.user) {
+  //     return response.unauthorized()
+  //   }
+
+  //   const { title } = request.only(['title'])
+
+  //   if (!title) {
+  //     return response.badRequest({ message: 'Concept title is required' })
+  //   }
+
+  //   await this.searchCacheService.storeRecentSearch(auth.user.id, title, 'admin')
+
+  //   return response.noContent()
+  // }
+
   async update({ request, params, response, session, bouncer, auth, logger }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
 

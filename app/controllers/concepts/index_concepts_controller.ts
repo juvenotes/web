@@ -114,6 +114,85 @@ export default class IndexConceptsController {
     return response.json(results)
   }
 
+  // async search({ request, response, logger, auth }: HttpContext) {
+  //   const context = {
+  //     controller: 'ConceptsIndexController',
+  //     action: 'search',
+  //     query: request.input('q', ''),
+  //   }
+
+  //   if (!context.query || context.query.length < 2) {
+  //     logger.info({
+  //       ...context,
+  //       message: 'Search skipped - query too short',
+  //       userId: auth.user?.id,
+  //     })
+  //     return response.json([])
+  //   }
+
+  //   logger.info({ ...context, message: 'Searching concepts' })
+
+  //   let results
+  //   const userId = auth.user?.id ?? 0
+
+  //   // Try to get cached results
+  //   results = await this.searchCacheService.getCachedResults(context.query)
+
+  //   // If no cached results, perform the database query
+  //   if (!results) {
+  //     results = await Concept.searchConceptByTitle(context.query)
+
+  //     // Cache the results
+  //     await this.searchCacheService.cacheResults(context.query, results)
+
+  //     logger.info({
+  //       ...context,
+  //       resultsCount: results.length,
+  //       message: 'DB search completed and cached',
+  //       userId,
+  //     })
+  //   } else {
+  //     logger.info({
+  //       ...context,
+  //       resultsCount: results.length,
+  //       message: 'Search returned from cache',
+  //       userId,
+  //     })
+  //   }
+
+  //   // Store this as a recent search for logged-in users
+  //   if (auth.user) {
+  //     await this.searchCacheService.storeRecentSearch(userId, context.query)
+  //   }
+
+  //   return response.json(results)
+  // }
+
+  // async recentSearches({ response, auth }: HttpContext) {
+  //   if (!auth.user) {
+  //     return response.unauthorized()
+  //   }
+
+  //   const recentSearches = await this.searchCacheService.getRecentSearches(auth.user.id)
+  //   return response.json(recentSearches)
+  // }
+
+  // async storeSelectedConcept({ request, response, auth }: HttpContext) {
+  //   if (!auth.user) {
+  //     return response.unauthorized()
+  //   }
+
+  //   const { title } = request.only(['title'])
+
+  //   if (!title) {
+  //     return response.badRequest({ message: 'Concept title is required' })
+  //   }
+
+  //   await this.searchCacheService.storeRecentSearch(auth.user.id, title)
+
+  //   return response.noContent()
+  // }
+
   private async getConceptParents(conceptId: number) {
     const parents: Concept[] = []
     let currentConcept = await Concept.query()

@@ -237,10 +237,26 @@ router
 
 //* CONCEPTS -> SEARCH
 router.get('/api/concepts/search', [IndexConceptsController, 'search']).use(middleware.auth())
+router
+  .get('/api/concepts/recent-searches', [IndexConceptsController, 'recentSearches'])
+  .use(middleware.auth())
+router.get('/api/concepts/store-selected-concept', [
+  IndexConceptsController,
+  'storeSelectedConcept',
+])
 
 //* MANAGE CONCEPTS -> SEARCH
 router
   .get('/api/manage/concepts/search', [ManageConceptsController, 'search'])
+  .use(middleware.auth())
+router
+  .get('/api/manage/concepts/recent-searches', [ManageConceptsController, 'recentSearches'])
+  .use(middleware.auth())
+router
+  .get('/api/manage/concepts/store-selected-concept', [
+    ManageConceptsController,
+    'storeSelectedConcept',
+  ])
   .use(middleware.auth())
 
 //* UPLOAD IMAGE -> CLOUDINARY
