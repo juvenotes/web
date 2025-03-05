@@ -20,19 +20,22 @@ const EmailVerificationsController = () => import('#controllers/auth/email_verif
 const ForgotPasswordController = () => import('#controllers/auth/forgot_password_controller')
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
-const IndexConceptsController = () => import('#controllers/concepts/index_controller')
-const ManageConceptsController = () => import('#controllers/manage/concepts/index_controller')
-const IndexPapersController = () => import('#controllers/papers/index_controller')
+const IndexConceptsController = () => import('#controllers/concepts/index_concepts_controller')
+const ManageConceptsController = () =>
+  import('#controllers/manage/concepts/manage_concepts_controller')
+const IndexPapersController = () => import('#controllers/papers/index_papers_controller')
 const UserDashboardController = () => import('#controllers/dashboard/index_controller')
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
-const ManagePapersController = () => import('#controllers/manage/past_papers/index_controller')
-const ManagementDashboardController = () => import('#controllers/manage/dashboard/index_controller')
-const ManageUsersController = () => import('#controllers/manage/users/index_controller')
+const ManagePapersController = () =>
+  import('#controllers/manage/past_papers/manage_papers_controller')
+const ManagementDashboardController = () =>
+  import('#controllers/manage/dashboard/manage_dashboard_controller')
+const ManageUsersController = () => import('#controllers/manage/users/manage_users_controller')
 const UploadImageController = () => import('#controllers/api/upload_image_controller')
 const ManageInstitutionsController = () =>
-  import('#controllers/manage/institutions/index_controller')
+  import('#controllers/manage/institutions/manage_institutions_controller')
 const IndexOsceController = () => import('#controllers/osce/osce_controller')
-const ManageOsceController = () => import('#controllers/manage/osce/osce_controller')
+const ManageOsceController = () => import('#controllers/manage/osce/manage_osce_controller')
 const CiteController = () => import('#controllers/api/cite_controller')
 const QuestionFeedbackController = () => import('#controllers/papers/question_feedback_controller')
 const ManageFeedbackController = () =>

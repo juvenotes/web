@@ -3,7 +3,7 @@ import Concept from '#models/concept'
 import ConceptDto from '#dtos/concept'
 import QuestionDto from '#dtos/question'
 
-export default class IndexController {
+export default class IndexConceptsController {
   /**
    * Show root level concepts
    */
