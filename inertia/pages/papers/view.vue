@@ -467,7 +467,11 @@ const getLastEditDate = computed(() => {
     <!-- The progress floating icon -->
     <div
       v-if="paperProgress.completionPercentage > 0"
-      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 border border-primary/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl"
+      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg border border-primary/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl group"
+      :class="{
+        'p-2 sm:p-4': true,
+        'sm:hover:w-auto hover:w-10': true,
+      }"
     >
       <div class="w-10 h-10 relative">
         <svg class="w-10 h-10 -rotate-90 transform">
@@ -493,64 +497,10 @@ const getLastEditDate = computed(() => {
             cy="20"
           />
         </svg>
-        <span class="absolute inset-0 flex items-center justify-center text-xs font-medium">
-          {{ Math.round(paperProgress.completionPercentage) }}%
-        </span>
-      </div>
-
-      <div class="flex flex-col">
-        <span class="text-sm font-medium">Your progress</span>
-        <span class="text-xs text-muted-foreground">
-          {{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of
-          {{ questions.length }}
-        </span>
-      </div>
-
-      <Button
-        v-if="paperProgress.progress?.lastQuestionId"
-        size="sm"
-        variant="ghost"
-        @click="continueFromLastQuestion"
-      >
-        <ArrowRight class="h-4 w-4 mr-1" />
-        Continue
-      </Button>
-    </div>
-    <!-- The progress floating icon - with enhanced mobile responsiveness -->
-    <!-- <div
-      v-if="paperProgress.completionPercentage > 0"
-      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg border border-primary/20 z-50 transition-all duration-300 hover:shadow-xl"
-      :class="{
-        'p-2 sm:p-4': true,
-        'w-14 h-14 sm:w-auto sm:h-auto': true,
-        'flex sm:flex-row flex-col items-center sm:gap-3 gap-1': true,
-      }"
-    >
-      <div class="w-8 h-8 sm:w-10 sm:h-10 relative">
-        <svg class="w-full h-full -rotate-90 transform">
-          <circle
-            class="text-gray-200"
-            stroke-width="3"
-            stroke="currentColor"
-            fill="transparent"
-            r="16"
-            cx="20"
-            cy="20"
-          />
-          <circle
-            class="text-primary"
-            stroke-width="3"
-            :stroke-dasharray="100.5"
-            :stroke-dashoffset="100.5 - paperProgress.completionPercentage"
-            stroke-linecap="round"
-            stroke="currentColor"
-            fill="transparent"
-            r="16"
-            cx="20"
-            cy="20"
-          />
-        </svg>
-        <span class="absolute inset-0 flex items-center justify-center text-xs font-medium">
+        <span
+          class="absolute inset-0 flex items-center justify-center text-xs sm:text-xs font-medium"
+          style="font-size: 0.7rem"
+        >
           {{ Math.round(paperProgress.completionPercentage) }}%
         </span>
       </div>
@@ -567,23 +517,13 @@ const getLastEditDate = computed(() => {
         v-if="paperProgress.progress?.lastQuestionId"
         size="sm"
         variant="ghost"
-        class="hidden sm:flex"
         @click="continueFromLastQuestion"
+        class="hidden sm:flex"
       >
         <ArrowRight class="h-4 w-4 mr-1" />
         Continue
       </Button>
-
-      <Button
-        v-if="paperProgress.progress?.lastQuestionId"
-        size="icon"
-        variant="ghost"
-        class="sm:hidden absolute -top-2 -right-2 h-6 w-6 bg-primary text-white rounded-full p-1"
-        @click="continueFromLastQuestion"
-      >
-        <ArrowRight class="h-4 w-4" />
-      </Button>
-    </div> -->
+    </div>
   </div>
 </template>
 <style scoped>
