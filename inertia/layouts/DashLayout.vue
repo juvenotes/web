@@ -64,79 +64,81 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-background">
-    <!-- Navigation - changed from z-[100] to z-[50] -->
-    <nav class="sticky top-0 z-[50] w-screen border-b bg-background/95 backdrop-blur">
+  <div class="min-h-screen flex flex-col bg-gray-50">
+    <!-- Navigation - modern flat design with subtle shadow -->
+    <nav class="sticky top-0 z-[50] w-screen bg-white border-b border-gray-100 shadow-sm backdrop-blur-md">
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
-          <!-- Left section -->
+          <!-- Left section - Logo only, no text -->
           <div class="flex items-center gap-4 w-[200px]">
-            <!-- Add fixed width -->
-            <button class="lg:hidden" @click="isSidebarCollapsed = !isSidebarCollapsed">
-              <MenuIcon class="h-6 w-6" />
+            <button 
+              class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-primary transition-all duration-200" 
+              @click="isSidebarCollapsed = !isSidebarCollapsed"
+            >
+              <MenuIcon class="h-5 w-5" />
             </button>
-            <Link href="/learn" class="block md:hidden">
-              <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
-            </Link>
-            <Link href="/learn" class="hidden md:block">
-              <img :src="logoPath" alt="Logo" class="h-14 w-auto" />
+            <Link href="/learn" class="flex items-center">
+              <img :src="logoPath" alt="Logo" class="h-11 w-auto" />
             </Link>
           </div>
 
-          <!-- Center search -->
+          <!-- Center search - modern rounded style -->
           <div class="hidden md:flex flex-1 mx-auto max-w-2xl">
             <Search />
           </div>
           <button
-            class="block md:hidden p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+            class="block md:hidden p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 ease-in-out text-gray-600"
             @click="isSearchOpen = true"
           >
             <SearchIcon class="h-5 w-5" />
           </button>
 
+          <!-- User menu with modern avatar button -->
           <div class="relative user-menu shrink-0">
             <button
               @click="isMenuOpen = !isMenuOpen"
-              class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+              class="h-9 w-9 rounded-full bg-gradient-to-br from-[#55A9C4]/90 to-[#4a91aa] flex items-center justify-center hover:shadow-md transition-all duration-200 ease-in-out"
             >
-              <User class="h-4 w-4" />
+              <User class="h-4 w-4 text-white" />
             </button>
 
-            <!-- User menu dropdown - changed from z-[110] to z-[70] -->
+            <!-- Modern user menu dropdown with sharper design -->
             <div
               v-show="isMenuOpen"
-              class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white border py-1 z-[70]"
+              class="absolute right-0 mt-3 w-64 rounded-xl overflow-hidden shadow-lg bg-white border border-gray-100 py-0 z-[70]"
             >
               <!-- User Info Section -->
-              <div class="px-4 py-2 border-b">
-                <p class="text-sm font-medium">{{ user?.email }}</p>
-                <p class="text-xs text-muted-foreground">{{ user?.fullName }}</p>
+              <div class="px-5 py-4 bg-gradient-to-r from-[#55A9C4]/10 to-[#4a91aa]/5">
+                <p class="text-sm font-medium text-gray-800">{{ user?.email }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ user?.fullName }}</p>
               </div>
 
               <!-- Settings Links -->
-              <Link
-                href="/settings/account"
-                class="w-full px-4 py-2 text-sm text-left hover:bg-muted/50 flex items-center"
-              >
-                <Settings class="mr-2 h-4 w-4" />
-                Account Settings
-              </Link>
+              <div class="py-2">
+                <Link
+                  href="/settings/account"
+                  class="w-full px-5 py-3 text-sm text-left hover:bg-gray-50 flex items-center transition-colors duration-200"
+                >
+                  <Settings class="mr-3 h-4 w-4 text-[#55A9C4]" />
+                  Account Settings
+                </Link>
 
-              <Link
-                href="/settings/profile"
-                class="w-full px-4 py-2 text-sm text-left hover:bg-muted/50 flex items-center"
-              >
-                <User class="mr-2 h-5 w-5" />
-                Profile Settings
-              </Link>
+                <Link
+                  href="/settings/profile"
+                  class="w-full px-5 py-3 text-sm text-left hover:bg-gray-50 flex items-center transition-colors duration-200"
+                >
+                  <User class="mr-3 h-4 w-4 text-[#55A9C4]" />
+                  Profile Settings
+                </Link>
+              </div>
 
               <!-- Logout Section -->
-              <div class="border-t mt-2">
+              <div class="border-t border-gray-100 py-2">
                 <button
-                  class="w-full px-4 py-2 text-sm text-left text-destructive hover:bg-muted/50 flex items-center"
+                  class="w-full px-5 py-3 text-sm text-left text-red-500 hover:bg-gray-50 flex items-center transition-colors duration-200"
                   @click="$inertia.post('/logout')"
                 >
-                  <LogOut class="mr-2 h-4 w-4" />
+                  <LogOut class="mr-3 h-4 w-4" />
                   Logout
                 </button>
               </div>
@@ -146,58 +148,67 @@ onUnmounted(() => {
       </div>
     </nav>
 
-    <!-- Mobile Search Modal - changed from z-[120] to z-[90] -->
+    <!-- Modern Search Modal with enhanced aesthetics -->
     <div
       v-show="isSearchOpen"
-      class="fixed inset-0 z-[90] bg-black/50 flex items-center justify-center px-4"
+      class="fixed inset-0 z-[90] bg-black/40 backdrop-blur-sm flex items-center justify-center px-4"
       @click.self="isSearchOpen = false"
     >
-      <div class="w-full max-w-lg p-4 bg-white rounded-lg shadow-lg relative">
+      <div class="w-full max-w-lg p-6 bg-white rounded-xl shadow-xl relative border border-gray-100">
         <button
           @click="isSearchOpen = false"
-          class="absolute top-3 right-3 h-10 w-10 flex items-center justify-center rounded-full bg-muted/20 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all shadow-lg"
+          class="absolute top-4 right-4 h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition-all duration-200"
         >
-          <ChevronRight class="h-5 w-5" />
+          <ChevronRight class="h-4 w-4" />
         </button>
         <Search />
       </div>
     </div>
 
     <div class="flex-1 flex">
-      <!-- Backdrop for sidebar on mobile - changed from z-[80] to z-[25] -->
+      <!-- Backdrop for sidebar on mobile -->
       <div
         v-show="!isSidebarCollapsed"
-        class="fixed inset-0 bg-black/20 z-[25] lg:hidden"
+        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[25] lg:hidden"
         @click="isSidebarCollapsed = true"
       />
 
-      <!-- Sidebar - changed from z-[90] to z-[30] -->
+      <!-- Modern sidebar with card-style design -->
       <aside
-        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col border-r bg-white z-[30] -translate-x-full lg:translate-x-0"
-        :class="[isSidebarCollapsed ? 'w-16' : 'w-64', !isSidebarCollapsed && 'translate-x-0']"
+        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col bg-white z-[30] -translate-x-full lg:translate-x-0 shadow-lg lg:shadow-sm border-r border-gray-100"
+        :class="[isSidebarCollapsed ? 'w-16' : 'w-72', !isSidebarCollapsed && 'translate-x-0']"
         style="max-height: calc(100vh - 4rem)"
       >
         <!-- Desktop Toggle Button -->
         <button
-          class="hidden lg:block absolute -right-3 top-4 bg-background rounded-full p-1.5 border shadow-sm hover:bg-muted/50 transition-colors z-50"
+          class="hidden lg:block absolute -right-3 top-6 bg-white rounded-full p-1 border border-gray-200 shadow-md hover:shadow-lg hover:border-[#55A9C4]/30 transition-all duration-200 ease-in-out z-50"
           @click="isSidebarCollapsed = !isSidebarCollapsed"
         >
-          <ChevronLeft v-if="!isSidebarCollapsed" class="h-4 w-4" />
-          <ChevronRight v-else class="h-4 w-4" />
+          <ChevronLeft v-if="!isSidebarCollapsed" class="h-4 w-4 text-gray-600" />
+          <ChevronRight v-else class="h-4 w-4 text-gray-600" />
         </button>
 
-        <nav class="p-4 space-y-2 mt-12 flex-1">
+        <!-- Modern sidebar navigation with active indicators -->
+        <div class="px-3 pt-6 pb-2 mb-2 border-b border-gray-100">
+          <div class="px-3 flex items-center mb-6" v-if="!isSidebarCollapsed">
+            <span class="text-sm font-medium text-gray-400 uppercase tracking-wider">Main Menu</span>
+          </div>
+        </div>
+        
+        <nav class="px-3 space-y-1 flex-1 overflow-y-auto">
           <Link
             v-for="link in sidebarLinks"
             :key="link.name"
             :href="link.href"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors"
+            class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#55A9C4]/10 transition-colors duration-200 text-gray-700 hover:text-[#55A9C4] group"
             @click="isSidebarCollapsed = true"
           >
-            <component :is="link.icon" class="h-5 w-5 shrink-0" />
+            <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-[#55A9C4]/10 transition-colors">
+              <component :is="link.icon" class="h-5 w-5 shrink-0 text-gray-500 group-hover:text-[#55A9C4] transition-colors" />
+            </div>
             <span
               :class="[
-                'transition-opacity duration-300 whitespace-nowrap',
+                'transition-opacity duration-300 whitespace-nowrap text-sm font-medium',
                 isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100 w-auto',
               ]"
             >
@@ -206,15 +217,18 @@ onUnmounted(() => {
           </Link>
         </nav>
 
-        <div class="p-4">
+        <!-- Logout positioned at bottom of sidebar -->
+        <div class="p-3 border-t border-gray-100">
           <button
             @click="$inertia.post('/logout')"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors w-full text-destructive"
+            class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-red-50 transition-colors duration-200 w-full text-gray-700 hover:text-red-500 group"
           >
-            <LogOut class="h-4 w-4 shrink-0" />
+            <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-red-50 transition-colors">
+              <LogOut class="h-4 w-4 shrink-0 text-gray-500 group-hover:text-red-500 transition-colors" />
+            </div>
             <span
               :class="[
-                'transition-opacity duration-300 whitespace-nowrap',
+                'transition-opacity duration-300 whitespace-nowrap text-sm font-medium',
                 isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100 w-auto',
               ]"
             >
@@ -224,79 +238,68 @@ onUnmounted(() => {
         </div>
       </aside>
 
-      <!-- Main content - keeping z-[0] as is -->
-      <main class="flex-1 p-8 overflow-auto bg-gray-50/50 relative z-[0]">
+      <!-- Main content with subtle pattern background -->
+      <main class="flex-1 p-6 md:p-8 overflow-auto bg-gray-50 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cg fill=%27%23000000%27 fill-opacity=%270.03%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] relative z-[0]">
         <slot />
       </main>
     </div>
 
-    <footer class="w-screen border-t bg-background/95">
-      <div class="container mx-auto px-4 sm:px-6 py-2">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-          <!-- Company Info -->
-          <div class="flex items-center gap-4">
-            <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
-            <p class="text-sm text-muted-foreground">© 2025 Juvenotes. All rights reserved.</p>
+    <!-- Minimal compact footer with social icons -->
+    <footer class="w-screen border-t border-gray-200 bg-white">
+      <div class="container mx-auto px-6 py-3">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <!-- Logo only -->
+          <div class="flex items-center">
+            <img :src="logoPath" alt="Logo" class="h-9 w-auto" />
+            <span class="text-xs text-gray-400 ml-4">© 2025</span>
           </div>
 
-          <!-- Links and Social -->
-          <div class="flex items-center gap-8">
-            <!-- Legal Links -->
-            <div class="flex items-center gap-6">
-              <Link
-                href="/terms"
-                class="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Terms
-              </Link>
-              <Link
-                href="/privacy"
-                class="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Privacy
-              </Link>
-              <!-- Button to open cookie preferences -->
-              <a
-                href="#"
-                class="text-sm text-muted-foreground hover:text-primary transition-colors"
-                id="open_preferences_center"
-                >Update cookies preferences</a
-              >
-            </div>
+          <!-- Centered links -->
+          <div class="flex items-center gap-6">
+            <Link
+              href="/terms"
+              class="text-xs text-gray-500 hover:text-[#55A9C4] transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/privacy"
+              class="text-xs text-gray-500 hover:text-[#55A9C4] transition-colors"
+            >
+              Privacy
+            </Link>
+            <a
+              href="#"
+              class="text-xs text-gray-500 hover:text-[#55A9C4] transition-colors"
+              id="open_preferences_center"
+            >
+              Cookies
+            </a>
+          </div>
 
-            <!-- Social Links -->
-            <div class="flex items-center gap-3">
-              <span class="text-sm font-medium text-muted-foreground">Contact us:</span>
-              <div class="flex gap-2">
-                <a
-                  href="https://x.com/juvenotes"
-                  class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
-                  aria-label="Twitter"
-                >
-                  <Twitter
-                    class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
-                  />
-                </a>
-                <a
-                  href="https://www.instagram.com/juvenotes/"
-                  class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
-                  aria-label="Instagram"
-                >
-                  <Instagram
-                    class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
-                  />
-                </a>
-                <a
-                  href="https://www.linkedin.com/company/juvenotes"
-                  class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin
-                    class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
-                  />
-                </a>
-              </div>
-            </div>
+          <!-- Social icons only, no labels -->
+          <div class="flex items-center gap-3">
+            <a
+              href="https://x.com/juvenotes"
+              class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
+              aria-label="Twitter"
+            >
+              <Twitter class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
+            </a>
+            <a
+              href="https://www.instagram.com/juvenotes/"
+              class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
+              aria-label="Instagram"
+            >
+              <Instagram class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/juvenotes"
+              class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
+              aria-label="LinkedIn"
+            >
+              <Linkedin class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
+            </a>
           </div>
         </div>
       </div>
