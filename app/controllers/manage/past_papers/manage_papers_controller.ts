@@ -261,6 +261,7 @@ export default class ManagePastPapersController {
             slug,
             type: QuestionType.MCQ,
             question_text: data.questionText,
+            question_image_path: data.questionImagePath || null,
           })
           .returning('*')
 
@@ -310,6 +311,7 @@ export default class ManagePastPapersController {
             slug,
             type: QuestionType.SAQ,
             question_text: data.questionText,
+            question_image_path: data.questionImagePath || null,
           })
           .returning('*')
 
@@ -421,6 +423,7 @@ export default class ManagePastPapersController {
         await question
           .merge({
             questionText: data.questionText,
+            questionImagePath: data.questionImagePath || null,
           })
           .useTransaction(trx)
           .save()
@@ -551,6 +554,7 @@ export default class ManagePastPapersController {
         await question
           .merge({
             questionText: data.questionText,
+            questionImagePath: data.questionImagePath || null,
           })
           .useTransaction(trx)
           .save()

@@ -25,6 +25,7 @@ const stationSchema = vine.object({
 export const createMcqQuestionValidator = vine.compile(
   vine.object({
     questionText: vine.string().trim().minLength(1),
+    questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.MCQ),
     choices: vine
       .array(
@@ -41,6 +42,7 @@ export const createMcqQuestionValidator = vine.compile(
 export const createSaqQuestionValidator = vine.compile(
   vine.object({
     questionText: vine.string().trim().minLength(1),
+    questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.SAQ),
     parts: vine
       .array(
@@ -57,6 +59,7 @@ export const createSaqQuestionValidator = vine.compile(
 export const updateMcqQuestionValidator = vine.compile(
   vine.object({
     questionText: vine.string().trim().minLength(1),
+    questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.MCQ),
     choices: vine
       .array(
@@ -73,6 +76,7 @@ export const updateMcqQuestionValidator = vine.compile(
 export const updateSaqQuestionValidator = vine.compile(
   vine.object({
     questionText: vine.string().trim().minLength(1),
+    questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.SAQ),
     parts: vine
       .array(
@@ -90,6 +94,7 @@ export const updateSaqQuestionValidator = vine.compile(
 export const updateQuestionValidator = vine.compile(
   vine.object({
     question_text: vine.string().minLength(3).maxLength(1000).optional(),
+    questionImagePath: vine.string().nullable().optional(),
     choices: vine.array(mcqChoiceSchema).optional(),
     parts: vine.array(saqPartSchema).optional(),
   })
