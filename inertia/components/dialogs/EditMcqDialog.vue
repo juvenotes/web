@@ -3,13 +3,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/u
 import { Button } from '~/components/ui/button'
 import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
-import { Trash2, Plus } from 'lucide-vue-next'
+import { Trash2, Plus, Loader2 } from 'lucide-vue-next'
 import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
 import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
-import { watch, onMounted } from 'vue'
+import { watch, onMounted, ref } from 'vue'
+import axios from 'axios'
+
+interface ImageInputEvent extends Event {
+  target: HTMLInputElement
+}
 
 const props = defineProps<{
   open: boolean
@@ -22,9 +27,12 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
+const isUploadingQuestionImage = ref(false)
+
 // Create form with initial values
 const form = useForm({
   questionText: props.question.questionText,
+  questionImagePath: props.question.questionImagePath || '',
   type: QuestionType.MCQ as const,
   choices: props.question.choices.map((choice) => ({
     id: choice.id,
@@ -37,6 +45,7 @@ const form = useForm({
 // Function to reset/initialize form with current question data
 const initializeForm = () => {
   form.questionText = props.question.questionText
+  form.questionImagePath = props.question.questionImagePath || ''
   form.type = QuestionType.MCQ
   form.choices = props.question.choices.map((choice) => ({
     id: choice.id,
@@ -73,6 +82,34 @@ watch(
 onMounted(() => {
   initializeForm()
 })
+
+async function handleImageUpload(file: File) {
+  const formData = new FormData()
+  formData.append('image', file)
+
+  formData.append('context[folder]', 'mcq')
+  formData.append('context[subFolder]', `paper-${props.paper.id}`)
+
+  try {
+    isUploadingQuestionImage.value = true
+
+    const { data } = await axios.post('/api/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    form.questionImagePath = data
+  } catch (error) {
+    console.error('Failed to upload image:', error)
+  } finally {
+    isUploadingQuestionImage.value = false
+  }
+}
+
+function removeImage() {
+  form.questionImagePath = ''
+}
 
 const addChoice = () => {
   if (form.choices.length < 5) {
@@ -129,6 +166,51 @@ const handleSubmit = () => {
               class="min-h-[44px] sm:min-h-[48px]"
               :class="{ 'border-destructive': form.errors.questionText }"
             />
+          </div>
+
+          <!-- Question Image (Optional) -->
+          <div class="space-y-2 sm:space-y-3">
+            <Label class="text-sm sm:text-base">Question Image (Optional)</Label>
+            <div class="space-y-2">
+              <Input
+                type="file"
+                accept="image/*"
+                :disabled="isUploadingQuestionImage"
+                @input="
+                  (e: ImageInputEvent) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleImageUpload(file)
+                  }
+                "
+              />
+
+              <!-- Question Image Preview -->
+              <div v-if="form.questionImagePath" class="relative w-full">
+                <img
+                  :src="form.questionImagePath"
+                  class="max-h-40 rounded-lg object-cover"
+                  alt="Question image preview"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  class="absolute top-2 right-2"
+                  @click="removeImage"
+                >
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </div>
+
+              <!-- Upload Loading State -->
+              <div
+                v-if="isUploadingQuestionImage"
+                class="flex items-center gap-2 text-sm text-muted-foreground"
+              >
+                <Loader2 class="h-4 w-4 animate-spin" />
+                <span>Uploading image...</span>
+              </div>
+            </div>
           </div>
 
           <!-- Choices -->

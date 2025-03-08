@@ -3,8 +3,17 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, Clock, Plus, Upload, Pencil, Trash2, ChevronDown, MessageSquare } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import {
+  FileText,
+  Clock,
+  Plus,
+  Upload,
+  Pencil,
+  Trash2,
+  ChevronDown,
+  MessageSquare,
+} from 'lucide-vue-next'
+import { computed, ref, onMounted } from 'vue'
 import { toast } from 'vue-sonner'
 import { useForm } from '@inertiajs/vue3'
 import QuestionFeedbackDto from '#dtos/question_feedback'
@@ -93,6 +102,15 @@ function handleEditQuestion(question: QuestionDto) {
     selectedQuestion.value = question
   }
 }
+
+onMounted(() => {
+  // Debug image paths
+  console.log('Image paths in questions:', 
+    props.questions
+      .filter(q => q.questionImagePath)
+      .map(q => ({ id: q.id, path: q.questionImagePath }))
+  )
+})
 
 function markFeedbackAsResolved(feedbackId: number) {
   axios
@@ -230,6 +248,15 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                 Q{{ index + 1 }}
               </span>
               <p class="text-sm sm:text-base text-foreground">{{ question.questionText }}</p>
+            </div>
+
+            <!-- Add Question Image Display -->
+            <div v-if="question.questionImagePath" class="mt-3 mb-3">
+              <img
+                :src="question.questionImagePath"
+                :alt="`Question image`"
+                class="max-w-full h-auto rounded-lg border shadow-sm max-h-[300px] object-contain"
+              />
             </div>
 
             <!-- Actions -->
