@@ -102,6 +102,7 @@ declare module 'vue' {
     Label: typeof import('./inertia/components/ui/label/Label.vue')['default']
     MdxContent: typeof import('./inertia/components/MdxContent.vue')['default']
     NewChildConceptDialog: typeof import('./inertia/components/dialogs/NewChildConceptDialog.vue')['default']
+    NotificationDropdown: typeof import('./inertia/components/NotificationDropdown.vue')['default']
     Popover: typeof import('./inertia/components/ui/popover/Popover.vue')['default']
     PopoverContent: typeof import('./inertia/components/ui/popover/PopoverContent.vue')['default']
     PopoverTrigger: typeof import('./inertia/components/ui/popover/PopoverTrigger.vue')['default']

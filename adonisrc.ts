@@ -53,7 +53,8 @@ export default defineConfig({
     () => import('@julr/adonisjs-prometheus/prometheus_provider'),
     () => import('@foadonis/maintenance/maintenance_provider'),
     () => import('@foadonis/magnify/magnify_provider'),
-    () => import('@adonisjs/redis/redis_provider')
+    () => import('@adonisjs/redis/redis_provider'),
+    () => import('@adonisjs/transmit/transmit_provider')
   ],
 
   /*
