@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import transmit from '@adonisjs/transmit/services/main'
 
 const HomeController = () => import('#controllers/home/home_controller')
 const SupportController = () => import('#controllers/home/support_controller')
@@ -40,6 +41,14 @@ const CiteController = () => import('#controllers/api/cite_controller')
 const QuestionFeedbackController = () => import('#controllers/papers/question_feedback_controller')
 const ManageFeedbackController = () =>
   import('#controllers/manage/feedback/manage_feedback_controller')
+
+transmit.registerRoutes((route) => {
+  // Ensure you are authenticated to register your client
+  if (route.getPattern() === '__transmit/events') {
+    route.middleware(middleware.auth())
+    return
+  }
+})
 
 // test crash route
 router.get('/crash', () => {
