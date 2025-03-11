@@ -4,7 +4,7 @@ import type TodayDto from '#dtos/today'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { Calendar, CheckCircle, Circle, XCircle } from 'lucide-vue-next'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { DateTime } from 'luxon'
 import axios from 'axios'
 
@@ -23,6 +23,23 @@ const props = defineProps<Props>()
 const selectedAnswers = ref<Record<number, number>>({}) // questionId -> choiceId
 const showAnswer = ref<Record<number, boolean>>({}) // questionId -> boolean
 
+// Load previously answered questions from localStorage
+onMounted(() => {
+  // Only restore if we have an active question
+  if (props.today?.id) {
+    const savedAnswers = localStorage.getItem(`today-answers-${props.today.id}`)
+    const savedShownAnswers = localStorage.getItem(`today-shown-${props.today.id}`)
+
+    if (savedAnswers) {
+      selectedAnswers.value = JSON.parse(savedAnswers)
+    }
+
+    if (savedShownAnswers) {
+      showAnswer.value = JSON.parse(savedShownAnswers)
+    }
+  }
+})
+
 // Format the scheduled date for display
 const formattedDate = computed(() => {
   if (!props.today) return null
@@ -34,13 +51,19 @@ const formattedDate = computed(() => {
 })
 
 function getCorrectAnswer(question: QuestionDto) {
-  return question.choices?.find(choice => choice.isCorrect)
+  return question.choices?.find((choice) => choice.isCorrect)
 }
 
 // Handle selecting an answer AND check it immediately
 const handleChoiceSelect = (questionId: number, choiceId: number) => {
   selectedAnswers.value[questionId] = choiceId
   showAnswer.value[questionId] = true
+
+  // Save to localStorage
+  if (props.today?.id) {
+    localStorage.setItem(`today-answers-${props.today.id}`, JSON.stringify(selectedAnswers.value))
+    localStorage.setItem(`today-shown-${props.today.id}`, JSON.stringify(showAnswer.value))
+  }
 
   // Get the selected choice to determine if it's correct
   const question = props.questions.find((q) => q.id === questionId)
@@ -156,7 +179,7 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
             <span class="text-muted-foreground flex-1">{{ choice.choiceText }}</span>
           </div>
 
-          <!-- Explanation Section - EXACTLY like papers/view -->
+          <!-- Explanation Section -->
           <div
             v-if="showAnswer[question.id]"
             class="mt-4 p-3 sm:p-6 rounded-lg bg-[#CDE5ED] shadow-md border border-[#A8D3E7]"
@@ -167,6 +190,23 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
             <p class="mt-2 text-base text-muted-foreground text-[#1F2937] font-medium">
               <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
             </p>
+
+            <!-- Navigation buttons -->
+            <div class="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/learn"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white hover:bg-gray-50 text-primary border border-primary/30 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow"
+              >
+                <span>Go to Dashboard</span>
+              </Link>
+
+              <Link
+                href="/papers"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow"
+              >
+                <span>Explore Past Papers</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
