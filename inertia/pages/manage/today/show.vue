@@ -2,7 +2,7 @@
 import { Link, useForm } from '@inertiajs/vue3'
 import type TodayDto from '#dtos/today'
 import type QuestionDto from '#dtos/question'
-import DashLayout from '~/layouts/DashLayout.vue'
+import AdminLayout from '~/layouts/AdminLayout.vue'
 import {
   Calendar,
   Plus,
@@ -18,7 +18,7 @@ import { TodayStatus } from '#enums/today_status'
 import { computed, ref } from 'vue'
 import { DateTime } from 'luxon'
 
-defineOptions({ layout: DashLayout })
+defineOptions({ layout: AdminLayout })
 
 interface Props {
   today: TodayDto
