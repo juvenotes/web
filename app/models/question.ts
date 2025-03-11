@@ -8,6 +8,7 @@ import McqChoice from './mcq_choice.js'
 import SaqPart from './saq_part.js'
 import PastPaper from './past_paper.js'
 import Station from './station.js'
+import Today from './today.js'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })
@@ -48,6 +49,24 @@ export default class Question extends BaseModel {
   })
   declare concepts: ManyToMany<typeof Concept>
 
+  @manyToMany(() => Concept, {
+    pivotTable: 'question_topics',
+    localKey: 'id',
+    pivotForeignKey: 'question_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'topic_id',
+  })
+  declare topics: ManyToMany<typeof Concept>
+
+  @manyToMany(() => Concept, {
+    pivotTable: 'question_units',
+    localKey: 'id',
+    pivotForeignKey: 'question_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'unit_id',
+  })
+  declare units: ManyToMany<typeof Concept>
+
   @hasMany(() => McqChoice)
   declare choices: HasMany<typeof McqChoice>
 
@@ -57,8 +76,14 @@ export default class Question extends BaseModel {
   @column()
   declare pastPaperId: number | null
 
+  @column()
+  declare todayId: number | null
+
   @belongsTo(() => PastPaper)
   declare pastPaper: BelongsTo<typeof PastPaper>
+
+  @belongsTo(() => Today)
+  declare today: BelongsTo<typeof Today>
 
   @computed()
   get isMcq() {

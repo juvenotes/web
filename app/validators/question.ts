@@ -36,6 +36,8 @@ export const createMcqQuestionValidator = vine.compile(
         })
       )
       .minLength(1),
+    topicIds: vine.array(vine.number()).optional(),
+    unitIds: vine.array(vine.number()).optional(),
   })
 )
 
@@ -53,6 +55,8 @@ export const createSaqQuestionValidator = vine.compile(
         })
       )
       .minLength(1),
+    topicIds: vine.array(vine.number()).optional(),
+    unitIds: vine.array(vine.number()).optional(),
   })
 )
 
@@ -71,6 +75,8 @@ export const updateMcqQuestionValidator = vine.compile(
         })
       )
       .minLength(1),
+    topicIds: vine.array(vine.number()).optional(),
+    unitIds: vine.array(vine.number()).optional(),
   })
 )
 export const updateSaqQuestionValidator = vine.compile(
@@ -88,6 +94,8 @@ export const updateSaqQuestionValidator = vine.compile(
         })
       )
       .minLength(1),
+    topicIds: vine.array(vine.number()).optional(),
+    unitIds: vine.array(vine.number()).optional(),
   })
 )
 
@@ -106,6 +114,8 @@ export const createOsceQuestionValidator = vine.compile(
     questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.OSCE),
     parts: vine.array(stationSchema).minLength(1).maxLength(5),
+    topicIds: vine.array(vine.number()).optional(),
+    unitIds: vine.array(vine.number()).optional(),
   })
 )
 
@@ -115,6 +125,8 @@ export const updateOsceQuestionValidator = vine.compile(
     questionImagePath: vine.string().nullable().optional(),
     type: vine.literal(QuestionType.OSCE),
     parts: vine.array(stationSchema).minLength(1).maxLength(5),
+    topicIds: vine.array(vine.number()).optional(),
+    unitIds: vine.array(vine.number()).optional(),
   })
 )
 
