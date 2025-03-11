@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/vue3'
 import type TodayDto from '#dtos/today'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { Calendar, CheckCircle, Circle, XCircle } from 'lucide-vue-next'
+import { Calendar, CheckCircle, Circle, XCircle, Settings } from 'lucide-vue-next'
 import { ref, computed, onMounted } from 'vue'
 import { DateTime } from 'luxon'
 import axios from 'axios'
@@ -95,9 +95,13 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold text-foreground">Question of the Day</h1>
-      <div v-if="canManage">
-        <Link href="/manage/today" class="text-primary hover:text-primary/70">
-          Manage Questions
+      <div v-if="canManage" class="flex items-center gap-2">
+        <Link
+          href="/manage/today"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/5 hover:bg-primary/10 transition-all duration-200 text-primary border border-primary/15 shadow-sm hover:shadow"
+        >
+          <Settings class="h-4 w-4" />
+          <span class="text-sm font-medium">Manage Questions</span>
         </Link>
       </div>
     </div>

@@ -1,40 +1,40 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
 import type TodayDto from '#dtos/today'
-import DashLayout from '~/layouts/DashLayout.vue'
-import { Calendar, Plus, Archive, Clock, CheckCircle } from 'lucide-vue-next'
+import AdminLayout from '~/layouts/AdminLayout.vue'
+import { Calendar, Plus, Archive, Clock, CheckCircle, Eye } from 'lucide-vue-next'
 import { TodayStatus } from '#enums/today_status'
-import { computed, ref } from 'vue'  // Added ref import
+import { computed, ref } from 'vue' // Added ref import
 import { DateTime } from 'luxon'
 
-defineOptions({ layout: DashLayout })
+defineOptions({ layout: AdminLayout })
 
 interface Props {
   todayItems: TodayDto[]
-  canManage: boolean
 }
 
 const props = defineProps<Props>()
 const showCreateDialog = ref(false) // Add ref to control dialog visibility
 
 // Filter today items by status
-const activeToday = computed(() => 
-  props.todayItems.filter(item => item.status === TodayStatus.ACTIVE)[0] || null
+const activeToday = computed(
+  () => props.todayItems.filter((item) => item.status === TodayStatus.ACTIVE)[0] || null
 )
 
-const scheduledItems = computed(() => 
-  props.todayItems.filter(item => item.status === TodayStatus.SCHEDULED)
-    .sort((a, b) => 
-      DateTime.fromISO(a.scheduledFor).toMillis() - 
-      DateTime.fromISO(b.scheduledFor).toMillis()
+const scheduledItems = computed(() =>
+  props.todayItems
+    .filter((item) => item.status === TodayStatus.SCHEDULED)
+    .sort(
+      (a, b) =>
+        DateTime.fromISO(a.scheduledFor).toMillis() - DateTime.fromISO(b.scheduledFor).toMillis()
     )
 )
 
-const archivedItems = computed(() => 
-  props.todayItems.filter(item => item.status === TodayStatus.ARCHIVED)
-    .sort((a, b) => 
-      DateTime.fromISO(b.updatedAt).toMillis() - 
-      DateTime.fromISO(a.updatedAt).toMillis()
+const archivedItems = computed(() =>
+  props.todayItems
+    .filter((item) => item.status === TodayStatus.ARCHIVED)
+    .sort(
+      (a, b) => DateTime.fromISO(b.updatedAt).toMillis() - DateTime.fromISO(a.updatedAt).toMillis()
     )
 )
 
@@ -73,6 +73,13 @@ const formatScheduledDate = (dateString: string) => {
             </p>
           </div>
         </div>
+        <Link
+          href="/today"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white hover:bg-gray-50 transition-all duration-200 text-gray-700 border border-gray-200 shadow-sm hover:shadow"
+        >
+          <Eye class="h-4 w-4" />
+          <span class="text-sm font-medium">View</span>
+        </Link>
 
         <!-- Changed from Link to Button that opens dialog -->
         <Button class="w-full sm:w-auto" @click="showCreateDialog = true">
@@ -88,7 +95,7 @@ const formatScheduledDate = (dateString: string) => {
         <h2 class="text-lg font-semibold">Today's Question</h2>
       </div>
 
-      <Link 
+      <Link
         :href="`/manage/today/${activeToday.slug}`"
         class="block p-6 bg-white rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-shadow"
       >
@@ -114,7 +121,11 @@ const formatScheduledDate = (dateString: string) => {
 
         <div class="mt-4 flex items-center gap-2 text-primary font-medium">
           <span>View question</span>
-          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+          <svg
+            class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
             <path
               fill-rule="evenodd"
               d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
@@ -133,10 +144,10 @@ const formatScheduledDate = (dateString: string) => {
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Link 
-          v-for="item in scheduledItems" 
+        <Link
+          v-for="item in scheduledItems"
           :key="item.id"
-          :href="`/manage/today/${item.slug}`" 
+          :href="`/manage/today/${item.slug}`"
           class="group p-5 bg-white rounded-xl border hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
         >
           <h3 class="text-lg font-medium text-foreground">{{ item.title }}</h3>
@@ -145,15 +156,21 @@ const formatScheduledDate = (dateString: string) => {
               {{ item.studyLevel }}
             </span>
           </div> -->
-          
+
           <div class="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
             <Calendar class="h-4 w-4" />
             <span>Scheduled for: {{ formatScheduledDate(item.scheduledFor) }}</span>
           </div>
 
-          <div class="mt-3 flex items-center text-primary text-sm font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+          <div
+            class="mt-3 flex items-center text-primary text-sm font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
+          >
             <span>View question</span>
-            <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+            <svg
+              class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
               <path
                 fill-rule="evenodd"
                 d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
@@ -173,10 +190,10 @@ const formatScheduledDate = (dateString: string) => {
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Link 
-          v-for="item in archivedItems" 
+        <Link
+          v-for="item in archivedItems"
           :key="item.id"
-          :href="`/manage/today/${item.slug}`" 
+          :href="`/manage/today/${item.slug}`"
           class="group p-5 bg-white/80 rounded-xl border border-gray-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
         >
           <h3 class="text-lg font-medium text-foreground">{{ item.title }}</h3>
@@ -185,15 +202,21 @@ const formatScheduledDate = (dateString: string) => {
               {{ item.studyLevel }}
             </span>
           </div> -->
-          
+
           <div class="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
             <Calendar class="h-4 w-4" />
             <span>Was for: {{ formatScheduledDate(item.scheduledFor) }}</span>
           </div>
 
-          <div class="mt-3 flex items-center text-primary text-sm font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+          <div
+            class="mt-3 flex items-center text-primary text-sm font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
+          >
             <span>View question</span>
-            <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+            <svg
+              class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
               <path
                 fill-rule="evenodd"
                 d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
@@ -206,7 +229,10 @@ const formatScheduledDate = (dateString: string) => {
     </div>
 
     <!-- Empty State -->
-    <div v-if="!activeToday && scheduledItems.length === 0 && archivedItems.length === 0" class="text-center py-16">
+    <div
+      v-if="!activeToday && scheduledItems.length === 0 && archivedItems.length === 0"
+      class="text-center py-16"
+    >
       <Calendar class="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
       <h3 class="text-xl font-medium text-foreground mb-2">No questions created yet</h3>
       <p class="text-muted-foreground mb-6">Create your first question of the day</p>
@@ -215,7 +241,7 @@ const formatScheduledDate = (dateString: string) => {
         <Plus class="h-4 w-4 mr-2" />Create Your First Question
       </Button>
     </div>
-    
+
     <!-- Add the CreateTodayDialog component -->
     <CreateTodayDialog v-model:open="showCreateDialog" />
   </div>
