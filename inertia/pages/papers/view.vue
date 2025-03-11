@@ -215,7 +215,7 @@ const getLastEditDate = computed(() => {
   <AppHead :title="paper.title" :description="`Questions for ${paper.title}`" />
   <FeedbackDialog v-model:open="feedbackDialog.isOpen" :question="feedbackDialog.question"
     @close="closeFeedbackDialog" />
-  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-10">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-5 sm:py-8 space-y-6 sm:space-y-10">
     <!-- Header section with glass morphism effect -->
     <div class="relative p-5 sm:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-primary/10 shadow-sm transition-all duration-300 hover:shadow-md">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent rounded-t-2xl" />
@@ -326,7 +326,7 @@ const getLastEditDate = computed(() => {
     <div class="space-y-6 sm:space-y-8">
       <div v-for="(question, index) in questions" :key="question.id" 
            :id="`question-${question.id}`"
-           class="p-5 sm:p-8 bg-white rounded-xl border shadow-sm hover:shadow-md transition-all duration-300">
+           class="p-4 sm:p-6 md:p-8 bg-white rounded-xl border shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full">
         <!-- Question Text with improved typography -->
         <div class="space-y-4 sm:space-y-5">
           <div class="flex flex-col gap-2 sm:gap-3">
@@ -377,13 +377,13 @@ const getLastEditDate = computed(() => {
                 <h3 class="text-lg font-bold text-gray-800">Solution Explanation</h3>
               </div>
               
-              <!-- Modern card with sidebar accent -->
-              <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100">
+              <!-- Modern card with sidebar accent - WIDER -->
+              <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full">
                 <!-- Left accent border -->
                 <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-blue-500"></div>
                 
                 <!-- Answer header -->
-                <div class="p-4 sm:p-5 bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-100">
+                <div class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-100">
                   <div class="flex items-center gap-3">
                     <div class="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600">
                       <CheckCircle class="h-5 w-5" />
@@ -397,15 +397,15 @@ const getLastEditDate = computed(() => {
                   </div>
                 </div>
                 
-                <!-- Explanation content with visual separation -->
-                <div class="p-5 sm:p-6 bg-white">
+                <!-- Explanation content with visual separation - WIDER -->
+                <div class="p-4 sm:p-6 md:p-8 bg-white">
                   <div class="flex gap-3 items-start">
                     <div class="shrink-0 pt-1">
                       <div class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
                         <Info class="h-3 w-3 text-blue-600" />
                       </div>
                     </div>
-                    <div class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content">
+                    <div class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
                       <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
                     </div>
                   </div>
@@ -427,7 +427,7 @@ const getLastEditDate = computed(() => {
 
           <!-- Enhanced SAQ Section with modern card design -->
           <div v-if="question.isSaq" class="mt-5 sm:mt-7 space-y-5 sm:space-y-7">
-            <div class="bg-gradient-to-r from-primary/5 to-primary/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+            <div class="bg-gradient-to-r from-primary/5 to-primary/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full">
               <!-- SAQ Header with improved styling -->
               <div class="flex items-center justify-between px-5 py-4 bg-primary/15 border-b border-primary/10">
                 <div class="flex items-center gap-3">
@@ -442,7 +442,7 @@ const getLastEditDate = computed(() => {
               <!-- SAQ Parts List with hover effects -->
               <div class="divide-y divide-primary/10">
                 <div v-for="(part, partIndex) in question.parts" :key="part.id"
-                  class="px-5 py-4 sm:py-5 bg-white/80 hover:bg-white/100 transition-all duration-300">
+                  class="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 bg-white/80 hover:bg-white/100 transition-all duration-300">
                   <!-- Part Header with Part Number and Marks -->
                   <div class="flex items-center justify-between mb-3 sm:mb-4">
                     <div class="flex items-baseline gap-3">
@@ -470,15 +470,15 @@ const getLastEditDate = computed(() => {
                     <span>Show Answer</span>
                   </button>
 
-                  <!-- EXPLANATION SECTION FOR SAQ -->
+                  <!-- EXPLANATION SECTION FOR SAQ - WIDER -->
                   <div v-if="showAnswer[part.id]" class="mt-5 sm:mt-6 animate-fadeIn">
-                    <!-- Modern card with sidebar accent -->
-                    <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100">
+                    <!-- Modern card with sidebar accent - WIDER -->
+                    <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full">
                       <!-- Left accent border -->
                       <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-primary to-blue-500"></div>
                       
                       <!-- Answer header -->
-                      <div class="p-4 sm:p-5 bg-gradient-to-r from-primary/5 to-blue-50 border-b border-gray-100">
+                      <div class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-primary/5 to-blue-50 border-b border-gray-100">
                         <div class="flex items-center gap-3">
                           <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary">
                             <CheckCircle class="h-5 w-5" />
@@ -492,9 +492,9 @@ const getLastEditDate = computed(() => {
                         </div>
                       </div>
                       
-                      <!-- Explanation content with improved formatting -->
-                      <div class="p-5 sm:p-6 bg-white">
-                        <div class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content">
+                      <!-- Explanation content with improved formatting - WIDER -->
+                      <div class="p-4 sm:p-6 md:p-8 bg-white">
+                        <div class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
                           <ViewExplanation :content="part.expectedAnswer" />
                         </div>
                       </div>
@@ -694,5 +694,64 @@ const getLastEditDate = computed(() => {
 
 .animate-fadeIn {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Highlight effect for current question */
+.highlight-question {
+  box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.3);
+}
+/* Add this to your existing <style scoped> section */
+.explanation-content {
+  /* Keep your existing styles */
+
+  /* Add responsive video styling */
+  :deep(iframe) {
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    display: block;
+    margin: 1rem auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    
+    /* Base size for small devices */
+    width: 100%;
+    max-height: 250px;
+    
+    /* Adjust size for medium devices */
+    @media (min-width: 640px) {
+      width: 90%;
+      max-height: 300px;
+    }
+    
+    /* Adjust size for larger devices */
+    @media (min-width: 768px) {
+      width: 85%;
+      max-height: 350px;
+    }
+    
+    /* Optional transition for smooth resizing */
+    transition: all 0.3s ease;
+  }
+  
+  /* Create a responsive container for videos if needed */
+  :deep(.video-container) {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+    
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+  }
 }
 </style>
