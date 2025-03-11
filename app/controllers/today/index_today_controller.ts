@@ -37,8 +37,8 @@ export default class IndexTodayController {
     return inertia.render('today/index', {
       today: today ? new TodayDto(today) : null,
       questions: today?.questions ? QuestionDto.fromArray(today.questions) : [],
-      canManage,
       isActive: !!today,
+      canManage,
     })
   }
 }

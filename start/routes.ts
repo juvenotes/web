@@ -360,4 +360,4 @@ router
   .prefix('/manage/today')
   .use(middleware.auth())
 
-router.get('/today', [IndexTodayController, 'index']).as('today.index')
+router.get('/today', [IndexTodayController, 'index']).as('today.index').use(middleware.auth())
