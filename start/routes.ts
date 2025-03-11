@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import transmit from '@adonisjs/transmit/services/main'
 
 const HomeController = () => import('#controllers/home/home_controller')
 const SupportController = () => import('#controllers/home/support_controller')
@@ -40,6 +41,16 @@ const CiteController = () => import('#controllers/api/cite_controller')
 const QuestionFeedbackController = () => import('#controllers/papers/question_feedback_controller')
 const ManageFeedbackController = () =>
   import('#controllers/manage/feedback/manage_feedback_controller')
+const ManageTodayController = () => import('#controllers/manage/today/manage_today_controller')
+const IndexTodayController = () => import('#controllers/today/index_today_controller')
+
+transmit.registerRoutes((route) => {
+  // Ensure you are authenticated to register your client
+  if (route.getPattern() === '__transmit/events') {
+    route.middleware(middleware.auth())
+    return
+  }
+})
 
 // test crash route
 router.get('/crash', () => {
@@ -330,3 +341,23 @@ router
 router
   .post('/api/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
   .use(middleware.auth())
+
+// Today routes
+router
+  .group(() => {
+    // Basic Today CRUD operations
+    router.get('/', [ManageTodayController, 'index'])
+    router.get('/:slug', [ManageTodayController, 'show'])
+    router.post('/', [ManageTodayController, 'store'])
+    router.put('/:slug', [ManageTodayController, 'update'])
+    router.delete('/:slug', [ManageTodayController, 'destroy'])
+
+    // MCQ operations
+    router.post('/:slug/questions/mcq', [ManageTodayController, 'addQuestion'])
+    router.put('/:slug/questions/:questionSlug/mcq', [ManageTodayController, 'editQuestion'])
+    router.delete('/:slug/questions/:questionId', [ManageTodayController, 'removeQuestion'])
+  })
+  .prefix('/manage/today')
+  .use(middleware.auth())
+
+router.get('/today', [IndexTodayController, 'index']).as('today.index')

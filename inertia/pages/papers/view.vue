@@ -51,6 +51,7 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
       questionId,
       choiceId,
       isCorrect,
+      source: 'paper',
     })
   } catch (error) {
     console.error('Failed to record response', error)
@@ -157,18 +158,27 @@ const initializeUserAnswers = async () => {
     const response = await axios.get(`/api/papers/${props.paper.id}/my-responses`)
 
     if (response.data.responses?.length) {
-      response.data.responses.forEach((item: { questionId: number; selectedOption: string }) => {
-        const question = props.questions.find((q) => q.id === item.questionId)
-        if (!question) return
+      response.data.responses.forEach(
+        (item: { questionId: number; choiceId: number; selectedOption?: string }) => {
+          if (item.choiceId) {
+            // Use choiceId directly if available
+            selectedAnswers.value[item.questionId] = item.choiceId
+            showAnswer.value[item.questionId] = true
+          } else if (item.selectedOption) {
+            // Fall back to the old selectedOption approach
+            const question = props.questions.find((q) => q.id === item.questionId)
+            if (!question) return
 
-        // Convert letter (A, B, C) back to choice ID
-        const choiceIndex = item.selectedOption.charCodeAt(0) - 65
-        if (question.choices[choiceIndex]) {
-          selectedAnswers.value[question.id] = question.choices[choiceIndex].id
-          showAnswer.value[question.id] = true
+            const choiceIndex = item.selectedOption.charCodeAt(0) - 65
+            if (question.choices[choiceIndex]) {
+              selectedAnswers.value[item.questionId] = question.choices[choiceIndex].id
+              showAnswer.value[item.questionId] = true
+            }
+          }
         }
-      })
+      )
     }
+    // Rest of the function unchanged
   } catch (error) {
     console.error('Failed to fetch user responses:', error)
   }
@@ -218,7 +228,7 @@ const getLastEditDate = computed(() => {
     :question="feedbackDialog.question"
     @close="closeFeedbackDialog"
   />
-  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-10">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-5 sm:py-8 space-y-6 sm:space-y-10">
     <!-- Header section with glass morphism effect -->
     <div
       class="relative p-5 sm:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-primary/10 shadow-sm transition-all duration-300 hover:shadow-md"
@@ -266,7 +276,7 @@ const getLastEditDate = computed(() => {
           </div>
         </div>
         <!-- Action buttons -->
-        <div class="flex flex-wrap gap-2 mt-3 sm:mt-0">
+        <div class="flex flex-wrap items-center gap-2 mt-3 sm:mt-0">
           <!-- Continue button -->
           <Button
             v-if="paperProgress.progress?.lastQuestionId"
@@ -362,7 +372,7 @@ const getLastEditDate = computed(() => {
         v-for="(question, index) in questions"
         :key="question.id"
         :id="`question-${question.id}`"
-        class="p-5 sm:p-8 bg-white rounded-xl border shadow-sm hover:shadow-md transition-all duration-300"
+        class="p-4 sm:p-6 md:p-8 bg-white rounded-xl border shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full"
       >
         <!-- Question Text with improved typography -->
         <div class="space-y-4 sm:space-y-5">
@@ -377,15 +387,6 @@ const getLastEditDate = computed(() => {
             >
               {{ question.questionText }}
             </p>
-          </div>
-
-          <!-- Question Image (if present) -->
-          <div v-if="question.questionImagePath" class="mt-2 flex justify-center">
-            <img
-              :src="question.questionImagePath"
-              :alt="`Question ${index + 1} image`"
-              class="max-w-full h-auto rounded-lg border shadow-sm max-h-[400px] object-contain"
-            />
           </div>
 
           <!-- MCQ Section with enhanced UI -->
@@ -451,8 +452,10 @@ const getLastEditDate = computed(() => {
                 <h3 class="text-lg font-bold text-gray-800">Solution Explanation</h3>
               </div>
 
-              <!-- Modern card with sidebar accent -->
-              <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100">
+              <!-- Modern card with sidebar accent - WIDER -->
+              <div
+                class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
+              >
                 <!-- Left accent border -->
                 <div
                   class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-blue-500"
@@ -460,7 +463,7 @@ const getLastEditDate = computed(() => {
 
                 <!-- Answer header -->
                 <div
-                  class="p-4 sm:p-5 bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-100"
+                  class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-100"
                 >
                   <div class="flex items-center gap-3">
                     <div
@@ -477,8 +480,8 @@ const getLastEditDate = computed(() => {
                   </div>
                 </div>
 
-                <!-- Explanation content with visual separation -->
-                <div class="p-5 sm:p-6 bg-white">
+                <!-- Explanation content with visual separation - WIDER -->
+                <div class="p-4 sm:p-6 md:p-8 bg-white">
                   <div class="flex gap-3 items-start">
                     <div class="shrink-0 pt-1">
                       <div
@@ -488,7 +491,7 @@ const getLastEditDate = computed(() => {
                       </div>
                     </div>
                     <div
-                      class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content"
+                      class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
                     >
                       <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
                     </div>
@@ -515,7 +518,7 @@ const getLastEditDate = computed(() => {
           <!-- Enhanced SAQ Section with modern card design -->
           <div v-if="question.isSaq" class="mt-5 sm:mt-7 space-y-5 sm:space-y-7">
             <div
-              class="bg-gradient-to-r from-primary/5 to-primary/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
+              class="bg-gradient-to-r from-primary/5 to-primary/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full"
             >
               <!-- SAQ Header with improved styling -->
               <div
@@ -539,7 +542,7 @@ const getLastEditDate = computed(() => {
                 <div
                   v-for="(part, partIndex) in question.parts"
                   :key="part.id"
-                  class="px-5 py-4 sm:py-5 bg-white/80 hover:bg-white/100 transition-all duration-300"
+                  class="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 bg-white/80 hover:bg-white/100 transition-all duration-300"
                 >
                   <!-- Part Header with Part Number and Marks -->
                   <div class="flex items-center justify-between mb-3 sm:mb-4">
@@ -578,11 +581,11 @@ const getLastEditDate = computed(() => {
                     <span>Show Answer</span>
                   </button>
 
-                  <!-- EXPLANATION SECTION FOR SAQ -->
+                  <!-- EXPLANATION SECTION FOR SAQ - WIDER -->
                   <div v-if="showAnswer[part.id]" class="mt-5 sm:mt-6 animate-fadeIn">
-                    <!-- Modern card with sidebar accent -->
+                    <!-- Modern card with sidebar accent - WIDER -->
                     <div
-                      class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100"
+                      class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
                     >
                       <!-- Left accent border -->
                       <div
@@ -591,7 +594,7 @@ const getLastEditDate = computed(() => {
 
                       <!-- Answer header -->
                       <div
-                        class="p-4 sm:p-5 bg-gradient-to-r from-primary/5 to-blue-50 border-b border-gray-100"
+                        class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-primary/5 to-blue-50 border-b border-gray-100"
                       >
                         <div class="flex items-center gap-3">
                           <div
@@ -608,10 +611,10 @@ const getLastEditDate = computed(() => {
                         </div>
                       </div>
 
-                      <!-- Explanation content with improved formatting -->
-                      <div class="p-5 sm:p-6 bg-white">
+                      <!-- Explanation content with improved formatting - WIDER -->
+                      <div class="p-4 sm:p-6 md:p-8 bg-white">
                         <div
-                          class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content"
+                          class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
                         >
                           <ViewExplanation :content="part.expectedAnswer" />
                         </div>
@@ -737,6 +740,59 @@ const getLastEditDate = computed(() => {
       margin: 1.25rem 0;
     }
   }
+
+  /* New properties for scrolling - begin */
+  position: relative;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
+
+  /* Style the scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  /* Adjust max-height based on screen size */
+  @media (min-width: 640px) {
+    max-height: 400px;
+  }
+
+  @media (min-width: 1024px) {
+    max-height: 500px;
+  }
+
+  /* Optional visual indicator for scrollable content */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.9), transparent);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  &:not(:hover):not(:focus-within)::after {
+    opacity: 1;
+  }
+  /* New properties for scrolling - end */
 }
 
 /* Improved scrollbar hiding for better mobile experience */
@@ -769,5 +825,66 @@ const getLastEditDate = computed(() => {
 
 .animate-fadeIn {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Highlight effect for current question */
+.highlight-question {
+  box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.3);
+}
+/* Add this to your existing <style scoped> section */
+.explanation-content {
+  /* Keep your existing styles */
+
+  /* Add responsive video styling */
+  :deep(iframe) {
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    display: block;
+    margin: 1rem auto;
+    border-radius: 0.5rem;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    /* Base size for small devices */
+    width: 100%;
+    max-height: 250px;
+
+    /* Adjust size for medium devices */
+    @media (min-width: 640px) {
+      width: 90%;
+      max-height: 300px;
+    }
+
+    /* Adjust size for larger devices */
+    @media (min-width: 768px) {
+      width: 85%;
+      max-height: 350px;
+    }
+
+    /* Optional transition for smooth resizing */
+    transition: all 0.3s ease;
+  }
+
+  /* Create a responsive container for videos if needed */
+  :deep(.video-container) {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+  }
 }
 </style>

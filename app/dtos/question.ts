@@ -7,6 +7,7 @@ import McqChoiceDto from '#dtos/mcq_choice'
 import SaqPartDto from '#dtos/saq_part'
 import PastPaperDto from '#dtos/past_paper'
 import StationDto from './station.js'
+import TodayDto from '#dtos/today'
 
 export default class QuestionDto extends BaseModelDto {
   declare id: number
@@ -19,14 +20,19 @@ export default class QuestionDto extends BaseModelDto {
   declare updatedAt: string
   declare user: UserDto | null
   declare concepts: ConceptDto[]
+  declare topics: ConceptDto[]
+  declare units: ConceptDto[]
   declare choices: McqChoiceDto[]
   declare parts: SaqPartDto[]
   declare stations: StationDto[]
   declare slug: any
   declare pastPaperId: number | null
+  declare todayId: number | null
   declare pastPaper: PastPaperDto | null
+  declare today: TodayDto | null
   declare isMcq: boolean
   declare isSaq: boolean
+  declare isOsce: boolean
 
   constructor(question?: Question) {
     super()
@@ -38,17 +44,22 @@ export default class QuestionDto extends BaseModelDto {
     this.questionText = question.questionText
     this.questionImagePath = question.questionImagePath
     this.difficultyLevel = question.difficultyLevel
-    // this.createdAt = question.createdAt.toISO()!
-    // this.updatedAt = question.updatedAt.toISO()!
+    this.createdAt = question.createdAt?.toISO() || ''
+    this.updatedAt = question.updatedAt?.toISO() || ''
     this.user = question.user && new UserDto(question.user)
     this.concepts = ConceptDto.fromArray(question.concepts)
+    this.topics = ConceptDto.fromArray(question.topics || [])
+    this.units = ConceptDto.fromArray(question.units || [])
     this.choices = McqChoiceDto.fromArray(question.choices)
     this.parts = SaqPartDto.fromArray(question.parts)
     this.stations = StationDto.fromArray(question.stations)
     this.slug = question.slug
     this.pastPaperId = question.pastPaperId
+    this.todayId = question.todayId
     this.pastPaper = question.pastPaper && new PastPaperDto(question.pastPaper)
+    this.today = question.today && new TodayDto(question.today)
     this.isMcq = question.isMcq
     this.isSaq = question.isSaq
+    this.isOsce = question.isOsce
   }
 }

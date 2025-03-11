@@ -8,6 +8,7 @@ import UserOsceResponse from '#models/user_osce_response'
 import { ResponseStatus } from '#enums/response_status'
 import McqChoice from '#models/mcq_choice'
 import SaqPart from '#models/saq_part'
+import db from '@adonisjs/lucid/services/db'
 
 export default class UserProgressService {
   /**
@@ -19,52 +20,155 @@ export default class UserProgressService {
 
   /**
    * Record mcq question attempt and update last question
+   * @param source Indicates where the response came from ('paper' or 'today')
    */
   async recordMcqAttempt(
     userId: number,
     paperId: number,
     questionId: number,
     choiceId: number,
-    isCorrect: boolean
+    isCorrect: boolean,
+    source: 'paper' | 'today' = 'paper'
   ) {
     // Get the choice to store its text for historical record
     const choice = await McqChoice.findOrFail(choiceId)
 
+    // Always record in user_mcq_responses table with source field
     await UserMcqResponse.create({
       userId,
       questionId,
       choiceId,
-      selectedOption: '', // Optional: calculate based on choice position
+      selectedOption: '',
       isCorrect,
       status: ResponseStatus.ACTIVE,
-      originalChoiceText: choice.choiceText, // Store current text
+      originalChoiceText: choice.choiceText,
+      source,
     })
 
-    // Find existing progress record
-    const existingProgress = await UserPaperProgress.query()
-      .where('user_id', userId)
-      .where('paper_id', paperId)
-      .first()
+    // Based on source, update different stat tables
+    if (source === 'today') {
+      // Track Today question attempt in user_today_stats
+      await this.recordTodayQuestionAttempt(userId, paperId, questionId, isCorrect)
+    } else {
+      // Track Paper question attempt in user_paper_stats
+      await this.recordPaperQuestionAttempt(userId, paperId, questionId, isCorrect)
 
-    if (existingProgress) {
-      // If record exists, update it and increment attempt count
-      await existingProgress
-        .merge({
+      // Also update UserPaperProgress (keep existing functionality)
+      const existingProgress = await UserPaperProgress.query()
+        .where('user_id', userId)
+        .where('paper_id', paperId)
+        .first()
+
+      if (existingProgress) {
+        await existingProgress
+          .merge({
+            lastQuestionId: questionId,
+            lastVisitedAt: DateTime.now(),
+            attemptCount: existingProgress.attemptCount + 1,
+          })
+          .save()
+      } else {
+        await UserPaperProgress.create({
+          userId,
+          paperId,
           lastQuestionId: questionId,
           lastVisitedAt: DateTime.now(),
-          attemptCount: existingProgress.attemptCount + 1,
+          attemptCount: 1,
         })
-        .save()
-    } else {
-      // If no record exists, create a new one with attempt_count = 1
-      await UserPaperProgress.create({
-        userId,
-        paperId,
-        lastQuestionId: questionId,
-        lastVisitedAt: DateTime.now(),
-        attemptCount: 1,
-      })
+      }
     }
+  }
+
+  /**
+   * Record a Today question attempt
+   */
+  private async recordTodayQuestionAttempt(
+    userId: number,
+    todayId: number,
+    _questionId: number,
+    isCorrect: boolean
+  ) {
+    const today = new Date().toISOString().split('T')[0]
+
+    await db.transaction(async (trx) => {
+      // Check if record exists
+      const existing = await trx
+        .from('user_today_stats')
+        .where('user_id', userId)
+        .where('date', today)
+        .first()
+
+      if (existing) {
+        // Update existing record
+        await trx
+          .from('user_today_stats')
+          .where('user_id', userId)
+          .where('date', today)
+          .update({
+            questions_attempted: existing.questions_attempted + 1,
+            questions_correct: existing.questions_correct + (isCorrect ? 1 : 0),
+          })
+      } else {
+        // Insert new record - CHANGED THIS PART
+        await trx
+          .insertQuery()
+          .table('user_today_stats')
+          .insert({
+            user_id: userId,
+            date: today,
+            questions_attempted: 1,
+            questions_correct: isCorrect ? 1 : 0,
+            today_id: todayId,
+          })
+      }
+    })
+  }
+
+  /**
+   * Record a Paper question attempt with aggregated stats
+   */
+  private async recordPaperQuestionAttempt(
+    userId: number,
+    paperId: number,
+    _questionId: number,
+    isCorrect: boolean
+  ) {
+    // Calculate current completion percentage
+    const completionPercentage = await this.getCompletionPercentage(userId, paperId)
+
+    await db.transaction(async (trx) => {
+      // Check if record exists
+      const existing = await trx
+        .from('user_paper_stats')
+        .where('user_id', userId)
+        .where('paper_id', paperId)
+        .first()
+
+      if (existing) {
+        // Update existing record
+        await trx
+          .from('user_paper_stats')
+          .where('user_id', userId)
+          .where('paper_id', paperId)
+          .update({
+            questions_attempted: existing.questions_attempted + 1,
+            questions_correct: existing.questions_correct + (isCorrect ? 1 : 0),
+            completion_percentage: completionPercentage,
+          })
+      } else {
+        // Insert new record - CHANGED THIS PART
+        await trx
+          .insertQuery()
+          .table('user_paper_stats')
+          .insert({
+            user_id: userId,
+            paper_id: paperId,
+            questions_attempted: 1,
+            questions_correct: isCorrect ? 1 : 0,
+            completion_percentage: completionPercentage,
+          })
+      }
+    })
   }
 
   /**
