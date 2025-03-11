@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from 'inertia/lib/utils'
+import { cn } from '~/lib/utils'
 import {
   HoverCardContent,
   type HoverCardContentProps,

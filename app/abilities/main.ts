@@ -21,6 +21,11 @@ export const viewQuestions = Bouncer.ability((user: User | null) => {
   return user !== null
 })
 
+export const viewAnswers = Bouncer.ability((user: User | null) => {
+  // Only authenticated users can see answers
+  return user !== null
+})
+
 export const canManage = Bouncer.ability((user: User | null) => {
   return !!user && [Role.EDITOR, Role.ADMIN].includes(user.roleId)
 })
