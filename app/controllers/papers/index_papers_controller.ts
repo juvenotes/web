@@ -164,12 +164,13 @@ export default class IndexController {
       return response.unauthorized()
     }
 
-    const { paperId, questionId, choiceId, isCorrect } = request.only([
-      'paperId',
-      'questionId',
-      'choiceId',
-      'isCorrect',
-    ])
+    const {
+      paperId,
+      questionId,
+      choiceId,
+      isCorrect,
+      source = 'paper',
+    } = request.only(['paperId', 'questionId', 'choiceId', 'isCorrect', 'source'])
 
     // Pass the selected option (now a letter) to your service
     await this.userProgressService.recordMcqAttempt(
@@ -177,7 +178,8 @@ export default class IndexController {
       paperId,
       questionId,
       choiceId,
-      isCorrect
+      isCorrect,
+      source as 'paper' | 'today'
     )
 
     return response.ok({ success: true })

@@ -3,14 +3,15 @@ import { Link } from '@inertiajs/vue3'
 import type TodayDto from '#dtos/today'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { Calendar, CheckCircle, Circle, XCircle, MessageSquare } from 'lucide-vue-next'
+import { Calendar, CheckCircle, Circle, XCircle } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 import { DateTime } from 'luxon'
+import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
 
 interface Props {
-  today: TodayDto | null
+  today: TodayDto
   questions: QuestionDto[]
   canManage: boolean
   isActive: boolean
@@ -32,15 +33,36 @@ const formattedDate = computed(() => {
   }
 })
 
-// Handle selecting an answer AND check it immediately - just like in papers/view
+function getCorrectAnswer(question: QuestionDto) {
+  return question.choices?.find(choice => choice.isCorrect)
+}
+
+// Handle selecting an answer AND check it immediately
 const handleChoiceSelect = (questionId: number, choiceId: number) => {
   selectedAnswers.value[questionId] = choiceId
   showAnswer.value[questionId] = true
+
+  // Get the selected choice to determine if it's correct
+  const question = props.questions.find((q) => q.id === questionId)
+  const choice = question?.choices?.find((c) => c.id === choiceId)
+
+  if (question && choice) {
+    recordResponse(questionId, choiceId, choice.isCorrect)
+  }
 }
 
-// Helper to get correct answer - same as papers/view
-const getCorrectAnswer = (question: QuestionDto) => {
-  return question.choices?.find(c => c.isCorrect)
+async function recordResponse(questionId: number, choiceId: number, isCorrect: boolean) {
+  try {
+    await axios.post('/api/papers/record-response', {
+      paperId: props.today.id, // Use today ID here
+      questionId,
+      choiceId,
+      isCorrect,
+      source: 'today', // Explicitly specify this is from Today
+    })
+  } catch (error) {
+    console.error('Failed to record response', error)
+  }
 }
 </script>
 
@@ -70,7 +92,9 @@ const getCorrectAnswer = (question: QuestionDto) => {
     <div v-else class="space-y-6">
       <!-- Today header -->
       <div class="relative p-6 bg-white rounded-xl border shadow-sm">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+        />
         <div class="flex items-center gap-4">
           <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
             <Calendar class="h-6 w-6 text-primary" />
@@ -83,14 +107,16 @@ const getCorrectAnswer = (question: QuestionDto) => {
       </div>
 
       <!-- Questions -->
-      <div 
-        v-for="(question, index) in questions" 
+      <div
+        v-for="(question, index) in questions"
         :key="question.id"
         class="p-4 sm:p-6 bg-white rounded-xl border"
       >
         <!-- Question Text - EXACTLY like papers/view -->
         <div class="flex flex-col gap-2">
-          <span class="inline-block w-fit px-4 py-1.5 bg-primary/10 text-primary rounded-lg font-semibold text-lg">
+          <span
+            class="inline-block w-fit px-4 py-1.5 bg-primary/10 text-primary rounded-lg font-semibold text-lg"
+          >
             Question {{ index + 1 }}
           </span>
           <p class="text-foreground pl-1">{{ question.questionText }}</p>
@@ -142,18 +168,6 @@ const getCorrectAnswer = (question: QuestionDto) => {
               <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
             </p>
           </div>
-          
-          <!-- Feedback Button (like in papers/view) -->
-          <Button
-            v-if="showAnswer[question.id]"
-            variant="outline"
-            class="mt-4 flex items-center gap-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 border border-blue-200 transition-all duration-200 rounded-lg px-5 py-2.5 shadow-sm hover:shadow group"
-          >
-            <MessageSquare
-              class="h-4.5 w-4.5 opacity-75 group-hover:scale-110 group-hover:opacity-100 transition-all duration-200"
-            />
-            <span class="font-medium">Provide Feedback</span>
-          </Button>
         </div>
       </div>
     </div>
