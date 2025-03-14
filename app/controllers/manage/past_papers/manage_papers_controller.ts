@@ -23,6 +23,7 @@ import { PaperType } from '#enums/exam_type'
 import QuestionFeedbackDto from '#dtos/question_feedback'
 import { ResponseStatus } from '#enums/response_status'
 import QuestionDeletionService from '#services/question_deletion_service'
+import PaperDeletionService from '#services/paper_deletion_service'
 
 export default class ManagePastPapersController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -713,7 +714,7 @@ export default class ManagePastPapersController {
       return response.forbidden('Cannot delete this paper')
     }
 
-    await paper.delete()
+    await PaperDeletionService.delete(paper.id)
 
     logger.info('paper deleted successfully', {
       userId: auth?.user?.id,
