@@ -22,6 +22,8 @@ import {
 import { PaperType } from '#enums/exam_type'
 import QuestionFeedbackDto from '#dtos/question_feedback'
 import { ResponseStatus } from '#enums/response_status'
+import QuestionDeletionService from '#services/question_deletion_service'
+import PaperDeletionService from '#services/paper_deletion_service'
 
 export default class ManagePastPapersController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -648,8 +650,8 @@ export default class ManagePastPapersController {
           .useTransaction(trx)
           .save()
 
-        // Delete the question
-        await question.useTransaction(trx).delete()
+        // Use the question service for soft deletion
+        await QuestionDeletionService.delete(question.id)
       })
 
       session.flash('success', 'Question deleted successfully')
@@ -659,6 +661,35 @@ export default class ManagePastPapersController {
       throw error
     }
   }
+
+  // async deleteQuestion({ params, response, auth, session, logger }: HttpContext) {
+  //   try {
+  //     // Load question with pastPaper relationship
+  //     const question = await Question.query()
+  //       .where('slug', params.questionSlug)
+  //       .preload('pastPaper')
+  //       .firstOrFail()
+
+  //     await db.transaction(async (trx) => {
+  //       // Update paper metadata
+  //       await question.pastPaper
+  //         .merge({
+  //           metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
+  //         })
+  //         .useTransaction(trx)
+  //         .save()
+
+  //       // Delete the question
+  //       await question.useTransaction(trx).delete()
+  //     })
+
+  //     session.flash('success', 'Question deleted successfully')
+  //     return response.redirect().back()
+  //   } catch (error) {
+  //     logger.error('failed to delete question', { error })
+  //     throw error
+  //   }
+  // }
 
   /**
    * Delete a paper
@@ -683,7 +714,7 @@ export default class ManagePastPapersController {
       return response.forbidden('Cannot delete this paper')
     }
 
-    await paper.delete()
+    await PaperDeletionService.delete(paper.id)
 
     logger.info('paper deleted successfully', {
       userId: auth?.user?.id,

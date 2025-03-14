@@ -1,5 +1,15 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column, computed, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  belongsTo,
+  column,
+  computed,
+  hasMany,
+  manyToMany,
+  beforeFind,
+  beforeFetch,
+  scope,
+} from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import { QuestionType, DifficultyLevel } from '#enums/question_types'
 import Concept from './concept.js'
@@ -9,6 +19,7 @@ import SaqPart from './saq_part.js'
 import PastPaper from './past_paper.js'
 import Station from './station.js'
 import Today from './today.js'
+import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })
@@ -37,6 +48,9 @@ export default class Question extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @column.dateTime({ autoCreate: false })
+  declare deletedAt: DateTime | null
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
@@ -99,6 +113,24 @@ export default class Question extends BaseModel {
   get isOsce() {
     return this.type === QuestionType.OSCE
   }
+
+  static withoutDeleted = scope((query: ModelQueryBuilderContract<typeof Question>) => {
+    query.whereNull('deleted_at')
+  })
+
+  @beforeFind()
+  @beforeFetch()
+  static excludeDeletedHook(query: ModelQueryBuilderContract<typeof Question>) {
+    query.apply((scopes) => scopes.withoutDeleted())
+  }
+
+  static withTrashed = scope((_query: ModelQueryBuilderContract<typeof Question>) => {
+    // No filtering - include all records
+  })
+
+  static onlyTrashed = scope((query) => {
+    query.whereNotNull('deleted_at')
+  })
 
   // @computed()
   // get totalMarks() {
