@@ -6,8 +6,9 @@ import ConceptDto from '#dtos/concept'
 import McqChoiceDto from '#dtos/mcq_choice'
 import SaqPartDto from '#dtos/saq_part'
 import PastPaperDto from '#dtos/past_paper'
-import StationDto from './station.js'
 import TodayDto from '#dtos/today'
+import StationDto from '#dtos/station'
+import SpotStationDto from '#dtos/spot_station'
 
 export default class QuestionDto extends BaseModelDto {
   declare id: number
@@ -25,11 +26,13 @@ export default class QuestionDto extends BaseModelDto {
   declare choices: McqChoiceDto[]
   declare parts: SaqPartDto[]
   declare stations: StationDto[]
+  declare spotStations: SpotStationDto[]
   declare slug: any
   declare pastPaperId: number | null
   declare todayId: number | null
   declare pastPaper: PastPaperDto | null
   declare today: TodayDto | null
+  declare isSpot: boolean
   declare isMcq: boolean
   declare isSaq: boolean
   declare isOsce: boolean
@@ -53,6 +56,7 @@ export default class QuestionDto extends BaseModelDto {
     this.choices = McqChoiceDto.fromArray(question.choices)
     this.parts = SaqPartDto.fromArray(question.parts)
     this.stations = StationDto.fromArray(question.stations)
+    this.spotStations = SpotStationDto.fromArray(question.spotStations)
     this.slug = question.slug
     this.pastPaperId = question.pastPaperId
     this.todayId = question.todayId
@@ -61,5 +65,6 @@ export default class QuestionDto extends BaseModelDto {
     this.isMcq = question.isMcq
     this.isSaq = question.isSaq
     this.isOsce = question.isOsce
+    this.isSpot = question.isSpot
   }
 }

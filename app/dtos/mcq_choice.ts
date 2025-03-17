@@ -10,6 +10,7 @@ export default class McqChoiceDto extends BaseModelDto {
   declare explanation: string | null
   declare createdAt: string
   declare updatedAt: string
+  declare deletedAt: string | null
   declare question: QuestionDto | null
 
   constructor(mcqChoice?: McqChoice) {
@@ -21,8 +22,9 @@ export default class McqChoiceDto extends BaseModelDto {
     this.choiceText = mcqChoice.choiceText
     this.isCorrect = mcqChoice.isCorrect
     this.explanation = mcqChoice.explanation
-    // this.createdAt = mcqChoice.createdAt.toISO()!
-    // this.updatedAt = mcqChoice.updatedAt.toISO()!
+    this.createdAt = mcqChoice.createdAt?.toISO() || ''
+    this.updatedAt = mcqChoice.updatedAt?.toISO() || ''
+    this.deletedAt = mcqChoice.deletedAt?.toISO() || ''
     this.question = mcqChoice.question && new QuestionDto(mcqChoice.question)
   }
 }

@@ -12,6 +12,8 @@ import { QuestionType } from '#enums/question_types'
 import Question from '#models/question'
 import db from '@adonisjs/lucid/services/db'
 import { createOsceQuestionValidator, updateOsceQuestionValidator } from '#validators/question'
+import QuestionDeletionService from '#services/question_deletion_service'
+import PaperDeletionService from '#services/paper_deletion_service'
 
 export default class ManageOsceController {
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
@@ -346,13 +348,15 @@ export default class ManageOsceController {
    * Delete an OSCE question
    */
   async deleteQuestion({ params, response, auth, session, logger }: HttpContext) {
-    const question = await Question.query()
-      .where('slug', params.questionSlug)
-      .preload('pastPaper')
-      .firstOrFail()
-
     try {
+      // Load question with pastPaper relationship
+      const question = await Question.query()
+        .where('slug', params.questionSlug)
+        .preload('pastPaper')
+        .firstOrFail()
+
       await db.transaction(async (trx) => {
+        // Update paper metadata
         await question.pastPaper
           .merge({
             metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
@@ -360,7 +364,8 @@ export default class ManageOsceController {
           .useTransaction(trx)
           .save()
 
-        await question.useTransaction(trx).delete()
+        // Use the question service for soft deletion instead of hard delete
+        await QuestionDeletionService.delete(question.id)
       })
 
       session.flash('success', 'Question deleted successfully')
@@ -393,12 +398,14 @@ export default class ManageOsceController {
       return response.forbidden('Cannot delete this OSCE paper')
     }
 
-    await paper.delete()
+    // Use soft deletion service instead of hard delete
+    await PaperDeletionService.delete(paper.id)
 
     // Check if concept still has any OSCE papers
     const remainingOsces = await PastPaper.query()
       .where('concept_id', paper.conceptId)
       .where('paper_type', PaperType.OSCE)
+      .whereNull('deleted_at') // Only count non-deleted papers
       .first()
 
     if (!remainingOsces) {

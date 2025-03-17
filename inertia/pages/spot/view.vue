@@ -36,19 +36,19 @@ const lastEditDate = computed(() => {
 })
 
 const breadcrumbItems = computed(() => [
-  { label: 'OSCEs', href: '/osce' },
-  { label: props.concept.title, href: `/osce/${props.concept.slug}` },
+  { label: 'SPOT Papers', href: '/spot' },
+  { label: props.concept.title, href: `/spot/${props.concept.slug}` },
   { label: props.paper.title },
 ])
 
-// Record OSCE station viewing as progress
-const handleOsceStationView = (questionId: number, stationId: number) => {
+// Record SPOT station viewing as progress
+const handleSpotStationView = (questionId: number, stationId: number) => {
   showAnswers.value[stationId] = !showAnswers.value[stationId]
 
   // Only send the API request when revealing the answer (not when hiding it)
   if (showAnswers.value[stationId]) {
     axios
-      .post('/api/papers/record-osce-response', {
+      .post('/api/papers/record-spot-response', {
         paperId: props.paper.id,
         questionId,
         stationId,
@@ -57,7 +57,7 @@ const handleOsceStationView = (questionId: number, stationId: number) => {
         updateProgress()
       })
       .catch((error) => {
-        console.error('Failed to record OSCE response', error)
+        console.error('Failed to record SPOT response', error)
       })
   }
 }
@@ -77,7 +77,7 @@ const updateProgress = async () => {
 
 const totalStations = computed(() => {
   return props.questions.reduce((total, question) => {
-    return total + (question.stations?.length || 0)
+    return total + (question.spotStations?.length || 0)
   }, 0)
 })
 </script>
@@ -105,7 +105,7 @@ const totalStations = computed(() => {
             <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
               <span class="truncate max-w-[150px] sm:max-w-none">{{ concept.title }}</span>
               <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                OSCE
+                SPOT
               </span>
               <span>{{ paper.year }}</span>
             </div>
@@ -119,7 +119,7 @@ const totalStations = computed(() => {
         <!-- Manage button -->
         <Link
           v-if="canManage"
-          :href="`/manage/osce/${concept.slug}/${paper.slug}`"
+          :href="`/manage/spot/${concept.slug}/${paper.slug}`"
           class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
         >
           <Settings class="h-4 w-4" />
@@ -158,50 +158,50 @@ const totalStations = computed(() => {
               />
             </div>
 
-            <!-- OSCE Parts -->
+            <!-- SPOT Stations -->
             <div class="pl-10 space-y-4">
               <div
-                v-for="(part, partIndex) in question.stations"
-                :key="part.id"
+                v-for="(station, stationIndex) in question.spotStations"
+                :key="station.id"
                 class="relative pl-4 border-l-2 border-primary/20 py-3"
               >
-                <!-- Part Text -->
+                <!-- Station Text -->
                 <div class="flex justify-between items-start">
                   <div class="space-y-2">
                     <div class="flex items-center gap-2">
-                      <span class="font-medium text-base">Part {{ partIndex + 1 }}</span>
+                      <span class="font-medium text-base">Station {{ stationIndex + 1 }}</span>
                       <span
                         class="text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium"
                       >
-                        {{ part.marks }} marks
+                        {{ station.marks }} marks
                       </span>
                     </div>
-                    <p class="text-base">{{ part.partText }}</p>
+                    <p class="text-base">{{ station.partText }}</p>
                   </div>
                 </div>
 
                 <!-- Expected Answer -->
                 <button
-                  @click="handleOsceStationView(question.id, part.id)"
+                  @click="handleSpotStationView(question.id, station.id)"
                   class="mt-3 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium transition hover:bg-primary/80"
                 >
-                  {{ showAnswers[part.id] ? 'Hide Answer' : 'Show Answer' }}
+                  {{ showAnswers[station.id] ? 'Hide Answer' : 'Show Answer' }}
                 </button>
                 <div
-                  v-if="showAnswers[part.id]"
+                  v-if="showAnswers[station.id]"
                   class="mt-3 bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-4"
                 >
                   <p class="text-sm font-semibold text-muted-foreground">Expected Answer:</p>
                   <div class="mt-2 text-md text-gray-800 leading-relaxed whitespace-pre-wrap">
-                    <ViewExplanation :content="part.expectedAnswer" />
+                    <ViewExplanation :content="station.expectedAnswer" />
                   </div>
                 </div>
 
-                <!-- Part Image if present -->
-                <div v-if="part.imagePath" class="mt-3 flex justify-center">
+                <!-- Station Image if present -->
+                <div v-if="station.imagePath" class="mt-3 flex justify-center">
                   <img
-                    :src="part.imagePath"
-                    :alt="`Part ${partIndex + 1} image`"
+                    :src="station.imagePath"
+                    :alt="`Station ${stationIndex + 1} image`"
                     class="max-w-full h-auto rounded-lg border shadow-sm max-h-[300px] object-contain"
                   />
                 </div>
@@ -211,7 +211,7 @@ const totalStations = computed(() => {
         </div>
       </template>
       <div v-else class="text-center py-12 bg-white rounded-xl border">
-        <p class="text-muted-foreground">This OSCE paper has no questions yet.</p>
+        <p class="text-muted-foreground">This SPOT paper has no questions yet.</p>
       </div>
     </div>
     <div

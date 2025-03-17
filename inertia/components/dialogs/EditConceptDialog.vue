@@ -16,6 +16,7 @@ const form = useForm({
   title: props.concept.title,
   isTerminal: props.concept.isTerminal,
   hasOsce: props.concept?.hasOsce ?? false,
+  hasSpot: props.concept?.hasSpot ?? false,
   trainingLevel: props.concept.trainingLevel,
 })
 
@@ -60,6 +61,16 @@ const handleSubmit = () => {
             class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
           />
           <Label for="has-osce">Has OSCE</Label>
+        </div>
+
+        <div v-if="concept.isRoot" class="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            v-model="form.hasSpot"
+            id="has-spot"
+            class="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
+          />
+          <Label for="has-spot">Has SPOT</Label>
         </div>
 
         <div v-if="concept.isRoot" class="space-y-2">

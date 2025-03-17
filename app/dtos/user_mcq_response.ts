@@ -26,7 +26,7 @@ export default class UserMcqResponseDto extends BaseModelDto {
     this.choiceId = userMcqResponse.choiceId
     this.isCorrect = userMcqResponse.isCorrect
     this.status = userMcqResponse.status
-    this.createdAt = userMcqResponse.createdAt.toISO()!
+    this.createdAt = userMcqResponse.createdAt?.toISO() || ''
     this.user = userMcqResponse.user && new UserDto(userMcqResponse.user)
     this.question = userMcqResponse.question && new QuestionDto(userMcqResponse.question)
   }

@@ -27,6 +27,7 @@ export const createConceptValidator = vine.compile(
     parentId: vine.string().trim().nullable(),
     isTerminal: vine.boolean(),
     hasOsce: vine.boolean().optional(),
+    hasSpot: vine.boolean().optional(),
     trainingLevel: vine.enum(Object.values(TrainingLevel)).nullable().optional(),
     metadata: metadataSchema.optional(),
   })
@@ -37,6 +38,7 @@ export const updateConceptValidator = vine.compile(
     title: vine.string().minLength(3).optional(),
     isTerminal: vine.boolean().optional(),
     hasOsce: vine.boolean().optional(),
+    hasSpot: vine.boolean().optional(),
     trainingLevel: vine.enum(Object.values(TrainingLevel)).nullable().optional(),
     metadata: metadataSchema.optional(),
   })

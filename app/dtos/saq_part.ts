@@ -10,6 +10,7 @@ export default class SaqPartDto extends BaseModelDto {
   declare marks: number
   declare createdAt: string
   declare updatedAt: string
+  declare deletedAt: string | null
   declare question: QuestionDto | null
 
   constructor(saqPart?: SaqPart) {
@@ -21,8 +22,9 @@ export default class SaqPartDto extends BaseModelDto {
     this.partText = saqPart.partText
     this.expectedAnswer = saqPart.expectedAnswer
     this.marks = saqPart.marks
-    // this.createdAt = saqPart.createdAt.toISO()!
-    // this.updatedAt = saqPart.updatedAt.toISO()!
+    this.createdAt = saqPart.createdAt?.toISO() || ''
+    this.updatedAt = saqPart.updatedAt?.toISO() || ''
+    this.deletedAt = saqPart.deletedAt?.toISO() || ''
     this.question = saqPart.question && new QuestionDto(saqPart.question)
   }
 }

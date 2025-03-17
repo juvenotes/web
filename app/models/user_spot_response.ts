@@ -4,9 +4,9 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { ResponseStatus } from '#enums/response_status'
 import User from './user.js'
 import Question from './question.js'
-import Station from './station.js'
+import SpotStation from './spot_station.js'
 
-export default class UserOsceResponse extends BaseModel {
+export default class UserSpotResponse extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -20,7 +20,7 @@ export default class UserOsceResponse extends BaseModel {
   declare stationId: number
 
   @column()
-  declare action: string // 'viewed' or other actions
+  declare action: string
 
   @column()
   declare status: ResponseStatus
@@ -37,8 +37,8 @@ export default class UserOsceResponse extends BaseModel {
   @belongsTo(() => Question)
   declare question: BelongsTo<typeof Question>
 
-  @belongsTo(() => Station, {
+  @belongsTo(() => SpotStation, {
     foreignKey: 'stationId',
   })
-  declare station: BelongsTo<typeof Station>
+  declare station: BelongsTo<typeof SpotStation>
 }

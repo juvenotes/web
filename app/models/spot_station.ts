@@ -4,7 +4,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import Question from './question.js'
 import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 
-export default class Station extends BaseModel {
+export default class SpotStation extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -39,7 +39,7 @@ export default class Station extends BaseModel {
     query.whereNull('deleted_at')
   })
 
-  static withTrashed = scope((_query: ModelQueryBuilderContract<typeof Station>) => {
+  static withTrashed = scope((_query: ModelQueryBuilderContract<typeof SpotStation>) => {
     // No filter - include all records
   })
 
@@ -49,7 +49,7 @@ export default class Station extends BaseModel {
 
   @beforeFind()
   @beforeFetch()
-  static excludeDeletedHook(query: ModelQueryBuilderContract<typeof Station>) {
+  static excludeDeletedHook(query: ModelQueryBuilderContract<typeof SpotStation>) {
     query.apply((scopes) => scopes.withoutDeleted())
   }
 }
