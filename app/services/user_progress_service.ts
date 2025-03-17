@@ -9,6 +9,7 @@ import { ResponseStatus } from '#enums/response_status'
 import McqChoice from '#models/mcq_choice'
 import SaqPart from '#models/saq_part'
 import db from '@adonisjs/lucid/services/db'
+import Station from '#models/station'
 
 export default class UserProgressService {
   /**
@@ -233,6 +234,7 @@ export default class UserProgressService {
     questionId: number,
     stationId: number
   ) {
+    const station = await Station.findOrFail(stationId)
     // First check if the user has already viewed this station
     const existingView = await UserOsceResponse.query()
       .where('userId', userId)
@@ -247,6 +249,8 @@ export default class UserProgressService {
         questionId,
         stationId,
         action: 'viewed', // Just recording that it was viewed
+        status: ResponseStatus.ACTIVE,
+        originalStationText: station.partText, // Store text for historical reference
       })
     }
 
@@ -285,11 +289,17 @@ export default class UserProgressService {
     const paper = await PastPaper.query()
       .where('id', paperId)
       .preload('questions', (query) => {
-        query.preload('choices').preload('parts').preload('stations')
+        query
+          .preload('choices')
+          .preload('parts')
+          .preload('stations', (stationQuery) => {
+            // Only include non-deleted stations
+            stationQuery.whereNull('deleted_at')
+          })
       })
       .firstOrFail()
 
-    // Count total items (MCQ questions + SAQ parts)
+    // Count total items (MCQ questions + SAQ parts + OSCE stations)
     let totalItems = 0
     let answeredItems = 0
 
@@ -324,6 +334,7 @@ export default class UserProgressService {
         const viewedStations = await UserOsceResponse.query()
           .where('userId', userId)
           .where('questionId', question.id)
+          .where('status', ResponseStatus.ACTIVE)
           .count('* as total')
 
         answeredItems += Number(viewedStations[0].$extras.total || 0)

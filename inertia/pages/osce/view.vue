@@ -74,6 +74,12 @@ const updateProgress = async () => {
     console.error('Failed to update progress:', error)
   }
 }
+
+const totalStations = computed(() => {
+  return props.questions.reduce((total, question) => {
+    return total + (question.stations?.length || 0)
+  }, 0)
+})
 </script>
 
 <template>
@@ -210,7 +216,11 @@ const updateProgress = async () => {
     </div>
     <div
       v-if="paperProgress.completionPercentage > 0"
-      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 border border-primary/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl"
+      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg border border-primary/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl group"
+      :class="{
+        'p-2 sm:p-4': true,
+        'sm:hover:w-auto hover:w-10': true,
+      }"
     >
       <div class="w-10 h-10 relative">
         <svg class="w-10 h-10 -rotate-90 transform">
@@ -236,16 +246,19 @@ const updateProgress = async () => {
             cy="20"
           />
         </svg>
-        <span class="absolute inset-0 flex items-center justify-center text-xs font-medium">
+        <span
+          class="absolute inset-0 flex items-center justify-center text-xs font-medium"
+          style="font-size: 0.7rem"
+        >
           {{ Math.round(paperProgress.completionPercentage) }}%
         </span>
       </div>
 
-      <div class="flex flex-col">
+      <div class="hidden sm:flex flex-col">
         <span class="text-sm font-medium">Your progress</span>
         <span class="text-xs text-muted-foreground">
-          {{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of
-          {{ questions.length }}
+          {{ Math.round((paperProgress.completionPercentage * totalStations) / 100) }} of
+          {{ totalStations }}
         </span>
       </div>
     </div>

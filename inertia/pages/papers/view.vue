@@ -44,9 +44,9 @@ const selectedAnswers = ref<Record<number, number | null>>({}) // to track selec
 const showAnswer = ref<Record<number, boolean>>({}) // to show the answer explanation
 
 // Record answer to the server
-async function recordResponse(questionId: number, choiceId: number, isCorrect: boolean) {
+async function recordMcqResponse(questionId: number, choiceId: number, isCorrect: boolean) {
   try {
-    await axios.post('/api/papers/record-response', {
+    await axios.post('/api/papers/record-mcq-response', {
       paperId: props.paper.id,
       questionId,
       choiceId,
@@ -103,7 +103,7 @@ const handleChoiceSelect = (questionId: number, choiceId: number) => {
   const choice = question?.choices.find((c) => c.id === choiceId)
 
   if (question && choice) {
-    recordResponse(questionId, choiceId, choice.isCorrect).then(() => {
+    recordMcqResponse(questionId, choiceId, choice.isCorrect).then(() => {
       updateProgress()
     })
   }

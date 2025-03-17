@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { ResponseStatus } from '#enums/response_status'
 import User from './user.js'
 import Question from './question.js'
 import Station from './station.js'
@@ -19,7 +20,13 @@ export default class UserOsceResponse extends BaseModel {
   declare stationId: number
 
   @column()
-  declare action: string // This will just store 'viewed'
+  declare action: string // 'viewed' or other actions
+
+  @column()
+  declare status: ResponseStatus
+
+  @column()
+  declare originalStationText: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

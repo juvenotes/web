@@ -184,7 +184,7 @@ router
   .get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'view'])
   .use(middleware.auth())
 router
-  .post('/api/papers/record-response', [IndexPapersController, 'recordMcqResponse'])
+  .post('/api/papers/record-mcq-response', [IndexPapersController, 'recordMcqResponse'])
   .use(middleware.auth())
 router
   .post('/api/papers/record-saq-response', [IndexPapersController, 'recordSaqResponse'])
