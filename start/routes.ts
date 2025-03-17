@@ -43,6 +43,8 @@ const ManageFeedbackController = () =>
   import('#controllers/manage/feedback/manage_feedback_controller')
 const ManageTodayController = () => import('#controllers/manage/today/manage_today_controller')
 const IndexTodayController = () => import('#controllers/today/index_today_controller')
+const ManageSpotController = () => import('#controllers/manage/spot/manage_spot_controller')
+const IndexSpotController = () => import('#controllers/spot/index_spot_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -184,7 +186,7 @@ router
   .get('/papers/:conceptSlug/:paperSlug', [IndexPapersController, 'view'])
   .use(middleware.auth())
 router
-  .post('/api/papers/record-response', [IndexPapersController, 'recordMcqResponse'])
+  .post('/api/papers/record-mcq-response', [IndexPapersController, 'recordMcqResponse'])
   .use(middleware.auth())
 router
   .post('/api/papers/record-saq-response', [IndexPapersController, 'recordSaqResponse'])
@@ -361,3 +363,35 @@ router
   .use(middleware.auth())
 
 router.get('/today', [IndexTodayController, 'index']).as('today.index').use(middleware.auth())
+
+//* SPOT: VIEW
+router
+  .group(() => {
+    router.get('/', [IndexSpotController, 'index'])
+    router.get('/:slug', [IndexSpotController, 'show'])
+    router.get('/:conceptSlug/:paperSlug', [IndexSpotController, 'viewPaper'])
+  })
+  .prefix('/spot')
+  .use(middleware.auth())
+
+//* SPOT: MANAGE
+router
+  .group(() => {
+    router.get('/', [ManageSpotController, 'index'])
+    router.get('/:slug', [ManageSpotController, 'show'])
+    router.get('/:conceptSlug/:paperSlug', [ManageSpotController, 'viewSpotPaper'])
+    router.post('/', [ManageSpotController, 'store'])
+    router.post('/:conceptSlug/:paperSlug/questions', [ManageSpotController, 'addQuestion'])
+    router.put('/:conceptSlug/:paperSlug/questions/:questionSlug/spot', [
+      ManageSpotController,
+      'updateQuestion',
+    ])
+    router.delete('/:conceptSlug/:paperSlug/questions/:questionSlug', [
+      ManageSpotController,
+      'deleteQuestion',
+    ])
+    router.patch('/:paperSlug', [ManageSpotController, 'update'])
+    router.delete('/:conceptSlug/:paperSlug', [ManageSpotController, 'destroy'])
+  })
+  .prefix('/manage/spot')
+  .use(middleware.auth())

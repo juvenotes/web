@@ -8,6 +8,7 @@ export enum PaperType {
   SAQ = 'saq',
   MIXED = 'mixed',
   OSCE = 'osce',
+  SPOT = 'spot',
 }
 
 export const PaperTypeLabels = {
@@ -15,6 +16,7 @@ export const PaperTypeLabels = {
   [PaperType.SAQ]: 'Short Answer Questions (SAQ)',
   [PaperType.MIXED]: 'Mixed MCQ and SAQ',
   [PaperType.OSCE]: 'Objective Structured Clinical Examination (OSCE)',
+  [PaperType.SPOT]: 'SPOT exams',
 }
 
 export const ExamTypeLabels = {

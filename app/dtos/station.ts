@@ -9,8 +9,9 @@ export default class StationDto extends BaseModelDto {
   declare expectedAnswer: string
   declare marks: number
   declare imagePath: string | null
-  // declare createdAt: string
-  // declare updatedAt: string
+  declare createdAt: string
+  declare updatedAt: string
+  declare deletedAt: string | null
   declare question: QuestionDto | null
 
   constructor(station?: Station) {
@@ -23,8 +24,9 @@ export default class StationDto extends BaseModelDto {
     this.expectedAnswer = station.expectedAnswer
     this.marks = station.marks
     this.imagePath = station.imagePath
-    // this.createdAt = station.createdAt.toISO()!
-    // this.updatedAt = station.updatedAt.toISO()!
+    this.createdAt = station.createdAt?.toISO() || ''
+    this.updatedAt = station.updatedAt?.toISO() || ''
+    this.deletedAt = station.deletedAt?.toISO() || ''
     this.question = station.question && new QuestionDto(station.question)
   }
 }

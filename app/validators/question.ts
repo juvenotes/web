@@ -22,6 +22,13 @@ const stationSchema = vine.object({
   imagePath: vine.string().nullable().optional(),
 })
 
+const spotStationSchema = vine.object({
+  partText: vine.string().trim().minLength(1),
+  expectedAnswer: vine.string().trim().minLength(1).maxLength(5000),
+  marks: vine.number().min(1),
+  imagePath: vine.string().nullable().optional(),
+})
+
 export const createMcqQuestionValidator = vine.compile(
   vine.object({
     questionText: vine.string().trim().minLength(1),
@@ -136,5 +143,27 @@ export const createFeedbackValidator = vine.compile(
     feedbackText: vine.string().trim(),
     feedbackTarget: vine.string().trim(),
     feedbackSource: vine.string().trim(),
+  })
+)
+
+export const createSpotQuestionValidator = vine.compile(
+  vine.object({
+    questionText: vine.string().trim().minLength(1),
+    questionImagePath: vine.string().nullable().optional(),
+    type: vine.literal(QuestionType.SPOT),
+    parts: vine.array(spotStationSchema).minLength(1).maxLength(5),
+    topicIds: vine.array(vine.number()).optional(),
+    unitIds: vine.array(vine.number()).optional(),
+  })
+)
+
+export const updateSpotQuestionValidator = vine.compile(
+  vine.object({
+    questionText: vine.string().trim().minLength(1),
+    questionImagePath: vine.string().nullable().optional(),
+    type: vine.literal(QuestionType.SPOT),
+    parts: vine.array(spotStationSchema).minLength(1).maxLength(5),
+    topicIds: vine.array(vine.number()).optional(),
+    unitIds: vine.array(vine.number()).optional(),
   })
 )

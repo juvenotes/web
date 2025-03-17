@@ -12,20 +12,18 @@ interface Props {
   concept: ConceptDto
   papers: PastPaperDto[]
 }
+
 const props = defineProps<Props>()
 const isCreateDialogOpen = ref(false)
 
 const breadcrumbItems = computed(() => [
-  { label: 'OSCEs', href: '/manage/osce' },
+  { label: 'SPOT Management', href: '/manage/spot' },
   { label: props.concept.title },
 ])
 </script>
 
 <template>
-  <AppHead
-    :title="`Manage ${concept.title} OSCEs`"
-    :description="`Manage OSCE papers for ${concept.title}`"
-  />
+  <AppHead :title="`${concept.title} SPOTs`" :description="`SPOT papers for ${concept.title}`" />
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
@@ -44,7 +42,7 @@ const breadcrumbItems = computed(() => [
           </div>
           <div class="space-y-1">
             <h1 class="text-2xl font-bold text-foreground">{{ concept.title }}</h1>
-            <p class="text-sm text-muted-foreground">Manage OSCE Papers</p>
+            <p class="text-sm text-muted-foreground">Manage SPOT Papers</p>
           </div>
         </div>
 
@@ -56,7 +54,7 @@ const breadcrumbItems = computed(() => [
             class="flex items-center justify-center gap-2 w-full sm:w-auto"
           >
             <Plus class="h-4 w-4" />
-            Add OSCE Paper
+            Add SPOT Paper
           </Button>
         </div>
       </div>
@@ -68,16 +66,16 @@ const breadcrumbItems = computed(() => [
         <Link
           v-for="paper in papers"
           :key="paper.id"
-          :href="`/manage/osce/${concept.slug}/${paper.slug}`"
+          :href="`/manage/spot/${concept.slug}/${paper.slug}`"
           class="group relative overflow-hidden rounded-xl bg-white p-5 border hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
         >
           <div class="relative space-y-3">
             <h3 class="text-lg font-semibold text-foreground">
-              {{ paper.title || `${concept.title} OSCE paper from ${paper.year}` }}
+              {{ paper.title || `${concept.title} SPOT paper from ${paper.year}` }}
             </h3>
             <div class="flex items-center gap-3 text-sm">
               <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
-                OSCE
+                SPOT
               </span>
               <span class="text-muted-foreground">{{ paper.year }}</span>
             </div>
@@ -88,8 +86,10 @@ const breadcrumbItems = computed(() => [
 
     <!-- Empty State -->
     <div v-else class="text-center p-8 bg-white rounded-xl border">
-      <p class="text-muted-foreground">No OSCE papers added yet. Click "Add OSCE" to create one.</p>
+      <p class="text-muted-foreground">No SPOT papers added yet. Click "Add SPOT" to create one.</p>
     </div>
-    <CreateOscePaperDialog v-model:open="isCreateDialogOpen" :concept="concept" />
+
+    <!-- Create Spot Paper Dialog -->
+    <CreateSpotPaperDialog v-model:open="isCreateDialogOpen" :concept="concept" />
   </div>
 </template>

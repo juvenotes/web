@@ -27,6 +27,7 @@ export default class ConceptDto extends BaseModelDto {
   declare isRoot: boolean
   declare isRootLevel: boolean
   declare hasOsce: boolean
+  declare hasSpot: boolean
   declare trainingLevel: TrainingLevel | null
 
   constructor(concept?: Concept) {
@@ -54,6 +55,7 @@ export default class ConceptDto extends BaseModelDto {
     this.isRoot = concept.isRoot
     this.isRootLevel = concept.isRootLevel
     this.hasOsce = concept.hasOsce
+    this.hasSpot = concept.hasSpot
     this.trainingLevel = concept.trainingLevel
   }
 }

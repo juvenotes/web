@@ -37,6 +37,9 @@ export default class Concept extends BaseModel {
   declare hasOsce: boolean
 
   @column()
+  declare hasSpot: boolean
+
+  @column()
   declare trainingLevel: TrainingLevel | null
 
   @column()

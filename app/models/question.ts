@@ -20,6 +20,7 @@ import PastPaper from './past_paper.js'
 import Station from './station.js'
 import Today from './today.js'
 import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
+import SpotStation from './spot_station.js'
 
 export default class Question extends BaseModel {
   @column({ isPrimary: true })
@@ -87,6 +88,9 @@ export default class Question extends BaseModel {
   @hasMany(() => SaqPart)
   declare parts: HasMany<typeof SaqPart>
 
+  @hasMany(() => SpotStation)
+  declare spotStations: HasMany<typeof SpotStation>
+
   @column()
   declare pastPaperId: number | null
 
@@ -112,6 +116,11 @@ export default class Question extends BaseModel {
   @computed()
   get isOsce() {
     return this.type === QuestionType.OSCE
+  }
+
+  @computed()
+  get isSpot() {
+    return this.type === QuestionType.SPOT
   }
 
   static withoutDeleted = scope((query: ModelQueryBuilderContract<typeof Question>) => {

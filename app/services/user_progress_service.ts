@@ -9,6 +9,9 @@ import { ResponseStatus } from '#enums/response_status'
 import McqChoice from '#models/mcq_choice'
 import SaqPart from '#models/saq_part'
 import db from '@adonisjs/lucid/services/db'
+import Station from '#models/station'
+import UserSpotResponse from '#models/user_spot_response'
+import SpotStation from '#models/spot_station'
 
 export default class UserProgressService {
   /**
@@ -233,6 +236,7 @@ export default class UserProgressService {
     questionId: number,
     stationId: number
   ) {
+    const station = await Station.findOrFail(stationId)
     // First check if the user has already viewed this station
     const existingView = await UserOsceResponse.query()
       .where('userId', userId)
@@ -247,6 +251,65 @@ export default class UserProgressService {
         questionId,
         stationId,
         action: 'viewed', // Just recording that it was viewed
+        status: ResponseStatus.ACTIVE,
+        originalStationText: station.partText, // Store text for historical reference
+      })
+    }
+
+    // Find existing progress record
+    const existingProgress = await UserPaperProgress.query()
+      .where('user_id', userId)
+      .where('paper_id', paperId)
+      .first()
+
+    if (existingProgress) {
+      // If record exists, update it and increment attempt count
+      await existingProgress
+        .merge({
+          lastQuestionId: questionId,
+          lastVisitedAt: DateTime.now(),
+          attemptCount: existingProgress.attemptCount + 1,
+        })
+        .save()
+    } else {
+      // If no record exists, create a new one with attempt_count = 1
+      await UserPaperProgress.create({
+        userId,
+        paperId,
+        lastQuestionId: questionId,
+        lastVisitedAt: DateTime.now(),
+        attemptCount: 1,
+      })
+    }
+  }
+
+  /**
+   * Record user viewing a SPOT station
+   */
+  async recordSpotStationView(
+    userId: number,
+    paperId: number,
+    questionId: number,
+    stationId: number
+  ) {
+    const station = await SpotStation.findOrFail(stationId)
+
+    // First check if the user has already viewed this station
+    const existingView = await UserSpotResponse.query()
+      .where('userId', userId)
+      .where('questionId', questionId)
+      .where('stationId', stationId)
+      .first()
+
+    // Only create a new view record if it doesn't already exist
+    if (!existingView) {
+      await UserSpotResponse.create({
+        userId,
+        questionId,
+        stationId,
+        action: 'viewed', // Just recording that it was viewed
+        status: ResponseStatus.ACTIVE,
+        originalStationText: station.partText, // Store text for historical reference
       })
     }
 
@@ -285,11 +348,21 @@ export default class UserProgressService {
     const paper = await PastPaper.query()
       .where('id', paperId)
       .preload('questions', (query) => {
-        query.preload('choices').preload('parts').preload('stations')
+        query
+          .preload('choices')
+          .preload('parts')
+          .preload('stations', (stationQuery) => {
+            // Only include non-deleted stations
+            stationQuery.whereNull('deleted_at')
+          })
+          .preload('spotStations', (stationQuery) => {
+            // Only include non-deleted stations
+            stationQuery.whereNull('deleted_at')
+          })
       })
       .firstOrFail()
 
-    // Count total items (MCQ questions + SAQ parts)
+    // Count total items (MCQ questions + SAQ parts + OSCE stations)
     let totalItems = 0
     let answeredItems = 0
 
@@ -324,6 +397,19 @@ export default class UserProgressService {
         const viewedStations = await UserOsceResponse.query()
           .where('userId', userId)
           .where('questionId', question.id)
+          .where('status', ResponseStatus.ACTIVE)
+          .count('* as total')
+
+        answeredItems += Number(viewedStations[0].$extras.total || 0)
+      } else if (question.type === QuestionType.SPOT) {
+        // For SPOTs, each station counts as 1 item
+        totalItems += question.spotStations?.length || 0
+
+        // Check how many stations user has viewed
+        const viewedStations = await UserSpotResponse.query()
+          .where('userId', userId)
+          .where('questionId', question.id)
+          .where('status', ResponseStatus.ACTIVE)
           .count('* as total')
 
         answeredItems += Number(viewedStations[0].$extras.total || 0)

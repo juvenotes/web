@@ -76,7 +76,7 @@ const handleChoiceSelect = (questionId: number, choiceId: number) => {
 
 async function recordResponse(questionId: number, choiceId: number, isCorrect: boolean) {
   try {
-    await axios.post('/api/papers/record-response', {
+    await axios.post('/api/papers/record-mcq-response', {
       paperId: props.today.id, // Use today ID here
       questionId,
       choiceId,
@@ -101,7 +101,7 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
           class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/5 hover:bg-primary/10 transition-all duration-200 text-primary border border-primary/15 shadow-sm hover:shadow"
         >
           <Settings class="h-4 w-4" />
-          <span class="text-sm font-medium">Manage Questions</span>
+          <span class="text-sm font-medium">Edit</span>
         </Link>
       </div>
     </div>
