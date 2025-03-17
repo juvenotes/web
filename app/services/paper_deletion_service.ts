@@ -7,6 +7,7 @@ import SaqPart from '#models/saq_part'
 import McqChoice from '#models/mcq_choice'
 import { QuestionType } from '#enums/question_types'
 import Station from '#models/station'
+import SpotStation from '#models/spot_station'
 
 export default class PaperDeletionService {
   /**
@@ -58,12 +59,15 @@ export default class PaperDeletionService {
         await question.useTransaction(trx).save()
 
         // Restore related items based on question type
+        // Restore related items based on question type
         if (question.type === QuestionType.MCQ) {
           await this.#restoreMcqChoices(question.id, trx)
         } else if (question.type === QuestionType.SAQ) {
           await this.#restoreSaqParts(question.id, trx)
         } else if (question.type === QuestionType.OSCE) {
           await this.#restoreOsceStations(question.id, trx)
+        } else if (question.type === QuestionType.SPOT) {
+          await this.#restoreSpotStations(question.id, trx)
         }
       }
     })
@@ -109,6 +113,23 @@ export default class PaperDeletionService {
   static async #restoreOsceStations(questionId: number, trx: any): Promise<void> {
     // Find all soft-deleted stations for this question
     const stations = await Station.query({ client: trx })
+      .apply((scopes) => scopes.withTrashed())
+      .where('question_id', questionId)
+      .whereNotNull('deleted_at')
+
+    // Restore each station
+    for (const station of stations) {
+      station.deletedAt = null
+      await station.useTransaction(trx).save()
+    }
+  }
+
+  /**
+   * Restore soft-deleted SPOT stations for a question
+   */
+  static async #restoreSpotStations(questionId: number, trx: any): Promise<void> {
+    // Find all soft-deleted stations for this question
+    const stations = await SpotStation.query({ client: trx })
       .apply((scopes) => scopes.withTrashed())
       .where('question_id', questionId)
       .whereNotNull('deleted_at')

@@ -2,6 +2,7 @@ export enum QuestionType {
   MCQ = 'mcq',
   SAQ = 'saq',
   OSCE = 'osce',
+  SPOT = 'spot',
 }
 
 export enum DifficultyLevel {
