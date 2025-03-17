@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Search as SearchIcon,
   Stethoscope,
+  Pin,
 } from 'lucide-vue-next'
 import { Twitter, Instagram, Linkedin } from 'lucide-vue-next'
 import UserDto from '#dtos/user'
@@ -33,6 +34,7 @@ const sidebarLinks = [
   { name: 'Concepts', href: '/concepts', icon: BookOpen },
   { name: 'Papers', href: '/papers', icon: FileText },
   { name: 'Osces', href: '/osce', icon: Stethoscope },
+  { name: 'Spot', href: '/spot', icon: Pin },
 ]
 
 const closeOnClickOutside = (event: MouseEvent) => {
