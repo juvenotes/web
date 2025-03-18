@@ -213,19 +213,33 @@ const getLastEditDate = computed(() => {
 
 <template>
   <AppHead :title="paper.title" :description="`Questions for ${paper.title}`" />
-  <FeedbackDialog v-model:open="feedbackDialog.isOpen" :question="feedbackDialog.question"
-    @close="closeFeedbackDialog" />
+  <FeedbackDialog
+    v-model:open="feedbackDialog.isOpen"
+    :question="feedbackDialog.question"
+    @close="closeFeedbackDialog"
+  />
   <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-5 sm:py-8 space-y-6 sm:space-y-10">
     <!-- Header section with glass morphism effect -->
-    <div class="relative p-5 sm:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-primary/10 shadow-sm transition-all duration-300 hover:shadow-md">
-      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent rounded-t-2xl" />
+    <div
+      class="relative p-5 sm:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-primary/10 shadow-sm transition-all duration-300 hover:shadow-md"
+    >
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent rounded-t-2xl"
+      />
 
-      <BreadcrumbTrail :items="breadcrumbItems" class="max-w-full overflow-x-auto pb-2 hide-scrollbar" />
+      <BreadcrumbTrail
+        :items="breadcrumbItems"
+        class="max-w-full overflow-x-auto pb-2 hide-scrollbar"
+      />
 
       <!-- Paper Info with improved spacing -->
-      <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-start justify-between">
+      <div
+        class="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-start justify-between"
+      >
         <div class="flex items-start gap-4 sm:gap-5">
-          <div class="p-3 sm:p-4 rounded-xl bg-primary/10 border border-primary/15 shadow-sm shrink-0">
+          <div
+            class="p-3 sm:p-4 rounded-xl bg-primary/10 border border-primary/15 shadow-sm shrink-0"
+          >
             <FileText class="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           </div>
           <div class="min-w-0 flex-1">
@@ -233,10 +247,14 @@ const getLastEditDate = computed(() => {
               {{ paper.title }}
             </h1>
             <div class="flex flex-wrap items-center gap-3 mt-2">
-              <span class="text-sm sm:text-base text-muted-foreground truncate max-w-[180px] sm:max-w-[250px]">
+              <span
+                class="text-sm sm:text-base text-muted-foreground truncate max-w-[180px] sm:max-w-[250px]"
+              >
                 {{ concept.title }}
               </span>
-              <span class="px-2.5 py-1 text-xs font-semibold bg-primary/15 text-primary rounded-full shadow-sm">
+              <span
+                class="px-2.5 py-1 text-xs font-semibold bg-primary/15 text-primary rounded-full shadow-sm"
+              >
                 {{ paper.examType.toUpperCase() }}
               </span>
               <span class="text-sm sm:text-base text-muted-foreground">{{ paper.year }}</span>
@@ -249,36 +267,45 @@ const getLastEditDate = computed(() => {
         </div>
         <!-- Action buttons -->
         <div class="flex flex-wrap items-center gap-2 mt-3 sm:mt-0">
-  <!-- Continue button -->
-  <Button
-    v-if="paperProgress.progress?.lastQuestionId"
-    variant="default"
-    class="flex items-center gap-1.5 w-full sm:w-auto"
-    @click="continueFromLastQuestion"
-  >
-    <ArrowRight class="h-4 w-4" />
-    Continue where you left off
-  </Button>
+          <!-- Continue button -->
+          <Button
+            v-if="paperProgress.progress?.lastQuestionId"
+            variant="default"
+            class="flex items-center gap-1.5 w-full sm:w-auto"
+            @click="continueFromLastQuestion"
+          >
+            <ArrowRight class="h-4 w-4" />
+            Continue where you left off
+          </Button>
 
-  <!-- Manage button with hover effect -->
-  <Link v-if="canManage" :href="`/manage/papers/${concept.slug}/${paper.slug}`"
-    class="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg bg-primary/5 hover:bg-primary/10 transition-all duration-200 text-primary border border-primary/15 w-full sm:w-auto shadow-sm hover:shadow group">
-    <Settings class="h-4 w-4 sm:h-5 sm:w-5 group-hover:rotate-45 transition-transform duration-300" />
-    <span class="text-sm font-medium">Edit Paper</span>
-  </Link>
-</div>
-
+          <!-- Manage button with hover effect -->
+          <Link
+            v-if="canManage"
+            :href="`/manage/papers/${concept.slug}/${paper.slug}`"
+            class="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg bg-primary/5 hover:bg-primary/10 transition-all duration-200 text-primary border border-primary/15 w-full sm:w-auto shadow-sm hover:shadow group"
+          >
+            <Settings
+              class="h-4 w-4 sm:h-5 sm:w-5 group-hover:rotate-45 transition-transform duration-300"
+            />
+            <span class="text-sm font-medium">Edit Paper</span>
+          </Link>
+        </div>
       </div>
     </div>
 
-    <div v-if="paper.metadata?.lastEditedBy || paper.createdAt" class="text-xs sm:text-sm text-muted-foreground px-1 italic">
+    <div
+      v-if="paper.metadata?.lastEditedBy || paper.createdAt"
+      class="text-xs sm:text-sm text-muted-foreground px-1 italic"
+    >
       Last edited on {{ getLastEditDate }}
     </div>
 
     <DisclaimerBanner />
 
     <!-- Progress Tracking Section -->
-    <div class="bg-white p-5 sm:p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-300">
+    <div
+      class="bg-white p-5 sm:p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-300"
+    >
       <div v-if="paperProgress.progress" class="flex items-center gap-3 mb-4">
         <CheckCircle v-if="hasAttemptedPaper" class="h-5 w-5 text-green-500" />
         <XCircle v-else class="h-5 w-5 text-amber-500" />
@@ -291,7 +318,9 @@ const getLastEditDate = computed(() => {
       >
         <div class="flex justify-between items-center mb-2 sm:mb-3">
           <span class="font-medium text-sm sm:text-base">Your progress</span>
-          <span class="text-sm sm:text-base font-semibold">{{ paperProgress.completionPercentage }}%</span>
+          <span class="text-sm sm:text-base font-semibold"
+            >{{ paperProgress.completionPercentage }}%</span
+          >
         </div>
 
         <div class="h-2.5 sm:h-3 bg-gray-200 rounded-full overflow-hidden">
@@ -309,8 +338,13 @@ const getLastEditDate = computed(() => {
           ></div>
         </div>
 
-        <div class="mt-2 sm:mt-3 flex justify-between items-center text-xs sm:text-sm text-muted-foreground">
-          <span>{{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of {{ questions.length }} questions</span>
+        <div
+          class="mt-2 sm:mt-3 flex justify-between items-center text-xs sm:text-sm text-muted-foreground"
+        >
+          <span
+            >{{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of
+            {{ questions.length }} questions</span
+          >
 
           <span
             v-if="paperProgress.completionPercentage === 100"
@@ -324,47 +358,87 @@ const getLastEditDate = computed(() => {
 
     <!-- Questions List with enhanced spacing and shadows -->
     <div class="space-y-6 sm:space-y-8">
-      <div v-for="(question, index) in questions" :key="question.id" 
-           :id="`question-${question.id}`"
-           class="p-4 sm:p-6 md:p-8 bg-white rounded-xl border shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full">
+      <div
+        v-for="(question, index) in questions"
+        :key="question.id"
+        :id="`question-${question.id}`"
+        class="p-4 sm:p-6 md:p-8 bg-white rounded-xl border shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full"
+      >
         <!-- Question Text with improved typography -->
         <div class="space-y-4 sm:space-y-5">
           <div class="flex flex-col gap-2 sm:gap-3">
             <span
-              class="inline-block w-fit px-4 sm:px-5 py-1.5 sm:py-2 bg-primary/15 text-primary rounded-lg font-semibold text-base sm:text-lg shadow-sm">
+              class="inline-block w-fit px-4 sm:px-5 py-1.5 sm:py-2 bg-primary/15 text-primary rounded-lg font-semibold text-base sm:text-lg shadow-sm"
+            >
               Question {{ index + 1 }}
             </span>
-            <p class="text-foreground pl-1 text-sm sm:text-base md:text-lg break-words leading-relaxed">{{ question.questionText }}</p>
+            <p
+              class="text-foreground pl-1 text-sm sm:text-base md:text-lg break-words leading-relaxed"
+            >
+              {{ question.questionText }}
+            </p>
+          </div>
+
+          <!-- Question Image if present -->
+          <div v-if="question.questionImagePath" class="flex justify-center mt-4">
+            <img
+              :src="question.questionImagePath"
+              :alt="`Question ${index + 1} image`"
+              class="max-w-full h-auto rounded-lg border shadow-sm max-h-[400px] object-contain"
+            />
           </div>
 
           <!-- MCQ Section with enhanced UI -->
           <div v-if="question.isMcq" class="p-auto space-y-4 sm:space-y-5 mt-4 sm:mt-6">
             <!-- Choice Options with subtle animations -->
-            <div v-for="choice in question.choices" :key="choice.id" :class="{
-              'border-green-500 bg-green-50': selectedAnswers[question.id] === choice.id && choice.isCorrect,
-              'border-red-500 bg-red-50': selectedAnswers[question.id] === choice.id && !choice.isCorrect,
-              'hover:bg-slate-50 hover:shadow hover:border-primary/30': !showAnswer[question.id],
-              'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
-            }" class="flex items-center gap-4 sm:gap-5 p-4 sm:p-5 rounded-xl border transition-all duration-300 text-sm sm:text-base cursor-pointer group sm:hover:scale-[1.02]"
-              @click="handleChoiceSelect(question.id, choice.id)">
-
+            <div
+              v-for="choice in question.choices"
+              :key="choice.id"
+              :class="{
+                'border-green-500 bg-green-50':
+                  selectedAnswers[question.id] === choice.id && choice.isCorrect,
+                'border-red-500 bg-red-50':
+                  selectedAnswers[question.id] === choice.id && !choice.isCorrect,
+                'hover:bg-slate-50 hover:shadow hover:border-primary/30': !showAnswer[question.id],
+                'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
+              }"
+              class="flex items-center gap-4 sm:gap-5 p-4 sm:p-5 rounded-xl border transition-all duration-300 text-sm sm:text-base cursor-pointer group sm:hover:scale-[1.02]"
+              @click="handleChoiceSelect(question.id, choice.id)"
+            >
               <!-- Icon Container with enhanced visuals -->
               <div
-                class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full group-hover:bg-primary/15 transition-colors duration-300">
-                <CheckCircle v-if="showAnswer[question.id] && choice.isCorrect"
-                  class="h-5 w-5 text-green-500 sm:scale-110 animate-fadeIn" />
+                class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full group-hover:bg-primary/15 transition-colors duration-300"
+              >
+                <CheckCircle
+                  v-if="showAnswer[question.id] && choice.isCorrect"
+                  class="h-5 w-5 text-green-500 sm:scale-110 animate-fadeIn"
+                />
                 <XCircle
-                  v-else-if="showAnswer[question.id] && selectedAnswers[question.id] === choice.id && !choice.isCorrect"
-                  class="h-5 w-5 text-red-500 sm:scale-110 animate-fadeIn" />
+                  v-else-if="
+                    showAnswer[question.id] &&
+                    selectedAnswers[question.id] === choice.id &&
+                    !choice.isCorrect
+                  "
+                  class="h-5 w-5 text-red-500 sm:scale-110 animate-fadeIn"
+                />
                 <Circle v-else class="h-5 w-5 text-muted-foreground" />
               </div>
 
               <!-- Choice Text with improved styling -->
-              <span :class="{
-                'text-green-700 font-medium': showAnswer[question.id] && choice.isCorrect,
-                'text-red-700 font-medium': showAnswer[question.id] && selectedAnswers[question.id] === choice.id && !choice.isCorrect,
-                'text-muted-foreground': !(showAnswer[question.id] && (choice.isCorrect || selectedAnswers[question.id] === choice.id))
-              }" class="flex-1 break-words transition-colors duration-300 leading-relaxed">
+              <span
+                :class="{
+                  'text-green-700 font-medium': showAnswer[question.id] && choice.isCorrect,
+                  'text-red-700 font-medium':
+                    showAnswer[question.id] &&
+                    selectedAnswers[question.id] === choice.id &&
+                    !choice.isCorrect,
+                  'text-muted-foreground': !(
+                    showAnswer[question.id] &&
+                    (choice.isCorrect || selectedAnswers[question.id] === choice.id)
+                  ),
+                }"
+                class="flex-1 break-words transition-colors duration-300 leading-relaxed"
+              >
                 {{ choice.choiceText }}
               </span>
             </div>
@@ -376,16 +450,24 @@ const getLastEditDate = computed(() => {
                 <div class="h-6 w-1 bg-green-500 rounded-full"></div>
                 <h3 class="text-lg font-bold text-gray-800">Solution Explanation</h3>
               </div>
-              
+
               <!-- Modern card with sidebar accent - WIDER -->
-              <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full">
+              <div
+                class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
+              >
                 <!-- Left accent border -->
-                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-blue-500"></div>
-                
+                <div
+                  class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-blue-500"
+                ></div>
+
                 <!-- Answer header -->
-                <div class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-100">
+                <div
+                  class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-100"
+                >
                   <div class="flex items-center gap-3">
-                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600">
+                    <div
+                      class="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600"
+                    >
                       <CheckCircle class="h-5 w-5" />
                     </div>
                     <div>
@@ -396,16 +478,20 @@ const getLastEditDate = computed(() => {
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- Explanation content with visual separation - WIDER -->
                 <div class="p-4 sm:p-6 md:p-8 bg-white">
                   <div class="flex gap-3 items-start">
                     <div class="shrink-0 pt-1">
-                      <div class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
+                      <div
+                        class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center"
+                      >
                         <Info class="h-3 w-3 text-blue-600" />
                       </div>
                     </div>
-                    <div class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                    <div
+                      class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
+                    >
                       <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
                     </div>
                   </div>
@@ -413,12 +499,15 @@ const getLastEditDate = computed(() => {
               </div>
 
               <!-- Feedback Button with enhanced styling -->
-              <Button variant="outline"
+              <Button
+                variant="outline"
                 class="mt-5 sm:mt-6 flex items-center gap-3 sm:gap-4 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 transition-all duration-300 rounded-lg px-5 sm:px-6 py-3 sm:py-3.5 shadow-sm hover:shadow-md group text-xs sm:text-sm w-full sm:w-auto justify-center sm:justify-start animate-fadeIn"
-                @click="openFeedbackDialog(question)">
+                @click="openFeedbackDialog(question)"
+              >
                 <div class="p-1.5 rounded-full bg-gray-100 shadow-sm">
                   <MessageSquare
-                    class="h-4 w-4 sm:h-5 sm:w-5 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 text-gray-600" />
+                    class="h-4 w-4 sm:h-5 sm:w-5 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 text-gray-600"
+                  />
                 </div>
                 <span class="font-medium">Provide Feedback</span>
               </Button>
@@ -427,30 +516,44 @@ const getLastEditDate = computed(() => {
 
           <!-- Enhanced SAQ Section with modern card design -->
           <div v-if="question.isSaq" class="mt-5 sm:mt-7 space-y-5 sm:space-y-7">
-            <div class="bg-gradient-to-r from-primary/5 to-primary/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full">
+            <div
+              class="bg-gradient-to-r from-primary/5 to-primary/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full"
+            >
               <!-- SAQ Header with improved styling -->
-              <div class="flex items-center justify-between px-5 py-4 bg-primary/15 border-b border-primary/10">
+              <div
+                class="flex items-center justify-between px-5 py-4 bg-primary/15 border-b border-primary/10"
+              >
                 <div class="flex items-center gap-3">
                   <BookOpen class="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  <span class="text-sm sm:text-base font-medium text-primary">Short Answer Questions</span>
+                  <span class="text-sm sm:text-base font-medium text-primary"
+                    >Short Answer Questions</span
+                  >
                 </div>
-                <div class="text-xs sm:text-sm bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-primary/80 font-medium shadow-sm">
+                <div
+                  class="text-xs sm:text-sm bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-primary/80 font-medium shadow-sm"
+                >
                   {{ question.parts.length }} part{{ question.parts.length > 1 ? 's' : '' }}
                 </div>
               </div>
 
               <!-- SAQ Parts List with hover effects -->
               <div class="divide-y divide-primary/10">
-                <div v-for="(part, partIndex) in question.parts" :key="part.id"
-                  class="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 bg-white/80 hover:bg-white/100 transition-all duration-300">
+                <div
+                  v-for="(part, partIndex) in question.parts"
+                  :key="part.id"
+                  class="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 bg-white/80 hover:bg-white/100 transition-all duration-300"
+                >
                   <!-- Part Header with Part Number and Marks -->
                   <div class="flex items-center justify-between mb-3 sm:mb-4">
                     <div class="flex items-baseline gap-3">
                       <span
-                        class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-primary/15 text-primary text-xs font-semibold shadow-sm">
+                        class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-primary/15 text-primary text-xs font-semibold shadow-sm"
+                      >
                         {{ partIndex + 1 }}
                       </span>
-                      <span class="text-xs sm:text-sm text-primary/80 font-medium px-2 py-0.5 bg-primary/5 rounded-md">
+                      <span
+                        class="text-xs sm:text-sm text-primary/80 font-medium px-2 py-0.5 bg-primary/5 rounded-md"
+                      >
                         {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }}
                       </span>
                     </div>
@@ -458,29 +561,44 @@ const getLastEditDate = computed(() => {
 
                   <!-- Part Text with improved typography -->
                   <div>
-                    <p class="text-sm sm:text-base text-foreground break-words mb-4 sm:mb-5 leading-relaxed">
+                    <p
+                      class="text-sm sm:text-base text-foreground break-words mb-4 sm:mb-5 leading-relaxed"
+                    >
                       {{ part.partText }}
                     </p>
                   </div>
 
                   <!-- Show Answer Button with enhanced animation -->
-                  <button v-if="!showAnswer[part.id]" @click="handleSaqPartView(question.id, part.id)"
-                    class="group w-full sm:w-auto flex items-center justify-center gap-2 mt-3 sm:mt-4 text-primary font-semibold text-xs sm:text-sm rounded-lg p-2.5 sm:p-3 bg-gradient-to-r from-primary/15 to-primary/5 hover:from-primary/25 hover:to-primary/15 border border-primary/20 transition-all duration-300 shadow-sm hover:shadow">
-                    <ChevronDown class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300" />
+                  <button
+                    v-if="!showAnswer[part.id]"
+                    @click="handleSaqPartView(question.id, part.id)"
+                    class="group w-full sm:w-auto flex items-center justify-center gap-2 mt-3 sm:mt-4 text-primary font-semibold text-xs sm:text-sm rounded-lg p-2.5 sm:p-3 bg-gradient-to-r from-primary/15 to-primary/5 hover:from-primary/25 hover:to-primary/15 border border-primary/20 transition-all duration-300 shadow-sm hover:shadow"
+                  >
+                    <ChevronDown
+                      class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300"
+                    />
                     <span>Show Answer</span>
                   </button>
 
                   <!-- EXPLANATION SECTION FOR SAQ - WIDER -->
                   <div v-if="showAnswer[part.id]" class="mt-5 sm:mt-6 animate-fadeIn">
                     <!-- Modern card with sidebar accent - WIDER -->
-                    <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full">
+                    <div
+                      class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
+                    >
                       <!-- Left accent border -->
-                      <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-primary to-blue-500"></div>
-                      
+                      <div
+                        class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-primary to-blue-500"
+                      ></div>
+
                       <!-- Answer header -->
-                      <div class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-primary/5 to-blue-50 border-b border-gray-100">
+                      <div
+                        class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-primary/5 to-blue-50 border-b border-gray-100"
+                      >
                         <div class="flex items-center gap-3">
-                          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary">
+                          <div
+                            class="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary"
+                          >
                             <CheckCircle class="h-5 w-5" />
                           </div>
                           <div>
@@ -491,20 +609,26 @@ const getLastEditDate = computed(() => {
                           </div>
                         </div>
                       </div>
-                      
+
                       <!-- Explanation content with improved formatting - WIDER -->
                       <div class="p-4 sm:p-6 md:p-8 bg-white">
-                        <div class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                        <div
+                          class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
+                        >
                           <ViewExplanation :content="part.expectedAnswer" />
                         </div>
                       </div>
                     </div>
 
                     <!-- Feedback Button -->
-                    <Button variant="ghost"
+                    <Button
+                      variant="ghost"
                       class="mt-4 sm:mt-5 flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-300 text-xs sm:text-sm w-full sm:w-auto justify-center sm:justify-start group"
-                      @click="openFeedbackDialog(question)">
-                      <MessageSquare class="h-4 w-4 text-gray-600 group-hover:scale-110 transition-all duration-300" />
+                      @click="openFeedbackDialog(question)"
+                    >
+                      <MessageSquare
+                        class="h-4 w-4 text-gray-600 group-hover:scale-110 transition-all duration-300"
+                      />
                       <span class="font-medium">Provide Feedback</span>
                     </Button>
                   </div>
@@ -584,7 +708,7 @@ const getLastEditDate = computed(() => {
     list-style-type: decimal;
     margin-left: 1.25rem;
     margin-top: 0.75rem;
-    
+
     @media (min-width: 640px) {
       margin-left: 1.75rem;
       margin-top: 1rem;
@@ -595,7 +719,7 @@ const getLastEditDate = computed(() => {
     list-style-type: disc;
     margin-left: 1.25rem;
     margin-top: 0.75rem;
-    
+
     @media (min-width: 640px) {
       margin-left: 1.75rem;
       margin-top: 1rem;
@@ -610,46 +734,46 @@ const getLastEditDate = computed(() => {
   :deep(hr) {
     margin: 1rem 0;
     border-top: 1px dashed #a8d3e7;
-    
+
     @media (min-width: 640px) {
       margin: 1.25rem 0;
     }
   }
-  
+
   /* Scrolling properties */
   position: relative;
   max-height: 300px;
   overflow-y: auto;
   padding-right: 5px;
-  
+
   /* Style the scrollbar */
   &::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 10px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: #c1c1c1;
     border-radius: 10px;
   }
-  
+
   &::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
   }
-  
+
   /* Adjust max-height based on screen size */
   @media (min-width: 640px) {
     max-height: 400px;
   }
-  
+
   @media (min-width: 1024px) {
     max-height: 500px;
   }
-  
+
   /* Responsive video styling */
   :deep(iframe) {
     max-width: 100%;
@@ -658,28 +782,30 @@ const getLastEditDate = computed(() => {
     display: block;
     margin: 1rem auto;
     border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
     /* Base size for small devices */
     width: 100%;
     max-height: 250px;
-    
+
     /* Adjust size for medium devices */
     @media (min-width: 640px) {
       width: 90%;
       max-height: 300px;
     }
-    
+
     /* Adjust size for larger devices */
     @media (min-width: 768px) {
       width: 85%;
       max-height: 350px;
     }
-    
+
     /* Optional transition for smooth resizing */
     transition: all 0.3s ease;
   }
-  
+
   /* Create a responsive container for videos if needed */
   :deep(.video-container) {
     position: relative;
@@ -689,7 +815,7 @@ const getLastEditDate = computed(() => {
     max-width: 100%;
     margin: 1rem 0;
     border-radius: 0.5rem;
-    
+
     iframe {
       position: absolute;
       top: 0;
@@ -719,8 +845,14 @@ const getLastEditDate = computed(() => {
 
 /* Enhanced animation for smoother transitions */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fadeIn {
