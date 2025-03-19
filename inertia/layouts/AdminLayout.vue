@@ -12,6 +12,7 @@ import {
   Stethoscope,
   Pin,
   X,
+  Calendar,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type UserDto from '#dtos/user'
@@ -29,6 +30,7 @@ const menuItems = [
   { name: 'Papers', href: '/manage/papers', icon: FileText },
   { name: 'Osce', href: '/manage/osce', icon: Stethoscope },
   { name: 'Spot', href: '/manage/spot', icon: Pin },
+  { name: 'Today', href: '/manage/today', icon: Calendar },
   { name: 'Users', href: '/manage/users', icon: Users },
   // { name: 'Institutions', href: '/manage/institutions', icon: School },
   // { name: 'Settings', href: '/manage/settings', icon: Settings },
