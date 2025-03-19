@@ -45,6 +45,7 @@ const ManageTodayController = () => import('#controllers/manage/today/manage_tod
 const IndexTodayController = () => import('#controllers/today/index_today_controller')
 const ManageSpotController = () => import('#controllers/manage/spot/manage_spot_controller')
 const IndexSpotController = () => import('#controllers/spot/index_spot_controller')
+const PaymentsController = () => import('#controllers/payments_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -394,4 +395,22 @@ router
     router.delete('/:conceptSlug/:paperSlug', [ManageSpotController, 'destroy'])
   })
   .prefix('/manage/spot')
+  .use(middleware.auth())
+
+// Add these routes with your other route definitions
+router
+  .get('/test/mpesa', [PaymentsController, 'showMpesaTestPage'])
+  .as('payments.mpesa.test')
+  .use(middleware.auth())
+
+// API routes for payment processing
+router
+  .group(() => {
+    router.post('/mpesa/process', [PaymentsController, 'processMpesaPayment'])
+    router.post('/mpesa/verify', [PaymentsController, 'verifyMpesaPayment'])
+    // Future Paystack routes
+    // router.post('/paystack/process', [PaymentsController, 'processPaystackPayment'])
+    // router.post('/paystack/verify', [PaymentsController, 'verifyPaystackPayment'])
+  })
+  .prefix('/api/payments')
   .use(middleware.auth())
