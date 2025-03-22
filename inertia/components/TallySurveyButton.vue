@@ -36,23 +36,16 @@ const props = defineProps({
     type: String,
     default: 'flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-all'
   },
-  // Storage key for remembering user's interaction with the form
-  storageKey: {
-    type: String,
-    default: 'tally_survey_status'
+  // Added emit for banner parent to handle visibility
+  onFormInteraction: {
+    type: Function,
+    default: () => {}
   }
 })
 
 const isReady = ref(false)
-const shouldShow = ref(true)
 
 onMounted(() => {
-  // Check if user already submitted or closed the form
-  const status = localStorage.getItem(props.storageKey)
-  if (status === 'submitted' || status === 'closed') {
-    shouldShow.value = false
-  }
-
   // Check if Tally is loaded
   const checkTally = setInterval(() => {
     if (window.Tally) {
@@ -66,7 +59,7 @@ onMounted(() => {
 })
 
 function openSurvey() {
-    if (!isReady.value || !window.Tally) return
+  if (!isReady.value || !window.Tally) return
 
   window.Tally.openPopup(props.formId, {
     width: 500,
@@ -76,22 +69,20 @@ function openSurvey() {
       animation: "wave"
     },
     onClose: () => {
-      // Remember that user closed the form
-      localStorage.setItem(props.storageKey, 'closed')
-      shouldShow.value = false
+      // Let parent know form was closed
+      props.onFormInteraction('closed')
     },
     onSubmit: () => {
-      // Remember that user submitted the form
-      localStorage.setItem(props.storageKey, 'submitted')
-      shouldShow.value = false
+      // Let parent know form was submitted
+      props.onFormInteraction('submitted')
     }
   })
 }
 </script>
 
 <template>
+  <!-- Removed v-if="shouldShow" -->
   <button
-    v-if="shouldShow" 
     :class="buttonClass"
     @click="openSurvey"
     :disabled="!isReady"
