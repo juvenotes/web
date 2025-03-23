@@ -26,7 +26,7 @@ defineProps<{
 
 const logoPath = '/images/logo.webp'
 const isMenuOpen = ref(false)
-const isSidebarCollapsed = ref(true)
+const isSidebarCollapsed = ref(true)  // Keep this as true initially to avoid hydration mismatch
 const isSearchOpen = ref(false) // State to manage search modal visibility
 
 const sidebarLinks = [
@@ -45,7 +45,20 @@ const closeOnClickOutside = (event: MouseEvent) => {
 }
 
 const handleResize = () => {
-  isSidebarCollapsed.value = window.innerWidth < 1024 // Collapse on small screens, open on large
+  // Only set initial state on first load
+  if (window.innerWidth >= 1024) {
+    isSidebarCollapsed.value = false // Set sidebar to open on large screens
+  } else {
+    isSidebarCollapsed.value = true // Collapse on small screens
+  }
+}
+
+// Function to conditionally collapse sidebar on mobile
+const handleSidebarLinkClick = () => {
+  if (window.innerWidth < 1024) {
+    isSidebarCollapsed.value = true
+  }
+  // On desktop, do nothing - keep sidebar open
 }
 
 onMounted(() => {
@@ -55,9 +68,40 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', closeOnClickOutside)
 })
+
 onMounted(() => {
-  handleResize() // Set initial state based on screen size
-  window.addEventListener('resize', handleResize) // Listen for screen size changes
+  handleResize() // Set initial state based on screen size - this will override the default true state
+  
+  // Add resize listener but with a modified function that doesn't change the state 
+  // once the user has manually toggled it
+  let userHasToggled = false
+  
+  window.addEventListener('resize', () => {
+    // Only auto-adjust on resize if the user hasn't manually toggled the sidebar
+    if (!userHasToggled) {
+      if (window.innerWidth >= 1024) {
+        isSidebarCollapsed.value = false
+      } else {
+        isSidebarCollapsed.value = true
+      }
+    }
+  })
+  
+  // Add event listener to track when user manually toggles the sidebar
+  const toggleButton = document.querySelector('.lg\\:hidden[class*="rounded-lg"]')
+  const desktopToggleButton = document.querySelector('.lg\\:block[class*="rounded-full"]')
+  
+  if (toggleButton) {
+    toggleButton.addEventListener('click', () => {
+      userHasToggled = true
+    })
+  }
+  
+  if (desktopToggleButton) {
+    desktopToggleButton.addEventListener('click', () => {
+      userHasToggled = true
+    })
+  }
 })
 
 onUnmounted(() => {
@@ -80,7 +124,7 @@ onUnmounted(() => {
               <MenuIcon class="h-5 w-5" />
             </button>
             <Link href="/learn" class="flex items-center">
-              <img :src="logoPath" alt="Logo" class="h-11 w-auto" />
+              <img :src="logoPath" alt="Logo" class="h-20 w-auto" />
             </Link>
           </div>
 
@@ -203,7 +247,7 @@ onUnmounted(() => {
             :key="link.name"
             :href="link.href"
             class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#55A9C4]/10 transition-colors duration-200 text-gray-700 hover:text-[#55A9C4] group"
-            @click="isSidebarCollapsed = true"
+            @click="handleSidebarLinkClick"
           >
             <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-[#55A9C4]/10 transition-colors">
               <component :is="link.icon" class="h-5 w-5 shrink-0 text-gray-500 group-hover:text-[#55A9C4] transition-colors" />
