@@ -360,6 +360,9 @@ router
     router.put('/:slug/questions/:questionSlug/mcq', [ManageTodayController, 'editQuestion'])
     router.delete('/:slug/questions/:questionId', [ManageTodayController, 'removeQuestion'])
 
+    // Archive
+    router.post('/archive-outdated', [ManageTodayController, 'archiveOutdated'])
+
     // Manage concept linkage
     router.post('/:slug/questions/:questionId/concepts', [
       ManageTodayController,

@@ -10,6 +10,8 @@ import QuestionDto from '#dtos/question'
 import { TodayStatus } from '#enums/today_status'
 import { createMcqQuestionValidator } from '#validators/question'
 import { QuestionType } from '#enums/question_types'
+import { DateTime } from 'luxon'
+import ArchiveOutdatedTodayJob from '#jobs/archive_outdated_today_job'
 
 @inject()
 export default class ManageTodayController {
@@ -87,24 +89,40 @@ export default class ManageTodayController {
     logger.info({ ...context, message: 'Creating new today item' })
 
     const data = await request.validateUsing(createTodayValidator)
+    const status = data.status || TodayStatus.SCHEDULED
 
-    const today = await Today.create({
-      ...data,
-      userId: auth.user!.id,
-      slug: generateSlug(),
-      status: data.status || TodayStatus.SCHEDULED,
+    await db.transaction(async (trx) => {
+      // If creating an active today, archive any existing active days
+      if (status === TodayStatus.ACTIVE) {
+        await Today.query({ client: trx })
+          .where('status', TodayStatus.ACTIVE)
+          .update({ status: TodayStatus.ARCHIVED })
+
+        logger.info({
+          ...context,
+          message: 'Archived previously active Today items',
+        })
+      }
+
+      // Create the new Today item
+      const today = await Today.create({
+        ...data,
+        userId: auth.user!.id,
+        slug: generateSlug(),
+        status: status,
+      })
+
+      logger.info({
+        ...context,
+        userId: auth.user!.id,
+        todayId: today.id,
+        todaySlug: today.slug,
+        message: 'Today item created successfully',
+      })
+
+      session.flash('success', 'Today item created successfully')
+      return response.redirect().toPath(`/manage/today/${today.slug}`)
     })
-
-    logger.info({
-      ...context,
-      userId: auth.user!.id,
-      todayId: today.id,
-      todaySlug: today.slug,
-      message: 'Day item created successfully',
-    })
-
-    session.flash('success', 'Today item created successfully')
-    return response.redirect().toPath(`/manage/today/${today.slug}`)
   }
 
   /**
@@ -127,6 +145,18 @@ export default class ManageTodayController {
 
     // Start a transaction for atomic updates
     await db.transaction(async (trx) => {
+      // If setting this today to active, archive any existing active days
+      if (data.status === TodayStatus.ACTIVE) {
+        await Today.query({ client: trx })
+          .where('status', TodayStatus.ACTIVE)
+          .where('id', '!=', today.id)
+          .update({ status: TodayStatus.ARCHIVED })
+
+        logger.info({
+          ...context,
+          message: 'Archived previously active Today items',
+        })
+      }
       // Update basic properties
       await today
         .merge({
@@ -368,6 +398,39 @@ export default class ManageTodayController {
     } catch (error) {
       logger.error('failed to delete question', { error })
       throw error
+    }
+  }
+
+  /**
+   * Archive outdated Today items manually
+   */
+  async archiveOutdated({ response, logger, bouncer }: HttpContext) {
+    // Ensure only admins can access this endpoint
+    await bouncer.authorize('canManage')
+
+    try {
+      const today = DateTime.now().toISODate()
+
+      logger.info({
+        controller: 'ManageTodayController',
+        action: 'archiveOutdated',
+        message: 'Manually triggering archiving of outdated Today items',
+        currentDate: today,
+      })
+
+      // Run the job immediately
+      await ArchiveOutdatedTodayJob.dispatch({ forceRun: true })
+
+      return response.json({
+        success: true,
+        message: 'Archiving job dispatched successfully',
+      })
+    } catch (error) {
+      logger.error('Failed to dispatch archiving job', { error })
+      return response.status(500).json({
+        success: false,
+        message: 'Failed to dispatch archiving job',
+      })
     }
   }
 

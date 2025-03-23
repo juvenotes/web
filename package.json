@@ -15,6 +15,7 @@
   },
   "imports": {
     "#utils/*": "./app/utils/*.js",
+    "#jobs/*": "./app/jobs/*.js",
     "#dtos/*": "./app/dtos/*.js",
     "#actions/*": "./app/actions/*.js",
     "#constants/*": "./app/constants/*.js",
@@ -83,6 +84,7 @@
     "@adonisjs/transmit": "^2.0.2",
     "@adonisjs/transmit-client": "^1.0.0",
     "@adonisjs/vite": "^3.0.0",
+    "@cavai/adonis-queue": "^4.0.0",
     "@citation-js/core": "^0.7.18",
     "@citation-js/plugin-bibtex": "^0.7.18",
     "@citation-js/plugin-csl": "^0.7.18",
