@@ -359,6 +359,16 @@ router
     router.post('/:slug/questions/mcq', [ManageTodayController, 'addQuestion'])
     router.put('/:slug/questions/:questionSlug/mcq', [ManageTodayController, 'editQuestion'])
     router.delete('/:slug/questions/:questionId', [ManageTodayController, 'removeQuestion'])
+
+    // Manage concept linkage
+    router.post('/:slug/questions/:questionId/concepts', [
+      ManageTodayController,
+      'addConceptsToQuestion',
+    ])
+    router.delete('/:slug/questions/:questionId/concepts/:conceptId', [
+      ManageTodayController,
+      'removeConceptFromQuestion',
+    ])
   })
   .prefix('/manage/today')
   .use(middleware.auth())

@@ -17,6 +17,7 @@ import {
 import { TodayStatus } from '#enums/today_status'
 import { computed, ref } from 'vue'
 import { DateTime } from 'luxon'
+// import ConceptDto from '#dtos/concept'
 
 defineOptions({ layout: AdminLayout })
 
@@ -49,6 +50,31 @@ const statusColors = {
 
 // Delete form
 const deleteForm = useForm({})
+// const conceptForm = useForm({
+//   conceptIds: [] as number[],
+// })
+
+// function handleConceptsSelect(questionId: number, concepts: any[]) {
+//   const conceptIds = concepts.map((c) => c.id)
+
+//   conceptForm.conceptIds = conceptIds
+//   conceptForm.post(`/manage/today/${props.today.slug}/questions/${questionId}/concepts`, {
+//     preserveScroll: true,
+//     preserveState: false,
+//   })
+// }
+
+// function removeConceptFromQuestion(questionId: number, conceptId: number) {
+//   if (!confirm('Remove this concept from the question?')) return
+
+//   conceptForm.delete(
+//     `/manage/today/${props.today.slug}/questions/${questionId}/concepts/${conceptId}`,
+//     {
+//       preserveScroll: true,
+//       preserveState: false,
+//     }
+//   )
+// }
 
 const handleDelete = () => {
   if (confirm('Are you sure you want to delete this item?')) {
@@ -159,10 +185,7 @@ const breadcrumbItems = computed(() => [
           </Button>
 
           <!-- Add Question Button - Secondary when Make Active is available -->
-          <Button
-            @click="showAddQuestionDialog = true"
-            class="flex items-center gap-2"
-          >
+          <Button @click="showAddQuestionDialog = true" class="flex items-center gap-2">
             <Plus class="h-4 w-4 mr-1" />
             <span>Add Question</span>
           </Button>
@@ -257,6 +280,18 @@ const breadcrumbItems = computed(() => [
                 </div>
               </div>
             </div>
+
+            <!-- <div class="pt-2 border-t">
+              <ConceptSearchDialog
+                :selectedConcepts="question.concepts || []"
+                @select="(concepts: ConceptDto[]) => handleConceptsSelect(question.id, concepts)"
+                @remove="(concept: ConceptDto) => removeConceptFromQuestion(question.id, concept.id)"
+                buttonText="Add Related Concept"
+                buttonVariant="outline"
+                compact
+                multiSelect
+              />
+            </div> -->
 
             <!-- Action buttons for each question -->
             <div class="flex items-center gap-3 justify-end">

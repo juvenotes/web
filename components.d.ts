@@ -49,6 +49,8 @@ declare module 'vue' {
     CollapsibleContent: typeof import('./inertia/components/ui/collapsible/CollapsibleContent.vue')['default']
     CollapsibleTrigger: typeof import('./inertia/components/ui/collapsible/CollapsibleTrigger.vue')['default']
     ConceptContentStats: typeof import('./inertia/components/ConceptContentStats.vue')['default']
+    ConceptLink: typeof import('./inertia/components/dialogs/ConceptLink.vue')['default']
+    ConceptSearchDialog: typeof import('./inertia/components/dialogs/ConceptSearchDialog.vue')['default']
     CookieConsent: typeof import('./inertia/components/CookieConsent.vue')['default']
     CreateOscePaperDialog: typeof import('./inertia/components/dialogs/CreateOscePaperDialog.vue')['default']
     CreatePaperDialog: typeof import('./inertia/components/dialogs/CreatePaperDialog.vue')['default']

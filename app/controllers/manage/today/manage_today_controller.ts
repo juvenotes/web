@@ -56,6 +56,7 @@ export default class ManageTodayController {
       .where('user_id', auth.user!.id)
       .preload('questions', (query) => {
         query.preload('choices')
+        query.preload('concepts')
       })
       .firstOrFail()
 
@@ -366,6 +367,110 @@ export default class ManageTodayController {
       return response.redirect().back()
     } catch (error) {
       logger.error('failed to delete question', { error })
+      throw error
+    }
+  }
+
+  /**
+   * Add concepts to a question
+   */
+  async addConceptsToQuestion({ params, request, response, auth, logger }: HttpContext) {
+    const context = {
+      controller: 'ManageTodayController',
+      action: 'addConceptsToQuestion',
+      todaySlug: params.slug,
+      questionId: params.questionId,
+    }
+    logger.info({ ...context, message: 'Adding concepts to question' })
+
+    try {
+      // Validate question belongs to this today item
+      const today = await Today.query()
+        .where('slug', params.slug)
+        .where('user_id', auth.user!.id)
+        .firstOrFail()
+
+      const question = await Question.query()
+        .where('id', params.questionId)
+        .where('today_id', today.id)
+        .firstOrFail()
+
+      // Get concept IDs from request
+      const { conceptIds } = request.only(['conceptIds'])
+
+      await db.transaction(async (trx) => {
+        // Clear existing question topics if any
+        await trx.from('question_topics').where('question_id', question.id).delete()
+
+        // Insert new relationships if any concepts were provided
+        if (Array.isArray(conceptIds) && conceptIds.length > 0) {
+          await trx
+            .insertQuery()
+            .table('question_topics')
+            .multiInsert(
+              conceptIds.map((conceptId) => ({
+                question_id: question.id,
+                topic_id: conceptId,
+              }))
+            )
+        }
+      })
+
+      logger.info({
+        ...context,
+        userId: auth.user?.id,
+        conceptCount: Array.isArray(conceptIds) ? conceptIds.length : 0,
+        message: 'Successfully added concepts to question',
+      })
+
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('Failed to add concepts to question', { error })
+      throw error
+    }
+  }
+
+  /**
+   * Remove a concept from a question
+   */
+  async removeConceptFromQuestion({ params, response, auth, logger }: HttpContext) {
+    const context = {
+      controller: 'ManageTodayController',
+      action: 'removeConceptFromQuestion',
+      todaySlug: params.slug,
+      questionId: params.questionId,
+      conceptId: params.conceptId,
+    }
+    logger.info({ ...context, message: 'Removing concept from question' })
+
+    try {
+      // Validate question belongs to this today item
+      const today = await Today.query()
+        .where('slug', params.slug)
+        .where('user_id', auth.user!.id)
+        .firstOrFail()
+
+      const question = await Question.query()
+        .where('id', params.questionId)
+        .where('today_id', today.id)
+        .firstOrFail()
+
+      // Delete the specific relationship
+      await db
+        .from('question_topics')
+        .where('question_id', question.id)
+        .where('topic_id', params.conceptId)
+        .delete()
+
+      logger.info({
+        ...context,
+        userId: auth.user?.id,
+        message: 'Successfully removed concept from question',
+      })
+
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('Failed to remove concept from question', { error })
       throw error
     }
   }
