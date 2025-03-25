@@ -9,7 +9,9 @@ import logger from '@adonisjs/core/services/logger'
 export default class SessionCheckMiddleware {
   constructor(protected sessionService: SessionService) {}
 
-  async handle({ request, response, auth }: HttpContext, next: NextFn) {
+  async handle(ctx: HttpContext, next: NextFn) {
+    const { request, response, auth } = ctx
+
     // Skip session checks for static assets and API routes
     if (
       request.url().startsWith('/assets/') ||
@@ -19,13 +21,16 @@ export default class SessionCheckMiddleware {
       return next()
     }
 
-    // If user is not authenticated, clear any existing session cookie
-    if (!auth.user) {
-      response.clearCookie(this.sessionService.getCookieName())
-      return next()
-    }
-
     try {
+      // Safely check if auth and auth.user exist
+      if (!auth || !auth.user) {
+        // Only clear cookie if sessionService is available
+        if (this.sessionService && this.sessionService.getCookieName) {
+          response.clearCookie(this.sessionService.getCookieName())
+        }
+        return next()
+      }
+
       // Check the session status
       const user = auth.user
       const { isOk, log } = await this.sessionService.check(user)
