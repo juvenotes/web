@@ -96,5 +96,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   MPESA_BUSINESS_SHORT_CODE: Env.schema.string(),
 
-  MPESA_CALLBACK_URL: Env.schema.string()
+  MPESA_CALLBACK_URL: Env.schema.string(),
+
+  IDENTITY_SECRET: Env.schema.string()
 })

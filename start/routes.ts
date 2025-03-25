@@ -46,6 +46,7 @@ const IndexTodayController = () => import('#controllers/today/index_today_contro
 const ManageSpotController = () => import('#controllers/manage/spot/manage_spot_controller')
 const IndexSpotController = () => import('#controllers/spot/index_spot_controller')
 const PaymentsController = () => import('#controllers/payments_controller')
+const SessionsController = () => import('#controllers/session_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -141,6 +142,14 @@ router
 router
   .put('/settings/profile', [ProfileController, 'update'])
   .as('settings.profile.update')
+  .use(middleware.auth())
+
+// SESSION LOGS
+router
+  .group(() => {
+    router.delete('/sessions/:id', [SessionsController, 'destroy']).as('sessions.destroy')
+    router.delete('/sessions', [SessionsController, 'destroy']).as('sessions.destroy.all')
+  })
   .use(middleware.auth())
 
 //* CONCEPTS -> VIEW

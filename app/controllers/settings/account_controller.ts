@@ -1,14 +1,34 @@
 import WebLogout from '#actions/auth/http/web_logout'
 import DestroyUserAccount from '#actions/settings/destroy_user_account'
 import UpdateUserEmail from '#actions/settings/update_user_email'
+import SessionLogDto from '#dtos/session_log'
+import SessionService from '#services/session_service'
 import { updateEmailValidator } from '#validators/settings'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import vine from '@vinejs/vine'
 
 export default class AccountsController {
-  async index({ inertia }: HttpContext) {
-    return inertia.render('settings/account')
+  @inject()
+  async index({ inertia, auth, response }: HttpContext, sessionService: SessionService) {
+    if (!auth.user) {
+      return response.redirect().toRoute('login.show')
+    }
+
+    // Get active sessions and convert to DTOs
+    const sessions = await sessionService.getList(auth.user)
+    const sessionDtos = sessions.map((session) => {
+      // Mark current session
+      session.isCurrentSession = session.token === sessionService.token
+
+      // Convert to DTO
+      return new SessionLogDto(session)
+    })
+
+    return inertia.render('settings/account', {
+      user: auth.user,
+      sessions: sessionDtos,
+    })
   }
 
   async updateEmail({ request, response, session, auth, logger }: HttpContext) {

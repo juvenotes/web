@@ -5,6 +5,7 @@ import { registerValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 import { Infer } from '@vinejs/vine/types'
+import SessionService from '#services/session_service'
 
 type Params = {
   data: Infer<typeof registerValidator>
@@ -12,7 +13,10 @@ type Params = {
 
 @inject()
 export default class WebRegister {
-  constructor(protected ctx: HttpContext) {}
+  constructor(
+    protected ctx: HttpContext,
+    protected sessionService: SessionService
+  ) {}
 
   async handle({ data }: Params) {
     let username = generateUsername()
@@ -26,11 +30,15 @@ export default class WebRegister {
         username = generateUsername()
       }
     }
+
     const user = await User.create({
       ...data,
       username,
       roleId: Role.USER,
     })
+
+    // Note: don't track session here since the user typically needs to verify email first
+    // Session will be tracked upon first login
 
     return { user }
   }
