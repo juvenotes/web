@@ -26,7 +26,7 @@ defineProps<{
 
 const logoPath = '/images/logo.webp'
 const isMenuOpen = ref(false)
-const isSidebarCollapsed = ref(true)  // Keep this as true initially to avoid hydration mismatch
+const isSidebarCollapsed = ref(true) // Keep this as true initially to avoid hydration mismatch
 const isSearchOpen = ref(false) // State to manage search modal visibility
 
 const sidebarLinks = [
@@ -71,11 +71,11 @@ onUnmounted(() => {
 
 onMounted(() => {
   handleResize() // Set initial state based on screen size - this will override the default true state
-  
-  // Add resize listener but with a modified function that doesn't change the state 
+
+  // Add resize listener but with a modified function that doesn't change the state
   // once the user has manually toggled it
   let userHasToggled = false
-  
+
   window.addEventListener('resize', () => {
     // Only auto-adjust on resize if the user hasn't manually toggled the sidebar
     if (!userHasToggled) {
@@ -86,17 +86,17 @@ onMounted(() => {
       }
     }
   })
-  
+
   // Add event listener to track when user manually toggles the sidebar
   const toggleButton = document.querySelector('.lg\\:hidden[class*="rounded-lg"]')
   const desktopToggleButton = document.querySelector('.lg\\:block[class*="rounded-full"]')
-  
+
   if (toggleButton) {
     toggleButton.addEventListener('click', () => {
       userHasToggled = true
     })
   }
-  
+
   if (desktopToggleButton) {
     desktopToggleButton.addEventListener('click', () => {
       userHasToggled = true
@@ -112,13 +112,15 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50">
     <!-- Navigation - modern flat design with subtle shadow -->
-    <nav class="sticky top-0 z-[50] w-screen bg-white border-b border-gray-100 shadow-sm backdrop-blur-md">
+    <nav
+      class="sticky top-0 z-[50] w-screen bg-white border-b border-gray-100 shadow-sm backdrop-blur-md"
+    >
       <div class="w-full px-4 sm:px-6">
         <div class="flex h-16 items-center justify-between">
           <!-- Left section - Logo only, no text -->
           <div class="flex items-center gap-4 w-[200px]">
-            <button 
-              class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-primary transition-all duration-200" 
+            <button
+              class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-primary transition-all duration-200"
               @click="isSidebarCollapsed = !isSidebarCollapsed"
             >
               <MenuIcon class="h-5 w-5" />
@@ -200,7 +202,9 @@ onUnmounted(() => {
       class="fixed inset-0 z-[90] bg-black/40 backdrop-blur-sm flex items-center justify-center px-4"
       @click.self="isSearchOpen = false"
     >
-      <div class="w-full max-w-lg p-6 bg-white rounded-xl shadow-xl relative border border-gray-100">
+      <div
+        class="w-full max-w-lg p-6 bg-white rounded-xl shadow-xl relative border border-gray-100"
+      >
         <button
           @click="isSearchOpen = false"
           class="absolute top-4 right-4 h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition-all duration-200"
@@ -237,10 +241,12 @@ onUnmounted(() => {
         <!-- Modern sidebar navigation with active indicators -->
         <div class="px-3 pt-6 pb-2 mb-2 border-b border-gray-100">
           <div class="px-3 flex items-center mb-6" v-if="!isSidebarCollapsed">
-            <span class="text-sm font-medium text-gray-400 uppercase tracking-wider">Main Menu</span>
+            <span class="text-sm font-medium text-gray-400 uppercase tracking-wider"
+              >Main Menu</span
+            >
           </div>
         </div>
-        
+
         <nav class="px-3 space-y-1 flex-1 overflow-y-auto">
           <Link
             v-for="link in sidebarLinks"
@@ -249,8 +255,13 @@ onUnmounted(() => {
             class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#55A9C4]/10 transition-colors duration-200 text-gray-700 hover:text-[#55A9C4] group"
             @click="handleSidebarLinkClick"
           >
-            <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-[#55A9C4]/10 transition-colors">
-              <component :is="link.icon" class="h-5 w-5 shrink-0 text-gray-500 group-hover:text-[#55A9C4] transition-colors" />
+            <div
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-[#55A9C4]/10 transition-colors"
+            >
+              <component
+                :is="link.icon"
+                class="h-5 w-5 shrink-0 text-gray-500 group-hover:text-[#55A9C4] transition-colors"
+              />
             </div>
             <span
               :class="[
@@ -269,8 +280,12 @@ onUnmounted(() => {
             @click="$inertia.post('/logout')"
             class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-red-50 transition-colors duration-200 w-full text-gray-700 hover:text-red-500 group"
           >
-            <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-red-50 transition-colors">
-              <LogOut class="h-4 w-4 shrink-0 text-gray-500 group-hover:text-red-500 transition-colors" />
+            <div
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-red-50 transition-colors"
+            >
+              <LogOut
+                class="h-4 w-4 shrink-0 text-gray-500 group-hover:text-red-500 transition-colors"
+              />
             </div>
             <span
               :class="[
@@ -285,7 +300,9 @@ onUnmounted(() => {
       </aside>
 
       <!-- Main content with subtle pattern background -->
-      <main class="flex-1 p-6 md:p-8 overflow-auto bg-gray-50 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cg fill=%27%23000000%27 fill-opacity=%270.03%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] relative z-[0]">
+      <main
+        class="flex-1 p-6 md:p-8 overflow-auto bg-gray-50 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cg fill=%27%23000000%27 fill-opacity=%270.03%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] relative z-[0]"
+      >
         <SurveyBanner />
         <slot />
       </main>
@@ -330,6 +347,8 @@ onUnmounted(() => {
               href="https://x.com/juvenotes"
               class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
               aria-label="Twitter"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <Twitter class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
             </a>
@@ -337,6 +356,8 @@ onUnmounted(() => {
               href="https://www.instagram.com/juvenotes/"
               class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
               aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <Instagram class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
             </a>
@@ -344,6 +365,8 @@ onUnmounted(() => {
               href="https://www.linkedin.com/company/juvenotes"
               class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
               aria-label="LinkedIn"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <Linkedin class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
             </a>
