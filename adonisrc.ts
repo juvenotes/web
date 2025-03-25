@@ -19,6 +19,7 @@ export default defineConfig({
     () => import('@adocasts.com/actions/commands'),
     () => import('@foadonis/maintenance/commands'),
     () => import('@foadonis/magnify/commands'),
+    () => import('@cavai/adonis-queue/commands')
   ],
 
   /*
@@ -54,7 +55,8 @@ export default defineConfig({
     () => import('@foadonis/maintenance/maintenance_provider'),
     () => import('@foadonis/magnify/magnify_provider'),
     () => import('@adonisjs/redis/redis_provider'),
-    () => import('@adonisjs/transmit/transmit_provider')
+    () => import('@adonisjs/transmit/transmit_provider'),
+    () => import('@cavai/adonis-queue/queue_provider')
   ],
 
   /*

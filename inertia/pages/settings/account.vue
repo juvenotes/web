@@ -2,11 +2,12 @@
 import { Link, useForm } from '@inertiajs/vue3'
 import UserDto from '#dtos/user'
 import AppLayout from '~/layouts/AppLayout.vue'
-import { Settings, ArrowLeft } from 'lucide-vue-next'
+import { Settings, ArrowLeft, Laptop, MapPin, Clock, Info } from 'lucide-vue-next'
+import SessionLogDto from '#dtos/session_log'
 
 defineOptions({ layout: AppLayout })
 
-defineProps<{ user: UserDto }>()
+defineProps<{ user: UserDto; sessions: SessionLogDto[] }>()
 
 // Email update form
 const emailForm = useForm({
@@ -14,11 +15,26 @@ const emailForm = useForm({
   password: '',
 })
 
+// Session termination forms
+const terminateForm = useForm({})
+
 // Form handlers
 const updateEmail = () => {
   emailForm.put('/settings/account/email', {
     onSuccess: () => emailForm.reset(),
   })
+}
+
+const terminateSession = (id: number) => {
+  if (confirm('Are you sure you want to terminate this session?')) {
+    terminateForm.delete(`/sessions/${id}`)
+  }
+}
+
+const terminateAllOtherSessions = () => {
+  if (confirm('Are you sure you want to terminate all other sessions?')) {
+    terminateForm.delete('/sessions')
+  }
 }
 </script>
 
@@ -85,6 +101,107 @@ const updateEmail = () => {
           {{ emailForm.processing ? 'Updating...' : 'Update Email' }}
         </button>
       </form>
+    </div>
+
+    <!-- Active Sessions Section -->
+    <div class="bg-white p-6 rounded-lg border space-y-4">
+      <div>
+        <h2 class="text-lg font-medium">Active Sessions</h2>
+        <p class="text-sm text-muted-foreground">
+          Below are the active sessions for your account. Active sessions are sessions that haven't
+          signed out or expired. Location information is provided by IP2Location and is based on the
+          IP Address of the session, accuracy will vary depending on the ISP/VPN.
+        </p>
+      </div>
+
+      <div class="mt-4 space-y-4">
+        <div v-if="sessions.length" class="space-y-4">
+          <div
+            v-for="session in sessions"
+            :key="session.id"
+            class="bg-white border rounded-md overflow-hidden"
+          >
+            <div class="p-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-2">
+                  <Laptop class="h-5 w-5 text-muted-foreground" />
+                  <span class="font-medium">
+                    {{ session.browserName }} {{ session.browserVersion }}
+                  </span>
+                  <span
+                    v-if="session.isCurrentSession"
+                    class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full"
+                  >
+                    Current Session
+                  </span>
+                </div>
+                <button
+                  v-if="!session.isCurrentSession"
+                  @click="terminateSession(session.id)"
+                  class="text-red-600 text-sm hover:text-red-800"
+                >
+                  Terminate
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                <div class="flex items-center space-x-2">
+                  <MapPin class="h-4 w-4 text-muted-foreground" />
+                  <span>
+                    {{
+                      [session.city, session.country].filter(Boolean).join(', ') ||
+                      'Unknown location'
+                    }}
+                  </span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Clock class="h-4 w-4 text-muted-foreground" />
+                  <span>Last active {{ session.lastTouchedAgo }}</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Info class="h-4 w-4 text-muted-foreground" />
+                  <span class="text-muted-foreground">IP: {{ session.ipAddress }}</span>
+                </div>
+                <div
+                  v-if="session.latitude && session.longitude"
+                  class="flex items-center space-x-2"
+                >
+                  <MapPin class="h-4 w-4 text-muted-foreground" />
+                  <span class="text-muted-foreground">
+                    {{ session.latitude.toFixed(2) }}, {{ session.longitude.toFixed(2) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="text-center py-8 bg-gray-50 rounded-lg">
+          <p class="text-muted-foreground">No active sessions found</p>
+        </div>
+
+        <div v-if="sessions.length > 1" class="mt-4">
+          <button
+            @click="terminateAllOtherSessions"
+            class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+          >
+            Terminate All Other Sessions
+          </button>
+        </div>
+
+        <!-- Attribution -->
+        <div class="text-xs text-gray-500 mt-4 pt-4 border-t">
+          <p>
+            IP geolocation data provided by
+            <a
+              href="https://www.ip2location.com"
+              class="text-primary hover:underline"
+              target="_blank"
+              >IP2Location</a
+            >.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Delete Account Section -->

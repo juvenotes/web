@@ -14,6 +14,7 @@ import PastPaper from './past_paper.js'
 import UserEducationEntry from './user_education_entry.js'
 import { CountryCode } from '#enums/countries'
 import EmailVerification from './email_verification.js'
+import SessionLog from './session_log.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -104,4 +105,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasMany(() => UserEducationEntry)
   declare userEducationEntries: HasMany<typeof UserEducationEntry>
+
+  @hasMany(() => SessionLog)
+  declare sessions: HasMany<typeof SessionLog>
 }

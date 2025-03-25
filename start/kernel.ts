@@ -37,6 +37,7 @@ server.use([
   () => import('@adonisjs/cors/cors_middleware'),
   () => import('@adonisjs/vite/vite_middleware'),
   () => import('@adonisjs/inertia/inertia_middleware'),
+  () => import('#middleware/session_check_middleware'),
   // () => ({ default: StatsigInitMiddleware }),
 ])
 
@@ -50,8 +51,6 @@ router.use([
   () => import('@adonisjs/auth/initialize_auth_middleware'),
   () => import('@adonisjs/shield/shield_middleware'),
   () => import('#middleware/initialize_bouncer_middleware'),
-  // () => import('#middleware/statsig_middleware'),
-  // () => import('#middleware/experiment_middleware')
 ])
 
 // process.on('SIGTERM', async () => {

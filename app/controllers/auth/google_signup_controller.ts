@@ -4,8 +4,13 @@ import { Role } from '#enums/roles'
 import sendWelcomeEmail from '#actions/auth/registration_emails/send_welcome_email'
 import { SESSION_KEYS } from '#constants/session'
 import { generateUsername } from '#utils/generate_username'
+import { inject } from '@adonisjs/core'
+import SessionService from '#services/session_service'
 
+@inject()
 export default class GoogleSignupController {
+  constructor(protected sessionService: SessionService) {}
+
   private async handleLogin(
     existingUser: User,
     googleUser: any,
@@ -21,6 +26,8 @@ export default class GoogleSignupController {
     }
 
     await auth.use('web').login(existingUser)
+
+    await this.sessionService.onSignInSuccess(existingUser, true)
 
     const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
     await session.regenerate()
@@ -57,6 +64,8 @@ export default class GoogleSignupController {
     })
 
     await auth.use('web').login(newUser)
+
+    await this.sessionService.onSignInSuccess(newUser, true)
 
     const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
     await session.regenerate()
