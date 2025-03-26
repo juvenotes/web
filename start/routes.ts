@@ -449,3 +449,4 @@ router
 router
   .post('/api/study-sessions/:id/heartbeat', [StudyTimeController, 'heartbeat'])
   .use(middleware.auth())
+router.post('/api/study-sessions', [StudyTimeController, 'create']).use(middleware.auth())

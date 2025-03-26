@@ -227,9 +227,7 @@ export default class StudyTimeService {
       .from('user_study_times')
       .where('user_id', userId)
       .where('date', date)
-      .update({
-        total_seconds: db.raw(`total_seconds + ${additionalSeconds}`),
-      })
+      .increment('total_seconds', additionalSeconds)
   }
 
   /**

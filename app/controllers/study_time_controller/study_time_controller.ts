@@ -19,6 +19,30 @@ export default class StudyTimeController {
     return { success: true }
   }
 
+  async create({ request, response, auth }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized('User not authenticated')
+    }
+
+    const { resourceType, resourceId, contentType } = request.body()
+
+    try {
+      const result = await this.studyTimeService.recordActivity(
+        auth.user.id,
+        resourceType,
+        resourceId,
+        contentType
+      )
+      return response.ok(result)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      return response.internalServerError({
+        error: 'Failed to create session',
+        message: errorMessage,
+      })
+    }
+  }
+
   async pauseSession({ request, response, params, auth }: HttpContext) {
     if (!auth.user) {
       return response.unauthorized('User not authenticated')

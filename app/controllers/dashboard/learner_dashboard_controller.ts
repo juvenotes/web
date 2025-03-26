@@ -1,10 +1,10 @@
-import StatsDto from '#dtos/stats'
-import Concept from '#models/concept'
-import PastPaper from '#models/past_paper'
-import Question from '#models/question'
 import { HttpContext } from '@adonisjs/core/http'
 import StudyTimeService from '#services/study_time_service'
 import { inject } from '@adonisjs/core'
+import Concept from '#models/concept'
+import PastPaper from '#models/past_paper'
+import Question from '#models/question'
+import StatsDto from '#dtos/stats'
 
 @inject()
 export default class DashboardController {
