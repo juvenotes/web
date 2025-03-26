@@ -88,10 +88,12 @@ const addImage = () => {
     const tempUrl = URL.createObjectURL(file)
 
     // Insert temporary image with loading attribute
-    const tempImageTransaction = editor.value?.chain().focus()
-      .setImage({ 
-        src: tempUrl, 
-        'data-loading': 'true'  // Add loading attribute
+    const tempImageTransaction = editor.value
+      ?.chain()
+      .focus()
+      .setImage({
+        'src': tempUrl,
+        'data-loading': 'true', // Add loading attribute
       } as any)
       .run()
 
@@ -101,12 +103,16 @@ const addImage = () => {
 
       if (url && tempImageTransaction) {
         // Replace with the real image URL
-        editor.value?.chain().focus().setImage({ 
-          src: url, 
-          alt: file.name,
-          width: '640px', // Standard size matching YouTube
-          height: 'auto'
-        } as any).run()
+        editor.value
+          ?.chain()
+          .focus()
+          .setImage({
+            src: url,
+            alt: file.name,
+            width: '640px', // Standard size matching YouTube
+            height: 'auto',
+          } as any)
+          .run()
       }
     } catch (error) {
       console.error('Error adding image:', error)
@@ -304,7 +310,7 @@ const toolbar = [
           </div>
         </div>
       </div>
-      
+
       <!-- Upload Status Indicator -->
       <div v-if="isUploading" class="flex items-center gap-2 text-xs text-muted-foreground px-2">
         <Loader2 class="h-3 w-3 animate-spin" />
@@ -420,7 +426,7 @@ const toolbar = [
   > * + * {
     margin-top: 0.75em;
   }
-  
+
   /* Add these new styles for image support */
   .editor-image {
     display: block;
@@ -429,8 +435,8 @@ const toolbar = [
     max-width: 100%;
     height: auto;
   }
-  
-  .editor-image[data-loading="true"] {
+
+  .editor-image[data-loading='true'] {
     position: relative;
     opacity: 0.7;
     animation: pulse 1.5s infinite;
@@ -439,8 +445,8 @@ const toolbar = [
     border-radius: 0.5rem;
   }
 
-  .editor-image[data-loading="true"]::before {
-    content: "Uploading...";
+  .editor-image[data-loading='true']::before {
+    content: 'Uploading...';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -451,13 +457,13 @@ const toolbar = [
     border-radius: 0.25rem;
     font-size: 0.875rem;
   }
-  
+
   /* Selected image styling */
   img.ProseMirror-selectednode {
     outline: 2px solid #3b82f6;
     border-radius: 0.5rem;
   }
-  
+
   img:hover {
     cursor: pointer;
   }
@@ -500,13 +506,13 @@ const toolbar = [
       background: hsl(var(--accent));
     }
   }
-  
+
   /* Add this for links */
   a {
     color: #3b82f6;
     text-decoration: underline;
   }
-  
+
   a:hover {
     color: #2563eb;
   }

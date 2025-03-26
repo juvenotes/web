@@ -18,7 +18,9 @@ defineProps<{
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"></div>
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      ></div>
 
       <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
         <div class="flex items-start gap-4 mt-4">
@@ -60,7 +62,8 @@ defineProps<{
             <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
               {{ concept.pastPapers?.filter((p) => p.paperType === PaperType.SPOT).length ?? 0 }}
               {{
-                (concept.pastPapers?.filter((p) => p.paperType === PaperType.SPOT).length ?? 0) === 1
+                (concept.pastPapers?.filter((p) => p.paperType === PaperType.SPOT).length ?? 0) ===
+                1
                   ? 'paper'
                   : 'papers'
               }}

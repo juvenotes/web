@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import ConceptDto from '#dtos/concept'
 import PastPaperDto from '#dtos/past_paper'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Calendar, AlertCircle, Settings } from 'lucide-vue-next'
 import { StudyLevel } from '#enums/study_level'
+import UserStudySessionDto from '#dtos/user_study_session'
+import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
 
@@ -13,9 +15,25 @@ interface Props {
   concept: ConceptDto
   papers: PastPaperDto[]
   canManage: boolean
+  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
+  const studySession = ref(props.studySession)
+
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'paper',
+        resourceId: props.concept.id // Using concept ID as this is a listing page
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const breadcrumbItems = computed(() => [
   { label: 'Papers', href: '/papers' },
@@ -45,7 +63,7 @@ const papersByYear = computed(() => {
 
 <template>
   <AppHead :title="`${concept.title} Papers`" :description="`Past papers for ${concept.title}`" />
-
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
     <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">

@@ -3,44 +3,45 @@ import { ref, onMounted } from 'vue'
 
 interface TallyWidget {
   openPopup: (
-    formId: string, 
+    formId: string,
     options: {
-      width?: number;
-      layout?: string;
+      width?: number
+      layout?: string
       emoji?: {
-        text: string;
-        animation: string;
-      };
-      onClose?: () => void;
-      onSubmit?: () => void;
+        text: string
+        animation: string
+      }
+      onClose?: () => void
+      onSubmit?: () => void
     }
-  ) => void;
+  ) => void
 }
 
 declare global {
   interface Window {
-    Tally?: TallyWidget;
+    Tally?: TallyWidget
   }
 }
 
 const props = defineProps({
   formId: {
     type: String,
-    default: 'mKaaJg'
+    default: 'mKaaJg',
   },
   buttonText: {
     type: String,
-    default: 'Take our quick survey'
+    default: 'Take our quick survey',
   },
   buttonClass: {
     type: String,
-    default: 'flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-all'
+    default:
+      'flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-all',
   },
   // Added emit for banner parent to handle visibility
   onFormInteraction: {
     type: Function,
-    default: () => {}
-  }
+    default: () => {},
+  },
 })
 
 const isReady = ref(false)
@@ -53,7 +54,7 @@ onMounted(() => {
       clearInterval(checkTally)
     }
   }, 300)
-  
+
   // Stop checking after 5 seconds
   setTimeout(() => clearInterval(checkTally), 5000)
 })
@@ -65,8 +66,8 @@ function openSurvey() {
     width: 500,
     layout: 'modal',
     emoji: {
-      text: "👋",
-      animation: "wave"
+      text: '👋',
+      animation: 'wave',
     },
     onClose: () => {
       // Let parent know form was closed
@@ -75,28 +76,23 @@ function openSurvey() {
     onSubmit: () => {
       // Let parent know form was submitted
       props.onFormInteraction('submitted')
-    }
+    },
   })
 }
 </script>
 
 <template>
   <!-- Removed v-if="shouldShow" -->
-  <button
-    :class="buttonClass"
-    @click="openSurvey"
-    :disabled="!isReady"
-    type="button"
-  >
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="18" 
-      height="18" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      stroke-width="2" 
-      stroke-linecap="round" 
+  <button :class="buttonClass" @click="openSurvey" :disabled="!isReady" type="button">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
       stroke-linejoin="round"
     >
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>

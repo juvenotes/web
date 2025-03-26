@@ -1,13 +1,24 @@
 <script setup lang="ts">
 import UserDto from '#dtos/user'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { BookOpen, FileText, Clock, Flame, ChevronRight, Stethoscope, Pin, Hand } from 'lucide-vue-next'
+import {
+  BookOpen,
+  FileText,
+  Clock,
+  Flame,
+  ChevronRight,
+  Stethoscope,
+  Pin,
+  Hand,
+} from 'lucide-vue-next'
 import StatsDto from '#dtos/stats'
 
 defineProps<{
   messages: Record<string, string | Record<string, string>>
   user: UserDto | null | undefined
   stats: StatsDto
+  totalStudyTime: number
+  formattedStudyTime: string
 }>()
 
 defineOptions({ layout: DashLayout })
@@ -18,55 +29,61 @@ defineOptions({ layout: DashLayout })
   <div class="dashboard-content max-w-7xl mx-auto space-y-10 px-4 sm:px-6 py-6">
     <!-- Hero Welcome Section -->
     <div
-  class="relative bg-gradient-to-br from-[#55A9C4]/10 via-[#55A9C4]/15 to-transparent p-6 rounded-2xl shadow-sm backdrop-blur-sm border border-[#55A9C4]/10"
->
-  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-    <!-- Welcome Text -->
-    <div class="space-y-2">
-    <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-2">
-      Hey {{ user?.fullName }}!
-      <div class="wave-animation">
-        <div class="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full shadow-md">
-          <Hand class="h-6 w-6 text-yellow-600" />
+      class="relative bg-gradient-to-br from-[#55A9C4]/10 via-[#55A9C4]/15 to-transparent p-6 rounded-2xl shadow-sm backdrop-blur-sm border border-[#55A9C4]/10"
+    >
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <!-- Welcome Text -->
+        <div class="space-y-2">
+          <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-2">
+            Hey {{ user?.fullName }}!
+            <div class="wave-animation">
+              <div
+                class="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full shadow-md"
+              >
+                <Hand class="h-6 w-6 text-yellow-600" />
+              </div>
+            </div>
+          </h1>
+          <p class="text-sm text-[#4A6772]">Ready to continue your learning journey?</p>
         </div>
-      </div>
-    </h1>
-    <p class="text-sm text-[#4A6772]">Ready to continue your learning journey?</p>
-  </div>
 
-    <!-- Stats Grid -->
-    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-      <!-- Study Time -->
-      <div
-        class="group flex items-center gap-3 bg-white/90 hover:bg-gradient-to-r hover:from-[#55A9C4]/5 hover:to-[#55A9C4]/20 p-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex-1 md:flex-initial border border-[#55A9C4]/20"
-      >
-        <div class="rounded-lg bg-[#55A9C4]/20 p-2 group-hover:scale-110 transition-transform duration-300">
-          <Clock class="h-5 w-5 text-[#55A9C4]" />
-        </div>
-        <div>
-          <p class="text-xs font-medium text-[#4A6772]">Study Time</p>
-          <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ formatTime(user?.total_study_time ?? 0) }}</p> -->
-        </div>
-      </div>
+        <!-- Stats Grid -->
+        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <!-- Study Time -->
+          <div
+            class="group flex items-center gap-3 bg-white/90 hover:bg-gradient-to-r hover:from-[#55A9C4]/5 hover:to-[#55A9C4]/20 p-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex-1 md:flex-initial border border-[#55A9C4]/20"
+          >
+            <div
+              class="rounded-lg bg-[#55A9C4]/20 p-2 group-hover:scale-110 transition-transform duration-300"
+            >
+              <Clock class="h-5 w-5 text-[#55A9C4]" />
+            </div>
+            <div>
+              <p class="text-xs font-medium text-[#4A6772]">Study Time</p>
+              <p class="text-lg font-bold text-[#2C5D6F]">{{ formattedStudyTime }}</p>
+            </div>
+          </div>
 
-      <!-- Streak Counter -->
-      <div
-        class="group flex items-center gap-3 bg-white/90 hover:bg-gradient-to-r hover:from-orange-50 hover:to-[#55A9C4]/10 p-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex-1 md:flex-initial border border-[#55A9C4]/20 border-l-orange-200"
-      >
-        <div class="rounded-lg bg-orange-100 p-2 group-hover:scale-110 transition-transform duration-300">
-          <Flame class="h-5 w-5 text-orange-600" />
-        </div>
-        <div>
-          <p class="text-xs font-medium text-[#4A6772]">Streak</p>
-          <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ user?.streak_count ?? 0 }} days</p> -->
+          <!-- Streak Counter -->
+          <div
+            class="group flex items-center gap-3 bg-white/90 hover:bg-gradient-to-r hover:from-orange-50 hover:to-[#55A9C4]/10 p-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex-1 md:flex-initial border border-[#55A9C4]/20 border-l-orange-200"
+          >
+            <div
+              class="rounded-lg bg-orange-100 p-2 group-hover:scale-110 transition-transform duration-300"
+            >
+              <Flame class="h-5 w-5 text-orange-600" />
+            </div>
+            <div>
+              <p class="text-xs font-medium text-[#4A6772]">Streak</p>
+              <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ user?.streak_count ?? 0 }} days</p> -->
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
     <!-- Feature Cards Grid -->
-  <div class="grid md:grid-cols-2 gap-8 p-6">
+    <div class="grid md:grid-cols-2 gap-8 p-6">
       <!-- Past Papers Card -->
       <div
         @click="$inertia.visit('/papers')"
@@ -74,7 +91,9 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-6 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300"
+            >
               <FileText class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
@@ -83,12 +102,16 @@ defineOptions({ layout: DashLayout })
             </div>
           </div>
           <!-- Hover Message (Hidden on Mobile) -->
-          <div class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+          <div
+            class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex"
+          >
             <span class="text-sm text-[#55A9C4] font-medium">Start Practicing</span>
             <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
           </div>
         </div>
-        <div class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"
+        ></div>
       </div>
 
       <!-- Concepts Card -->
@@ -98,7 +121,9 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-6 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300"
+            >
               <BookOpen class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
@@ -107,12 +132,16 @@ defineOptions({ layout: DashLayout })
             </div>
           </div>
           <!-- Hover Message (Hidden on Mobile) -->
-          <div class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+          <div
+            class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex"
+          >
             <span class="text-sm text-[#55A9C4] font-medium">Explore Concepts</span>
             <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
           </div>
         </div>
-        <div class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"
+        ></div>
       </div>
 
       <!-- OSCE Card -->
@@ -122,7 +151,9 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-6 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300"
+            >
               <Stethoscope class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
@@ -131,12 +162,16 @@ defineOptions({ layout: DashLayout })
             </div>
           </div>
           <!-- Hover Message (Hidden on Mobile) -->
-          <div class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+          <div
+            class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex"
+          >
             <span class="text-sm text-[#55A9C4] font-medium">Practice Scenarios</span>
             <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
           </div>
         </div>
-        <div class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"
+        ></div>
       </div>
 
       <!-- Spot Card -->
@@ -146,7 +181,9 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-6 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300"
+            >
               <Pin class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
@@ -155,12 +192,16 @@ defineOptions({ layout: DashLayout })
             </div>
           </div>
           <!-- Hover Message (Hidden on Mobile) -->
-          <div class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+          <div
+            class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex"
+          >
             <span class="text-sm text-[#55A9C4] font-medium">Identify Spots</span>
             <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
           </div>
         </div>
-        <div class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"
+        ></div>
       </div>
     </div>
   </div>
@@ -172,14 +213,30 @@ defineOptions({ layout: DashLayout })
 }
 
 @keyframes wave {
-  0% { transform: rotate(0deg); }
-  10% { transform: rotate(14deg); }
-  20% { transform: rotate(-8deg); }
-  30% { transform: rotate(14deg); }
-  40% { transform: rotate(-4deg); }
-  50% { transform: rotate(10deg); }
-  60% { transform: rotate(0deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  30% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .wave-animation {
@@ -189,8 +246,14 @@ defineOptions({ layout: DashLayout })
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
@@ -202,7 +265,7 @@ defineOptions({ layout: DashLayout })
   .dashboard-content {
     padding: 1.5rem 1rem; /* Maintain reasonable padding */
   }
-  
+
   .dashboard-content .grid {
     grid-template-columns: 1fr; /* Stack cards vertically */
     gap: 1.5rem; /* Keep decent spacing between cards */
@@ -234,15 +297,15 @@ defineOptions({ layout: DashLayout })
   .dashboard-content {
     padding: 1.25rem 0.75rem; /* Reduced but still adequate */
   }
-  
+
   .dashboard-content .grid {
     gap: 1.25rem; /* Still provides good separation */
   }
-  
+
   .dashboard-content .group {
     padding: 1.25rem; /* Enough breathing room */
   }
-  
+
   .dashboard-content .group .flex.items-start {
     gap: 0.75rem; /* Maintain reasonable spacing */
   }

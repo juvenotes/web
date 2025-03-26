@@ -75,7 +75,7 @@ onMounted(() => {
 async function handleImageUpload(file: File, type: 'question' | 'part', index?: number) {
   const formData = new FormData()
   formData.append('image', file)
-  
+
   formData.append('context[folder]', 'spot')
   formData.append(
     'context[subFolder]',
@@ -138,7 +138,7 @@ const removePart = (index: number) => {
 
 const handleSubmit = () => {
   form.put(
-    `/manage/spot/${props.concept.slug}/${props.paper.slug}/questions/${props.question.slug}/spot`, 
+    `/manage/spot/${props.concept.slug}/${props.paper.slug}/questions/${props.question.slug}/spot`,
     {
       preserveScroll: true,
       onSuccess: () => {

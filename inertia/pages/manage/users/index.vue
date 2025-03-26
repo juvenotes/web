@@ -123,11 +123,22 @@ watch(searchQuery, () => {
         :class="{ 'opacity-50 pointer-events-none': meta.current_page === 1 }"
       >
         <span class="sr-only">Previous</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left">
-          <path d="m15 18-6-6 6-6"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-chevron-left"
+        >
+          <path d="m15 18-6-6 6-6" />
         </svg>
       </Link>
-      
+
       <!-- First page -->
       <Link
         :href="`/manage/users?page=1&search=${searchQuery}`"
@@ -139,23 +150,21 @@ watch(searchQuery, () => {
       >
         1
       </Link>
-      
+
       <!-- Ellipsis if needed -->
       <span v-if="meta.current_page > 3" class="px-2 text-gray-500 hidden sm:block">...</span>
-      
+
       <!-- Pages around current page -->
       <template v-for="page in meta.last_page" :key="page">
         <Link
           v-if="
-            page !== 1 && 
-            page !== meta.last_page && 
-            (
-              page === meta.current_page || 
-              page === meta.current_page - 1 || 
+            page !== 1 &&
+            page !== meta.last_page &&
+            (page === meta.current_page ||
+              page === meta.current_page - 1 ||
               page === meta.current_page + 1 ||
               (page === 2 && meta.current_page === 1) ||
-              (page === meta.last_page - 1 && meta.current_page === meta.last_page)
-            )
+              (page === meta.last_page - 1 && meta.current_page === meta.last_page))
           "
           :href="`/manage/users?page=${page}&search=${searchQuery}`"
           class="px-3 py-2 text-sm rounded-md"
@@ -167,10 +176,12 @@ watch(searchQuery, () => {
           {{ page }}
         </Link>
       </template>
-      
+
       <!-- Ellipsis if needed -->
-      <span v-if="meta.current_page < meta.last_page - 2" class="px-2 text-gray-500 hidden sm:block">...</span>
-      
+      <span v-if="meta.current_page < meta.last_page - 2" class="px-2 text-gray-500 hidden sm:block"
+        >...</span
+      >
+
       <!-- Last page -->
       <Link
         v-if="meta.last_page > 1"
@@ -183,12 +194,12 @@ watch(searchQuery, () => {
       >
         {{ meta.last_page }}
       </Link>
-      
+
       <!-- Mobile current page indicator -->
       <span class="px-3 py-2 text-sm sm:hidden">
         {{ meta.current_page }} of {{ meta.last_page }}
       </span>
-      
+
       <!-- Next button -->
       <Link
         :href="`/manage/users?page=${meta.current_page < meta.last_page ? meta.current_page + 1 : meta.last_page}&search=${searchQuery}`"
@@ -196,8 +207,19 @@ watch(searchQuery, () => {
         :class="{ 'opacity-50 pointer-events-none': meta.current_page === meta.last_page }"
       >
         <span class="sr-only">Next</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right">
-          <path d="m9 18 6-6-6-6"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-chevron-right"
+        >
+          <path d="m9 18 6-6-6-6" />
         </svg>
       </Link>
     </div>

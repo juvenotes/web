@@ -73,7 +73,7 @@ onMounted(() => {
 async function handleImageUpload(file: File, type: 'question' | 'part', index?: number) {
   const formData = new FormData()
   formData.append('image', file)
-  
+
   formData.append('context[folder]', 'spot')
   formData.append(
     'context[subFolder]',

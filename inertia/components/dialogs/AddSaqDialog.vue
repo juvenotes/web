@@ -33,7 +33,7 @@ const form = useForm({
 // Function to reset/initialize form
 const initializeForm = () => {
   form.questionText = ''
-    form.questionImagePath = ''
+  form.questionImagePath = ''
   form.type = QuestionType.SAQ
   form.parts = [{ partText: '', expectedAnswer: '', marks: 1 }]
   form.clearErrors()

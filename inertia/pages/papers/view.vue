@@ -19,6 +19,7 @@ import {
 } from 'lucide-vue-next'
 import { computed, ref, onMounted, reactive } from 'vue'
 import axios from 'axios'
+import UserStudySessionDto from '#dtos/user_study_session'
 
 defineOptions({ layout: DashLayout })
 
@@ -30,9 +31,25 @@ interface Props {
   progress: UserPaperProgressDto | null
   attemptCount: number
   completionPercentage: number
+  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
+  const studySession = ref(props.studySession)
+
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'paper',
+        resourceId: props.concept.id // Using concept ID as this is a listing page
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const breadcrumbItems = computed(() => [
   { label: 'Papers', href: '/papers' },
@@ -213,6 +230,7 @@ const getLastEditDate = computed(() => {
 
 <template>
   <AppHead :title="paper.title" :description="`Questions for ${paper.title}`" />
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <FeedbackDialog
     v-model:open="feedbackDialog.isOpen"
     :question="feedbackDialog.question"

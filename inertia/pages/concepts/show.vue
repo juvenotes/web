@@ -2,8 +2,9 @@
 import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import type QuestionDto from '#dtos/question'
-import { computed, ref, watchEffect } from 'vue'
-import MdxContent from '~/components/MdxContent.vue'
+import type UserStudySessionDto from '#dtos/user_study_session'
+import { computed, onMounted, ref, watchEffect } from 'vue'
+import axios from 'axios'
 
 import DashLayout from '~/layouts/DashLayout.vue'
 import { BookOpen, Network, HelpCircle, Circle, Award, Settings } from 'lucide-vue-next'
@@ -17,11 +18,27 @@ const props = defineProps<{
   content: string | null
   parentConcepts?: ConceptDto[]
   canManage: boolean
+  studySession?: UserStudySessionDto
 }>()
 
 const children = ref(props.children)
 const questions = ref(props.questions)
 const content = computed(() => props.content || '')
+const studySession = ref(props.studySession)
+
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'concept',
+        resourceId: props.concept.id
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const breadcrumbItems = computed(() => {
   const items = [{ label: 'Concepts', href: '/concepts' }]
@@ -74,6 +91,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
 
 <template>
   <AppHead :title="`${concept.title}`" description="All available concepts in Juvenotes" />
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <div class="space-y-8">
       <!-- Enhanced Title Section -->
