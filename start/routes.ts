@@ -25,7 +25,7 @@ const IndexConceptsController = () => import('#controllers/concepts/index_concep
 const ManageConceptsController = () =>
   import('#controllers/manage/concepts/manage_concepts_controller')
 const IndexPapersController = () => import('#controllers/papers/index_papers_controller')
-const UserDashboardController = () => import('#controllers/dashboard/index_controller')
+const UserDashboardController = () => import('#controllers/dashboard/learner_dashboard_controller')
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
 const ManagePapersController = () =>
   import('#controllers/manage/past_papers/manage_papers_controller')
@@ -47,6 +47,8 @@ const ManageSpotController = () => import('#controllers/manage/spot/manage_spot_
 const IndexSpotController = () => import('#controllers/spot/index_spot_controller')
 const PaymentsController = () => import('#controllers/payments_controller')
 const SessionsController = () => import('#controllers/session_controller')
+const UserProgressController = () => import('#controllers/user_progress_controller')
+const StudyTimeController = () => import('#controllers/study_time_controller/study_time_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -435,4 +437,15 @@ router
     // router.post('/paystack/verify', [PaymentsController, 'verifyPaystackPayment'])
   })
   .prefix('/api/payments')
+  .use(middleware.auth())
+
+router.get('/api/user/study-time', [UserProgressController, 'getStudyTime']).use(middleware.auth())
+router
+  .post('/api/study-sessions/:id/pause', [StudyTimeController, 'pauseSession'])
+  .use(middleware.auth())
+router
+  .post('/api/study-sessions/:id/resume', [StudyTimeController, 'resumeSession'])
+  .use(middleware.auth())
+router
+  .post('/api/study-sessions/:id/heartbeat', [StudyTimeController, 'heartbeat'])
   .use(middleware.auth())

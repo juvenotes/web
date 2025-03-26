@@ -141,6 +141,8 @@ declare module 'vue' {
     SheetTrigger: typeof import('./inertia/components/ui/sheet/SheetTrigger.vue')['default']
     Skeleton: typeof import('./inertia/components/ui/skeleton/Skeleton.vue')['default']
     Sonner: typeof import('./inertia/components/ui/sonner/Sonner.vue')['default']
+    StudySessionTracker: typeof import('./inertia/components/StudySessionTracker.vue')['default']
+    StudyTimeCard: typeof import('./inertia/components/StudyTimeCard.vue')['default']
     SurveyBanner: typeof import('./inertia/components/SurveyBanner.vue')['default']
     Switch: typeof import('./inertia/components/ui/switch/Switch.vue')['default']
     TagsInput: typeof import('./inertia/components/ui/tags-input/TagsInput.vue')['default']

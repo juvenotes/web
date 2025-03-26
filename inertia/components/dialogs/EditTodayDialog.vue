@@ -15,7 +15,6 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-
 const form = useForm({
   title: '',
   scheduledFor: '',
@@ -26,7 +25,7 @@ const initializeForm = () => {
   form.title = props.today.title
   form.scheduledFor = props.today.scheduledFor
   form.status = props.today.status
-  
+
   form.clearErrors()
 }
 

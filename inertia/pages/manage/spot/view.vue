@@ -214,11 +214,7 @@ async function handleDeleteQuestion(question: QuestionDto) {
   </div>
 
   <!-- Dialogs -->
-  <AddSpotQuestionDialog
-    v-model:open="showAddQuestionDialog"
-    :paper="paper"
-    :concept="concept"
-  />
+  <AddSpotQuestionDialog v-model:open="showAddQuestionDialog" :paper="paper" :concept="concept" />
 
   <EditSpotQuestionDialog
     v-if="selectedQuestion"
@@ -228,10 +224,10 @@ async function handleDeleteQuestion(question: QuestionDto) {
     :question="selectedQuestion"
   />
 
-  <EditPaperDialog 
-    v-model:open="showEditPaperDialog" 
-    :paper="paper" 
-    :concept="concept" 
+  <EditPaperDialog
+    v-model:open="showEditPaperDialog"
+    :paper="paper"
+    :concept="concept"
     paper-type="SPOT"
   />
 </template>
