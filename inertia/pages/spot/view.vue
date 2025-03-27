@@ -3,10 +3,9 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Clock, Settings } from 'lucide-vue-next'
-import { computed, ref, reactive, onMounted } from 'vue'
+import { FileText, Clock, Settings, ArrowRight, CheckCircle, Info, BookOpen } from 'lucide-vue-next'
+import { computed, ref, reactive } from 'vue'
 import axios from 'axios'
-import UserStudySessionDto from '#dtos/user_study_session'
 
 defineOptions({ layout: DashLayout })
 
@@ -18,26 +17,9 @@ interface Props {
   progress: any | null
   attemptCount: number
   completionPercentage: number
-  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
-  const studySession = ref(props.studySession)
-
-// Initialize study session if not provided
-onMounted(async () => {
-  if (!studySession.value) {
-    try {
-      const response = await axios.post('/api/study-sessions', {
-        resourceType: 'spot',
-        resourceId: props.paper.id
-      })
-      studySession.value = response.data
-    } catch (error) {
-      console.error('Failed to create study session:', error)
-    }
-  }
-})
 
 const paperProgress = reactive({
   completionPercentage: props.completionPercentage,
@@ -48,9 +30,12 @@ const paperProgress = reactive({
 const showAnswers = ref<Record<number, boolean>>({})
 
 const lastEditDate = computed(() => {
-  return new Date(
-    props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt
-  ).toLocaleDateString()
+  const date = new Date(props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt)
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).format(date)
 })
 
 const breadcrumbItems = computed(() => [
@@ -59,11 +44,9 @@ const breadcrumbItems = computed(() => [
   { label: props.paper.title },
 ])
 
-// Record SPOT station viewing as progress
 const handleSpotStationView = (questionId: number, stationId: number) => {
   showAnswers.value[stationId] = !showAnswers.value[stationId]
 
-  // Only send the API request when revealing the answer (not when hiding it)
   if (showAnswers.value[stationId]) {
     axios
       .post('/api/papers/record-spot-response', {
@@ -98,77 +81,145 @@ const totalStations = computed(() => {
     return total + (question.spotStations?.length || 0)
   }, 0)
 })
+
+const continueFromLastQuestion = () => {
+  if (!paperProgress.progress?.lastQuestionId) return
+
+  const lastQuestionId = paperProgress.progress.lastQuestionId
+  const questionIndex = props.questions.findIndex((q) => q.id === lastQuestionId)
+  if (questionIndex === -1) return
+
+  setTimeout(() => {
+    const element = document.getElementById(`question-${lastQuestionId}`)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+      element.classList.add('highlight-question')
+      setTimeout(() => element.classList.remove('highlight-question'), 2000)
+    }
+  }, 500)
+}
 </script>
 
 <template>
   <AppHead :title="paper.title" :description="`Practice ${paper.title}`" />
-  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->
-    <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
-      <div
-        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
-      />
+    <div class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent rounded-t-2xl" />
 
-      <!-- Navigation -->
-      <BreadcrumbTrail :items="breadcrumbItems" />
+      <BreadcrumbTrail :items="breadcrumbItems" class="max-w-full overflow-x-auto pb-2 hide-scrollbar" />
 
-      <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
-        <div class="flex items-start gap-4">
-          <div class="p-3 rounded-xl bg-primary/5 border border-primary/10 shrink-0">
-            <FileText class="h-6 w-6 text-primary" />
+      <div class="mt-6 flex flex-col sm:flex-row sm:items-start gap-6">
+        <div class="flex items-start gap-4 flex-1">
+          <div class="p-3 rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200">
+            <FileText class="h-5 w-5 text-[#55A9C4]" />
           </div>
           <div class="space-y-1">
-            <h1 class="text-2xl font-bold text-foreground">{{ paper.title }}</h1>
-            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
-              <span class="truncate max-w-[150px] sm:max-w-none">{{ concept.title }}</span>
-              <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">{{ paper.title }}</h1>
+            <p class="text-sm text-gray-500 max-w-2xl">
+              SPOT stations for {{ paper.title }} in {{ concept.title }}
+            </p>
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <span class="px-2.5 py-1 text-xs font-semibold bg-[#55A9C4]/15 text-[#55A9C4] rounded-full shadow-sm">
                 SPOT
               </span>
-              <span>{{ paper.year }}</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs text-muted-foreground">
-              <Clock class="h-3 w-3" />
-              <span>Last edited {{ lastEditDate }}</span>
+              <span class="text-sm text-gray-500">{{ paper.year }}</span>
+              <span class="flex items-center gap-1 text-sm text-gray-500">
+                <Clock class="h-3 w-3" />
+                Last edited {{ lastEditDate }}
+              </span>
+              <span class="flex items-center gap-1 text-sm text-gray-500">
+                {{ paperProgress.attemptCount }} {{ paperProgress.attemptCount === 1 ? 'attempt' : 'attempts' }}
+              </span>
             </div>
           </div>
         </div>
 
-        <!-- Manage button -->
-        <Link
-          v-if="canManage"
-          :href="`/manage/spot/${concept.slug}/${paper.slug}`"
-          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors text-primary border border-primary/10 w-full sm:w-auto"
-        >
-          <Settings class="h-4 w-4" />
-          <span class="text-sm font-medium">Edit</span>
-        </Link>
+        <div class="w-full sm:w-auto mt-4 sm:mt-0 space-y-3">
+          <Button
+            v-if="paperProgress.progress?.lastQuestionId"
+            class="flex items-center gap-1.5 w-full sm:w-auto bg-[#55A9C4] hover:bg-[#55A9C4]/90 text-white"
+            @click="continueFromLastQuestion"
+          >
+            <ArrowRight class="h-4 w-4" />
+            Continue where you left off
+          </Button>
+
+          <Link
+            v-if="canManage"
+            :href="`/manage/spot/${concept.slug}/${paper.slug}`"
+            class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#55A9C4] hover:bg-[#55A9C4]/90 text-white border border-[#55A9C4] text-sm font-medium hover:shadow-md transition-all duration-200 group"
+          >
+            <Settings class="h-4 w-4 transition-transform duration-500 group-hover:rotate-180" />
+            <span>Edit SPOT</span>
+          </Link>
+        </div>
       </div>
     </div>
 
     <DisclaimerBanner />
 
+    <!-- Progress Tracking Section -->
+    <div class="bg-white p-5 sm:p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+      <div v-if="paperProgress.completionPercentage > 0" class="p-4 sm:p-5 bg-white/80 rounded-xl border border-[#55A9C4]/10 mb-4">
+        <div class="flex justify-between items-center mb-2 sm:mb-3">
+          <span class="font-medium text-sm sm:text-base">Your progress</span>
+          <span class="text-sm sm:text-base font-semibold">
+            {{ paperProgress.completionPercentage }}%
+          </span>
+        </div>
+
+        <div class="h-2.5 sm:h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            class="h-full bg-[#55A9C4] rounded-full transition-all duration-500"
+            :style="{ width: `${paperProgress.completionPercentage}%` }"
+            :class="{
+              'bg-amber-500': paperProgress.completionPercentage < 25,
+              'bg-orange-500': paperProgress.completionPercentage >= 25 && paperProgress.completionPercentage < 50,
+              'bg-blue-500': paperProgress.completionPercentage >= 50 && paperProgress.completionPercentage < 75,
+              'bg-green-500': paperProgress.completionPercentage >= 75,
+            }"
+          ></div>
+        </div>
+
+        <div class="mt-2 sm:mt-3 flex justify-between items-center text-xs sm:text-sm text-gray-500">
+          <span>
+            {{ Math.round((paperProgress.completionPercentage * totalStations) / 100) }} of
+            {{ totalStations }} stations
+          </span>
+          <span
+            v-if="paperProgress.completionPercentage === 100"
+            class="text-green-600 font-medium flex items-center gap-1"
+          >
+            <CheckCircle class="h-3.5 w-3.5" /> Complete
+          </span>
+        </div>
+      </div>
+    </div>
+
     <!-- Questions List -->
-    <div class="space-y-4">
+    <div class="space-y-6 sm:space-y-8">
       <template v-if="questions.length">
         <div
           v-for="(question, questionIndex) in questions"
           :key="question.id"
-          class="p-6 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow"
+          :id="`question-${question.id}`"
+          class="p-4 sm:p-6 md:p-8 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full"
         >
-          <div class="space-y-4">
+          <div class="space-y-4 sm:space-y-5">
             <!-- Question Header -->
-            <div class="flex gap-3">
-              <span
-                class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-sm font-medium"
-              >
-                Q{{ questionIndex + 1 }}
+            <div class="flex flex-col gap-2 sm:gap-3">
+              <span class="inline-block w-fit px-4 sm:px-5 py-1.5 sm:py-2 bg-[#55A9C4]/15 text-[#55A9C4] rounded-lg font-semibold text-base sm:text-lg shadow-sm">
+                Question {{ questionIndex + 1 }}
               </span>
-              <p class="text-base text-foreground">{{ question.questionText }}</p>
+              <p class="text-gray-900 pl-1 text-sm sm:text-base md:text-lg break-words leading-relaxed">
+                {{ question.questionText }}
+              </p>
             </div>
 
-            <!-- Question Image if present -->
-            <div v-if="question.questionImagePath" class="flex justify-center">
+            <!-- Question Image -->
+            <div v-if="question.questionImagePath" class="flex justify-center mt-4">
               <img
                 :src="question.questionImagePath"
                 :alt="`Question ${questionIndex + 1} image`"
@@ -177,64 +228,124 @@ const totalStations = computed(() => {
             </div>
 
             <!-- SPOT Stations -->
-            <div class="pl-10 space-y-4">
+            <div class="mt-5 sm:mt-7 space-y-5 sm:space-y-7 pl-6 sm:pl-8">
               <div
-                v-for="(station, stationIndex) in question.spotStations"
-                :key="station.id"
-                class="relative pl-4 border-l-2 border-primary/20 py-3"
+                class="bg-gradient-to-r from-[#55A9C4]/5 to-[#55A9C4]/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full"
               >
-                <!-- Station Text -->
-                <div class="flex justify-between items-start">
-                  <div class="space-y-2">
-                    <div class="flex items-center gap-2">
-                      <span class="font-medium text-base">Station {{ stationIndex + 1 }}</span>
-                      <span
-                        class="text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium"
-                      >
-                        {{ station.marks }} marks
-                      </span>
-                    </div>
-                    <p class="text-base">{{ station.partText }}</p>
-                  </div>
-                </div>
-
-                <!-- Expected Answer -->
-                <button
-                  @click="handleSpotStationView(question.id, station.id)"
-                  class="mt-3 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium transition hover:bg-primary/80"
-                >
-                  {{ showAnswers[station.id] ? 'Hide Answer' : 'Show Answer' }}
-                </button>
+                <!-- SPOT Stations Header -->
                 <div
-                  v-if="showAnswers[station.id]"
-                  class="mt-3 bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-4"
+                  class="flex items-center justify-between px-5 py-4 bg-[#55A9C4]/15 border-b border-[#55A9C4]/10"
                 >
-                  <p class="text-sm font-semibold text-muted-foreground">Expected Answer:</p>
-                  <div class="mt-2 text-md text-gray-800 leading-relaxed whitespace-pre-wrap">
-                    <ViewExplanation :content="station.expectedAnswer" />
+                  <div class="flex items-center gap-3">
+                    <BookOpen class="h-4 w-4 sm:h-5 sm:w-5 text-[#55A9C4]" />
+                    <span class="text-sm sm:text-base font-medium text-[#55A9C4]">SPOT Stations</span>
+                  </div>
+                  <div
+                    class="text-xs sm:text-sm bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-[#55A9C4]/80 font-medium shadow-sm"
+                  >
+                    {{ question.spotStations.length }} station{{ question.spotStations.length > 1 ? 's' : '' }}
                   </div>
                 </div>
 
-                <!-- Station Image if present -->
-                <div v-if="station.imagePath" class="mt-3 flex justify-center">
-                  <img
-                    :src="station.imagePath"
-                    :alt="`Station ${stationIndex + 1} image`"
-                    class="max-w-full h-auto rounded-lg border shadow-sm max-h-[300px] object-contain"
-                  />
+                <!-- SPOT Stations List -->
+                <div class="divide-y divide-[#55A9C4]/10">
+                  <div
+                    v-for="(station, stationIndex) in question.spotStations"
+                    :key="station.id"
+                    class="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 bg-white/80 hover:bg-white/100 transition-all duration-300 relative"
+                  >
+                    <!-- Station Header -->
+                    <div class="flex items-center justify-between mb-3 sm:mb-4">
+                      <div class="flex items-baseline gap-3">
+                        <span
+                          class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm"
+                        >
+                          {{ stationIndex + 1 }}
+                        </span>
+                        <span
+                          class="text-xs sm:text-sm text-[#55A9C4]/80 font-medium px-2 py-0.5 bg-[#55A9C4]/5 rounded-md"
+                        >
+                          {{ station.marks }} mark{{ station.marks > 1 ? 's' : '' }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Station Text -->
+                    <p class="text-sm sm:text-base text-gray-900 break-words mb-4 sm:mb-5 leading-relaxed">
+                      {{ station.partText }}
+                    </p>
+
+                    <!-- Station Image if present -->
+                    <div v-if="station.imagePath" class="mt-3 flex justify-center">
+                      <img
+                        :src="station.imagePath"
+                        :alt="`Station ${stationIndex + 1} image`"
+                        class="max-w-full h-auto rounded-lg border shadow-sm max-h-[300px] object-contain"
+                      />
+                    </div>
+
+                    <!-- Show Answer Button -->
+                    <button
+                      @click="handleSpotStationView(question.id, station.id)"
+                      class="group w-full sm:w-auto flex items-center justify-center gap-2 mt-3 sm:mt-4 text-[#55A9C4] font-semibold text-xs sm:text-sm rounded-lg p-2.5 sm:p-3 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 hover:from-[#55A9C4]/25 hover:to-[#55A9C4]/15 border border-[#55A9C4]/20 transition-all duration-300 shadow-sm hover:shadow"
+                    >
+                      <ChevronDown
+                        class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300"
+                      />
+                      <span>{{ showAnswers[station.id] ? 'Hide Answer' : 'Show Answer' }}</span>
+                    </button>
+
+                    <!-- Expected Answer Section -->
+                    <div v-if="showAnswers[station.id]" class="mt-5 sm:mt-6 animate-fadeIn">
+                      <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full">
+                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"></div>
+
+                        <div class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100">
+                          <div class="flex items-center gap-3">
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]">
+                              <CheckCircle class="h-5 w-5" />
+                            </div>
+                            <div>
+                              <p class="text-sm text-gray-500 font-medium">Expected Answer</p>
+                              <p class="text-sm text-[#55A9C4]/80 font-medium">
+                                {{ station.marks }} mark{{ station.marks > 1 ? 's' : '' }} available
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="p-4 sm:p-6 md:p-8 bg-white">
+                          <div class="flex gap-3 items-start">
+                            <div class="shrink-0 pt-1">
+                              <div class="w-5 h-5 rounded-full bg-[#55A9C4]/10 flex items-center justify-center">
+                                <Info class="h-3 w-3 text-[#55A9C4]" />
+                              </div>
+                            </div>
+                            <div class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                              <ViewExplanation :content="station.expectedAnswer" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </template>
-      <div v-else class="text-center py-12 bg-white rounded-xl border">
-        <p class="text-muted-foreground">This SPOT paper has no questions yet.</p>
+      
+      <!-- Empty State -->
+      <div v-else class="text-center py-12 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+        <p class="text-gray-500">This SPOT paper has no stations yet.</p>
       </div>
     </div>
+
+    <!-- Floating Progress Indicator -->
     <div
       v-if="paperProgress.completionPercentage > 0"
-      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg border border-primary/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl group"
+      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg border border-[#55A9C4]/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl group"
       :class="{
         'p-2 sm:p-4': true,
         'sm:hover:w-auto hover:w-10': true,
@@ -252,7 +363,7 @@ const totalStations = computed(() => {
             cy="20"
           />
           <circle
-            class="text-primary"
+            class="text-[#55A9C4]"
             stroke-width="3"
             :stroke-dasharray="100.5"
             :stroke-dashoffset="100.5 - paperProgress.completionPercentage"
@@ -264,21 +375,178 @@ const totalStations = computed(() => {
             cy="20"
           />
         </svg>
-        <span
-          class="absolute inset-0 flex items-center justify-center text-xs font-medium"
-          style="font-size: 0.7rem"
-        >
+        <span class="absolute inset-0 flex items-center justify-center text-xs sm:text-xs font-medium" style="font-size: 0.7rem">
           {{ Math.round(paperProgress.completionPercentage) }}%
         </span>
       </div>
 
       <div class="hidden sm:flex flex-col">
         <span class="text-sm font-medium">Your progress</span>
-        <span class="text-xs text-muted-foreground">
+        <span class="text-xs text-gray-500">
           {{ Math.round((paperProgress.completionPercentage * totalStations) / 100) }} of
           {{ totalStations }}
         </span>
       </div>
+
+      <Button
+        v-if="paperProgress.progress?.lastQuestionId"
+        size="sm"
+        variant="ghost"
+        @click="continueFromLastQuestion"
+        class="hidden sm:flex"
+      >
+        <ArrowRight class="h-4 w-4 mr-1" />
+        Continue
+      </Button>
     </div>
   </div>
 </template>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.explanation-content {
+  :deep(ol) {
+    list-style-type: decimal;
+    margin-left: 1.25rem;
+    margin-top: 0.75rem;
+
+    @media (min-width: 640px) {
+      margin-left: 1.75rem;
+      margin-top: 1rem;
+    }
+  }
+
+  :deep(ul) {
+    list-style-type: disc;
+    margin-left: 1.25rem;
+    margin-top: 0.75rem;
+
+    @media (min-width: 640px) {
+      margin-left: 1.75rem;
+      margin-top: 1rem;
+    }
+  }
+
+  :deep(li) {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  :deep(hr) {
+    margin: 1rem 0;
+    border-top: 1px dashed #a8d3e7;
+
+    @media (min-width: 640px) {
+      margin: 1.25rem 0;
+    }
+  }
+
+  position: relative;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  @media (min-width: 640px) {
+    max-height: 400px;
+  }
+
+  @media (min-width: 1024px) {
+    max-height: 500px;
+  }
+
+  :deep(iframe) {
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    display: block;
+    margin: 1rem auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    max-height: 250px;
+
+    @media (min-width: 640px) {
+      width: 90%;
+      max-height: 300px;
+    }
+
+    @media (min-width: 768px) {
+      width: 85%;
+      max-height: 350px;
+    }
+    transition: all 0.3s ease;
+  }
+
+  :deep(.video-container) {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+  }
+}
+
+.hide-scrollbar,
+:deep(.breadcrumb-trail) {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  white-space: nowrap;
+  padding-bottom: 4px;
+}
+
+.hide-scrollbar::-webkit-scrollbar,
+:deep(.breadcrumb-trail::-webkit-scrollbar) {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.highlight-question {
+  box-shadow: 0 0 0 3px rgba(85, 169, 196, 0.3);
+}
+</style>
