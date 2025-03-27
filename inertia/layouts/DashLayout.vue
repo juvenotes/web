@@ -275,7 +275,7 @@ onUnmounted(() => {
         </nav>
 
         <!-- Logout positioned at bottom of sidebar -->
-        <div class="p-3 border-t border-gray-100">
+        <!-- <div class="p-3 border-t border-gray-100">
           <button
             @click="$inertia.post('/logout')"
             class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-red-50 transition-colors duration-200 w-full text-gray-700 hover:text-red-500 group"
@@ -296,7 +296,7 @@ onUnmounted(() => {
               Log out
             </span>
           </button>
-        </div>
+        </div> -->
       </aside>
 
       <!-- Main content with subtle pattern background -->

@@ -60,7 +60,7 @@ defineOptions({ layout: DashLayout })
             </div>
             <div>
               <p class="text-xs font-medium text-[#4A6772]">Study Time</p>
-              <p class="text-lg font-bold text-[#2C5D6F]">{{ formattedStudyTime }}</p>
+              <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ formattedStudyTime }}</p> -->
             </div>
           </div>
 
