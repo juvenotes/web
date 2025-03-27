@@ -3,17 +3,36 @@ import { Link } from '@inertiajs/vue3'
 import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Settings } from 'lucide-vue-next'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { TrainingLevel } from '#enums/training_level'
+import UserStudySessionDto from '#dtos/user_study_session'
+import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
 
 interface Props {
   concepts: ConceptDto[]
   canManage: boolean
+  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
+  const studySession = ref(props.studySession)
+
+// Initialize study session if not provided
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'paper',
+        resourceId: 0 // Special case for index
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const selectedLevel = ref<TrainingLevel | null>(null)
 
@@ -25,6 +44,7 @@ const filteredConcepts = computed(() => {
 
 <template>
   <AppHead title="Past Papers" description="Access past examination papers" />
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->
     <div class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">

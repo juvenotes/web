@@ -2,9 +2,10 @@
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
+import type UserStudySessionDto from '#dtos/user_study_session'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Clock, Settings, ArrowRight, CheckCircle, Info, BookOpen } from 'lucide-vue-next'
-import { computed, ref, reactive } from 'vue'
+import { computed, ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
@@ -17,9 +18,26 @@ interface Props {
   progress: any | null
   attemptCount: number
   completionPercentage: number
+  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
+  const studySession = ref(props.studySession)
+
+// Initialize study session if not provided
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'spot',
+        resourceId: props.paper.id
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const paperProgress = reactive({
   completionPercentage: props.completionPercentage,
@@ -102,6 +120,7 @@ const continueFromLastQuestion = () => {
 
 <template>
   <AppHead :title="paper.title" :description="`Practice ${paper.title}`" />
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->

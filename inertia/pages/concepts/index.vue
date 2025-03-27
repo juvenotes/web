@@ -4,7 +4,9 @@ import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { BookOpen, Settings } from 'lucide-vue-next'
 import { TrainingLevel } from '#enums/training_level'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import UserStudySessionDto from '#dtos/user_study_session'
+import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
 
@@ -18,15 +20,33 @@ const filteredConcepts = computed(() => {
 interface Props {
   concepts: ConceptDto[]
   canManage: boolean
+  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
+  const studySession = ref(props.studySession)
+
+// Create a study session if one wasn't provided by the server
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'concept',
+        resourceId: 0, // Use 0 as a special ID for the concepts index page
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const breadcrumbItems = [{ label: 'Concepts' }]
 </script>
 
 <template>
   <AppHead title="All available concepts" description="All available concepts in Juvenotes" />
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->
     <div class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">

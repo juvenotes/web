@@ -14,8 +14,9 @@ import {
   Info,
   BookOpen,
 } from 'lucide-vue-next'
-import { computed, ref, reactive } from 'vue'
+import { computed, ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
+import UserStudySessionDto from '#dtos/user_study_session'
 
 defineOptions({ layout: DashLayout })
 
@@ -27,9 +28,26 @@ interface Props {
   progress: UserPaperProgressDto | null
   attemptCount: number
   completionPercentage: number
+  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
+  const studySession = ref(props.studySession)
+
+// Initialize study session if not provided
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'osce',
+        resourceId: props.paper.id
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const breadcrumbItems = computed(() => [
   { label: 'OSCEs', href: '/osce' },
@@ -130,6 +148,7 @@ const continueFromLastQuestion = () => {
 
 <template>
   <AppHead :title="paper.title" :description="`Practice ${paper.title}`" />
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <FeedbackDialog
     v-model:open="feedbackDialog.isOpen"
     :question="feedbackDialog.question"

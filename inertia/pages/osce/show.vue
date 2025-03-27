@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Calendar, AlertCircle, Settings } from 'lucide-vue-next'
 import { PaperType } from '#enums/exam_type'
+import UserStudySessionDto from '#dtos/user_study_session'
+import axios from 'axios'
 
 defineOptions({ 
   layout: DashLayout,
@@ -16,9 +18,26 @@ interface Props {
   concept: ConceptDto
   papers: PastPaperDto[]
   canManage: boolean
+  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
+  const studySession = ref(props.studySession)
+
+// Initialize study session if not provided
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'osce',
+        resourceId: props.concept.id
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const oscePapers = computed(() =>
   props.papers.filter((paper) => paper.paperType === PaperType.OSCE)
@@ -45,7 +64,7 @@ const breadcrumbItems = computed(() => [
 
 <template>
   <AppHead :title="`${concept.title} OSCEs`" :description="`OSCE papers for ${concept.title}`" />
-  
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <!-- Unique wrapper class for this page only -->
   <div class="osce-page-container">
     <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-6 md:space-y-8">

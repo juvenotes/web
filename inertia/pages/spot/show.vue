@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { FileText, Calendar, AlertCircle, Settings } from 'lucide-vue-next'
 import { PaperType } from '#enums/exam_type'
+import UserStudySessionDto from '#dtos/user_study_session'
+import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
 
@@ -13,9 +15,26 @@ interface Props {
   concept: ConceptDto
   papers: PastPaperDto[]
   canManage: boolean
+  studySession?: UserStudySessionDto
 }
 
 const props = defineProps<Props>()
+const studySession = ref(props.studySession)
+
+// Initialize study session if not provided
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'spot',
+        resourceId: props.concept.id
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const spotPapers = computed(() =>
   props.papers.filter((paper) => paper.paperType === PaperType.SPOT)
@@ -42,7 +61,7 @@ const breadcrumbItems = computed(() => [
 
 <template>
   <AppHead :title="`${concept.title} SPOT Papers`" :description="`SPOT papers for ${concept.title}`" />
-
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->
     <div class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">

@@ -4,15 +4,35 @@ import type ConceptDto from '#dtos/concept'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { Pin, Settings } from 'lucide-vue-next'
 import { PaperType } from '#enums/exam_type'
+import UserStudySessionDto from '#dtos/user_study_session'
+import axios from 'axios'
+import { ref, onMounted } from 'vue'
 
 defineOptions({ layout: DashLayout })
 
 interface Props {
   concepts: ConceptDto[]
   canManage: boolean
+  studySession?: UserStudySessionDto
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+const studySession = ref(props.studySession)
+
+// Initialize study session if not provided
+onMounted(async () => {
+  if (!studySession.value) {
+    try {
+      const response = await axios.post('/api/study-sessions', {
+        resourceType: 'spot',
+        resourceId: 0 // Special case for index page
+      })
+      studySession.value = response.data
+    } catch (error) {
+      console.error('Failed to create study session:', error)
+    }
+  }
+})
 
 const getSpotPaperCount = (concept: ConceptDto) =>
   concept.pastPapers?.filter((paper) => paper.paperType === PaperType.SPOT).length ?? 0
@@ -22,6 +42,7 @@ const breadcrumbItems = [{ label: 'SPOT Papers' }]
 
 <template>
   <AppHead title="SPOT Papers" description="Access SPOT examination papers" />
+  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->
     <div class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
