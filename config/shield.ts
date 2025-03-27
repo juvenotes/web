@@ -27,7 +27,7 @@ const shieldConfig = defineConfig({
         'https://cdn.brevo.com',
         'https://tally.so',
       ],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.bunny.net'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com https://fonts.bunny.net;'],
       imgSrc: ["'self'", 'data:', 'blob:', '*', 'https://www.brevo.com/'],
       connectSrc: [
         "'self'",
