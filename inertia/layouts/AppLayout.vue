@@ -14,7 +14,7 @@ declare global {
 onMounted(() => {
   // Only initialize if not already initialized
   if (document.querySelector('script[src*="cookie-consent.js"]')) return
-  
+
   const script = document.createElement('script')
   script.src = '//www.freeprivacypolicy.com/public/cookie-consent/4.2.0/cookie-consent.js'
   script.charset = 'UTF-8'

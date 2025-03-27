@@ -190,16 +190,24 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
               <div class="h-6 w-1 bg-green-500 rounded-full"></div>
               <h3 class="text-lg font-bold text-gray-800">Solution Explanation</h3>
             </div>
-            
+
             <!-- Modern card with sidebar accent -->
-            <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full">
+            <div
+              class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
+            >
               <!-- Left accent border -->
-              <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-blue-500"></div>
-              
+              <div
+                class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-blue-500"
+              ></div>
+
               <!-- Answer header -->
-              <div class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-100">
+              <div
+                class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-100"
+              >
                 <div class="flex items-center gap-3">
-                  <div class="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600">
+                  <div
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600"
+                  >
                     <CheckCircle class="h-5 w-5" />
                   </div>
                   <div>
@@ -210,7 +218,7 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
                   </div>
                 </div>
               </div>
-              
+
               <!-- Explanation content with visual separation -->
               <div class="p-4 sm:p-6 md:p-8 bg-white">
                 <div class="flex gap-3 items-start">
@@ -219,7 +227,9 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
                       <Info class="h-3 w-3 text-blue-600" />
                     </div>
                   </div>
-                  <div class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                  <div
+                    class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
+                  >
                     <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
                   </div>
                 </div>
@@ -255,7 +265,7 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
     list-style-type: decimal;
     margin-left: 1.25rem;
     margin-top: 0.75rem;
-    
+
     @media (min-width: 640px) {
       margin-left: 1.75rem;
       margin-top: 1rem;
@@ -266,7 +276,7 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
     list-style-type: disc;
     margin-left: 1.25rem;
     margin-top: 0.75rem;
-    
+
     @media (min-width: 640px) {
       margin-left: 1.75rem;
       margin-top: 1rem;
@@ -281,46 +291,46 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
   :deep(hr) {
     margin: 1rem 0;
     border-top: 1px dashed #a8d3e7;
-    
+
     @media (min-width: 640px) {
       margin: 1.25rem 0;
     }
   }
-  
+
   /* Scrolling properties */
   position: relative;
   max-height: 300px;
   overflow-y: auto;
   padding-right: 5px;
-  
+
   /* Style the scrollbar */
   &::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 10px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: #c1c1c1;
     border-radius: 10px;
   }
-  
+
   &::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
   }
-  
+
   /* Adjust max-height based on screen size */
   @media (min-width: 640px) {
     max-height: 400px;
   }
-  
+
   @media (min-width: 1024px) {
     max-height: 500px;
   }
-  
+
   /* Responsive video styling */
   :deep(iframe) {
     max-width: 100%;
@@ -329,28 +339,30 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
     display: block;
     margin: 1rem auto;
     border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
     /* Base size for small devices */
     width: 100%;
     max-height: 250px;
-    
+
     /* Adjust size for medium devices */
     @media (min-width: 640px) {
       width: 90%;
       max-height: 300px;
     }
-    
+
     /* Adjust size for larger devices */
     @media (min-width: 768px) {
       width: 85%;
       max-height: 350px;
     }
-    
+
     /* Optional transition for smooth resizing */
     transition: all 0.3s ease;
   }
-  
+
   /* Create a responsive container for videos if needed */
   :deep(.video-container) {
     position: relative;
@@ -360,7 +372,7 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
     max-width: 100%;
     margin: 1rem 0;
     border-radius: 0.5rem;
-    
+
     iframe {
       position: absolute;
       top: 0;
@@ -374,8 +386,14 @@ async function recordResponse(questionId: number, choiceId: number, isCorrect: b
 
 /* Enhanced animation for smoother transitions */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fadeIn {

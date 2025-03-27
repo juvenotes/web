@@ -12,12 +12,22 @@ import db from '@adonisjs/lucid/services/db'
 import Station from '#models/station'
 import UserSpotResponse from '#models/user_spot_response'
 import SpotStation from '#models/spot_station'
+import StudyTimeService from './study_time_service.js'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class UserProgressService {
+  constructor(private studyTimeService: StudyTimeService) {}
   /**
    * Record user viewing a paper
    */
-  async recordPaperView(userId: number, paperId: number) {
+  async recordPaperView(
+    userId: number,
+    paperId: number,
+    contentType?: 'mcq' | 'saq' | 'osce' | 'spot'
+  ) {
+    await this.studyTimeService.recordActivity(userId, 'paper', paperId, contentType)
+
     return UserPaperProgress.updateOrCreate({ userId, paperId }, { lastVisitedAt: DateTime.now() })
   }
 
@@ -33,6 +43,8 @@ export default class UserProgressService {
     isCorrect: boolean,
     source: 'paper' | 'today' = 'paper'
   ) {
+    // Track study time
+    await this.studyTimeService.recordActivity(userId, source, paperId)
     // Get the choice to store its text for historical record
     const choice = await McqChoice.findOrFail(choiceId)
 
@@ -178,6 +190,9 @@ export default class UserProgressService {
    * Record user viewing an SAQ part answer
    */
   async recordSaqPartView(userId: number, paperId: number, questionId: number, partId: number) {
+    // Track study time
+    await this.studyTimeService.recordActivity(userId, 'paper', paperId)
+
     // Get the part to store its text for historical record
     const part = await SaqPart.findOrFail(partId)
 
@@ -236,6 +251,8 @@ export default class UserProgressService {
     questionId: number,
     stationId: number
   ) {
+    // Track study time
+    await this.studyTimeService.recordActivity(userId, 'osce', paperId)
     const station = await Station.findOrFail(stationId)
     // First check if the user has already viewed this station
     const existingView = await UserOsceResponse.query()
@@ -292,6 +309,8 @@ export default class UserProgressService {
     questionId: number,
     stationId: number
   ) {
+    // Track study time
+    await this.studyTimeService.recordActivity(userId, 'spot', paperId)
     const station = await SpotStation.findOrFail(stationId)
 
     // First check if the user has already viewed this station
@@ -338,6 +357,82 @@ export default class UserProgressService {
         attemptCount: 1,
       })
     }
+  }
+
+  /**
+   * Record user viewing a concept
+   */
+  async recordConceptView(userId: number, conceptId: number) {
+    // Track study time
+    await this.studyTimeService.recordActivity(userId, 'concept', conceptId)
+    const now = DateTime.now()
+
+    await db.transaction(async (trx) => {
+      // First check if a record exists in user_concept_views
+      const existingView = await trx
+        .from('user_concept_views')
+        .where('user_id', userId)
+        .where('concept_id', conceptId)
+        .first()
+
+      if (existingView) {
+        // Update existing record
+        await trx
+          .from('user_concept_views')
+          .where('user_id', userId)
+          .where('concept_id', conceptId)
+          .update({
+            viewed_at: now.toSQL(),
+            view_count: existingView.view_count + 1,
+            status: ResponseStatus.ACTIVE,
+          })
+      } else {
+        // Insert new record
+        await trx.insertQuery().table('user_concept_views').insert({
+          user_id: userId,
+          concept_id: conceptId,
+          viewed_at: now.toSQL(),
+          status: ResponseStatus.ACTIVE,
+          view_count: 1, // Initialize count
+        })
+      }
+
+      // Update user_study_time table (this part is unchanged)
+      const today = now.toFormat('yyyy-MM-dd')
+
+      const existingRecord = await trx
+        .from('user_study_time')
+        .where('user_id', userId)
+        .where('date', today)
+        .first()
+
+      if (existingRecord) {
+        // Update existing record
+        await trx
+          .from('user_study_time')
+          .where('user_id', userId)
+          .where('date', today)
+          .update({
+            last_activity_at: now.toSQL(),
+            concept_views: db.raw('concept_views + 1'),
+          })
+      } else {
+        // Create new record
+        await trx.insertQuery().table('user_study_time').insert({
+          user_id: userId,
+          date: today,
+          last_activity_at: now.toSQL(),
+          concept_views: 1,
+          mcq_attempts: 0,
+          saq_views: 0,
+          osce_views: 0,
+          spot_views: 0,
+          total_seconds: 0,
+        })
+      }
+    })
+
+    return { success: true }
   }
 
   /**
@@ -442,5 +537,16 @@ export default class UserProgressService {
       .orderBy('attempts', 'desc')
       .preload('question')
       .limit(limit)
+  }
+
+  /**
+   * Get total study time for a user
+   */
+  async getTotalStudyTime(userId: number): Promise<{ seconds: number; formatted: string }> {
+    const totalSeconds = await this.studyTimeService.getTotalStudyTime(userId)
+    return {
+      seconds: totalSeconds,
+      formatted: this.studyTimeService.formatStudyTime(totalSeconds),
+    }
   }
 }

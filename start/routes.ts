@@ -25,7 +25,7 @@ const IndexConceptsController = () => import('#controllers/concepts/index_concep
 const ManageConceptsController = () =>
   import('#controllers/manage/concepts/manage_concepts_controller')
 const IndexPapersController = () => import('#controllers/papers/index_papers_controller')
-const UserDashboardController = () => import('#controllers/dashboard/index_controller')
+const UserDashboardController = () => import('#controllers/dashboard/learner_dashboard_controller')
 const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
 const ManagePapersController = () =>
   import('#controllers/manage/past_papers/manage_papers_controller')
@@ -46,6 +46,9 @@ const IndexTodayController = () => import('#controllers/today/index_today_contro
 const ManageSpotController = () => import('#controllers/manage/spot/manage_spot_controller')
 const IndexSpotController = () => import('#controllers/spot/index_spot_controller')
 const PaymentsController = () => import('#controllers/payments_controller')
+const SessionsController = () => import('#controllers/session_controller')
+const UserProgressController = () => import('#controllers/user_progress_controller')
+const StudyTimeController = () => import('#controllers/study_time_controller/study_time_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -141,6 +144,14 @@ router
 router
   .put('/settings/profile', [ProfileController, 'update'])
   .as('settings.profile.update')
+  .use(middleware.auth())
+
+// SESSION LOGS
+router
+  .group(() => {
+    router.delete('/sessions/:id', [SessionsController, 'destroy']).as('sessions.destroy')
+    router.delete('/sessions', [SessionsController, 'destroy']).as('sessions.destroy.all')
+  })
   .use(middleware.auth())
 
 //* CONCEPTS -> VIEW
@@ -359,6 +370,19 @@ router
     router.post('/:slug/questions/mcq', [ManageTodayController, 'addQuestion'])
     router.put('/:slug/questions/:questionSlug/mcq', [ManageTodayController, 'editQuestion'])
     router.delete('/:slug/questions/:questionId', [ManageTodayController, 'removeQuestion'])
+
+    // Archive
+    router.post('/archive-outdated', [ManageTodayController, 'archiveOutdated'])
+
+    // Manage concept linkage
+    router.post('/:slug/questions/:questionId/concepts', [
+      ManageTodayController,
+      'addConceptsToQuestion',
+    ])
+    router.delete('/:slug/questions/:questionId/concepts/:conceptId', [
+      ManageTodayController,
+      'removeConceptFromQuestion',
+    ])
   })
   .prefix('/manage/today')
   .use(middleware.auth())
@@ -414,3 +438,15 @@ router
   })
   .prefix('/api/payments')
   .use(middleware.auth())
+
+router.get('/api/user/study-time', [UserProgressController, 'getStudyTime']).use(middleware.auth())
+router
+  .post('/api/study-sessions/:id/pause', [StudyTimeController, 'pauseSession'])
+  .use(middleware.auth())
+router
+  .post('/api/study-sessions/:id/resume', [StudyTimeController, 'resumeSession'])
+  .use(middleware.auth())
+router
+  .post('/api/study-sessions/:id/heartbeat', [StudyTimeController, 'heartbeat'])
+  .use(middleware.auth())
+router.post('/api/study-sessions', [StudyTimeController, 'create']).use(middleware.auth())

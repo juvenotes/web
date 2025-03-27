@@ -248,10 +248,12 @@ const addImage = () => {
     const tempUrl = URL.createObjectURL(file)
 
     // Insert temporary image with loading attribute
-    const tempImageTransaction = editor.value?.chain().focus()
-      .setImage({ 
-        src: tempUrl, 
-        'data-loading': 'true'  // Add loading attribute
+    const tempImageTransaction = editor.value
+      ?.chain()
+      .focus()
+      .setImage({
+        'src': tempUrl,
+        'data-loading': 'true', // Add loading attribute
       } as any)
       .run()
 
@@ -261,12 +263,16 @@ const addImage = () => {
 
       if (url && tempImageTransaction) {
         // Replace with the real image URL
-        editor.value?.chain().focus().setImage({ 
-          src: url, 
-          alt: file.name,
-          width: '640px', // Standard size matching YouTube
-          height: 'auto'
-        } as any).run()
+        editor.value
+          ?.chain()
+          .focus()
+          .setImage({
+            src: url,
+            alt: file.name,
+            width: '640px', // Standard size matching YouTube
+            height: 'auto',
+          } as any)
+          .run()
       }
     } catch (error) {
       console.error('Error adding image:', error)
@@ -682,7 +688,7 @@ const addYoutubeVideo = () => {
   cursor: wait;
 } */
 /* Add to your existing styles */
-.editor-image[data-loading="true"] {
+.editor-image[data-loading='true'] {
   position: relative;
   opacity: 0.7;
   animation: pulse 1.5s infinite;
@@ -691,8 +697,8 @@ const addYoutubeVideo = () => {
   border-radius: 0.5rem;
 }
 
-.editor-image[data-loading="true"]::before {
-  content: "Uploading...";
+.editor-image[data-loading='true']::before {
+  content: 'Uploading...';
   position: absolute;
   top: 50%;
   left: 50%;

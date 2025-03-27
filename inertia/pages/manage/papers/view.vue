@@ -105,10 +105,11 @@ function handleEditQuestion(question: QuestionDto) {
 
 onMounted(() => {
   // Debug image paths
-  console.log('Image paths in questions:', 
+  console.log(
+    'Image paths in questions:',
     props.questions
-      .filter(q => q.questionImagePath)
-      .map(q => ({ id: q.id, path: q.questionImagePath }))
+      .filter((q) => q.questionImagePath)
+      .map((q) => ({ id: q.id, path: q.questionImagePath }))
   )
 })
 

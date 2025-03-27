@@ -35,20 +35,20 @@
 
 //   // Create a subscription to the user's notification channel
 //   notificationSubscription.value = transmit.value.subscription(`user/${userId}`)
-  
+
 //   // Listen for notification events
 //   notificationSubscription.value.create().then(() => {
 //     notificationSubscription.value.onMessage((data) => {
 //       // Add the new notification to the list
 //       const newNotification = data
-      
+
 //       if (!notifications.value.some(n => n.id === newNotification.id)) {
 //         // Add to the top of the list
 //         notifications.value = [newNotification, ...notifications.value]
-        
+
 //         // Update unread count
 //         unreadCount.value += 1
-        
+
 //         // Show a toast notification
 //         toast(newNotification.title, {
 //           description: newNotification.body || '',
@@ -68,7 +68,7 @@
 // const getNotificationTypeIcon = (type) => {
 //   const iconName = NotificationTypeIcons[type]
 //   if (!iconName) return null
-  
+
 //   // Map icon name to the imported component
 //   switch (iconName) {
 //     case 'Bell': return Bell
@@ -85,7 +85,7 @@
 // // Handle dropdown open/close
 // const handleOpenChange = (open) => {
 //   isOpen.value = open
-  
+
 //   // Only fetch if opening and no notifications loaded yet
 //   if (open && notifications.value.length === 0) {
 //     fetchNotifications()
@@ -200,7 +200,7 @@
 // // Lifecycle hooks
 // onMounted(async () => {
 //   fetchUnreadCount()
-  
+
 //   // Get current user ID
 //   try {
 //     const { data } = await axios.get('/api/auth/user')
@@ -210,13 +210,13 @@
 //   } catch (error) {
 //     console.error('Failed to get user ID for notifications', error)
 //   }
-  
+
 //   // Poll for new notifications as fallback (every minute)
 //   const intervalId = setInterval(fetchUnreadCount, 60000)
-  
+
 //   onBeforeUnmount(() => {
 //     clearInterval(intervalId)
-    
+
 //     // Clean up transmit subscription
 //     if (notificationSubscription.value) {
 //       notificationSubscription.value.delete().catch(() => {
@@ -227,6 +227,4 @@
 // })
 </script>
 
-<template>
- 
-</template>
+<template></template>

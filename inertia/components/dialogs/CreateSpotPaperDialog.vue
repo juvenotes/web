@@ -52,10 +52,7 @@ function handleSubmit() {
 
         <div class="space-y-2">
           <Label>Year</Label>
-          <Input 
-            v-model="form.year" 
-            :class="{ 'border-destructive': form.errors.year }"
-          />
+          <Input v-model="form.year" :class="{ 'border-destructive': form.errors.year }" />
           <p v-if="form.errors.year" class="text-sm text-destructive">
             {{ form.errors.year }}
           </p>

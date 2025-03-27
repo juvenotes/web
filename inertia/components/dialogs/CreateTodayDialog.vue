@@ -12,7 +12,6 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-
 const form = useForm({
   title: '',
   scheduledFor: DateTime.now().toFormat('yyyy-MM-dd'),
