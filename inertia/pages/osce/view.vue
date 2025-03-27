@@ -148,7 +148,8 @@ const continueFromLastQuestion = () => {
 
 <template>
   <AppHead :title="paper.title" :description="`Practice ${paper.title}`" />
-  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
+    <!-- <StudySessionTracker v-if="studySession" :sessionId="studySession.id" /> -->
+
   <FeedbackDialog
     v-model:open="feedbackDialog.isOpen"
     :question="feedbackDialog.question"

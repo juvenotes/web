@@ -64,7 +64,8 @@ const breadcrumbItems = computed(() => [
 
 <template>
   <AppHead :title="`${concept.title} OSCEs`" :description="`OSCE papers for ${concept.title}`" />
-  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
+    <!-- <StudySessionTracker v-if="studySession" :sessionId="studySession.id" /> -->
+
   <!-- Unique wrapper class for this page only -->
   <div class="osce-page-container">
     <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-6 md:space-y-8">

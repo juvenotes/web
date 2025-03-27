@@ -61,7 +61,8 @@ const breadcrumbItems = computed(() => [
 
 <template>
   <AppHead :title="`${concept.title} SPOT Papers`" :description="`SPOT papers for ${concept.title}`" />
-  <StudySessionTracker v-if="studySession" :sessionId="studySession.id" />
+    <!-- <StudySessionTracker v-if="studySession" :sessionId="studySession.id" /> -->
+
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->
     <div class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
