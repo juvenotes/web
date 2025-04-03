@@ -189,6 +189,7 @@ const handleDelete = () => {
               <Plus class="h-4 w-4 mr-2" />
               Add MCQ
             </Button>
+            <SectionManagerDialog :concept="concept" />
           </div>
         </div>
 

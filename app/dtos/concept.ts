@@ -4,6 +4,8 @@ import UserDto from '#dtos/user'
 import QuestionDto from '#dtos/question'
 import PastPaperDto from '#dtos/past_paper'
 import { TrainingLevel } from '#enums/training_level'
+import ConceptSectionDto from './concept_section.js'
+import ConceptCitationDto from './concept_citation.js'
 
 export default class ConceptDto extends BaseModelDto {
   declare id: number
@@ -23,6 +25,8 @@ export default class ConceptDto extends BaseModelDto {
   declare relatedConcepts: ConceptDto[]
   declare questions: QuestionDto[]
   declare pastPapers: PastPaperDto[]
+  declare sections: ConceptSectionDto[]
+  declare citations: ConceptCitationDto[]
   declare hasChildren: boolean
   declare isRoot: boolean
   declare isRootLevel: boolean
@@ -51,6 +55,8 @@ export default class ConceptDto extends BaseModelDto {
     this.relatedConcepts = ConceptDto.fromArray(concept.relatedConcepts)
     this.questions = QuestionDto.fromArray(concept.questions)
     this.pastPapers = PastPaperDto.fromArray(concept.pastPapers)
+    this.sections = ConceptSectionDto.fromArray(concept.sections)
+    this.citations = ConceptCitationDto.fromArray(concept.citations)
     this.hasChildren = concept.hasChildren
     this.isRoot = concept.isRoot
     this.isRootLevel = concept.isRootLevel
