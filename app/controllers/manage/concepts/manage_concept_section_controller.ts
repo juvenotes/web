@@ -59,7 +59,7 @@ export default class ManageConceptSectionController {
     }
 
     // Calculate position if not provided
-    if (!data.position) {
+    if (data.position === undefined) {
       const query = ConceptSection.query().where('concept_id', data.conceptId)
 
       if (data.parentSectionId) {
