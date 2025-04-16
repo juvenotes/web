@@ -121,6 +121,7 @@ export default class IndexController {
 
     let progress = null
     let completionPercentage = 0
+    let userResponses: string | any[] = []
 
     if (auth.user) {
       // Record paper view
@@ -134,6 +135,15 @@ export default class IndexController {
         auth.user.id,
         paper.id
       )
+
+      // Fetch user's previous responses
+      userResponses = await UserMcqResponse.query()
+        .where('user_id', auth.user.id)
+        .whereIn(
+          'question_id',
+          paper.questions.map((q) => q.id)
+        )
+        .select(['question_id', 'choice_id', 'is_correct'])
     }
 
     logger.info({
@@ -142,7 +152,8 @@ export default class IndexController {
       questionsCount: paper.questions?.length ?? 0,
       attemptsCount: attemptCount,
       completionPercentage,
-      message: 'Retrieved paper with questions',
+      userResponsesCount: userResponses.length,
+      message: 'Retrieved paper with questions and user responses',
       userId: auth.user?.id,
     })
 
@@ -156,6 +167,7 @@ export default class IndexController {
       progress,
       attemptCount,
       completionPercentage,
+      userResponses, // Pass responses directly to the view
     })
   }
 
