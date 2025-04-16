@@ -11,20 +11,20 @@ const mcqChoiceSchema = vine.object({
 // SAQ Part Schema
 const saqPartSchema = vine.object({
   part_text: vine.string().minLength(1).maxLength(1000),
-  expected_answer: vine.string().minLength(1).maxLength(2000),
+  expected_answer: vine.string().minLength(1).maxLength(20000),
   marks: vine.number().min(0).max(100),
 })
 
 const stationSchema = vine.object({
   partText: vine.string().trim().minLength(1),
-  expectedAnswer: vine.string().trim().minLength(1).maxLength(5000),
+  expectedAnswer: vine.string().trim().minLength(1).maxLength(20000),
   marks: vine.number().min(1),
   imagePath: vine.string().nullable().optional(),
 })
 
 const spotStationSchema = vine.object({
   partText: vine.string().trim().minLength(1),
-  expectedAnswer: vine.string().trim().minLength(1).maxLength(5000),
+  expectedAnswer: vine.string().trim().minLength(1).maxLength(20000),
   marks: vine.number().min(1),
   imagePath: vine.string().nullable().optional(),
 })
@@ -57,7 +57,7 @@ export const createSaqQuestionValidator = vine.compile(
       .array(
         vine.object({
           partText: vine.string().trim().minLength(1),
-          expectedAnswer: vine.string().trim().minLength(1).maxLength(5000),
+          expectedAnswer: vine.string().trim().minLength(1).maxLength(20000),
           marks: vine.number().min(1),
         })
       )
