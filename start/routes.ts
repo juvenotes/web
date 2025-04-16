@@ -49,6 +49,8 @@ const PaymentsController = () => import('#controllers/payments_controller')
 const SessionsController = () => import('#controllers/session_controller')
 const UserProgressController = () => import('#controllers/user_progress_controller')
 const StudyTimeController = () => import('#controllers/study_time_controller/study_time_controller')
+const ManageConceptSectionController = () =>
+  import('#controllers/manage/concepts/manage_concept_section_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -180,6 +182,29 @@ router
     router.delete('/:slug', [ManageConceptsController, 'destroy'])
   })
   .prefix('/manage/concepts')
+  .use(middleware.auth())
+
+router
+  .group(() => {
+    // Get sections for a concept
+    router.get('/concepts/:conceptSlug/:sectionSlug([^/]+(?:#[a-z]+)?)', [
+      ManageConceptSectionController,
+      'index',
+    ])
+
+    // Create a new section
+    router.post('/concepts/sections', [ManageConceptSectionController, 'store'])
+
+    // Get single section
+    router.get('/concepts/sections/:id', [ManageConceptSectionController, 'show'])
+
+    // Update a section
+    router.put('/concepts/sections/:id', [ManageConceptSectionController, 'update'])
+
+    // Delete a section (with optional query param ?deleteChildren=true)
+    router.delete('/concepts/sections/:id', [ManageConceptSectionController, 'destroy'])
+  })
+  .prefix('/manage')
   .use(middleware.auth())
 
 //* AUTH -> GOOGLE

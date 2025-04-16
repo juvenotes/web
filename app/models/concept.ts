@@ -5,6 +5,8 @@ import Question from './question.js'
 import User from './user.js'
 import PastPaper from './past_paper.js'
 import { TrainingLevel } from '#enums/training_level'
+import ConceptSection from './concept_section.js'
+import ConceptCitation from './concept_citation.js'
 // import { Searchable } from '@foadonis/magnify'
 // import { compose } from '@adonisjs/core/helpers'
 
@@ -74,6 +76,12 @@ export default class Concept extends BaseModel {
 
   @hasMany(() => PastPaper)
   declare pastPapers: HasMany<typeof PastPaper>
+
+  @hasMany(() => ConceptSection)
+  declare sections: HasMany<typeof ConceptSection>
+
+  @hasMany(() => ConceptCitation)
+  declare citations: HasMany<typeof ConceptCitation>
 
   @computed()
   public get hasChildren(): boolean {

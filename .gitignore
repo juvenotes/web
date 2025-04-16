@@ -34,3 +34,6 @@ yarn-error.log
 
 # tiptap
 .npmrc
+
+# ip2location bin files
+public/ip2location
