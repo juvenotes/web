@@ -4,7 +4,7 @@ import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import type UserStudySessionDto from '#dtos/user_study_session'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Clock, Settings, ArrowRight, CheckCircle, Info, BookOpen } from 'lucide-vue-next'
+import { FileText, Clock, Settings, ArrowRight, CheckCircle, BookOpen } from 'lucide-vue-next'
 import { computed, ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -314,7 +314,7 @@ const continueFromLastQuestion = () => {
                       <span>{{ showAnswers[station.id] ? 'Hide Answer' : 'Show Answer' }}</span>
                     </button>
 
-                    <!-- Expected Answer Section -->
+                    <!-- Expected Answer Section - MODIFIED HERE TO REMOVE INFO ICON -->
                     <div v-if="showAnswers[station.id]" class="mt-4 sm:mt-5 animate-fadeIn">
                       <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full">
                         <div class="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"></div>
@@ -333,16 +333,10 @@ const continueFromLastQuestion = () => {
                           </div>
                         </div>
 
-                        <div class="p-3 sm:p-4 md:p-6 bg-white">
-                          <div class="flex gap-2 sm:gap-3 items-start">
-                            <div class="shrink-0 pt-1">
-                              <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#55A9C4]/10 flex items-center justify-center">
-                                <Info class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#55A9C4]" />
-                              </div>
-                            </div>
-                            <div class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
-                              <ViewExplanation :content="station.expectedAnswer" />
-                            </div>
+                        <div class="p-3 sm:p-4 md:p-5 bg-white">
+                          <!-- Removed the info icon and its container div -->
+                          <div class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                            <ViewExplanation :content="station.expectedAnswer" />
                           </div>
                         </div>
                       </div>
@@ -424,54 +418,14 @@ const continueFromLastQuestion = () => {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .explanation-content {
-  :deep(ol) {
-    list-style-type: decimal;
-    margin-left: 1rem;
-    margin-top: 0.5rem;
-
-    @media (min-width: 640px) {
-      margin-left: 1.25rem;
-      margin-top: 0.75rem;
-    }
-  }
-
-  :deep(ul) {
-    list-style-type: disc;
-    margin-left: 1rem;
-    margin-top: 0.5rem;
-
-    @media (min-width: 640px) {
-      margin-left: 1.25rem;
-      margin-top: 0.75rem;
-    }
-  }
-
-  :deep(li) {
-    margin-bottom: 0.35rem;
-    line-height: 1.4;
-    
-    @media (min-width: 640px) {
-      margin-bottom: 0.5rem;
-      line-height: 1.5;
-    }
-  }
-
-  :deep(hr) {
-    margin: 0.75rem 0;
-    border-top: 1px dashed #a8d3e7;
-
-    @media (min-width: 640px) {
-      margin: 1rem 0;
-    }
-  }
-
   position: relative;
-  max-height: 250px;
+  max-height: 300px; /* Increased from 250px */
   overflow-y: auto;
   padding-right: 3px;
+  padding-left: 0; /* Added to remove any left padding */
 
   &::-webkit-scrollbar {
-    width: 4px;
+    width: 3px; /* Reduced from 4px */
   }
 
   &::-webkit-scrollbar-track {
@@ -489,16 +443,57 @@ const continueFromLastQuestion = () => {
   }
 
   @media (min-width: 640px) {
-    max-height: 300px;
-    padding-right: 5px;
+    max-height: 350px; /* Increased from 300px */
+    padding-right: 4px; /* Reduced from 5px */
     
     &::-webkit-scrollbar {
-      width: 6px;
+      width: 4px; /* Reduced from 6px */
     }
   }
 
   @media (min-width: 1024px) {
-    max-height: 400px;
+    max-height: 450px; /* Increased from 400px */
+  }
+
+  :deep(ol) {
+    list-style-type: decimal;
+    margin-left: 0.75rem; /* Reduced from 1rem */
+    margin-top: 0.4rem; /* Reduced from 0.5rem */
+
+    @media (min-width: 640px) {
+      margin-left: 1rem; /* Reduced from 1.25rem */
+      margin-top: 0.6rem; /* Reduced from 0.75rem */
+    }
+  }
+
+  :deep(ul) {
+    list-style-type: disc;
+    margin-left: 0.75rem; /* Reduced from 1rem */
+    margin-top: 0.4rem; /* Reduced from 0.5rem */
+
+    @media (min-width: 640px) {
+      margin-left: 1rem; /* Reduced from 1.25rem */
+      margin-top: 0.6rem; /* Reduced from 0.75rem */
+    }
+  }
+
+  :deep(li) {
+    margin-bottom: 0.25rem; /* Reduced from 0.35rem */
+    line-height: 1.35; /* Slightly reduced from 1.4 */
+    
+    @media (min-width: 640px) {
+      margin-bottom: 0.4rem; /* Reduced from 0.5rem */
+      line-height: 1.45; /* Slightly reduced from 1.5 */
+    }
+  }
+
+  :deep(hr) {
+    margin: 0.6rem 0; /* Reduced from 0.75rem */
+    border-top: 1px dashed #a8d3e7;
+
+    @media (min-width: 640px) {
+      margin: 0.8rem 0; /* Reduced from 1rem */
+    }
   }
 
   :deep(iframe) {
