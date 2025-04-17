@@ -14,7 +14,6 @@ import {
   MessageSquare,
   ChevronDown,
   BookOpen,
-  Info,
   Users,
   ArrowRight,
 } from 'lucide-vue-next'
@@ -411,16 +410,9 @@ const getLastEditDate = computed(() => {
                 </div>
 
                 <div class="p-4 sm:p-6 md:p-8 bg-white">
-                  <div class="flex gap-3 items-start">
-                    <div class="shrink-0 pt-1">
-                      <div class="w-5 h-5 rounded-full bg-[#55A9C4]/10 flex items-center justify-center">
-                        <Info class="h-3 w-3 text-[#55A9C4]" />
-                      </div>
-                    </div>
-                    <div
-                      class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
-                      <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
-                    </div>
+                  <div
+                    class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full pt-2">
+                    <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
                   </div>
                 </div>
               </div>
@@ -437,81 +429,80 @@ const getLastEditDate = computed(() => {
             </div>
           </div>
 
-          <div v-if="question.isSaq" class="mt-5 sm:mt-7 space-y-5 sm:space-y-7">
-            <!-- Modified the width here to use full width and proper padding for small screens -->
+          <!-- Optimized SAQ section -->
+          <div v-if="question.isSaq" class="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
             <div
               class="bg-gradient-to-r from-[#55A9C4]/5 to-[#55A9C4]/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full">
               <div
-                class="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 bg-[#55A9C4]/15 border-b border-[#55A9C4]/10">
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <BookOpen class="h-4 w-4 sm:h-5 sm:w-5 text-[#55A9C4]" />
-                  <span class="text-sm sm:text-base font-medium text-[#55A9C4]">Short Answer Questions</span>
+                class="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 bg-[#55A9C4]/15 border-b border-[#55A9C4]/10">
+                <div class="flex items-center gap-2">
+                  <BookOpen class="h-4 w-4 text-[#55A9C4]" />
+                  <span class="text-sm font-medium text-[#55A9C4]">Short Answer Questions</span>
                 </div>
                 <div
-                  class="text-xs sm:text-sm bg-white/70 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[#55A9C4]/80 font-medium shadow-sm">
+                  class="text-xs bg-white/70 backdrop-blur-sm px-2 py-1 rounded-full text-[#55A9C4]/80 font-medium shadow-sm">
                   {{ question.parts.length }} part{{ question.parts.length > 1 ? 's' : '' }}
                 </div>
               </div>
 
               <div class="divide-y divide-[#55A9C4]/10">
                 <div v-for="(part, partIndex) in question.parts" :key="part.id"
-                  class="px-3 sm:px-6 md:px-8 py-3 sm:py-5 md:py-6 bg-white/80 hover:bg-white/100 transition-all duration-300 w-full">
-                  <div class="flex items-center justify-between mb-2 sm:mb-4">
-                    <div class="flex items-baseline gap-2 sm:gap-3">
+                  class="px-3 sm:px-5 py-3 sm:py-4 bg-white/80 hover:bg-white/100 transition-all duration-300 w-full">
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-baseline gap-2">
                       <span
-                        class="inline-flex items-center justify-center h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm">
+                        class="inline-flex items-center justify-center h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm">
                         {{ partIndex + 1 }}
                       </span>
-                      <span
-                        class="text-xs sm:text-sm text-[#55A9C4]/80 font-medium px-2 py-0.5 bg-[#55A9C4]/5 rounded-md">
+                      <span class="text-xs text-[#55A9C4]/80 font-medium px-2 py-0.5 bg-[#55A9C4]/5 rounded-md">
                         {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }}
                       </span>
                     </div>
                   </div>
 
                   <div>
-                    <p class="text-sm sm:text-base text-gray-900 break-words mb-3 sm:mb-5 leading-relaxed">
+                    <p class="text-sm text-gray-900 break-words mb-3 leading-relaxed">
                       {{ part.partText }}
                     </p>
                   </div>
 
                   <button v-if="!showAnswer[part.id]" @click="handleSaqPartView(question.id, part.id)"
-                    class="group w-full flex items-center justify-center gap-2 mt-2 sm:mt-4 text-[#55A9C4] font-semibold text-xs sm:text-sm rounded-lg p-2 sm:p-3 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 hover:from-[#55A9C4]/25 hover:to-[#55A9C4]/15 border border-[#55A9C4]/20 transition-all duration-300 shadow-sm hover:shadow">
+                    class="group w-full flex items-center justify-center gap-2 mt-2 text-[#55A9C4] font-semibold text-xs rounded-lg p-2 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 hover:from-[#55A9C4]/25 hover:to-[#55A9C4]/15 border border-[#55A9C4]/20 transition-all duration-300 shadow-sm hover:shadow">
                     <ChevronDown class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300" />
                     <span>Show Answer</span>
                   </button>
 
-                  <div v-if="showAnswer[part.id]" class="mt-4 sm:mt-6 animate-fadeIn">
+                  <div v-if="showAnswer[part.id]" class="mt-3 sm:mt-4 animate-fadeIn">
                     <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full">
-                      <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500">
+                      <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#55A9C4] to-blue-500">
                       </div>
 
-                      <div
-                        class="p-3 sm:p-5 md:p-6 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100">
-                        <div class="flex items-center gap-2 sm:gap-3">
+                      <div class="p-2 sm:p-3 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100">
+                        <div class="flex items-center gap-2">
                           <div
-                            class="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]">
-                            <CheckCircle class="h-4 w-4 sm:h-5 sm:w-5" />
+                            class="flex items-center justify-center w-6 h-6 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]">
+                            <CheckCircle class="h-4 w-4" />
                           </div>
                           <div>
-                            <p class="text-xs sm:text-sm text-gray-500 font-medium">Expected Answer</p>
-                            <p class="text-xs sm:text-sm text-[#55A9C4]/80 font-medium">
+                            <p class="text-xs text-gray-500 font-medium">Expected Answer</p>
+                            <p class="text-xs text-[#55A9C4]/80 font-medium">
                               {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }} available
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div class="p-3 sm:p-6 md:p-8 bg-white w-full">
+                      <div class="p-3 sm:p-4 bg-white w-full">
+                        <!-- Here we've removed the flex container and directly display the content -->
                         <div
-                          class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                          class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
                           <ViewExplanation :content="part.expectedAnswer" />
                         </div>
                       </div>
                     </div>
 
                     <Button variant="ghost"
-                      class="mt-3 sm:mt-5 flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-300 text-xs sm:text-sm w-full justify-center sm:justify-start group"
+                      class="mt-2 sm:mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-300 text-xs w-full justify-center sm:justify-start group"
                       @click="openFeedbackDialog(question)">
                       <MessageSquare class="h-4 w-4 text-gray-600 group-hover:scale-110 transition-all duration-300" />
                       <span class="font-medium">Provide Feedback</span>
@@ -657,6 +648,7 @@ const getLastEditDate = computed(() => {
       width: 85%;
       max-height: 350px;
     }
+
     transition: all 0.3s ease;
   }
 
@@ -700,6 +692,7 @@ const getLastEditDate = computed(() => {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

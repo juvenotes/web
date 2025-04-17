@@ -11,7 +11,6 @@ import {
   MessageSquare,
   ChevronDown,
   ArrowRight,
-  Info,
   BookOpen,
 } from 'lucide-vue-next'
 import { computed, ref, reactive, onMounted } from 'vue'
@@ -367,16 +366,10 @@ const continueFromLastQuestion = () => {
                           </div>
                         </div>
 
+                        <!-- MODIFIED: Removed info icon and its wrapper div -->
                         <div class="p-3 sm:p-4 md:p-5 bg-white">
-                          <div class="flex gap-2 items-start">
-                            <div class="shrink-0 pt-1">
-                              <div class="w-4 h-4 rounded-full bg-[#55A9C4]/10 flex items-center justify-center">
-                                <Info class="h-2.5 w-2.5 text-[#55A9C4]" />
-                              </div>
-                            </div>
-                            <div class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
-                              <ViewExplanation :content="part.expectedAnswer" />
-                            </div>
+                          <div class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                            <ViewExplanation :content="part.expectedAnswer" />
                           </div>
                         </div>
                       </div>
@@ -470,6 +463,39 @@ const continueFromLastQuestion = () => {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .explanation-content {
+  position: relative;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px; /* Slightly increased padding */
+  width: 100%; /* Ensure full width */
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  @media (min-width: 640px) {
+    max-height: 300px;
+  }
+
+  @media (min-width: 1024px) {
+    max-height: 400px;
+    padding-right: 8px; /* More padding on larger screens */
+  }
+
   :deep(ol) {
     list-style-type: decimal;
     margin-left: 1rem;
@@ -504,37 +530,6 @@ const continueFromLastQuestion = () => {
     @media (min-width: 640px) {
       margin: 1rem 0;
     }
-  }
-
-  position: relative;
-  max-height: 250px;
-  overflow-y: auto;
-  padding-right: 3px;
-
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-  }
-
-  @media (min-width: 640px) {
-    max-height: 300px;
-  }
-
-  @media (min-width: 1024px) {
-    max-height: 400px;
   }
 
   :deep(iframe) {
