@@ -4,7 +4,6 @@ import Institution from '#models/institution'
 import Course from '#models/course'
 import EducationLevel from '#models/education_level'
 import InstitutionDto from '#dtos/institution'
-import CourseDto from '#dtos/course'
 import EducationLevelDto from '#dtos/education_level'
 import {
   createInstitutionValidator,
