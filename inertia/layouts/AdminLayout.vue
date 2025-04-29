@@ -4,7 +4,7 @@ import AdminSearch from '~/components/AdminSearch.vue'
 import {
   LayoutDashboard,
   BookOpen,
-  // School,
+  School,
   FileText,
   Users,
   // Settings,
@@ -13,6 +13,7 @@ import {
   Pin,
   X,
   Calendar,
+  GraduationCap,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type UserDto from '#dtos/user'
@@ -32,8 +33,8 @@ const menuItems = [
   { name: 'Spot', href: '/manage/spot', icon: Pin },
   { name: 'Today', href: '/manage/today', icon: Calendar },
   { name: 'Users', href: '/manage/users', icon: Users },
-  // { name: 'Institutions', href: '/manage/institutions', icon: School },
-  // { name: 'Settings', href: '/manage/settings', icon: Settings },
+  { name: 'Institutions', href: '/manage/institutions', icon: School },
+  { name: 'Courses', href: '/manage/courses', icon: GraduationCap },
 ]
 </script>
 

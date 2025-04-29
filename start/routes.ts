@@ -21,6 +21,8 @@ const EmailVerificationsController = () => import('#controllers/auth/email_verif
 const ForgotPasswordController = () => import('#controllers/auth/forgot_password_controller')
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
+const InstitutionsController = () => import('#controllers/manage/institutions_controller')
+const CoursesController = () => import('#controllers/manage/courses_controller')
 const IndexConceptsController = () => import('#controllers/concepts/index_concepts_controller')
 const ManageConceptsController = () =>
   import('#controllers/manage/concepts/manage_concepts_controller')
@@ -314,18 +316,30 @@ router
   })
   .use(middleware.auth())
 
-// //* MANAGE INSTITUTIONS
-// router
-//   .group(() => {
-//     router.get('/', [ManageInstitutionsController, 'index'])
-//     router.get('/:id', [ManageInstitutionsController, 'show'])
-//     router.post('/', [ManageInstitutionsController, 'store'])
-//     router.put('/:id', [ManageInstitutionsController, 'update'])
-//     router.put('/:id/courses', [ManageInstitutionsController, 'updateCourses'])
-//     router.delete('/:id', [ManageInstitutionsController, 'destroy'])
-//   })
-//   .prefix('/manage/institutions')
-//   .use(middleware.auth())
+//* MANAGE INSTITUTIONS
+router
+  .group(() => {
+    router.get('/', [InstitutionsController, 'index'])
+    router.get('/:id', [InstitutionsController, 'show'])
+    router.post('/', [InstitutionsController, 'store'])
+    router.put('/:id', [InstitutionsController, 'update'])
+    router.put('/:id/courses', [InstitutionsController, 'updateCourses'])
+    router.delete('/:id', [InstitutionsController, 'destroy'])
+  })
+  .prefix('/manage/institutions')
+  .use(middleware.auth())
+
+//* MANAGE COURSES
+router
+  .group(() => {
+    router.get('/', [CoursesController, 'index'])
+    router.get('/:id', [CoursesController, 'show'])
+    router.post('/', [CoursesController, 'store'])
+    router.put('/:id', [CoursesController, 'update'])
+    router.delete('/:id', [CoursesController, 'destroy'])
+  })
+  .prefix('/manage/courses')
+  .use(middleware.auth())
 
 //* OSCE: VIEW
 router

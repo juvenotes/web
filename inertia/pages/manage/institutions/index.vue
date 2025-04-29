@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import type InstitutionDto from '#dtos/institution'
-import { InstitutionType, InstitutionTypeLabels } from '#enums/institution_type'
-import { Loader2Icon } from 'lucide-vue-next'
+import { School, Plus, GraduationCap, Pencil, Trash2 } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -12,106 +11,99 @@ interface Props {
   institutions: InstitutionDto[]
 }
 
-const institutionTypes = computed(() =>
-  Object.entries(InstitutionType).map(([, value]) => ({
-    label: InstitutionTypeLabels[value],
-    value: value,
-  }))
-)
-
-const props = defineProps<Props>()
+defineProps<Props>()
 const isOpen = ref(false)
+const isDeleteDialogOpen = ref(false)
+const institutionToDelete = ref<InstitutionDto | null>(null)
 
-const institutionsByType = computed(() => {
-  return props.institutions.reduce(
-    (acc, institution) => {
-      const type = institution.institutionType || 'other'
-      if (!acc[type]) acc[type] = []
-      acc[type].push(institution)
-      return acc
-    },
-    {} as Record<string, InstitutionDto[]>
-  )
-})
-
-const formatType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
-}
-
+// Form for creating a new institution
 const form = useForm({
   name: '',
-  institutionType: '',
-  branch: '',
+  description: '',
 })
 
+// Delete form
+const deleteForm = useForm({})
+
+// Form submission handler
 const onSubmit = () => {
   form.post('/manage/institutions', {
     onSuccess: () => {
-      isOpen.value = false
       form.reset()
+      isOpen.value = false
     },
-    onError: (errors) => {
-      console.error('Form submission failed:', errors)
+  })
+}
+
+// Delete confirmation handler
+const confirmDelete = (institution: InstitutionDto) => {
+  institutionToDelete.value = institution
+  isDeleteDialogOpen.value = true
+}
+
+// Delete handler
+const onDelete = () => {
+  if (!institutionToDelete.value) return
+
+  deleteForm.delete(`/manage/institutions/${institutionToDelete.value.id}`, {
+    onSuccess: () => {
+      isDeleteDialogOpen.value = false
+      institutionToDelete.value = null
     },
   })
 }
 </script>
 
 <template>
-  <AppHead title="All available institutions" description="Institutions" />
-  <div class="container py-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Institutions</h1>
+  <AppHead title="Institution Management" description="Manage educational institutions" />
 
+  <div class="space-y-6">
+    <!-- Header section -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Institution Management</h1>
+        <p class="text-muted-foreground">
+          Manage educational institutions and their associated courses.
+        </p>
+      </div>
+
+      <!-- Create Institution Sheet -->
       <Sheet v-model:open="isOpen">
         <SheetTrigger asChild>
-          <Button>Add Institution</Button>
+          <Button class="gap-2">
+            <Plus class="h-4 w-4" />
+            Add Institution
+          </Button>
         </SheetTrigger>
-
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>Add New Institution</SheetTitle>
-            <SheetDescription>
-              Create a new institution to manage courses and programs.
-            </SheetDescription>
+            <SheetTitle>Create New Institution</SheetTitle>
+            <SheetDescription> Add a new educational institution to the system. </SheetDescription>
           </SheetHeader>
 
-          <form @submit.prevent="onSubmit" class="space-y-4 mt-4">
+          <form @submit.prevent="onSubmit" class="space-y-6 mt-6">
             <div class="space-y-2">
-              <label>Name</label>
-              <Input v-model="form.name" type="text" required />
+              <Label for="name">Institution Name</Label>
+              <Input
+                id="name"
+                v-model="form.name"
+                placeholder="e.g., Oxford University"
+                :error="form.errors.name"
+              />
+              <p v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</p>
             </div>
 
             <div class="space-y-2">
-              <label>Type</label>
-              <Select v-model="form.institutionType">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem
-                    v-for="type in institutionTypes"
-                    :key="type.value"
-                    :value="type.value"
-                  >
-                    {{ type.label }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div class="space-y-2">
-              <label>Branch (Optional)</label>
-              <Input v-model="form.branch" type="text" />
+              <Label for="description">Description (Optional)</Label>
+              <Textarea
+                id="description"
+                v-model="form.description"
+                placeholder="Brief description of the institution"
+              />
             </div>
 
             <SheetFooter>
-              <Button
-                type="submit"
-                :disabled="form.processing || !form.name || !form.institutionType"
-                class="gap-2"
-              >
-                <Loader2Icon v-if="form.processing" class="h-4 w-4 animate-spin" />
+              <Button type="submit" :disabled="form.processing">
                 {{ form.processing ? 'Creating...' : 'Create Institution' }}
               </Button>
             </SheetFooter>
@@ -120,66 +112,75 @@ const onSubmit = () => {
       </Sheet>
     </div>
 
-    <!-- Institutions List -->
-    <div v-for="(institutions, type) in institutionsByType" :key="type" class="mb-8">
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">{{ formatType(type) }}</h2>
+    <!-- Institutions Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <Card v-for="institution in institutions" :key="institution.id" class="overflow-hidden">
+        <CardHeader>
+          <CardTitle>{{ institution.name }}</CardTitle>
+        </CardHeader>
 
-      <div class="bg-white rounded-lg shadow overflow-x-auto">
-        <table class="w-full border-collapse min-w-[640px]">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600"
-              >
-                Name
-              </th>
-              <th
-                class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600"
-              >
-                Branch
-              </th>
-              <th
-                class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600"
-              >
-                Courses
-              </th>
-              <th
-                class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600"
-              >
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <tr
-              v-for="institution in institutions"
-              :key="institution.id"
-              class="hover:bg-gray-50 cursor-pointer"
-              @click="() => $inertia.visit(`/manage/institutions/${institution.id}`)"
+        <CardContent>
+          <div class="flex items-center gap-2">
+            <GraduationCap class="h-4 w-4 text-muted-foreground" />
+            <span class="text-sm text-muted-foreground">
+              {{ institution.courses.length }} courses
+            </span>
+          </div>
+        </CardContent>
+
+        <CardFooter class="flex justify-between border-t pt-4">
+          <Button variant="outline" asChild>
+            <Link :href="`/manage/institutions/${institution.id}`"> View Details </Link>
+          </Button>
+          <div class="flex space-x-2">
+            <Button variant="outline" size="icon" asChild>
+              <Link :href="`/manage/institutions/${institution.id}`">
+                <Pencil class="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              class="text-destructive hover:bg-destructive/10"
+              @click="confirmDelete(institution)"
             >
-              <td class="px-4 sm:px-6 py-4 text-sm">
-                <div class="font-medium text-primary">{{ institution.name }}</div>
-              </td>
-              <td class="px-4 sm:px-6 py-4 text-sm">
-                {{ institution.branch || '-' }}
-              </td>
-              <td class="px-4 sm:px-6 py-4 text-sm">
-                {{ institution.courses?.length ?? 0 }} courses
-              </td>
-              <td class="px-4 sm:px-6 py-4 text-sm">
-                <span
-                  class="px-2 py-1 rounded-full text-xs font-medium"
-                  :class="
-                    institution.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                  "
-                >
-                  {{ institution.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              <Trash2 class="h-4 w-4" />
+            </Button>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
+
+    <!-- Empty state -->
+    <div v-if="institutions.length === 0" class="text-center py-12">
+      <div class="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+        <School class="h-10 w-10 text-muted-foreground" />
+      </div>
+      <h3 class="text-lg font-medium">No institutions yet</h3>
+      <p class="text-muted-foreground mt-2 mb-4">Create your first institution to get started.</p>
+      <Button @click="isOpen = true">
+        <Plus class="mr-2 h-4 w-4" />
+        Add Your First Institution
+      </Button>
+    </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <Dialog v-model:open="isDeleteDialogOpen">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete Institution</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete "{{ institutionToDelete?.name }}"? This action cannot be
+            undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" @click="isDeleteDialogOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="onDelete" :disabled="deleteForm.processing">
+            {{ deleteForm.processing ? 'Deleting...' : 'Delete' }}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

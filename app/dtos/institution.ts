@@ -17,6 +17,6 @@ export default class InstitutionDto extends BaseModelDto {
     this.name = institution.name
     this.createdAt = institution.createdAt.toISO()!
     this.updatedAt = institution.updatedAt.toISO()!
-    this.courses = CourseDto.fromArray(institution.courses)
+    this.courses = CourseDto.fromArray(institution.courses || [])
   }
 }
