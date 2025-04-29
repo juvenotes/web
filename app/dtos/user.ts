@@ -7,7 +7,6 @@ import PasswordResetTokenDto from '#dtos/password_reset_token'
 import ConceptDto from '#dtos/concept'
 import QuestionDto from '#dtos/question'
 import PastPaperDto from '#dtos/past_paper'
-import UserEducationEntryDto from '#dtos/user_education_entry'
 
 export default class UserDto extends BaseModelDto {
   declare id: number
@@ -32,7 +31,6 @@ export default class UserDto extends BaseModelDto {
   declare concepts: ConceptDto[]
   declare questions: QuestionDto[]
   declare pastPapers: PastPaperDto[]
-  declare userEducationEntries: UserEducationEntryDto[]
 
   constructor(user?: User) {
     super()
@@ -60,6 +58,5 @@ export default class UserDto extends BaseModelDto {
     this.concepts = ConceptDto.fromArray(user.concepts)
     this.questions = QuestionDto.fromArray(user.questions)
     this.pastPapers = PastPaperDto.fromArray(user.pastPapers)
-    this.userEducationEntries = UserEducationEntryDto.fromArray(user.userEducationEntries)
   }
 }

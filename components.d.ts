@@ -120,7 +120,6 @@ declare module 'vue' {
     ScrollBar: typeof import('./inertia/components/ui/scroll-area/ScrollBar.vue')['default']
     Search: typeof import('./inertia/components/Search.vue')['default']
     SectionItem: typeof import('./inertia/components/SectionItem.vue')['default']
-    SectionItemDialog: typeof import('./inertia/components/SectionItem.vue')['default']
     SectionManagerDialog: typeof import('./inertia/components/dialogs/SectionManagerDialog.vue')['default']
     Select: typeof import('./inertia/components/ui/select/Select.vue')['default']
     SelectContent: typeof import('./inertia/components/ui/select/SelectContent.vue')['default']
