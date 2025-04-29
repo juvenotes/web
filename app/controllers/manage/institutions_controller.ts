@@ -54,31 +54,40 @@ export default class InstitutionsController {
       .firstOrFail()
 
     // Get all available courses for assignment to this institution
-    const allCourses = await Course.query()
-      .preload('educationLevel')
-      .orderBy('name')
+    const allCourses = await Course.query().preload('educationLevel').orderBy('name')
 
     // Get all education levels
     const educationLevels = await EducationLevel.query().orderBy('id')
 
     // Organize courses by education level
     const coursesByLevel: Record<number, { levelName: string; courses: any[] }> = {}
-    
+
     // First, build the structure with empty courses arrays for each level
-    educationLevels.forEach(level => {
+    educationLevels.forEach((level) => {
       coursesByLevel[level.id] = {
         levelName: level.name,
         courses: [],
       }
     })
-    
+
     // Then populate with courses from the institution
-    institution.courses.forEach(course => {
+    institution.courses.forEach((course) => {
       const levelId = course.educationLevelId
       if (levelId && coursesByLevel[levelId]) {
-        coursesByLevel[levelId].courses.push(course)
+        coursesByLevel[levelId].courses.push({
+          id: course.id,
+          name: course.name,
+          educationLevelId: levelId,
+        })
       }
     })
+
+    // Format available courses to match the component's expected structure
+    const availableCourses = allCourses.map((course) => ({
+      id: course.id,
+      name: course.name,
+      educationLevelId: course.educationLevelId,
+    }))
 
     logger.info({
       ...context,
@@ -92,7 +101,7 @@ export default class InstitutionsController {
       institution: new InstitutionDto(institution),
       coursesByLevel,
       educationLevels: EducationLevelDto.fromArray(educationLevels),
-      availableCourses: CourseDto.fromArray(allCourses),
+      availableCourses,
     })
   }
 

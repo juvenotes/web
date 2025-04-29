@@ -11,7 +11,7 @@ defineOptions({ layout: AdminLayout })
 interface Course {
   id: number
   name: string
-  educationLevels: Array<{ id: number; name: string }>
+  educationLevelId: number
 }
 
 interface CourseLevel {
@@ -73,9 +73,9 @@ const onDelete = () => {
   })
 }
 
-// Helper to check if a course is available for a specific education level
+// Helper to check if a course matches a specific education level
 const isCourseAvailableForLevel = (course: Course, levelId: number) => {
-  return course.educationLevels.some((level) => level.id === levelId)
+  return course.educationLevelId === levelId // Changed to directly compare educationLevelId
 }
 
 // Helper to get courses filtered by education level
