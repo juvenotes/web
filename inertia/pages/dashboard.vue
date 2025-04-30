@@ -26,6 +26,7 @@ defineOptions({ layout: DashLayout })
 
 <template>
   <AppHead title="Your dashboard" description="All available concepts in Juvenotes" />
+  <OnboardingTour :user="user" />
   <div class="dashboard-content max-w-7xl mx-auto space-y-10 px-4 sm:px-6 py-6">
     <!-- Hero Welcome Section -->
     <div
@@ -86,6 +87,7 @@ defineOptions({ layout: DashLayout })
     <div class="grid md:grid-cols-2 gap-8 p-6">
       <!-- Past Papers Card -->
       <div
+        data-tour="papers"
         @click="$inertia.visit('/papers')"
         class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
@@ -116,6 +118,7 @@ defineOptions({ layout: DashLayout })
 
       <!-- Concepts Card -->
       <div
+        data-tour="concepts"
         @click="$inertia.visit('/concepts')"
         class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
@@ -146,6 +149,7 @@ defineOptions({ layout: DashLayout })
 
       <!-- OSCE Card -->
       <div
+        data-tour="osce"
         @click="$inertia.visit('/osce')"
         class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
@@ -176,6 +180,7 @@ defineOptions({ layout: DashLayout })
 
       <!-- Spot Card -->
       <div
+        data-tour="spot"
         @click="$inertia.visit('/spot')"
         class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >

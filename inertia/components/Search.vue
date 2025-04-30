@@ -40,7 +40,7 @@ watch(query, () => {
 </script>
 
 <template>
-  <div class="relative w-full">
+  <div class="relative w-full" data-tour="search">
     <!-- Search Input -->
     <div class="relative">
       <Input

@@ -11,7 +11,7 @@ import PasswordResetToken from './password_reset_token.js'
 import Concept from './concept.js'
 import Question from './question.js'
 import PastPaper from './past_paper.js'
-import UserEducationEntry from './user_education_entry.js'
+
 import { CountryCode } from '#enums/countries'
 import EmailVerification from './email_verification.js'
 import SessionLog from './session_log.js'
@@ -102,9 +102,6 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasMany(() => PastPaper)
   declare pastPapers: HasMany<typeof PastPaper>
-
-  @hasMany(() => UserEducationEntry)
-  declare userEducationEntries: HasMany<typeof UserEducationEntry>
 
   @hasMany(() => SessionLog)
   declare sessions: HasMany<typeof SessionLog>

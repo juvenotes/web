@@ -3,7 +3,7 @@ import { SESSION_KEYS } from '#constants/session'
 import { loginValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
-// import { returnToKey } from '#middleware/auth_middleware'
+import UserEnrollment from '#models/user_enrollment'
 
 export default class LoginController {
   @inject()
@@ -14,22 +14,48 @@ export default class LoginController {
   }
 
   @inject()
-  async store({ request, response, session, logger }: HttpContext, webLogin: WebLogin) {
+  async store({ request, response, session, logger, auth }: HttpContext, webLogin: WebLogin) {
     const requestId = crypto.randomUUID()
     try {
       const data = await request.validateUsing(loginValidator)
       await webLogin.handle({ data })
 
-      logger.info(
-        {
-          requestId,
-          action: 'login.session',
-          sessionData: session.all(),
-        },
-        'Session state before redirect'
-      )
+      // Store intended destination URL in session
+      const returnTo = session.get(SESSION_KEYS.RETURN_TO, '/learn')
 
-      const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
+      // Check if the user has completed onboarding
+      if (auth.user) {
+        try {
+          const hasEnrollment = await UserEnrollment.query().where('userId', auth.user.id).first()
+
+          // If user has no enrollment data, redirect to onboarding as a required step
+          // Keep the original return URL in session for after onboarding
+          if (!hasEnrollment) {
+            logger.info(
+              {
+                requestId,
+                action: 'login.redirect.onboarding',
+                userId: auth.user.id,
+                returnTo,
+              },
+              'Redirecting to required onboarding'
+            )
+            return response.redirect().toPath('/onboarding')
+          }
+        } catch (error) {
+          logger.error(
+            {
+              requestId,
+              action: 'login.enrollment-check.error',
+              err: error,
+              userId: auth.user.id,
+            },
+            'Error checking user enrollment status'
+          )
+          // For errors, still redirect to onboarding as a safeguard
+          return response.redirect().toPath('/onboarding')
+        }
+      }
 
       logger.info(
         {
@@ -41,6 +67,9 @@ export default class LoginController {
         'Processing login redirect'
       )
 
+      // Only reach here if user has completed onboarding
+      // Pull the return URL from session and redirect
+      session.pull(SESSION_KEYS.RETURN_TO)
       await session.regenerate()
       session.flash('success', 'Welcome back to Juvenotes')
 
@@ -57,40 +86,4 @@ export default class LoginController {
       throw error
     }
   }
-
-  // @inject()
-  // async store({ request, response, session, logger }: HttpContext, webLogin: WebLogin) {
-  //   const requestId = crypto.randomUUID()
-  //   try {
-  //     logger.info({ requestId, action: 'login.validate' }, 'Validating login credentials')
-  //     const data = await request.validateUsing(loginValidator)
-  //     logger.info(
-  //       { requestId, action: 'login.validate.success', email: data.email },
-  //       'Login validation passed'
-  //     )
-
-  //     logger.info({ requestId, action: 'login.attempt', email: data.email }, 'Attempting login')
-  //     await webLogin.handle({ data })
-  //     logger.info({ requestId, action: 'login.success', email: data.email }, 'Login successful')
-
-  //     // Get stored URL and fall back to /learn
-  //     const returnTo = session.pull(SESSION_KEYS.RETURN_TO)
-  //     console.log('Retrieved return URL:', returnTo)
-  //     session.regenerate()
-
-  //     session.flash('success', 'Welcome back to Juvenotes')
-  //     return response.redirect().toPath(returnTo || '/learn')
-  //   } catch (error) {
-  //     logger.error(
-  //       {
-  //         requestId,
-  //         action: 'login.error',
-  //         err: error,
-  //         email: request.input('email'),
-  //       },
-  //       'Login failed'
-  //     )
-  //     throw error
-  //   }
-  // }
 }
