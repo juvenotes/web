@@ -6,6 +6,7 @@ import { SESSION_KEYS } from '#constants/session'
 import { generateUsername } from '#utils/generate_username'
 import { inject } from '@adonisjs/core'
 import SessionService from '#services/session_service'
+import UserEnrollment from '#models/user_enrollment'
 
 @inject()
 export default class GoogleSignupController {
@@ -14,7 +15,7 @@ export default class GoogleSignupController {
   private async handleLogin(
     existingUser: User,
     googleUser: any,
-    { auth, response, session }: HttpContext
+    { auth, response, session, logger }: HttpContext
   ) {
     if (!existingUser.providerId) {
       existingUser.merge({
@@ -26,13 +27,33 @@ export default class GoogleSignupController {
     }
 
     await auth.use('web').login(existingUser)
-
     await this.sessionService.onSignInSuccess(existingUser, true)
 
-    const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
-    await session.regenerate()
-    session.flash('success', `Welcome back ${existingUser.fullName}!`)
-    return response.redirect().toPath(returnTo)
+    try {
+      // Check if user has completed onboarding
+      const hasEnrollment = await UserEnrollment.query().where('userId', existingUser.id).first()
+
+      // Set return path based on enrollment status
+      const returnTo = hasEnrollment
+        ? session.pull(SESSION_KEYS.RETURN_TO, '/learn')
+        : '/onboarding'
+
+      await session.regenerate()
+      session.flash('success', `Welcome back ${existingUser.fullName}!`)
+      return response.redirect().toPath(returnTo)
+    } catch (error) {
+      logger.error('Error checking enrollment status', {
+        error,
+        userId: existingUser.id,
+        context: 'google_signup.handleLogin',
+      })
+
+      // Fallback to original behavior if error occurs
+      const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
+      await session.regenerate()
+      session.flash('success', `Welcome back ${existingUser.fullName}!`)
+      return response.redirect().toPath(returnTo)
+    }
   }
 
   private async handleRegistration(
@@ -64,10 +85,9 @@ export default class GoogleSignupController {
     })
 
     await auth.use('web').login(newUser)
-
     await this.sessionService.onSignInSuccess(newUser, true)
 
-    const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
+    // For new registrations, always redirect to onboarding
     await session.regenerate()
 
     try {
@@ -77,7 +97,7 @@ export default class GoogleSignupController {
     }
 
     session.flash('success', `Welcome to Juvenotes, ${newUser.fullName}!`)
-    return response.redirect().toPath(returnTo)
+    return response.redirect().toPath('/onboarding')
   }
 
   async redirect({ ally }: HttpContext) {

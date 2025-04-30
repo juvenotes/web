@@ -50,6 +50,7 @@ const UserProgressController = () => import('#controllers/user_progress_controll
 const StudyTimeController = () => import('#controllers/study_time_controller/study_time_controller')
 const ManageConceptSectionController = () =>
   import('#controllers/manage/concepts/manage_concept_section_controller')
+const OnboardingController = () => import('#controllers/onboarding_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -108,20 +109,15 @@ router
   .as('auth.password.update')
   .use([middleware.guest()])
 
-// router
-//   .group(() => {
-//     router.get('/personalize', [PersonalizationController, 'show'])
-//     router.post('/personalize', [PersonalizationController, 'store'])
-//   })
-//   .prefix('/auth')
-//   .use(middleware.auth())
-
 //* TERMS AND PRIVACY
 const TermsController = () => import('#controllers/legal/terms_controller')
 const PrivacyController = () => import('#controllers/legal/privacy_controller')
 
 //* USER DASHBOARD
-router.get('learn', [UserDashboardController, 'handle']).as('learn').use(middleware.auth())
+router
+  .get('learn', [UserDashboardController, 'handle'])
+  .as('learn')
+  .use([middleware.auth(), middleware.onboarding()])
 
 //* SETTINGS -> ACCOUNT
 router
@@ -455,6 +451,19 @@ router
     router.delete('/:conceptSlug/:paperSlug', [ManageSpotController, 'destroy'])
   })
   .prefix('/manage/spot')
+  .use(middleware.auth())
+
+//* ONBOARDING
+router
+  .group(() => {
+    router.get('/', [OnboardingController, 'show']).as('onboarding.show')
+    router.post('/', [OnboardingController, 'store']).as('onboarding.store')
+    router.get('/courses', [OnboardingController, 'getCourses']).as('onboarding.courses')
+    router
+      .get('/institutions', [OnboardingController, 'getInstitutions'])
+      .as('onboarding.institutions')
+  })
+  .prefix('/onboarding')
   .use(middleware.auth())
 
 // Add these routes with your other route definitions

@@ -1,6 +1,6 @@
 import WebRegister from '#actions/auth/http/web_register'
 import SendVerificationEmail from '#actions/auth/registration_emails/send_verification_email'
-import { SESSION_KEYS } from '#constants/session'
+// import { SESSION_KEYS } from '#constants/session'
 import { registerValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -17,11 +17,9 @@ export default class RegisterController {
       const { user } = await webRegister.handle({ data })
 
       try {
-        // Store return URL through verification flow
-        const returnTo = session.get(SESSION_KEYS.RETURN_TO)
-        if (returnTo) {
-          session.put('post_verify_return', returnTo)
-        }
+        // For new users, always redirect to onboarding after verification
+        // regardless of the original return URL
+        session.put('post_verify_return', '/onboarding')
 
         await SendVerificationEmail.handle({ user })
         session.flash('success', 'Please check your email to verify your account')
