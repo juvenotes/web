@@ -1,6 +1,5 @@
 import WebRegister from '#actions/auth/http/web_register'
 import SendVerificationEmail from '#actions/auth/registration_emails/send_verification_email'
-// import { SESSION_KEYS } from '#constants/session'
 import { registerValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
