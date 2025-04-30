@@ -14,6 +14,9 @@ export default class UserEnrollment extends BaseModel {
   @column()
   declare institutionCourseId: number
 
+  @column()
+  declare graduationYear: number | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
