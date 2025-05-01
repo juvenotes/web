@@ -1,12 +1,14 @@
-// import { test } from '@japa/runner'
+import { test } from '@japa/runner'
 
-// test('has docs for browser client', async ({ visit }) => {
-//   const page = await visit('https://japa.dev/docs')
-//   await page.getByRole('link', { name: 'Browser client' }).click()
+test('can visit home page', async ({ visit }) => {
+  const page = await visit('/')
 
-//   /**
-//    * Assertions
-//    */
-//   await page.assertPath('/docs/plugins/browser-client')
-//   await page.assertTextContains('body', 'Browser client')
-// })
+  // Use supported assertions from the documentation
+  // Verify that the page has loaded by checking for body element
+  await page.assertExists('body')
+
+  // Verify we're on the expected path
+  await page.assertPath('/')
+
+  console.log('Home page loaded successfully')
+})
