@@ -1,15 +1,16 @@
 import { BaseModelDto } from '@adocasts.com/dto/base'
 import Course from '#models/course'
-import InstitutionDto from '#dtos/institution'
 import EducationLevelDto from '#dtos/education_level'
+import InstitutionDto from '#dtos/institution'
 
 export default class CourseDto extends BaseModelDto {
   declare id: number
   declare name: string
-  declare institutions: InstitutionDto[]
-  declare educationLevels: EducationLevelDto[]
+  declare educationLevelId: number
   declare createdAt: string
   declare updatedAt: string
+  declare educationLevel: EducationLevelDto | null
+  declare institutions: InstitutionDto[]
 
   constructor(course?: Course) {
     super()
@@ -17,9 +18,10 @@ export default class CourseDto extends BaseModelDto {
     if (!course) return
     this.id = course.id
     this.name = course.name
+    this.educationLevelId = course.educationLevelId
+    this.createdAt = course.createdAt.toISO()!
+    this.updatedAt = course.updatedAt.toISO()!
+    this.educationLevel = course.educationLevel && new EducationLevelDto(course.educationLevel)
     this.institutions = InstitutionDto.fromArray(course.institutions)
-    this.educationLevels = EducationLevelDto.fromArray(course.educationLevels)
-    // this.createdAt = course.createdAt.toISO()!
-    // this.updatedAt = course.updatedAt.toISO()!
   }
 }

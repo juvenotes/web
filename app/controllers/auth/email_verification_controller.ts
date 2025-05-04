@@ -1,6 +1,7 @@
 import SendVerificationEmail from '#actions/auth/registration_emails/send_verification_email'
 import EmailVerification from '#models/email_verification'
 import User from '#models/user'
+import UserEnrollment from '#models/user_enrollment'
 import type { HttpContext } from '@adonisjs/core/http'
 import encryption from '@adonisjs/core/services/encryption'
 import { DateTime } from 'luxon'
@@ -84,8 +85,12 @@ export default class VerificationController {
 
       session.flash('success', 'Email verified successfully!')
 
-      // Get stored return URL from post-verify key
-      const returnTo = session.pull('post_verify_return', '/learn')
+      // Check if user has completed onboarding before redirecting
+      const hasEnrollment = await UserEnrollment.query().where('userId', user.id).first()
+
+      // Redirect to onboarding if user hasn't completed it yet
+      const returnTo = hasEnrollment ? session.pull('post_verify_return', '/learn') : '/onboarding'
+
       await session.regenerate()
 
       return response.redirect().toPath(returnTo)

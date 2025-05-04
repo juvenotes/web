@@ -21,20 +21,19 @@ const EmailVerificationsController = () => import('#controllers/auth/email_verif
 const ForgotPasswordController = () => import('#controllers/auth/forgot_password_controller')
 const ProfileController = () => import('#controllers/settings/profile_controller')
 const AccountController = () => import('#controllers/settings/account_controller')
+const InstitutionsController = () => import('#controllers/manage/institutions_controller')
+const CoursesController = () => import('#controllers/manage/courses_controller')
 const IndexConceptsController = () => import('#controllers/concepts/index_concepts_controller')
 const ManageConceptsController = () =>
   import('#controllers/manage/concepts/manage_concepts_controller')
 const IndexPapersController = () => import('#controllers/papers/index_papers_controller')
 const UserDashboardController = () => import('#controllers/dashboard/learner_dashboard_controller')
-const PersonalizationController = () => import('#controllers/auth/personalization/index_controller')
 const ManagePapersController = () =>
   import('#controllers/manage/past_papers/manage_papers_controller')
 const ManagementDashboardController = () =>
   import('#controllers/manage/dashboard/manage_dashboard_controller')
 const ManageUsersController = () => import('#controllers/manage/users/manage_users_controller')
 const UploadImageController = () => import('#controllers/api/upload_image_controller')
-const ManageInstitutionsController = () =>
-  import('#controllers/manage/institutions/manage_institutions_controller')
 const IndexOsceController = () => import('#controllers/osce/osce_controller')
 const ManageOsceController = () => import('#controllers/manage/osce/manage_osce_controller')
 const CiteController = () => import('#controllers/api/cite_controller')
@@ -51,6 +50,7 @@ const UserProgressController = () => import('#controllers/user_progress_controll
 const StudyTimeController = () => import('#controllers/study_time_controller/study_time_controller')
 const ManageConceptSectionController = () =>
   import('#controllers/manage/concepts/manage_concept_section_controller')
+const OnboardingController = () => import('#controllers/onboarding_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -109,20 +109,15 @@ router
   .as('auth.password.update')
   .use([middleware.guest()])
 
-router
-  .group(() => {
-    router.get('/personalize', [PersonalizationController, 'show'])
-    router.post('/personalize', [PersonalizationController, 'store'])
-  })
-  .prefix('/auth')
-  .use(middleware.auth())
-
 //* TERMS AND PRIVACY
 const TermsController = () => import('#controllers/legal/terms_controller')
 const PrivacyController = () => import('#controllers/legal/privacy_controller')
 
 //* USER DASHBOARD
-router.get('learn', [UserDashboardController, 'handle']).as('learn').use(middleware.auth())
+router
+  .get('learn', [UserDashboardController, 'handle'])
+  .as('learn')
+  .use([middleware.auth(), middleware.onboarding()])
 
 //* SETTINGS -> ACCOUNT
 router
@@ -320,14 +315,26 @@ router
 //* MANAGE INSTITUTIONS
 router
   .group(() => {
-    router.get('/', [ManageInstitutionsController, 'index'])
-    router.get('/:id', [ManageInstitutionsController, 'show'])
-    router.post('/', [ManageInstitutionsController, 'store'])
-    router.put('/:id', [ManageInstitutionsController, 'update'])
-    router.put('/:id/courses', [ManageInstitutionsController, 'updateCourses'])
-    router.delete('/:id', [ManageInstitutionsController, 'destroy'])
+    router.get('/', [InstitutionsController, 'index'])
+    router.get('/:id', [InstitutionsController, 'show'])
+    router.post('/', [InstitutionsController, 'store'])
+    router.put('/:id', [InstitutionsController, 'update'])
+    router.put('/:id/courses', [InstitutionsController, 'updateCourses'])
+    router.delete('/:id', [InstitutionsController, 'destroy'])
   })
   .prefix('/manage/institutions')
+  .use(middleware.auth())
+
+//* MANAGE COURSES
+router
+  .group(() => {
+    router.get('/', [CoursesController, 'index'])
+    router.get('/:id', [CoursesController, 'show'])
+    router.post('/', [CoursesController, 'store'])
+    router.put('/:id', [CoursesController, 'update'])
+    router.delete('/:id', [CoursesController, 'destroy'])
+  })
+  .prefix('/manage/courses')
   .use(middleware.auth())
 
 //* OSCE: VIEW
@@ -444,6 +451,19 @@ router
     router.delete('/:conceptSlug/:paperSlug', [ManageSpotController, 'destroy'])
   })
   .prefix('/manage/spot')
+  .use(middleware.auth())
+
+//* ONBOARDING
+router
+  .group(() => {
+    router.get('/', [OnboardingController, 'show']).as('onboarding.show')
+    router.post('/', [OnboardingController, 'store']).as('onboarding.store')
+    router.get('/courses', [OnboardingController, 'getCourses']).as('onboarding.courses')
+    router
+      .get('/institutions', [OnboardingController, 'getInstitutions'])
+      .as('onboarding.institutions')
+  })
+  .prefix('/onboarding')
   .use(middleware.auth())
 
 // Add these routes with your other route definitions

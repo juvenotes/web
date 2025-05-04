@@ -22,10 +22,13 @@ const features = [
 ]
 
 const statsDisplay = [
-  { number: `${props.stats.users}+`, label: 'Already Active Users' },
-  { number: `${props.stats.concepts}+`, label: 'Concepts Broken Down' },
-  { number: `${props.stats.papers}+`, label: 'Practice Papers With Questions' },
-  { number: `${props.stats.questions}+`, label: 'Questions' },
+  { number: `${Math.floor(props.stats.users / 10) * 10}+`, label: 'Already Active Users' },
+  { number: `${Math.floor(props.stats.concepts / 10) * 10}+`, label: 'Concepts Broken Down' },
+  {
+    number: `${Math.floor(props.stats.papers / 10) * 10}+`,
+    label: 'Practice Papers With Questions',
+  },
+  { number: `${Math.floor(props.stats.questions / 10) * 10}+`, label: 'Questions' },
 ]
 </script>
 
@@ -45,14 +48,14 @@ const statsDisplay = [
 
           <h2 class="text-xl font-semibold text-[#55A9C4] mb-4">Study Smart, Excel Easy!</h2>
           <p class="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Welcome to Juvenotes, your premier destination for a transformative medical education
-            experience. 🚀 You get:
+            Welcome to Juvenotes, your destination for a transformative medical education
+            experience. 🚀
           </p>
           <Button
             class="bg-[#55A9C4] text-white px-6 py-2 text-lg font-medium rounded-lg shadow-lg hover:bg-[#55A9C4]/90"
             @click="$inertia.visit('/learn')"
           >
-            START LEARNING NOW
+            Start Now
           </Button>
         </div>
       </section>
@@ -66,6 +69,7 @@ const statsDisplay = [
               v-for="feature in features"
               :key="feature.title"
               class="bg-gray-50 rounded-lg p-6 text-center hover:shadow-lg transition-shadow"
+              @click="$inertia.visit(feature.title === 'Past Papers' ? '/papers' : '/learn')"
             >
               <img
                 :src="`/images/${feature.icon}`"

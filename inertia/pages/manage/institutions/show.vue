@@ -5,14 +5,13 @@ import type InstitutionDto from '#dtos/institution'
 import { ArrowLeft, GraduationCap, School, Plus, Edit, Trash2, Loader2Icon } from 'lucide-vue-next'
 import { useForm } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
-import { InstitutionType, InstitutionTypeLabels } from '#enums/institution_type'
 
 defineOptions({ layout: AdminLayout })
 
 interface Course {
   id: number
   name: string
-  educationLevels: Array<{ id: number; name: string }>
+  educationLevelId: number
 }
 
 interface CourseLevel {
@@ -32,20 +31,9 @@ const isEditOpen = ref(false)
 const isCoursesOpen = ref(false)
 const isDeleteOpen = ref(false)
 
-// Institution type options
-const institutionTypes = computed(() =>
-  Object.entries(InstitutionType).map(([_, value]) => ({
-    label: InstitutionTypeLabels[value],
-    value: value,
-  }))
-)
-
 // Edit Institution Form
 const editForm = useForm({
   name: props.institution.name,
-  institutionType: props.institution.institutionType,
-  branch: props.institution.branch || '',
-  isActive: props.institution.isActive,
 })
 
 // Manage Courses Form
@@ -85,9 +73,9 @@ const onDelete = () => {
   })
 }
 
-// Helper to check if a course is available for a specific education level
+// Helper to check if a course matches a specific education level
 const isCourseAvailableForLevel = (course: Course, levelId: number) => {
-  return course.educationLevels.some((level) => level.id === levelId)
+  return course.educationLevelId === levelId // Changed to directly compare educationLevelId
 }
 
 // Helper to get courses filtered by education level
@@ -132,39 +120,6 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
                 <div class="space-y-2">
                   <label>Name</label>
                   <Input v-model="editForm.name" type="text" required />
-                </div>
-
-                <div class="space-y-2">
-                  <label>Type</label>
-                  <Select v-model="editForm.institutionType">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        v-for="type in institutionTypes"
-                        :key="type.value"
-                        :value="type.value"
-                      >
-                        {{ type.label }}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div class="space-y-2">
-                  <label>Branch</label>
-                  <Input v-model="editForm.branch" type="text" />
-                </div>
-
-                <div class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="isActive"
-                    v-model="editForm.isActive"
-                    class="rounded border-gray-300"
-                  />
-                  <label for="isActive">Active</label>
                 </div>
               </div>
 
@@ -273,14 +228,7 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
       <div class="flex items-start justify-between">
         <div>
           <h1 class="text-2xl font-bold text-gray-900">{{ institution.name }}</h1>
-          <p class="text-gray-500 mt-1">{{ institution.branch || 'Main Branch' }}</p>
         </div>
-        <span
-          class="px-3 py-1 rounded-full text-sm font-medium"
-          :class="institution.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
-        >
-          {{ institution.isActive ? 'Active' : 'Inactive' }}
-        </span>
       </div>
 
       <!-- Stats -->

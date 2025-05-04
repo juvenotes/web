@@ -17,7 +17,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-  const studySession = ref(props.studySession)
+const studySession = ref(props.studySession)
 
 // Initialize study session if not provided
 onMounted(async () => {
@@ -25,7 +25,7 @@ onMounted(async () => {
     try {
       const response = await axios.post('/api/study-sessions', {
         resourceType: 'paper',
-        resourceId: 0 // Special case for index
+        resourceId: 0, // Special case for index
       })
       studySession.value = response.data
     } catch (error) {
@@ -44,11 +44,13 @@ const filteredConcepts = computed(() => {
 
 <template>
   <AppHead title="Past Papers" description="Access past examination papers" />
-    <!-- <StudySessionTracker v-if="studySession" :sessionId="studySession.id" /> -->
+  <!-- <StudySessionTracker v-if="studySession" :sessionId="studySession.id" /> -->
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->
-    <div class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div
+      class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
+    >
       <!-- Gradient Top Border -->
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent"
@@ -59,7 +61,9 @@ const filteredConcepts = computed(() => {
       <div class="mt-6 flex flex-col sm:flex-row sm:items-start gap-6">
         <!-- Icon and Title -->
         <div class="flex items-start gap-4 flex-1">
-          <div class="p-3 rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200">
+          <div
+            class="p-3 rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
+          >
             <FileText class="h-5 w-5 text-[#55A9C4]" />
           </div>
           <div class="space-y-1">
@@ -103,8 +107,8 @@ const filteredConcepts = computed(() => {
           class="absolute inset-0 bg-gradient-to-br from-[#55A9C4]/10 via-[#55A9C4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out"
         />
         <div
-    class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent"
-  />
+          class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent"
+        />
 
         <div class="relative space-y-4">
           <!-- Concept Title -->
@@ -155,7 +159,9 @@ body {
 }
 
 /* Enhance Typography */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-weight: 600;
 }
 
@@ -165,13 +171,15 @@ p {
 }
 
 /* Smooth Transitions */
-a, button, .transition-all {
+a,
+button,
+.transition-all {
   transition: all 0.3s ease;
 }
 
 /* Hover Effects */
 .group:hover .group-hover\:text-\[\#55A9C4\] {
-  color: #55A9C4;
+  color: #55a9c4;
 }
 
 .group:hover .group-hover\:opacity-100 {

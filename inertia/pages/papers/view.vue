@@ -14,7 +14,6 @@ import {
   MessageSquare,
   ChevronDown,
   BookOpen,
-  Info,
   Users,
   ArrowRight,
 } from 'lucide-vue-next'
@@ -470,19 +469,10 @@ const getLastEditDate = computed(() => {
                 </div>
 
                 <div class="p-4 sm:p-6 md:p-8 bg-white">
-                  <div class="flex gap-3 items-start">
-                    <div class="shrink-0 pt-1">
-                      <div
-                        class="w-5 h-5 rounded-full bg-[#55A9C4]/10 flex items-center justify-center"
-                      >
-                        <Info class="h-3 w-3 text-[#55A9C4]" />
-                      </div>
-                    </div>
-                    <div
-                      class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
-                    >
-                      <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
-                    </div>
+                  <div
+                    class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full pt-2"
+                  >
+                    <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
                   </div>
                 </div>
               </div>
@@ -502,21 +492,20 @@ const getLastEditDate = computed(() => {
             </div>
           </div>
 
-          <div v-if="question.isSaq" class="mt-5 sm:mt-7 space-y-5 sm:space-y-7">
+          <!-- Optimized SAQ section -->
+          <div v-if="question.isSaq" class="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
             <div
               class="bg-gradient-to-r from-[#55A9C4]/5 to-[#55A9C4]/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full"
             >
               <div
-                class="flex items-center justify-between px-5 py-4 bg-[#55A9C4]/15 border-b border-[#55A9C4]/10"
+                class="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 bg-[#55A9C4]/15 border-b border-[#55A9C4]/10"
               >
-                <div class="flex items-center gap-3">
-                  <BookOpen class="h-4 w-4 sm:h-5 sm:w-5 text-[#55A9C4]" />
-                  <span class="text-sm sm:text-base font-medium text-[#55A9C4]"
-                    >Short Answer Questions</span
-                  >
+                <div class="flex items-center gap-2">
+                  <BookOpen class="h-4 w-4 text-[#55A9C4]" />
+                  <span class="text-sm font-medium text-[#55A9C4]">Short Answer Questions</span>
                 </div>
                 <div
-                  class="text-xs sm:text-sm bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-[#55A9C4]/80 font-medium shadow-sm"
+                  class="text-xs bg-white/70 backdrop-blur-sm px-2 py-1 rounded-full text-[#55A9C4]/80 font-medium shadow-sm"
                 >
                   {{ question.parts.length }} part{{ question.parts.length > 1 ? 's' : '' }}
                 </div>
@@ -526,17 +515,17 @@ const getLastEditDate = computed(() => {
                 <div
                   v-for="(part, partIndex) in question.parts"
                   :key="part.id"
-                  class="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 bg-white/80 hover:bg-white/100 transition-all duration-300"
+                  class="px-3 sm:px-5 py-3 sm:py-4 bg-white/80 hover:bg-white/100 transition-all duration-300 w-full"
                 >
-                  <div class="flex items-center justify-between mb-3 sm:mb-4">
-                    <div class="flex items-baseline gap-3">
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-baseline gap-2">
                       <span
-                        class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm"
+                        class="inline-flex items-center justify-center h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm"
                       >
                         {{ partIndex + 1 }}
                       </span>
                       <span
-                        class="text-xs sm:text-sm text-[#55A9C4]/80 font-medium px-2 py-0.5 bg-[#55A9C4]/5 rounded-md"
+                        class="text-xs text-[#55A9C4]/80 font-medium px-2 py-0.5 bg-[#55A9C4]/5 rounded-md"
                       >
                         {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }}
                       </span>
@@ -544,9 +533,7 @@ const getLastEditDate = computed(() => {
                   </div>
 
                   <div>
-                    <p
-                      class="text-sm sm:text-base text-gray-900 break-words mb-4 sm:mb-5 leading-relaxed"
-                    >
+                    <p class="text-sm text-gray-900 break-words mb-3 leading-relaxed">
                       {{ part.partText }}
                     </p>
                   </div>
@@ -554,7 +541,7 @@ const getLastEditDate = computed(() => {
                   <button
                     v-if="!showAnswer[part.id]"
                     @click="handleSaqPartView(question.id, part.id)"
-                    class="group w-full sm:w-auto flex items-center justify-center gap-2 mt-3 sm:mt-4 text-[#55A9C4] font-semibold text-xs sm:text-sm rounded-lg p-2.5 sm:p-3 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 hover:from-[#55A9C4]/25 hover:to-[#55A9C4]/15 border border-[#55A9C4]/20 transition-all duration-300 shadow-sm hover:shadow"
+                    class="group w-full flex items-center justify-center gap-2 mt-2 text-[#55A9C4] font-semibold text-xs rounded-lg p-2 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 hover:from-[#55A9C4]/25 hover:to-[#55A9C4]/15 border border-[#55A9C4]/20 transition-all duration-300 shadow-sm hover:shadow"
                   >
                     <ChevronDown
                       class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300"
@@ -562,35 +549,36 @@ const getLastEditDate = computed(() => {
                     <span>Show Answer</span>
                   </button>
 
-                  <div v-if="showAnswer[part.id]" class="mt-5 sm:mt-6 animate-fadeIn">
+                  <div v-if="showAnswer[part.id]" class="mt-3 sm:mt-4 animate-fadeIn">
                     <div
                       class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
                     >
                       <div
-                        class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"
+                        class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#55A9C4] to-blue-500"
                       ></div>
 
                       <div
-                        class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100"
+                        class="p-2 sm:p-3 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100"
                       >
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2">
                           <div
-                            class="flex items-center justify-center w-8 h-8 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
+                            class="flex items-center justify-center w-6 h-6 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
                           >
-                            <CheckCircle class="h-5 w-5" />
+                            <CheckCircle class="h-4 w-4" />
                           </div>
                           <div>
-                            <p class="text-sm text-gray-500 font-medium">Expected Answer</p>
-                            <p class="text-sm text-[#55A9C4]/80 font-medium">
+                            <p class="text-xs text-gray-500 font-medium">Expected Answer</p>
+                            <p class="text-xs text-[#55A9C4]/80 font-medium">
                               {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }} available
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div class="p-4 sm:p-6 md:p-8 bg-white">
+                      <div class="p-3 sm:p-4 bg-white w-full">
+                        <!-- Here we've removed the flex container and directly display the content -->
                         <div
-                          class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
+                          class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
                         >
                           <ViewExplanation :content="part.expectedAnswer" />
                         </div>
@@ -599,7 +587,7 @@ const getLastEditDate = computed(() => {
 
                     <Button
                       variant="ghost"
-                      class="mt-4 sm:mt-5 flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-300 text-xs sm:text-sm w-full sm:w-auto justify-center sm:justify-start group"
+                      class="mt-2 sm:mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-300 text-xs w-full justify-center sm:justify-start group"
                       @click="openFeedbackDialog(question)"
                     >
                       <MessageSquare
@@ -722,28 +710,28 @@ const getLastEditDate = computed(() => {
   position: relative;
   max-height: 300px;
   overflow-y: auto;
-  padding-right: 5px;
 
+  /* Vertical scrollbar styling */
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+    background: #f8f8f8;
+    border-radius: 2px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
+    background: #d1d1d1;
+    border-radius: 2px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: #b8b8b8;
   }
 
   @media (min-width: 640px) {
-    max-height: 400px;
+    max-height: 350px;
   }
 
   @media (min-width: 1024px) {
@@ -772,6 +760,7 @@ const getLastEditDate = computed(() => {
       width: 85%;
       max-height: 350px;
     }
+
     transition: all 0.3s ease;
   }
 
@@ -793,27 +782,91 @@ const getLastEditDate = computed(() => {
       margin: 0;
     }
   }
+
+  /* Table styling with visible horizontal scrollbar */
+  :deep(table) {
+    width: 100%;
+    font-size: 0.75rem;
+    border-collapse: collapse;
+    margin-bottom: 0.5rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+
+    /* Horizontal scrollbar styling */
+    &::-webkit-scrollbar {
+      height: 4px;
+      width: 4px; /* For vertical scrollbar if needed */
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f8f8f8;
+      border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #d1d1d1;
+      border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #b8b8b8;
+    }
+  }
+
+  :deep(th) {
+    background-color: rgba(85, 169, 196, 0.1);
+    color: #444;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    text-align: left;
+    border: 1px solid rgba(85, 169, 196, 0.2);
+    white-space: nowrap;
+  }
+
+  :deep(td) {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(85, 169, 196, 0.1);
+    white-space: nowrap;
+  }
 }
 
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .explanation-content {
+    :deep(table) {
+      font-size: 0.7rem;
+    }
+
+    :deep(th),
+    :deep(td) {
+      padding: 0.2rem 0.3rem;
+    }
+  }
+}
+
+/* For elements where you actually want to hide scrollbar */
 .hide-scrollbar,
 :deep(.breadcrumb-trail) {
   max-width: 100%;
   overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   white-space: nowrap;
   padding-bottom: 4px;
-}
 
-.hide-scrollbar::-webkit-scrollbar,
-:deep(.breadcrumb-trail::-webkit-scrollbar) {
-  display: none;
+  /* If you want to KEEP these hidden */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
