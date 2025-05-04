@@ -52,7 +52,7 @@ export default class OnboardingController {
   /**
    * API endpoint to fetch courses based on education level
    */
-  async getCourses({ request, response, auth }: HttpContext) {
+  async getCourses({ request, response, auth, logger }: HttpContext) {
     if (!auth.user) {
       return response.status(401).json({ message: 'Unauthorized' })
     }
@@ -64,30 +64,88 @@ export default class OnboardingController {
     }
 
     try {
+      logger.info('Loading courses for education level', {
+        controller: 'OnboardingController',
+        action: 'getCourses',
+        userId: auth.user.id,
+        educationLevelId,
+      })
+
       // Get courses filtered by education level
-      const courses = await Course.query().where('educationLevelId', educationLevelId)
+      const courses = await Course.query()
+        .where('educationLevelId', educationLevelId)
+        .preload('educationLevel')
+
+      logger.info('Courses loaded successfully', {
+        controller: 'OnboardingController',
+        action: 'getCourses',
+        userId: auth.user.id,
+        educationLevelId,
+        coursesCount: courses.length,
+        educationLevel: courses[0]?.educationLevel?.name,
+      })
 
       return response.json(CourseDto.fromArray(courses))
-    } catch {
+    } catch (error) {
+      logger.error('Failed to fetch courses', {
+        controller: 'OnboardingController',
+        action: 'getCourses',
+        userId: auth.user.id,
+        educationLevelId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
       return response.status(500).json({ message: 'Failed to fetch courses' })
     }
   }
 
   /**
-   * API endpoint to fetch institutions
-   * We fetch all institutions since they're not filtered by course
+   * API endpoint to fetch institutions that offer the selected course
    */
-  async getInstitutions({ response, auth }: HttpContext) {
+  async getInstitutions({ request, response, auth, logger }: HttpContext) {
     if (!auth.user) {
       return response.status(401).json({ message: 'Unauthorized' })
     }
 
+    const courseId = request.input('courseId')
+
+    if (!courseId) {
+      return response.status(400).json({ message: 'Course ID is required' })
+    }
+
     try {
-      // Get all institutions
-      const institutions = await Institution.all()
+      logger.info('Loading institutions for course', {
+        controller: 'OnboardingController',
+        action: 'getInstitutions',
+        userId: auth.user.id,
+        courseId,
+      })
+
+      // Get institutions that offer the selected course
+      const course = await Course.findOrFail(courseId)
+      const institutions = await Institution.query()
+        .whereHas('courses', (query) => {
+          query.where('courses.id', courseId)
+        })
+        .orderBy('name')
+
+      logger.info('Institutions loaded successfully', {
+        controller: 'OnboardingController',
+        action: 'getInstitutions',
+        userId: auth.user.id,
+        courseId,
+        courseName: course.name,
+        institutionsCount: institutions.length,
+      })
 
       return response.json(InstitutionDto.fromArray(institutions))
-    } catch {
+    } catch (error) {
+      logger.error('Failed to fetch institutions', {
+        controller: 'OnboardingController',
+        action: 'getInstitutions',
+        userId: auth.user.id,
+        courseId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
       return response.status(500).json({ message: 'Failed to fetch institutions' })
     }
   }
@@ -106,6 +164,16 @@ export default class OnboardingController {
       // Validate request using the validator
       const payload = await request.validateUsing(onboardingValidator)
 
+      logger.info('Starting onboarding submission process', {
+        controller: 'OnboardingController',
+        action: 'store',
+        userId: auth.user.id,
+        educationLevelId: payload.educationLevelId,
+        courseId: payload.courseId,
+        institutionId: payload.institutionId,
+        graduationYear: payload.graduationYear,
+      })
+
       // First, check if the course and institution combination exists
       let institutionCourse = await InstitutionCourse.query()
         .where('institutionId', payload.institutionId)
@@ -118,17 +186,27 @@ export default class OnboardingController {
           institutionId: payload.institutionId,
           courseId: payload.courseId,
         })
+
+        logger.info('Created new institution-course relationship', {
+          controller: 'OnboardingController',
+          action: 'store',
+          userId: auth.user.id,
+          institutionCourseId: institutionCourse.id,
+        })
       }
 
       // Create the user enrollment
-      await UserEnrollment.create({
+      const enrollment = await UserEnrollment.create({
         userId: auth.user.id,
         institutionCourseId: institutionCourse.id,
         graduationYear: payload.graduationYear,
       })
 
-      logger.info('User enrollment created during onboarding', {
+      logger.info('User enrollment created successfully', {
+        controller: 'OnboardingController',
+        action: 'store',
         userId: auth.user.id,
+        enrollmentId: enrollment.id,
         institutionCourseId: institutionCourse.id,
         graduationYear: payload.graduationYear,
       })
@@ -137,11 +215,22 @@ export default class OnboardingController {
 
       // Get the originally intended destination URL
       const returnTo = session.pull(SESSION_KEYS.RETURN_TO, '/learn')
-      logger.info('Redirecting after onboarding', { returnTo, userId: auth.user.id })
+      logger.info('Redirecting after successful onboarding', {
+        returnTo,
+        userId: auth.user.id,
+        controller: 'OnboardingController',
+        action: 'store',
+      })
 
       return response.redirect().toPath(returnTo)
-    } catch {
-      // Simple error handling that avoids TypeScript issues
+    } catch (error) {
+      logger.error('Failed to complete onboarding', {
+        controller: 'OnboardingController',
+        action: 'store',
+        userId: auth.user?.id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+
       session.flash('error', 'There was an error saving your profile information.')
       return response.redirect().back()
     }

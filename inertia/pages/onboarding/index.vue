@@ -3,9 +3,6 @@ import { ref, watch, computed } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import axios from 'axios'
 import OnboardingLayout from '~/layouts/OnboardingLayout.vue'
-import { Button } from '~/components/ui/button'
-import { Label } from '~/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Loader, CheckCircle, ChevronRight } from 'lucide-vue-next'
 import type EducationLevelDto from '#dtos/education_level'
 import type CourseDto from '#dtos/course'
@@ -54,14 +51,36 @@ const stepTitles = [
   'Graduation Year',
 ]
 
+// Helper function for logging user selections
+const logSelection = (step: string, value: string | number, additionalData = {}) => {
+  console.info(`Onboarding Selection - ${step}:`, {
+    step,
+    value,
+    timestamp: new Date().toISOString(),
+    ...additionalData
+  })
+}
+
 // Load courses when education level changes
 async function loadCourses() {
   if (!form.educationLevelId) return
+  
+  const selectedLevel = educationLevels.value.find(
+    level => level.id.toString() === form.educationLevelId
+  )
+  
+  logSelection('Education Level', form.educationLevelId, {
+    levelName: selectedLevel?.name
+  })
   
   try {
     loadingCourses.value = true
     const response = await axios.get(`/onboarding/courses?educationLevelId=${form.educationLevelId}`)
     courses.value = response.data
+    logSelection('Available Courses', courses.value.length, {
+      educationLevelId: form.educationLevelId,
+      coursesAvailable: courses.value.map(c => c.name)
+    })
   } catch (error) {
     console.error('Failed to load courses:', error)
   } finally {
@@ -69,12 +88,27 @@ async function loadCourses() {
   }
 }
 
-// Load institutions
+// Load institutions when course is selected
 async function loadInstitutions() {
+  if (!form.courseId) return
+  
+  const selectedCourse = courses.value.find(
+    course => course.id.toString() === form.courseId
+  )
+  
+  logSelection('Course', form.courseId, {
+    courseName: selectedCourse?.name,
+    educationLevelId: form.educationLevelId
+  })
+  
   try {
     loadingInstitutions.value = true
-    const response = await axios.get('/onboarding/institutions')
+    const response = await axios.get(`/onboarding/institutions?courseId=${form.courseId}`)
     institutions.value = response.data
+    logSelection('Available Institutions', institutions.value.length, {
+      courseId: form.courseId,
+      institutionsAvailable: institutions.value.map(i => i.name)
+    })
   } catch (error) {
     console.error('Failed to load institutions:', error)
   } finally {
@@ -85,15 +119,41 @@ async function loadInstitutions() {
 // Watch for changes in education level to load relevant courses
 watch(() => form.educationLevelId, () => {
   form.courseId = ''
+  form.institutionId = ''
+  institutions.value = []
   loadCourses()
 })
 
-// Watch for changes in course to reset institution selection
+// Watch for changes in course to load relevant institutions
 watch(() => form.courseId, () => {
   form.institutionId = ''
-  // Once a course is selected, load institutions if they haven't been loaded yet
-  if (form.courseId && institutions.value.length === 0) {
+  institutions.value = []
+  if (form.courseId) {
     loadInstitutions()
+  }
+})
+
+// Watch for institution selection
+watch(() => form.institutionId, (newValue) => {
+  if (newValue) {
+    const selectedInstitution = institutions.value.find(
+      inst => inst.id.toString() === newValue
+    )
+    logSelection('Institution', newValue, {
+      institutionName: selectedInstitution?.name,
+      courseId: form.courseId
+    })
+  }
+})
+
+// Watch for graduation year selection
+watch(() => form.graduationYear, (newValue) => {
+  if (newValue) {
+    logSelection('Graduation Year', newValue, {
+      educationLevelId: form.educationLevelId,
+      courseId: form.courseId,
+      institutionId: form.institutionId
+    })
   }
 })
 
