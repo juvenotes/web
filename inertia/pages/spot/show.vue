@@ -27,7 +27,7 @@ onMounted(async () => {
     try {
       const response = await axios.post('/api/study-sessions', {
         resourceType: 'spot',
-        resourceId: props.concept.id
+        resourceId: props.concept.id,
       })
       studySession.value = response.data
     } catch (error) {
@@ -60,29 +60,36 @@ const breadcrumbItems = computed(() => [
 </script>
 
 <template>
-  <AppHead :title="`${concept.title} SPOT Papers`" :description="`SPOT papers for ${concept.title}`" />
-    <!-- <StudySessionTracker v-if="studySession" :sessionId="studySession.id" /> -->
+  <AppHead
+    :title="`${concept.title} SPOT Papers`"
+    :description="`SPOT papers for ${concept.title}`"
+  />
+  <!-- <StudySessionTracker v-if="studySession" :sessionId="studySession.id" /> -->
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
     <!-- Header Section -->
-    <div class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent" />
+    <div
+      class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
+    >
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent"
+      />
 
       <BreadcrumbTrail :items="breadcrumbItems" />
 
       <div class="mt-6 flex flex-col sm:flex-row sm:items-start gap-6">
         <!-- Icon and Title -->
         <div class="flex items-start gap-4 flex-1">
-          <div class="p-3 rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200">
+          <div
+            class="p-3 rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
+          >
             <FileText class="h-5 w-5 text-[#55A9C4]" />
           </div>
           <div class="space-y-1 min-w-0">
             <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 truncate">
               {{ concept.title }}
             </h1>
-            <p class="text-sm text-gray-500">
-              SPOT Practice Papers
-            </p>
+            <p class="text-sm text-gray-500">SPOT Practice Papers</p>
           </div>
         </div>
 
@@ -115,10 +122,14 @@ const breadcrumbItems = computed(() => [
             :href="`/spot/${concept.slug}/${paper.slug}`"
             class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-gray-100 hover:border-[#55A9C4]/20 hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-2"
           >
-            <div class="absolute inset-0 bg-gradient-to-br from-[#55A9C4]/10 via-[#55A9C4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out" />
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-[#55A9C4]/10 via-[#55A9C4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out"
+            />
 
             <div class="relative space-y-4">
-              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-300">
+              <h3
+                class="text-lg font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-300"
+              >
                 {{ paper.title }}
               </h3>
 
@@ -128,7 +139,9 @@ const breadcrumbItems = computed(() => [
                 </span>
                 <span class="text-gray-500">Multiple stations</span>
               </div>
-              <div class="flex items-center text-sm text-[#55A9C4] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out">
+              <div
+                class="flex items-center text-sm text-[#55A9C4] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"
+              >
                 <span>Practice SPOT</span>
                 <svg
                   class="w-4 h-4 ml-2 transform group-hover:translate-x-2 transition-transform duration-300 ease-in-out"
@@ -149,9 +162,14 @@ const breadcrumbItems = computed(() => [
     </template>
 
     <!-- Empty State -->
-    <div v-else class="relative p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div
+      v-else
+      class="relative p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
+    >
       <div class="flex items-start gap-4">
-        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition-colors duration-200">
+        <div
+          class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition-colors duration-200"
+        >
           <AlertCircle class="h-5 w-5 text-amber-500" />
         </div>
         <div class="space-y-2">

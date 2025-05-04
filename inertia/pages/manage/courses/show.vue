@@ -22,7 +22,7 @@ const isDeleteOpen = ref(false)
 // Form for editing the course
 const editForm = useForm({
   name: props.course.name,
-  educationLevelId: props.course.educationLevelId
+  educationLevelId: props.course.educationLevelId,
 })
 
 // Form for confirming deletion
@@ -33,7 +33,7 @@ const onEditSubmit = () => {
   editForm.put(`/manage/courses/${props.course.id}`, {
     onSuccess: () => {
       isEditOpen.value = false
-    }
+    },
   })
 }
 
@@ -42,7 +42,7 @@ const onDelete = () => {
   deleteForm.delete(`/manage/courses/${props.course.id}`, {
     onSuccess: () => {
       window.location.href = '/manage/courses'
-    }
+    },
   })
 }
 </script>
@@ -72,20 +72,16 @@ const onDelete = () => {
           <SheetContent>
             <SheetHeader>
               <SheetTitle>Edit Course</SheetTitle>
-              <SheetDescription>
-                Update the course details.
-              </SheetDescription>
+              <SheetDescription> Update the course details. </SheetDescription>
             </SheetHeader>
 
             <form @submit.prevent="onEditSubmit" class="mt-6 space-y-6">
               <div class="space-y-2">
                 <Label for="name">Course Name</Label>
-                <Input
-                  id="name"
-                  v-model="editForm.name"
-                  :error="editForm.errors.name"
-                />
-                <p v-if="editForm.errors.name" class="text-sm text-red-500">{{ editForm.errors.name }}</p>
+                <Input id="name" v-model="editForm.name" :error="editForm.errors.name" />
+                <p v-if="editForm.errors.name" class="text-sm text-red-500">
+                  {{ editForm.errors.name }}
+                </p>
               </div>
 
               <div class="space-y-2">
@@ -95,11 +91,7 @@ const onDelete = () => {
                     <SelectValue placeholder="Select Education Level" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem
-                      v-for="level in educationLevels"
-                      :key="level.id"
-                      :value="level.id"
-                    >
+                    <SelectItem v-for="level in educationLevels" :key="level.id" :value="level.id">
                       {{ level.name }}
                     </SelectItem>
                   </SelectContent>
@@ -164,8 +156,8 @@ const onDelete = () => {
             :key="institution.id"
             class="p-4 rounded-lg border bg-gray-50/50"
           >
-            <Link 
-              :href="`/manage/institutions/${institution.id}`" 
+            <Link
+              :href="`/manage/institutions/${institution.id}`"
               class="hover:underline font-medium text-primary"
             >
               {{ institution.name }}
@@ -174,7 +166,7 @@ const onDelete = () => {
         </div>
         <div v-else class="text-center py-6 text-gray-500">
           No institutions are offering this course yet.
-          <br>
+          <br />
           You can add courses to institutions from the institutions management page.
         </div>
       </div>

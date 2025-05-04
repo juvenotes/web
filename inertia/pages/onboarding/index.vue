@@ -44,12 +44,7 @@ const form = useForm({
 })
 
 // Step titles
-const stepTitles = [
-  'Education Level',
-  'Course',
-  'Institution',
-  'Graduation Year',
-]
+const stepTitles = ['Education Level', 'Course', 'Institution', 'Graduation Year']
 
 // Helper function for logging user selections
 const logSelection = (step: string, value: string | number, additionalData = {}) => {
@@ -57,29 +52,31 @@ const logSelection = (step: string, value: string | number, additionalData = {})
     step,
     value,
     timestamp: new Date().toISOString(),
-    ...additionalData
+    ...additionalData,
   })
 }
 
 // Load courses when education level changes
 async function loadCourses() {
   if (!form.educationLevelId) return
-  
+
   const selectedLevel = educationLevels.value.find(
-    level => level.id.toString() === form.educationLevelId
+    (level) => level.id.toString() === form.educationLevelId
   )
-  
+
   logSelection('Education Level', form.educationLevelId, {
-    levelName: selectedLevel?.name
+    levelName: selectedLevel?.name,
   })
-  
+
   try {
     loadingCourses.value = true
-    const response = await axios.get(`/onboarding/courses?educationLevelId=${form.educationLevelId}`)
+    const response = await axios.get(
+      `/onboarding/courses?educationLevelId=${form.educationLevelId}`
+    )
     courses.value = response.data
     logSelection('Available Courses', courses.value.length, {
       educationLevelId: form.educationLevelId,
-      coursesAvailable: courses.value.map(c => c.name)
+      coursesAvailable: courses.value.map((c) => c.name),
     })
   } catch (error) {
     console.error('Failed to load courses:', error)
@@ -91,23 +88,21 @@ async function loadCourses() {
 // Load institutions when course is selected
 async function loadInstitutions() {
   if (!form.courseId) return
-  
-  const selectedCourse = courses.value.find(
-    course => course.id.toString() === form.courseId
-  )
-  
+
+  const selectedCourse = courses.value.find((course) => course.id.toString() === form.courseId)
+
   logSelection('Course', form.courseId, {
     courseName: selectedCourse?.name,
-    educationLevelId: form.educationLevelId
+    educationLevelId: form.educationLevelId,
   })
-  
+
   try {
     loadingInstitutions.value = true
     const response = await axios.get(`/onboarding/institutions?courseId=${form.courseId}`)
     institutions.value = response.data
     logSelection('Available Institutions', institutions.value.length, {
       courseId: form.courseId,
-      institutionsAvailable: institutions.value.map(i => i.name)
+      institutionsAvailable: institutions.value.map((i) => i.name),
     })
   } catch (error) {
     console.error('Failed to load institutions:', error)
@@ -117,45 +112,55 @@ async function loadInstitutions() {
 }
 
 // Watch for changes in education level to load relevant courses
-watch(() => form.educationLevelId, () => {
-  form.courseId = ''
-  form.institutionId = ''
-  institutions.value = []
-  loadCourses()
-})
+watch(
+  () => form.educationLevelId,
+  () => {
+    form.courseId = ''
+    form.institutionId = ''
+    institutions.value = []
+    loadCourses()
+  }
+)
 
 // Watch for changes in course to load relevant institutions
-watch(() => form.courseId, () => {
-  form.institutionId = ''
-  institutions.value = []
-  if (form.courseId) {
-    loadInstitutions()
+watch(
+  () => form.courseId,
+  () => {
+    form.institutionId = ''
+    institutions.value = []
+    if (form.courseId) {
+      loadInstitutions()
+    }
   }
-})
+)
 
 // Watch for institution selection
-watch(() => form.institutionId, (newValue) => {
-  if (newValue) {
-    const selectedInstitution = institutions.value.find(
-      inst => inst.id.toString() === newValue
-    )
-    logSelection('Institution', newValue, {
-      institutionName: selectedInstitution?.name,
-      courseId: form.courseId
-    })
+watch(
+  () => form.institutionId,
+  (newValue) => {
+    if (newValue) {
+      const selectedInstitution = institutions.value.find((inst) => inst.id.toString() === newValue)
+      logSelection('Institution', newValue, {
+        institutionName: selectedInstitution?.name,
+        courseId: form.courseId,
+      })
+    }
   }
-})
+)
 
 // Watch for graduation year selection
-watch(() => form.graduationYear, (newValue) => {
-  if (newValue) {
-    logSelection('Graduation Year', newValue, {
-      educationLevelId: form.educationLevelId,
-      courseId: form.courseId,
-      institutionId: form.institutionId
-    })
+watch(
+  () => form.graduationYear,
+  (newValue) => {
+    if (newValue) {
+      logSelection('Graduation Year', newValue, {
+        educationLevelId: form.educationLevelId,
+        courseId: form.courseId,
+        institutionId: form.institutionId,
+      })
+    }
   }
-})
+)
 
 // Methods for navigation
 const nextStep = () => {
@@ -206,14 +211,14 @@ const isStepValid = computed(() => {
         <h2 class="text-xl font-bold text-gray-800">Complete Your Profile</h2>
         <div class="text-sm text-gray-500">Step {{ step }} of {{ totalSteps }}</div>
       </div>
-      
+
       <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-        <div 
-          class="h-full bg-primary transition-all duration-300" 
+        <div
+          class="h-full bg-primary transition-all duration-300"
           :style="{ width: `${(step / totalSteps) * 100}%` }"
         ></div>
       </div>
-      
+
       <!-- Step indicators -->
       <div class="flex justify-between mt-2">
         <div
@@ -222,17 +227,20 @@ const isStepValid = computed(() => {
           class="flex flex-col items-center"
           :class="{ 'opacity-50': i > step }"
         >
-          <div 
+          <div
             class="w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors"
             :class="[
-              i < step ? 'bg-primary border-primary text-white' : 
-              i === step ? 'border-primary text-primary' : 'border-gray-300 text-gray-400'
+              i < step
+                ? 'bg-primary border-primary text-white'
+                : i === step
+                  ? 'border-primary text-primary'
+                  : 'border-gray-300 text-gray-400',
             ]"
           >
             <CheckCircle v-if="i < step" class="h-5 w-5" />
             <span v-else>{{ i }}</span>
           </div>
-          <span class="text-xs mt-1 hidden sm:block">{{ stepTitles[i-1] }}</span>
+          <span class="text-xs mt-1 hidden sm:block">{{ stepTitles[i - 1] }}</span>
         </div>
       </div>
     </div>
@@ -240,7 +248,8 @@ const isStepValid = computed(() => {
     <!-- Personalization message with required notice -->
     <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
       <p class="text-sm text-blue-700">
-        <strong>This step is required to continue.</strong> This information helps us personalize your learning experience and provide you with relevant resources and materials.
+        <strong>This step is required to continue.</strong> This information helps us personalize
+        your learning experience and provide you with relevant resources and materials.
       </p>
     </div>
 
@@ -285,11 +294,7 @@ const isStepValid = computed(() => {
               <SelectValue v-else placeholder="Select a course" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                v-for="course in courses"
-                :key="course.id"
-                :value="course.id.toString()"
-              >
+              <SelectItem v-for="course in courses" :key="course.id" :value="course.id.toString()">
                 {{ course.name }}
               </SelectItem>
             </SelectContent>
@@ -297,7 +302,10 @@ const isStepValid = computed(() => {
           <p v-if="form.errors.courseId" class="mt-1 text-sm text-red-500">
             {{ form.errors.courseId }}
           </p>
-          <p v-if="courses.length === 0 && !loadingCourses && form.educationLevelId" class="mt-1 text-sm text-gray-500">
+          <p
+            v-if="courses.length === 0 && !loadingCourses && form.educationLevelId"
+            class="mt-1 text-sm text-gray-500"
+          >
             No courses available for the selected education level.
           </p>
         </div>
@@ -308,7 +316,10 @@ const isStepValid = computed(() => {
         <h3 class="text-lg font-medium text-gray-800">Where are (or were) you studying?</h3>
         <div>
           <Label for="institution">Select your institution</Label>
-          <Select v-model="form.institutionId" :disabled="loadingInstitutions || institutions.length === 0">
+          <Select
+            v-model="form.institutionId"
+            :disabled="loadingInstitutions || institutions.length === 0"
+          >
             <SelectTrigger class="w-full">
               <span v-if="loadingInstitutions" class="flex items-center">
                 <Loader class="animate-spin h-4 w-4 mr-2" />
@@ -342,11 +353,7 @@ const isStepValid = computed(() => {
               <SelectValue placeholder="Select your graduation year" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                v-for="year in graduationYears"
-                :key="year"
-                :value="year"
-              >
+              <SelectItem v-for="year in graduationYears" :key="year" :value="year">
                 {{ year }}
               </SelectItem>
             </SelectContent>
@@ -359,18 +366,13 @@ const isStepValid = computed(() => {
 
       <!-- Navigation buttons -->
       <div class="flex justify-between mt-8">
-        <Button 
-          v-if="step > 1" 
-          variant="outline"
-          @click="prevStep"
-          :disabled="form.processing"
-        >
+        <Button v-if="step > 1" variant="outline" @click="prevStep" :disabled="form.processing">
           Previous
         </Button>
         <div v-else class="w-24"></div>
-        
-        <Button 
-          @click="nextStep" 
+
+        <Button
+          @click="nextStep"
           class="flex items-center gap-2"
           :disabled="!isStepValid || form.processing"
         >

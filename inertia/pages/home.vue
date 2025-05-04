@@ -24,7 +24,10 @@ const features = [
 const statsDisplay = [
   { number: `${Math.floor(props.stats.users / 10) * 10}+`, label: 'Already Active Users' },
   { number: `${Math.floor(props.stats.concepts / 10) * 10}+`, label: 'Concepts Broken Down' },
-  { number: `${Math.floor(props.stats.papers / 10) * 10}+`, label: 'Practice Papers With Questions' },
+  {
+    number: `${Math.floor(props.stats.papers / 10) * 10}+`,
+    label: 'Practice Papers With Questions',
+  },
   { number: `${Math.floor(props.stats.questions / 10) * 10}+`, label: 'Questions' },
 ]
 </script>
