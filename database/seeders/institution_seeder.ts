@@ -3,6 +3,8 @@ import db from '@adonisjs/lucid/services/db'
 
 export default class InstitutionSeeder extends BaseSeeder {
   async run() {
+    console.log('\n=== Seeding Institutions ===')
+
     // List of approved medical schools in Kenya
     const institutions = [
       'University of Nairobi',
@@ -38,5 +40,10 @@ export default class InstitutionSeeder extends BaseSeeder {
 
     // Insert institutions with just their names
     await db.table('institutions').multiInsert(institutions.map((name) => ({ name })))
+    console.log(`✓ Created ${institutions.length} institutions`)
+    console.log('Universities and Medical Schools:')
+    institutions.slice(0, 13).forEach((name) => console.log(`  - ${name}`))
+    console.log('\nDiploma and Technical Institutions:')
+    institutions.slice(13).forEach((name) => console.log(`  - ${name}`))
   }
 }

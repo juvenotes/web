@@ -3,11 +3,15 @@ import db from '@adonisjs/lucid/services/db'
 
 export default class InstitutionCourseSeeder extends BaseSeeder {
   async run() {
+    console.log('\n=== Creating Institution-Course Relationships ===')
+
     // Fetch all institutions
     const institutions = await db.from('institutions').select('id', 'name')
+    console.log(`Found ${institutions.length} institutions`)
 
     // Fetch all courses
     const courses = await db.from('courses').select('id', 'name', 'education_level_id')
+    console.log(`Found ${courses.length} courses`)
 
     // Define mappings for which institutions offer which courses
     const institutionCoursePairs = []
@@ -58,11 +62,15 @@ export default class InstitutionCourseSeeder extends BaseSeeder {
       'The Nyeri National Polytechnic',
       'Rift Valley Technical Training Institute',
       'Thika Technical Training Institute',
-      'Technical University of Mombasa',
-      'Technical University of Kenya',
-      'Mount Kenya University',
-      'Kenya Methodist University',
     ]
+
+    console.log('\nAuthorized Programs:')
+    console.log(`- MBChB: ${medicalSchools.length} schools`)
+    console.log(`- BDS: ${dentalSchools.length} schools`)
+    console.log(`- BPharm: ${pharmacyDegreeSchools.length} schools`)
+    console.log(`- Diploma in Pharmacy: ${pharmacyDiplomaSchools.length} schools`)
+
+    const courseRelationships = new Map()
 
     // Create institution-course relationships ONLY for verified combinations
     for (const institution of institutions) {
@@ -81,6 +89,7 @@ export default class InstitutionCourseSeeder extends BaseSeeder {
             institution_id: institution.id,
             course_id: course.id,
           })
+          courseRelationships.set(course.name, (courseRelationships.get(course.name) || 0) + 1)
         }
 
         // Match BDS to approved dental schools
@@ -92,6 +101,7 @@ export default class InstitutionCourseSeeder extends BaseSeeder {
             institution_id: institution.id,
             course_id: course.id,
           })
+          courseRelationships.set(course.name, (courseRelationships.get(course.name) || 0) + 1)
         }
 
         // Match BPharm to approved pharmacy degree institutions
@@ -103,6 +113,7 @@ export default class InstitutionCourseSeeder extends BaseSeeder {
             institution_id: institution.id,
             course_id: course.id,
           })
+          courseRelationships.set(course.name, (courseRelationships.get(course.name) || 0) + 1)
         }
 
         // Match Diploma in Pharmacy to approved diploma institutions
@@ -114,6 +125,7 @@ export default class InstitutionCourseSeeder extends BaseSeeder {
             institution_id: institution.id,
             course_id: course.id,
           })
+          courseRelationships.set(course.name, (courseRelationships.get(course.name) || 0) + 1)
         }
 
         // Match Nursing to medical schools (only if explicitly listed)
@@ -125,6 +137,7 @@ export default class InstitutionCourseSeeder extends BaseSeeder {
             institution_id: institution.id,
             course_id: course.id,
           })
+          courseRelationships.set(course.name, (courseRelationships.get(course.name) || 0) + 1)
         }
       }
     }
@@ -132,11 +145,13 @@ export default class InstitutionCourseSeeder extends BaseSeeder {
     // Insert only verified institution-course relationships
     if (institutionCoursePairs.length > 0) {
       await db.table('institution_courses').multiInsert(institutionCoursePairs)
-      console.log(
-        `Created ${institutionCoursePairs.length} verified institution-course relationships`
-      )
+      console.log('\nCreated institution-course relationships:')
+      for (const [course, count] of courseRelationships.entries()) {
+        console.log(`  - ${course}: offered at ${count} institutions`)
+      }
+      console.log(`\n✓ Total: ${institutionCoursePairs.length} verified relationships created`)
     } else {
-      console.log('No verified institution-course relationships to create')
+      console.log('\n⚠ No verified institution-course relationships to create')
     }
   }
 }
