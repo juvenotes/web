@@ -157,14 +157,23 @@ const continueFromLastQuestion = () => {
     class="w-full mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 font-sans"
   >
     <!-- Header Section -->
-    <div class="relative p-3 sm:p-6 bg-white rounded-lg sm:rounded-xl border border-gray-200 sm:border-gray-100 shadow-sm sm:shadow-lg hover:shadow-md transition-shadow duration-300">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent rounded-t-lg sm:rounded-t-xl" />
+    <div
+      class="relative p-3 sm:p-6 bg-white rounded-lg sm:rounded-xl border border-gray-200 sm:border-gray-100 shadow-sm sm:shadow-lg hover:shadow-md transition-shadow duration-300"
+    >
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent rounded-t-lg sm:rounded-t-xl"
+      />
 
-      <BreadcrumbTrail :items="breadcrumbItems" class="w-full overflow-x-auto pb-1 sm:pb-2 hide-scrollbar" />
+      <BreadcrumbTrail
+        :items="breadcrumbItems"
+        class="w-full overflow-x-auto pb-1 sm:pb-2 hide-scrollbar"
+      />
 
       <div class="mt-3 sm:mt-6 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6">
         <div class="flex items-start gap-2 sm:gap-3 flex-1">
-          <div class="p-1.5 sm:p-3 rounded-md sm:rounded-lg bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200">
+          <div
+            class="p-1.5 sm:p-3 rounded-md sm:rounded-lg bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
+          >
             <FileText class="h-3 w-3 sm:h-5 sm:w-5 text-[#55A9C4]" />
           </div>
           <div class="space-y-1">
@@ -173,12 +182,15 @@ const continueFromLastQuestion = () => {
               OSCE stations for {{ paper.title }} in {{ concept.title }}
             </p>
             <div class="flex flex-wrap items-center gap-1 sm:gap-3 pt-1 sm:pt-2">
-              <span class="px-1.5 sm:px-2 py-0.5 text-xs font-semibold bg-[#55A9C4]/15 text-[#55A9C4] rounded-full shadow-xs sm:shadow-sm">
+              <span
+                class="px-1.5 sm:px-2 py-0.5 text-xs font-semibold bg-[#55A9C4]/15 text-[#55A9C4] rounded-full shadow-xs sm:shadow-sm"
+              >
                 OSCE
               </span>
               <span class="text-xs text-gray-500">{{ paper.year }}</span>
               <span class="flex items-center gap-1 text-xs text-gray-500">
-                {{ paperProgress.attemptCount }} {{ paperProgress.attemptCount === 1 ? 'attempt' : 'attempts' }}
+                {{ paperProgress.attemptCount }}
+                {{ paperProgress.attemptCount === 1 ? 'attempt' : 'attempts' }}
               </span>
             </div>
           </div>
@@ -218,8 +230,13 @@ const continueFromLastQuestion = () => {
     <DisclaimerBanner />
 
     <!-- Progress Tracking Section -->
-    <div class="bg-white p-3 sm:p-5 rounded-lg border border-gray-200 sm:border-gray-100 shadow-xs sm:shadow-sm hover:shadow-sm sm:hover:shadow-md transition-all duration-300">
-      <div v-if="paperProgress.completionPercentage > 0" class="p-2 sm:p-4 bg-white/80 rounded-lg border border-[#55A9C4]/10 mb-2 sm:mb-4">
+    <div
+      class="bg-white p-3 sm:p-5 rounded-lg border border-gray-200 sm:border-gray-100 shadow-xs sm:shadow-sm hover:shadow-sm sm:hover:shadow-md transition-all duration-300"
+    >
+      <div
+        v-if="paperProgress.completionPercentage > 0"
+        class="p-2 sm:p-4 bg-white/80 rounded-lg border border-[#55A9C4]/10 mb-2 sm:mb-4"
+      >
         <div class="flex justify-between items-center mb-1 sm:mb-2">
           <span class="font-medium text-xs sm:text-sm">Your progress</span>
           <span class="text-xs sm:text-sm font-semibold">
@@ -269,7 +286,9 @@ const continueFromLastQuestion = () => {
           <div class="space-y-2 sm:space-y-4">
             <!-- Question Header -->
             <div class="flex flex-col gap-1 sm:gap-2">
-              <span class="inline-block w-fit px-2 sm:px-4 py-0.5 sm:py-1.5 bg-[#55A9C4]/15 text-[#55A9C4] rounded-md sm:rounded-lg font-medium sm:font-semibold text-xs sm:text-base shadow-xs sm:shadow-sm">
+              <span
+                class="inline-block w-fit px-2 sm:px-4 py-0.5 sm:py-1.5 bg-[#55A9C4]/15 text-[#55A9C4] rounded-md sm:rounded-lg font-medium sm:font-semibold text-xs sm:text-base shadow-xs sm:shadow-sm"
+              >
                 Station {{ questionIndex + 1 }}
               </span>
               <p class="text-gray-900 text-xs sm:text-base break-words leading-relaxed">
@@ -310,7 +329,9 @@ const continueFromLastQuestion = () => {
                 </div>
 
                 <!-- Part Text -->
-                <p class="text-xs sm:text-sm text-gray-900 break-words mb-2 sm:mb-4 leading-relaxed">
+                <p
+                  class="text-xs sm:text-sm text-gray-900 break-words mb-2 sm:mb-4 leading-relaxed"
+                >
                   {{ part.partText }}
                 </p>
 
@@ -336,16 +357,26 @@ const continueFromLastQuestion = () => {
 
                 <!-- Expected Response Section -->
                 <div v-if="showAnswers[part.id]" class="mt-3 sm:mt-4 animate-fadeIn">
-                  <div class="relative overflow-hidden rounded-lg border border-gray-200 sm:border-gray-100 w-full">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"></div>
+                  <div
+                    class="relative overflow-hidden rounded-lg border border-gray-200 sm:border-gray-100 w-full"
+                  >
+                    <div
+                      class="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"
+                    ></div>
 
-                    <div class="p-2 sm:p-4 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-200 sm:border-gray-100">
+                    <div
+                      class="p-2 sm:p-4 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-200 sm:border-gray-100"
+                    >
                       <div class="flex items-center gap-1 sm:gap-2">
-                        <div class="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]">
+                        <div
+                          class="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
+                        >
                           <CheckCircle class="h-3 w-3 sm:h-4 sm:w-4" />
                         </div>
                         <div>
-                          <p class="text-xs sm:text-sm text-gray-500 font-medium">Expected Response</p>
+                          <p class="text-xs sm:text-sm text-gray-500 font-medium">
+                            Expected Response
+                          </p>
                           <p class="text-xs sm:text-sm text-[#55A9C4]/80 font-medium">
                             {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }} available
                           </p>
@@ -354,7 +385,9 @@ const continueFromLastQuestion = () => {
                     </div>
 
                     <div class="p-2 sm:p-4 bg-white">
-                      <div class="text-xs sm:text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                      <div
+                        class="text-xs sm:text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
+                      >
                         <ViewExplanation :content="part.expectedAnswer" />
                       </div>
                     </div>
@@ -366,7 +399,9 @@ const continueFromLastQuestion = () => {
                     @click="openFeedbackDialog(question)"
                   >
                     <div class="p-1 rounded-full bg-gray-100 shadow-xs sm:shadow-sm">
-                      <MessageSquare class="h-3 w-3 sm:h-4 sm:w-4 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 text-gray-600" />
+                      <MessageSquare
+                        class="h-3 w-3 sm:h-4 sm:w-4 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 text-gray-600"
+                      />
                     </div>
                     <span class="font-medium">Provide Feedback</span>
                   </Button>
@@ -378,7 +413,10 @@ const continueFromLastQuestion = () => {
       </template>
 
       <!-- Empty State -->
-      <div v-else class="text-center py-6 sm:py-10 bg-white rounded-lg border border-gray-200 sm:border-gray-100 shadow-xs sm:shadow-sm hover:shadow-sm sm:hover:shadow-md transition-all duration-300">
+      <div
+        v-else
+        class="text-center py-6 sm:py-10 bg-white rounded-lg border border-gray-200 sm:border-gray-100 shadow-xs sm:shadow-sm hover:shadow-sm sm:hover:shadow-md transition-all duration-300"
+      >
         <p class="text-gray-500">This OSCE paper has no stations yet.</p>
       </div>
     </div>
@@ -415,7 +453,10 @@ const continueFromLastQuestion = () => {
             cy="16"
           />
         </svg>
-        <span class="absolute inset-0 flex items-center justify-center text-xs font-medium" style="font-size: 0.65rem">
+        <span
+          class="absolute inset-0 flex items-center justify-center text-xs font-medium"
+          style="font-size: 0.65rem"
+        >
           {{ Math.round(paperProgress.completionPercentage) }}%
         </span>
       </div>
@@ -468,22 +509,22 @@ const continueFromLastQuestion = () => {
       height: 4px;
       width: 4px;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: #f8f8f8;
       border-radius: 2px;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: #d1d1d1;
       border-radius: 2px;
     }
-    
+
     &::-webkit-scrollbar-thumb:hover {
       background: #b8b8b8;
     }
   }
-  
+
   :deep(th) {
     background-color: rgba(85, 169, 196, 0.1);
     color: #444;
@@ -493,7 +534,7 @@ const continueFromLastQuestion = () => {
     border: 1px solid rgba(85, 169, 196, 0.2);
     white-space: nowrap;
   }
-  
+
   :deep(td) {
     padding: 0.25rem 0.5rem;
     border: 1px solid rgba(85, 169, 196, 0.1);
@@ -522,7 +563,7 @@ const continueFromLastQuestion = () => {
   @media (min-width: 640px) {
     max-height: 300px;
     padding-right: 4px;
-    
+
     &::-webkit-scrollbar {
       width: 4px;
     }
@@ -557,7 +598,7 @@ const continueFromLastQuestion = () => {
   :deep(li) {
     margin-bottom: 0.25rem;
     line-height: 1.35;
-    
+
     @media (min-width: 640px) {
       margin-bottom: 0.4rem;
       line-height: 1.45;
@@ -588,7 +629,9 @@ const continueFromLastQuestion = () => {
       margin: 1rem auto;
       width: 95%;
       max-height: 250px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
 
     @media (min-width: 768px) {
@@ -626,7 +669,7 @@ const continueFromLastQuestion = () => {
     :deep(table) {
       font-size: 0.7rem;
     }
-    
+
     :deep(th),
     :deep(td) {
       padding: 0.2rem 0.3rem;
@@ -676,7 +719,7 @@ const continueFromLastQuestion = () => {
     border: 1px solid #e5e7eb;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
-  
+
   .station {
     padding: 0.75rem;
     margin-bottom: 0.75rem;
@@ -685,31 +728,31 @@ const continueFromLastQuestion = () => {
     background: white;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
-  
+
   .station-text {
     font-size: 0.875rem;
     line-height: 1.4;
   }
-  
+
   .expected-answer {
     padding: 0.5rem;
     margin-top: 0.5rem;
   }
-  
+
   .show-answer-btn {
     padding: 0.375rem 0.5rem;
     font-size: 0.75rem;
   }
-  
+
   .question-header {
     font-size: 0.875rem;
     padding: 0.5rem 0.75rem;
   }
-  
+
   .station-header {
     font-size: 0.75rem;
   }
-  
+
   .station-number {
     width: 1.25rem;
     height: 1.25rem;

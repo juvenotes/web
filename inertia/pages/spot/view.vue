@@ -4,7 +4,7 @@ import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import type UserStudySessionDto from '#dtos/user_study_session'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Clock, Settings, ArrowRight, CheckCircle} from 'lucide-vue-next'
+import { FileText, Clock, Settings, ArrowRight, CheckCircle } from 'lucide-vue-next'
 import { computed, ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -248,7 +248,9 @@ const continueFromLastQuestion = () => {
           <div class="space-y-3 sm:space-y-4">
             <!-- Question Header -->
             <div class="flex flex-col gap-2">
-              <span class="inline-block w-fit px-2 sm:px-4 py-1 sm:py-1.5 bg-[#55A9C4]/15 text-[#55A9C4] rounded-md sm:rounded-lg font-medium sm:font-semibold text-xs sm:text-base shadow-xs sm:shadow-sm">
+              <span
+                class="inline-block w-fit px-2 sm:px-4 py-1 sm:py-1.5 bg-[#55A9C4]/15 text-[#55A9C4] rounded-md sm:rounded-lg font-medium sm:font-semibold text-xs sm:text-base shadow-xs sm:shadow-sm"
+              >
                 Question {{ questionIndex + 1 }}
               </span>
               <p
@@ -291,7 +293,9 @@ const continueFromLastQuestion = () => {
                 </div>
 
                 <!-- Station Text -->
-                <p class="text-xs sm:text-base text-gray-900 break-words mb-2 sm:mb-4 leading-relaxed">
+                <p
+                  class="text-xs sm:text-base text-gray-900 break-words mb-2 sm:mb-4 leading-relaxed"
+                >
                   {{ station.partText }}
                 </p>
 
@@ -317,16 +321,26 @@ const continueFromLastQuestion = () => {
 
                 <!-- Expected Answer Section -->
                 <div v-if="showAnswers[station.id]" class="mt-3 sm:mt-5 animate-fadeIn">
-                  <div class="relative overflow-hidden rounded-lg sm:rounded-xl shadow-xs sm:shadow-lg border border-gray-200 sm:border-gray-100 w-full">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"></div>
+                  <div
+                    class="relative overflow-hidden rounded-lg sm:rounded-xl shadow-xs sm:shadow-lg border border-gray-200 sm:border-gray-100 w-full"
+                  >
+                    <div
+                      class="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"
+                    ></div>
 
-                    <div class="p-2 sm:p-4 md:p-5 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-200 sm:border-gray-100">
+                    <div
+                      class="p-2 sm:p-4 md:p-5 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-200 sm:border-gray-100"
+                    >
                       <div class="flex items-center gap-2 sm:gap-3">
-                        <div class="flex items-center justify-center w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]">
+                        <div
+                          class="flex items-center justify-center w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
+                        >
                           <CheckCircle class="h-3 w-3 sm:h-5 sm:w-5" />
                         </div>
                         <div>
-                          <p class="text-xs sm:text-sm text-gray-500 font-medium">Expected Answer</p>
+                          <p class="text-xs sm:text-sm text-gray-500 font-medium">
+                            Expected Answer
+                          </p>
                           <p class="text-xs sm:text-sm text-[#55A9C4]/80 font-medium">
                             {{ station.marks }} mark{{ station.marks > 1 ? 's' : '' }} available
                           </p>
@@ -335,7 +349,9 @@ const continueFromLastQuestion = () => {
                     </div>
 
                     <div class="p-2 sm:p-4 md:p-5 bg-white">
-                      <div class="text-xs sm:text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                      <div
+                        class="text-xs sm:text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
+                      >
                         <ViewExplanation :content="station.expectedAnswer" />
                       </div>
                     </div>
@@ -444,22 +460,22 @@ const continueFromLastQuestion = () => {
       height: 4px;
       width: 4px;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: #f8f8f8;
       border-radius: 2px;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: #d1d1d1;
       border-radius: 2px;
     }
-    
+
     &::-webkit-scrollbar-thumb:hover {
       background: #b8b8b8;
     }
   }
-  
+
   :deep(th) {
     background-color: rgba(85, 169, 196, 0.1);
     color: #444;
@@ -469,7 +485,7 @@ const continueFromLastQuestion = () => {
     border: 1px solid rgba(85, 169, 196, 0.2);
     white-space: nowrap;
   }
-  
+
   :deep(td) {
     padding: 0.25rem 0.5rem;
     border: 1px solid rgba(85, 169, 196, 0.1);
@@ -481,7 +497,7 @@ const continueFromLastQuestion = () => {
     :deep(table) {
       font-size: 0.7rem;
     }
-    
+
     :deep(th),
     :deep(td) {
       padding: 0.2rem 0.3rem;
@@ -510,7 +526,7 @@ const continueFromLastQuestion = () => {
   @media (min-width: 640px) {
     max-height: 350px;
     padding-right: 4px;
-    
+
     &::-webkit-scrollbar {
       width: 4px;
     }
@@ -545,7 +561,7 @@ const continueFromLastQuestion = () => {
   :deep(li) {
     margin-bottom: 0.25rem;
     line-height: 1.35;
-    
+
     @media (min-width: 640px) {
       margin-bottom: 0.4rem;
       line-height: 1.45;
@@ -654,7 +670,7 @@ const continueFromLastQuestion = () => {
     border: 1px solid #e5e7eb;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
-  
+
   .station {
     padding: 0.75rem;
     margin-bottom: 0.75rem;
@@ -663,31 +679,31 @@ const continueFromLastQuestion = () => {
     background: white;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
-  
+
   .station-text {
     font-size: 0.875rem;
     line-height: 1.4;
   }
-  
+
   .expected-answer {
     padding: 0.5rem;
     margin-top: 0.5rem;
   }
-  
+
   .show-answer-btn {
     padding: 0.375rem 0.5rem;
     font-size: 0.75rem;
   }
-  
+
   .question-header {
     font-size: 0.875rem;
     padding: 0.5rem 0.75rem;
   }
-  
+
   .station-header {
     font-size: 0.75rem;
   }
-  
+
   .station-number {
     width: 1.25rem;
     height: 1.25rem;

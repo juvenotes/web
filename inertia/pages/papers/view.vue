@@ -799,22 +799,22 @@ const getLastEditDate = computed(() => {
       height: 4px;
       width: 4px; /* For vertical scrollbar if needed */
     }
-    
+
     &::-webkit-scrollbar-track {
       background: #f8f8f8;
       border-radius: 2px;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: #d1d1d1;
       border-radius: 2px;
     }
-    
+
     &::-webkit-scrollbar-thumb:hover {
       background: #b8b8b8;
     }
   }
-  
+
   :deep(th) {
     background-color: rgba(85, 169, 196, 0.1);
     color: #444;
@@ -824,7 +824,7 @@ const getLastEditDate = computed(() => {
     border: 1px solid rgba(85, 169, 196, 0.2);
     white-space: nowrap;
   }
-  
+
   :deep(td) {
     padding: 0.25rem 0.5rem;
     border: 1px solid rgba(85, 169, 196, 0.1);
@@ -838,8 +838,9 @@ const getLastEditDate = computed(() => {
     :deep(table) {
       font-size: 0.7rem;
     }
-    
-    :deep(th), :deep(td) {
+
+    :deep(th),
+    :deep(td) {
       padding: 0.2rem 0.3rem;
     }
   }
@@ -852,11 +853,11 @@ const getLastEditDate = computed(() => {
   overflow-x: auto;
   white-space: nowrap;
   padding-bottom: 4px;
-  
+
   /* If you want to KEEP these hidden */
   scrollbar-width: none;
   -ms-overflow-style: none;
-  
+
   &::-webkit-scrollbar {
     display: none;
   }
