@@ -4,7 +4,7 @@ import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import type UserStudySessionDto from '#dtos/user_study_session'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Clock, Settings, ArrowRight, CheckCircle, BookOpen } from 'lucide-vue-next'
+import { FileText, Clock, Settings, ArrowRight, CheckCircle} from 'lucide-vue-next'
 import { computed, ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -243,14 +243,12 @@ const continueFromLastQuestion = () => {
           v-for="(question, questionIndex) in questions"
           :key="question.id"
           :id="`question-${question.id}`"
-          class="p-3 sm:p-4 md:p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full"
+          class="p-2 sm:p-4 md:p-6 bg-white rounded-lg sm:rounded-xl border border-gray-200 sm:border-gray-100 shadow-xs sm:shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full"
         >
           <div class="space-y-3 sm:space-y-4">
             <!-- Question Header -->
             <div class="flex flex-col gap-2">
-              <span
-                class="inline-block w-fit px-3 sm:px-4 py-1 sm:py-1.5 bg-[#55A9C4]/15 text-[#55A9C4] rounded-lg font-medium sm:font-semibold text-sm sm:text-base shadow-sm"
-              >
+              <span class="inline-block w-fit px-2 sm:px-4 py-1 sm:py-1.5 bg-[#55A9C4]/15 text-[#55A9C4] rounded-md sm:rounded-lg font-medium sm:font-semibold text-xs sm:text-base shadow-xs sm:shadow-sm">
                 Question {{ questionIndex + 1 }}
               </span>
               <p
@@ -261,125 +259,84 @@ const continueFromLastQuestion = () => {
             </div>
 
             <!-- Question Image -->
-            <div v-if="question.questionImagePath" class="flex justify-center mt-3 sm:mt-4">
+            <div v-if="question.questionImagePath" class="flex justify-center mt-2 sm:mt-4">
               <img
                 :src="question.questionImagePath"
                 :alt="`Question ${questionIndex + 1} image`"
-                class="w-full h-auto rounded-lg border shadow-sm max-h-[300px] sm:max-h-[400px] object-contain"
+                class="w-full h-auto rounded-lg border shadow-xs sm:shadow-sm max-h-[250px] sm:max-h-[400px] object-contain"
               />
             </div>
 
             <!-- SPOT Stations -->
-            <div class="mt-4 sm:mt-5 space-y-4 sm:space-y-5 pl-0 sm:pl-4 md:pl-6">
+            <div class="mt-3 sm:mt-5 space-y-3 sm:space-y-5">
               <div
-                class="bg-gradient-to-r from-[#55A9C4]/5 to-[#55A9C4]/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full"
+                v-for="(station, stationIndex) in question.spotStations"
+                :key="station.id"
+                class="p-2 sm:p-4 bg-white rounded-lg sm:rounded-xl border border-gray-200 sm:border-[#55A9C4]/10 shadow-xs sm:shadow-sm hover:shadow-md transition-all duration-300 relative"
               >
-                <!-- SPOT Stations Header -->
-                <div
-                  class="flex items-center justify-between px-3 sm:px-4 md:px-5 py-3 sm:py-4 bg-[#55A9C4]/15 border-b border-[#55A9C4]/10"
-                >
-                  <div class="flex items-center gap-2 sm:gap-3">
-                    <BookOpen class="h-4 w-4 sm:h-5 sm:w-5 text-[#55A9C4]" />
-                    <span class="text-xs sm:text-sm md:text-base font-medium text-[#55A9C4]"
-                      >SPOT Stations</span
+                <!-- Station Header -->
+                <div class="flex items-center justify-between mb-1 sm:mb-3">
+                  <div class="flex items-baseline gap-1 sm:gap-3">
+                    <span
+                      class="inline-flex items-center justify-center h-5 w-5 sm:h-7 sm:w-7 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-xs sm:shadow-sm"
                     >
-                  </div>
-                  <div
-                    class="text-xs bg-white/70 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[#55A9C4]/80 font-medium shadow-sm"
-                  >
-                    {{ question.spotStations.length }} station{{
-                      question.spotStations.length > 1 ? 's' : ''
-                    }}
+                      {{ stationIndex + 1 }}
+                    </span>
+                    <span
+                      class="text-xs text-[#55A9C4]/80 font-medium px-1.5 py-0.5 bg-[#55A9C4]/5 rounded-md"
+                    >
+                      {{ station.marks }} mark{{ station.marks > 1 ? 's' : '' }}
+                    </span>
                   </div>
                 </div>
 
-                <!-- SPOT Stations List -->
-                <div class="divide-y divide-[#55A9C4]/10">
-                  <div
-                    v-for="(station, stationIndex) in question.spotStations"
-                    :key="station.id"
-                    class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5 bg-white/80 hover:bg-white/100 transition-all duration-300 relative"
-                  >
-                    <!-- Station Header -->
-                    <div class="flex items-center justify-between mb-2 sm:mb-3">
-                      <div class="flex items-baseline gap-2 sm:gap-3">
-                        <span
-                          class="inline-flex items-center justify-center h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm"
-                        >
-                          {{ stationIndex + 1 }}
-                        </span>
-                        <span
-                          class="text-xs text-[#55A9C4]/80 font-medium px-2 py-0.5 bg-[#55A9C4]/5 rounded-md"
-                        >
-                          {{ station.marks }} mark{{ station.marks > 1 ? 's' : '' }}
-                        </span>
+                <!-- Station Text -->
+                <p class="text-xs sm:text-base text-gray-900 break-words mb-2 sm:mb-4 leading-relaxed">
+                  {{ station.partText }}
+                </p>
+
+                <!-- Station Image if present -->
+                <div v-if="station.imagePath" class="mt-1 sm:mt-3 flex justify-center">
+                  <img
+                    :src="station.imagePath"
+                    :alt="`Station ${stationIndex + 1} image`"
+                    class="w-full h-auto rounded-lg border shadow-xs sm:shadow-sm max-h-[200px] sm:max-h-[300px] object-contain"
+                  />
+                </div>
+
+                <!-- Show Answer Button -->
+                <button
+                  @click="handleSpotStationView(question.id, station.id)"
+                  class="group w-full flex items-center justify-center gap-2 mt-2 text-[#55A9C4] font-medium sm:font-semibold text-xs sm:text-sm rounded-md sm:rounded-lg p-1.5 sm:p-2.5 md:p-3 bg-gradient-to-r from-[#55A9C4]/10 to-[#55A9C4]/5 hover:from-[#55A9C4]/20 hover:to-[#55A9C4]/10 border border-[#55A9C4]/20 transition-all duration-300 shadow-xs sm:shadow-sm hover:shadow"
+                >
+                  <ChevronDown
+                    class="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-y-1 transition-transform duration-300"
+                  />
+                  <span>{{ showAnswers[station.id] ? 'Hide Answer' : 'Show Answer' }}</span>
+                </button>
+
+                <!-- Expected Answer Section -->
+                <div v-if="showAnswers[station.id]" class="mt-3 sm:mt-5 animate-fadeIn">
+                  <div class="relative overflow-hidden rounded-lg sm:rounded-xl shadow-xs sm:shadow-lg border border-gray-200 sm:border-gray-100 w-full">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"></div>
+
+                    <div class="p-2 sm:p-4 md:p-5 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-200 sm:border-gray-100">
+                      <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="flex items-center justify-center w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]">
+                          <CheckCircle class="h-3 w-3 sm:h-5 sm:w-5" />
+                        </div>
+                        <div>
+                          <p class="text-xs sm:text-sm text-gray-500 font-medium">Expected Answer</p>
+                          <p class="text-xs sm:text-sm text-[#55A9C4]/80 font-medium">
+                            {{ station.marks }} mark{{ station.marks > 1 ? 's' : '' }} available
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    <!-- Station Text -->
-                    <p
-                      class="text-sm sm:text-base text-gray-900 break-words mb-3 sm:mb-4 leading-relaxed"
-                    >
-                      {{ station.partText }}
-                    </p>
-
-                    <!-- Station Image if present -->
-                    <div v-if="station.imagePath" class="mt-2 sm:mt-3 flex justify-center">
-                      <img
-                        :src="station.imagePath"
-                        :alt="`Station ${stationIndex + 1} image`"
-                        class="w-full h-auto rounded-lg border shadow-sm max-h-[250px] sm:max-h-[300px] object-contain"
-                      />
-                    </div>
-
-                    <!-- Show Answer Button -->
-                    <button
-                      @click="handleSpotStationView(question.id, station.id)"
-                      class="group w-full flex items-center justify-center gap-2 mt-3 text-[#55A9C4] font-medium sm:font-semibold text-xs sm:text-sm rounded-lg p-2 sm:p-2.5 md:p-3 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 hover:from-[#55A9C4]/25 hover:to-[#55A9C4]/15 border border-[#55A9C4]/20 transition-all duration-300 shadow-sm hover:shadow"
-                    >
-                      <ChevronDown
-                        class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300"
-                      />
-                      <span>{{ showAnswers[station.id] ? 'Hide Answer' : 'Show Answer' }}</span>
-                    </button>
-
-                    <!-- Expected Answer Section - MODIFIED HERE TO REMOVE INFO ICON -->
-                    <div v-if="showAnswers[station.id]" class="mt-4 sm:mt-5 animate-fadeIn">
-                      <div
-                        class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
-                      >
-                        <div
-                          class="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"
-                        ></div>
-
-                        <div
-                          class="p-3 sm:p-4 md:p-5 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100"
-                        >
-                          <div class="flex items-center gap-2 sm:gap-3">
-                            <div
-                              class="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
-                            >
-                              <CheckCircle class="h-4 w-4 sm:h-5 sm:w-5" />
-                            </div>
-                            <div>
-                              <p class="text-xs sm:text-sm text-gray-500 font-medium">
-                                Expected Answer
-                              </p>
-                              <p class="text-xs sm:text-sm text-[#55A9C4]/80 font-medium">
-                                {{ station.marks }} mark{{ station.marks > 1 ? 's' : '' }} available
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="p-3 sm:p-4 md:p-5 bg-white">
-                          <!-- Removed the info icon and its container div -->
-                          <div
-                            class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
-                          >
-                            <ViewExplanation :content="station.expectedAnswer" />
-                          </div>
-                        </div>
+                    <div class="p-2 sm:p-4 md:p-5 bg-white">
+                      <div class="text-xs sm:text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                        <ViewExplanation :content="station.expectedAnswer" />
                       </div>
                     </div>
                   </div>
@@ -466,13 +423,74 @@ const continueFromLastQuestion = () => {
 
 .explanation-content {
   position: relative;
-  max-height: 300px; /* Increased from 250px */
+  max-height: 250px;
   overflow-y: auto;
   padding-right: 3px;
-  padding-left: 0; /* Added to remove any left padding */
+  padding-left: 0;
 
+  /* Added table styling to match first file */
+  :deep(table) {
+    width: 100%;
+    font-size: 0.75rem;
+    border-collapse: collapse;
+    margin-bottom: 0.5rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+
+    /* Horizontal scrollbar styling */
+    &::-webkit-scrollbar {
+      height: 4px;
+      width: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f8f8f8;
+      border-radius: 2px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #d1d1d1;
+      border-radius: 2px;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+      background: #b8b8b8;
+    }
+  }
+  
+  :deep(th) {
+    background-color: rgba(85, 169, 196, 0.1);
+    color: #444;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    text-align: left;
+    border: 1px solid rgba(85, 169, 196, 0.2);
+    white-space: nowrap;
+  }
+  
+  :deep(td) {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(85, 169, 196, 0.1);
+    white-space: nowrap;
+  }
+
+  /* Mobile responsive adjustments for tables */
+  @media (max-width: 640px) {
+    :deep(table) {
+      font-size: 0.7rem;
+    }
+    
+    :deep(th),
+    :deep(td) {
+      padding: 0.2rem 0.3rem;
+    }
+  }
+
+  /* Existing scrollbar styling */
   &::-webkit-scrollbar {
-    width: 3px; /* Reduced from 4px */
+    width: 3px;
   }
 
   &::-webkit-scrollbar-track {
@@ -490,56 +508,56 @@ const continueFromLastQuestion = () => {
   }
 
   @media (min-width: 640px) {
-    max-height: 350px; /* Increased from 300px */
-    padding-right: 4px; /* Reduced from 5px */
-
+    max-height: 350px;
+    padding-right: 4px;
+    
     &::-webkit-scrollbar {
-      width: 4px; /* Reduced from 6px */
+      width: 4px;
     }
   }
 
   @media (min-width: 1024px) {
-    max-height: 450px; /* Increased from 400px */
+    max-height: 450px;
   }
 
   :deep(ol) {
     list-style-type: decimal;
-    margin-left: 0.75rem; /* Reduced from 1rem */
-    margin-top: 0.4rem; /* Reduced from 0.5rem */
+    margin-left: 0.75rem;
+    margin-top: 0.4rem;
 
     @media (min-width: 640px) {
-      margin-left: 1rem; /* Reduced from 1.25rem */
-      margin-top: 0.6rem; /* Reduced from 0.75rem */
+      margin-left: 1rem;
+      margin-top: 0.6rem;
     }
   }
 
   :deep(ul) {
     list-style-type: disc;
-    margin-left: 0.75rem; /* Reduced from 1rem */
-    margin-top: 0.4rem; /* Reduced from 0.5rem */
+    margin-left: 0.75rem;
+    margin-top: 0.4rem;
 
     @media (min-width: 640px) {
-      margin-left: 1rem; /* Reduced from 1.25rem */
-      margin-top: 0.6rem; /* Reduced from 0.75rem */
+      margin-left: 1rem;
+      margin-top: 0.6rem;
     }
   }
 
   :deep(li) {
-    margin-bottom: 0.25rem; /* Reduced from 0.35rem */
-    line-height: 1.35; /* Slightly reduced from 1.4 */
-
+    margin-bottom: 0.25rem;
+    line-height: 1.35;
+    
     @media (min-width: 640px) {
-      margin-bottom: 0.4rem; /* Reduced from 0.5rem */
-      line-height: 1.45; /* Slightly reduced from 1.5 */
+      margin-bottom: 0.4rem;
+      line-height: 1.45;
     }
   }
 
   :deep(hr) {
-    margin: 0.6rem 0; /* Reduced from 0.75rem */
+    margin: 0.6rem 0;
     border-top: 1px dashed #a8d3e7;
 
     @media (min-width: 640px) {
-      margin: 0.8rem 0; /* Reduced from 1rem */
+      margin: 0.8rem 0;
     }
   }
 
@@ -626,5 +644,54 @@ const continueFromLastQuestion = () => {
 
 .highlight-question {
   box-shadow: 0 0 0 3px rgba(85, 169, 196, 0.3);
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  .question-container {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .station {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    background: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .station-text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  .expected-answer {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .show-answer-btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .question-header {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .station-header {
+    font-size: 0.75rem;
+  }
+  
+  .station-number {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.625rem;
+  }
 }
 </style>

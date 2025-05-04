@@ -710,29 +710,28 @@ const getLastEditDate = computed(() => {
   position: relative;
   max-height: 300px;
   overflow-y: auto;
-  padding-right: 5px;
-  width: 100%;
 
+  /* Vertical scrollbar styling */
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+    background: #f8f8f8;
+    border-radius: 2px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
+    background: #d1d1d1;
+    border-radius: 2px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: #b8b8b8;
   }
 
   @media (min-width: 640px) {
-    max-height: 400px;
+    max-height: 350px;
   }
 
   @media (min-width: 1024px) {
@@ -783,29 +782,91 @@ const getLastEditDate = computed(() => {
       margin: 0;
     }
   }
+
+  /* Table styling with visible horizontal scrollbar */
+  :deep(table) {
+    width: 100%;
+    font-size: 0.75rem;
+    border-collapse: collapse;
+    margin-bottom: 0.5rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+
+    /* Horizontal scrollbar styling */
+    &::-webkit-scrollbar {
+      height: 4px;
+      width: 4px; /* For vertical scrollbar if needed */
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f8f8f8;
+      border-radius: 2px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #d1d1d1;
+      border-radius: 2px;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+      background: #b8b8b8;
+    }
+  }
+  
+  :deep(th) {
+    background-color: rgba(85, 169, 196, 0.1);
+    color: #444;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    text-align: left;
+    border: 1px solid rgba(85, 169, 196, 0.2);
+    white-space: nowrap;
+  }
+  
+  :deep(td) {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(85, 169, 196, 0.1);
+    white-space: nowrap;
+  }
 }
 
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .explanation-content {
+    :deep(table) {
+      font-size: 0.7rem;
+    }
+    
+    :deep(th), :deep(td) {
+      padding: 0.2rem 0.3rem;
+    }
+  }
+}
+
+/* For elements where you actually want to hide scrollbar */
 .hide-scrollbar,
 :deep(.breadcrumb-trail) {
   max-width: 100%;
   overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   white-space: nowrap;
   padding-bottom: 4px;
-}
-
-.hide-scrollbar::-webkit-scrollbar,
-:deep(.breadcrumb-trail::-webkit-scrollbar) {
-  display: none;
+  
+  /* If you want to KEEP these hidden */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(4px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
