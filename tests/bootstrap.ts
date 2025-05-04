@@ -7,6 +7,7 @@ import { apiClient } from '@japa/api-client'
 import { sessionApiClient } from '@adonisjs/session/plugins/api_client'
 import { authApiClient } from '@adonisjs/auth/plugins/api_client'
 import { shieldApiClient } from '@adonisjs/shield/plugins/api_client'
+import { browserClient } from '@japa/browser-client'
 
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
@@ -23,6 +24,12 @@ export const plugins: Config['plugins'] = [
   authApiClient(app),
   sessionApiClient(app),
   shieldApiClient(),
+  browserClient({
+    runInSuites: ['browser'],
+    contextOptions: {
+      baseURL: process.env.APP_URL || 'http://localhost:3333',
+    },
+  }),
 ]
 
 /**

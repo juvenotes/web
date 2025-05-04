@@ -38,7 +38,7 @@ onMounted(async () => {
     try {
       const response = await axios.post('/api/study-sessions', {
         resourceType: 'osce',
-        resourceId: props.paper.id
+        resourceId: props.paper.id,
       })
       studySession.value = response.data
     } catch (error) {
@@ -153,7 +153,9 @@ const continueFromLastQuestion = () => {
     @close="closeFeedbackDialog"
   />
 
-  <div class="w-full mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 font-sans">
+  <div
+    class="w-full mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 font-sans"
+  >
     <!-- Header Section -->
     <div class="relative p-3 sm:p-6 bg-white rounded-lg sm:rounded-xl border border-gray-200 sm:border-gray-100 shadow-sm sm:shadow-lg hover:shadow-md transition-shadow duration-300">
       <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent rounded-t-lg sm:rounded-t-xl" />
@@ -197,14 +199,19 @@ const continueFromLastQuestion = () => {
             :href="`/manage/osce/${concept.slug}/${paper.slug}`"
             class="w-full sm:w-auto flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-md sm:rounded-lg bg-[#55A9C4] hover:bg-[#55A9C4]/90 text-white border border-[#55A9C4] text-xs sm:text-sm font-medium hover:shadow-sm sm:hover:shadow-md transition-all duration-200 group"
           >
-            <Settings class="h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-500 group-hover:rotate-180" />
+            <Settings
+              class="h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-500 group-hover:rotate-180"
+            />
             <span>Edit OSCE</span>
           </Link>
         </div>
       </div>
     </div>
 
-    <div v-if="paper.metadata?.lastEditedBy || paper.createdAt" class="text-xs text-gray-500 px-1 italic">
+    <div
+      v-if="paper.metadata?.lastEditedBy || paper.createdAt"
+      class="text-xs text-gray-500 px-1 italic"
+    >
       Last edited on {{ lastEditDate }}
     </div>
 
@@ -226,8 +233,10 @@ const continueFromLastQuestion = () => {
             :style="{ width: `${paperProgress.completionPercentage}%` }"
             :class="{
               'bg-amber-500': paperProgress.completionPercentage < 25,
-              'bg-orange-500': paperProgress.completionPercentage >= 25 && paperProgress.completionPercentage < 50,
-              'bg-blue-500': paperProgress.completionPercentage >= 50 && paperProgress.completionPercentage < 75,
+              'bg-orange-500':
+                paperProgress.completionPercentage >= 25 && paperProgress.completionPercentage < 50,
+              'bg-blue-500':
+                paperProgress.completionPercentage >= 50 && paperProgress.completionPercentage < 75,
               'bg-green-500': paperProgress.completionPercentage >= 75,
             }"
           ></div>
@@ -313,7 +322,6 @@ const continueFromLastQuestion = () => {
                     class="w-full h-auto rounded-lg border shadow-xs sm:shadow-sm max-h-[200px] sm:max-h-[300px] object-contain"
                   />
                 </div>
-
                 <!-- Show Answer Button -->
                 <button
                   v-if="!showAnswers[part.id]"
@@ -368,7 +376,7 @@ const continueFromLastQuestion = () => {
           </div>
         </div>
       </template>
-      
+
       <!-- Empty State -->
       <div v-else class="text-center py-6 sm:py-10 bg-white rounded-lg border border-gray-200 sm:border-gray-100 shadow-xs sm:shadow-sm hover:shadow-sm sm:hover:shadow-md transition-all duration-300">
         <p class="text-gray-500">This OSCE paper has no stations yet.</p>

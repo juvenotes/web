@@ -4,11 +4,16 @@ import db from '@adonisjs/lucid/services/db'
 
 export default class EducationLevelSeeder extends BaseSeeder {
   async run() {
+    console.log('\n=== Seeding Education Levels ===')
+
     // Insert education levels from the enum
-    await db.table('education_levels').multiInsert(
-      Object.values(EducationLevel).map((level) => ({
-        name: level,
-      }))
-    )
+    const levels = Object.values(EducationLevel).map((level) => ({
+      name: level,
+    }))
+
+    await db.table('education_levels').multiInsert(levels)
+
+    console.log(`✓ Created ${levels.length} education levels:`)
+    levels.forEach((level) => console.log(`  - ${level.name}`))
   }
 }

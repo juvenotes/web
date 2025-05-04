@@ -22,7 +22,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-  const studySession = ref(props.studySession)
+const studySession = ref(props.studySession)
 
 // Initialize study session if not provided
 onMounted(async () => {
@@ -30,7 +30,7 @@ onMounted(async () => {
     try {
       const response = await axios.post('/api/study-sessions', {
         resourceType: 'spot',
-        resourceId: props.paper.id
+        resourceId: props.paper.id,
       })
       studySession.value = response.data
     } catch (error) {
@@ -124,23 +124,36 @@ const continueFromLastQuestion = () => {
 
   <div class="w-full mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8 font-sans">
     <!-- Header Section -->
-    <div class="relative p-4 sm:p-6 md:p-8 bg-white rounded-xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent rounded-t-xl" />
+    <div
+      class="relative p-4 sm:p-6 md:p-8 bg-white rounded-xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
+    >
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent rounded-t-xl"
+      />
 
-      <BreadcrumbTrail :items="breadcrumbItems" class="max-w-full overflow-x-auto pb-2 hide-scrollbar" />
+      <BreadcrumbTrail
+        :items="breadcrumbItems"
+        class="max-w-full overflow-x-auto pb-2 hide-scrollbar"
+      />
 
       <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
         <div class="flex items-start gap-3 flex-1">
-          <div class="p-2 sm:p-3 rounded-lg bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200">
+          <div
+            class="p-2 sm:p-3 rounded-lg bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
+          >
             <FileText class="h-4 w-4 sm:h-5 sm:w-5 text-[#55A9C4]" />
           </div>
           <div class="space-y-1">
-            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">{{ paper.title }}</h1>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
+              {{ paper.title }}
+            </h1>
             <p class="text-xs sm:text-sm text-gray-500 max-w-full">
               SPOT stations for {{ paper.title }} in {{ concept.title }}
             </p>
             <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
-              <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 text-xs font-semibold bg-[#55A9C4]/15 text-[#55A9C4] rounded-full shadow-sm">
+              <span
+                class="px-2 py-0.5 sm:px-2.5 sm:py-1 text-xs font-semibold bg-[#55A9C4]/15 text-[#55A9C4] rounded-full shadow-sm"
+              >
                 SPOT
               </span>
               <span class="text-xs sm:text-sm text-gray-500">{{ paper.year }}</span>
@@ -149,7 +162,8 @@ const continueFromLastQuestion = () => {
                 Last edited {{ lastEditDate }}
               </span>
               <span class="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
-                {{ paperProgress.attemptCount }} {{ paperProgress.attemptCount === 1 ? 'attempt' : 'attempts' }}
+                {{ paperProgress.attemptCount }}
+                {{ paperProgress.attemptCount === 1 ? 'attempt' : 'attempts' }}
               </span>
             </div>
           </div>
@@ -180,13 +194,16 @@ const continueFromLastQuestion = () => {
     <DisclaimerBanner />
 
     <!-- Progress Tracking Section -->
-    <div class="bg-white p-4 sm:p-5 md:p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-      <div v-if="paperProgress.completionPercentage > 0" class="p-3 sm:p-4 md:p-5 bg-white/80 rounded-xl border border-[#55A9C4]/10 mb-3 sm:mb-4">
+    <div
+      class="bg-white p-4 sm:p-5 md:p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300"
+    >
+      <div
+        v-if="paperProgress.completionPercentage > 0"
+        class="p-3 sm:p-4 md:p-5 bg-white/80 rounded-xl border border-[#55A9C4]/10 mb-3 sm:mb-4"
+      >
         <div class="flex justify-between items-center mb-2">
           <span class="font-medium text-sm">Your progress</span>
-          <span class="text-sm font-semibold">
-            {{ paperProgress.completionPercentage }}%
-          </span>
+          <span class="text-sm font-semibold"> {{ paperProgress.completionPercentage }}% </span>
         </div>
 
         <div class="h-2 sm:h-2.5 md:h-3 bg-gray-200 rounded-full overflow-hidden">
@@ -195,8 +212,10 @@ const continueFromLastQuestion = () => {
             :style="{ width: `${paperProgress.completionPercentage}%` }"
             :class="{
               'bg-amber-500': paperProgress.completionPercentage < 25,
-              'bg-orange-500': paperProgress.completionPercentage >= 25 && paperProgress.completionPercentage < 50,
-              'bg-blue-500': paperProgress.completionPercentage >= 50 && paperProgress.completionPercentage < 75,
+              'bg-orange-500':
+                paperProgress.completionPercentage >= 25 && paperProgress.completionPercentage < 50,
+              'bg-blue-500':
+                paperProgress.completionPercentage >= 50 && paperProgress.completionPercentage < 75,
               'bg-green-500': paperProgress.completionPercentage >= 75,
             }"
           ></div>
@@ -232,7 +251,9 @@ const continueFromLastQuestion = () => {
               <span class="inline-block w-fit px-2 sm:px-4 py-1 sm:py-1.5 bg-[#55A9C4]/15 text-[#55A9C4] rounded-md sm:rounded-lg font-medium sm:font-semibold text-xs sm:text-base shadow-xs sm:shadow-sm">
                 Question {{ questionIndex + 1 }}
               </span>
-              <p class="text-gray-900 pl-0.5 text-sm sm:text-base md:text-lg break-words leading-relaxed">
+              <p
+                class="text-gray-900 pl-0.5 text-sm sm:text-base md:text-lg break-words leading-relaxed"
+              >
                 {{ question.questionText }}
               </p>
             </div>
@@ -325,9 +346,12 @@ const continueFromLastQuestion = () => {
           </div>
         </div>
       </template>
-      
+
       <!-- Empty State -->
-      <div v-else class="text-center py-8 sm:py-12 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+      <div
+        v-else
+        class="text-center py-8 sm:py-12 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300"
+      >
         <p class="text-gray-500">This SPOT paper has no stations yet.</p>
       </div>
     </div>
@@ -364,7 +388,10 @@ const continueFromLastQuestion = () => {
             cy="16"
           />
         </svg>
-        <span class="absolute inset-0 flex items-center justify-center text-xs font-medium" style="font-size: 0.65rem">
+        <span
+          class="absolute inset-0 flex items-center justify-center text-xs font-medium"
+          style="font-size: 0.65rem"
+        >
           {{ Math.round(paperProgress.completionPercentage) }}%
         </span>
       </div>
@@ -549,7 +576,9 @@ const continueFromLastQuestion = () => {
       margin: 1rem auto;
       width: 95%;
       max-height: 250px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
 
     @media (min-width: 768px) {

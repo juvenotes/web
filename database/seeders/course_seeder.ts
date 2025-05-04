@@ -3,6 +3,8 @@ import db from '@adonisjs/lucid/services/db'
 
 export default class CourseSeeder extends BaseSeeder {
   async run() {
+    console.log('\n=== Seeding Courses ===')
+
     const courses = [
       { name: 'Bachelor of Medicine and Surgery (MBChB)' },
       { name: 'Bachelor of Dental Surgery (BDS)' },
@@ -18,12 +20,22 @@ export default class CourseSeeder extends BaseSeeder {
       .where('name', 'UNDERGRADUATE')
       .first()
 
+    if (!diplomaLevel || !undergraduateLevel) {
+      throw new Error(
+        'Required education levels not found. Please run education level seeder first.'
+      )
+    }
+
+    console.log('\nEducation Levels found:')
+    console.log(`  - Diploma Level (ID: ${diplomaLevel.id})`)
+    console.log(`  - Undergraduate Level (ID: ${undergraduateLevel.id})`)
+
     // Associate courses with their education levels
     const coursesWithLevels = courses.map((course) => {
       // Diploma in Pharmacy goes to Diploma level, all others are undergraduate
       const educationLevelId = course.name.startsWith('Diploma')
-        ? diplomaLevel?.id
-        : undergraduateLevel?.id
+        ? diplomaLevel.id
+        : undergraduateLevel.id
 
       return {
         ...course,
@@ -33,5 +45,11 @@ export default class CourseSeeder extends BaseSeeder {
 
     // Insert courses with their education level associations
     await db.table('courses').multiInsert(coursesWithLevels)
+
+    console.log('\nCreated courses:')
+    coursesWithLevels.forEach((course) => {
+      const level = course.education_level_id === diplomaLevel.id ? 'Diploma' : 'Undergraduate'
+      console.log(`  - ${course.name} (${level})`)
+    })
   }
 }
