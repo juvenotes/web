@@ -105,4 +105,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   R_2_SECRET_ACCESS_KEY: Env.schema.string(),
 
   R_2_ACCESS_KEY_ID: Env.schema.string(),
+
+  POSTHOG_API_KEY: Env.schema.string(),
+
+  POSTHOG_HOST: Env.schema.string()
 })
