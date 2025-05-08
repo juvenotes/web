@@ -179,6 +179,7 @@ declare module 'vue' {
     TooltipProvider: typeof import('./inertia/components/ui/tooltip/TooltipProvider.vue')['default']
     TooltipTrigger: typeof import('./inertia/components/ui/tooltip/TooltipTrigger.vue')['default']
     UploadMcqsDialog: typeof import('./inertia/components/dialogs/UploadMcqsDialog.vue')['default']
+    UploadPdfQuestionsDialog: typeof import('./inertia/components/dialogs/UploadPdfQuestionsDialog.vue')['default']
     ViewExplanation: typeof import('./inertia/components/ViewExplanation.vue')['default']
   }
 }
