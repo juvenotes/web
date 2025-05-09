@@ -51,6 +51,7 @@ const StudyTimeController = () => import('#controllers/study_time_controller/stu
 const ManageConceptSectionController = () =>
   import('#controllers/manage/concepts/manage_concept_section_controller')
 const OnboardingController = () => import('#controllers/onboarding_controller')
+import PapersController from '#controllers/api/papers_controller'
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -228,6 +229,12 @@ router
   .use(middleware.auth())
 router
   .get('/api/papers/:paperId/my-responses', [IndexPapersController, 'getMyResponses'])
+  .use(middleware.auth())
+router
+  .post('/api/papers/add-mcq-question', [
+    () => import('#controllers/api/papers_controller'),
+    'addMcqQuestion',
+  ])
   .use(middleware.auth())
 
 // LEGAL -> TERMS

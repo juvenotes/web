@@ -439,9 +439,5 @@ const selectedQuestion = ref<QuestionDto | null>(null)
     :question="selectedQuestion"
   />
   <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
-  <UploadPdfQuestionsDialog
-    v-model:open="showUploadPdfDialog"
-    :paper="paper"
-    :concept="concept"
-  />
+  <UploadPdfQuestionsDialog v-model:open="showUploadPdfDialog" :paper="paper" :concept="concept" />
 </template>
