@@ -39,6 +39,9 @@ const lastJson = ref<any>(null)
 const isSavingAll = ref(false)
 const progressMessage = ref<string>('')
 
+// Use environment variable for FastAPI websocket endpoint
+const FASTAPI_WS_URL = import.meta.env.VITE_FASTAPI_WS_URL || 'ws://localhost:8000/ws-mcq-upload'
+
 onMounted(() => {
   isDesktop.value = window.innerWidth > 768
 })
@@ -88,7 +91,7 @@ async function handleUpload() {
   questions.value = []
   progressMessage.value = ''
   try {
-    const ws = new WebSocket('ws://localhost:8000/ws-mcq-upload')
+    const ws = new WebSocket(FASTAPI_WS_URL)
     ws.binaryType = 'arraybuffer'
     ws.onopen = () => {
       const reader = new FileReader()
