@@ -145,6 +145,7 @@ const getLastEditDate = computed(() => {
 const showAddMcqDialog = ref(false)
 const showAddSaqDialog = ref(false)
 const showUploadDialog = ref(false)
+const showUploadPdfDialog = ref(false)
 const showEditMcqDialog = ref(false)
 const showEditSaqDialog = ref(false)
 const showEditPaperDialog = ref(false)
@@ -218,6 +219,9 @@ const selectedQuestion = ref<QuestionDto | null>(null)
               </DropdownMenuItem>
               <DropdownMenuItem @click="showUploadDialog = true">
                 <Upload class="mr-2 h-4 w-4" /> Upload MCQs
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="showUploadPdfDialog = true">
+                <Upload class="mr-2 h-4 w-4" /> Upload PDF (AI)
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem @click="showEditPaperDialog = true">
@@ -435,4 +439,5 @@ const selectedQuestion = ref<QuestionDto | null>(null)
     :question="selectedQuestion"
   />
   <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
+  <UploadPdfQuestionsDialog v-model:open="showUploadPdfDialog" :paper="paper" :concept="concept" />
 </template>
