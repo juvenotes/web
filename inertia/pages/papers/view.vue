@@ -224,10 +224,11 @@ const getLastEditDate = computed(() => {
     :question="feedbackDialog.question"
     @close="closeFeedbackDialog"
   />
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
-    <!-- Updated Header Section -->
+  <!-- Further increased width by changing from max-w-5xl to max-w-6xl -->
+  <div class="max-w-6xl mx-auto px-1 sm:px-2 py-5 space-y-5 font-sans">
+    <!-- Header Section with reduced padding -->
     <div
-      class="relative p-6 sm:p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
+      class="relative p-2 sm:p-3 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
     >
       <!-- Gradient Top Border -->
       <div
@@ -236,14 +237,14 @@ const getLastEditDate = computed(() => {
 
       <BreadcrumbTrail
         :items="breadcrumbItems"
-        class="max-w-full overflow-x-auto pb-2 hide-scrollbar text-xs sm:text-sm"
+        class="max-w-full overflow-x-auto pb-1 hide-scrollbar text-xs sm:text-sm"
       />
 
       <!-- Paper Info -->
-      <div class="mt-6 flex flex-col sm:flex-row sm:items-start gap-6">
-        <div class="flex items-start gap-4 flex-1">
+      <div class="mt-4 flex flex-col sm:flex-row sm:items-start gap-4">
+        <div class="flex items-start gap-3 flex-1">
           <div
-            class="p-3 rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
+            class="p-2 rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
           >
             <FileText class="h-5 w-5 text-[#55A9C4]" />
           </div>
@@ -251,12 +252,12 @@ const getLastEditDate = computed(() => {
             <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 truncate">
               {{ paper.title }}
             </h1>
-            <div class="flex flex-wrap items-center gap-3 mt-2">
+            <div class="flex flex-wrap items-center gap-2 mt-1">
               <span class="text-sm text-gray-500 truncate max-w-[180px] sm:max-w-[250px]">
                 {{ concept.title }}
               </span>
               <span
-                class="px-2.5 py-1 text-xs font-semibold bg-[#55A9C4]/15 text-[#55A9C4] rounded-full shadow-sm"
+                class="px-2 py-0.5 text-xs font-semibold bg-[#55A9C4]/15 text-[#55A9C4] rounded-full shadow-sm"
               >
                 {{ paper.examType.toUpperCase() }}
               </span>
@@ -270,7 +271,7 @@ const getLastEditDate = computed(() => {
         </div>
 
         <!-- Action buttons -->
-        <div class="w-full sm:w-auto mt-4 sm:mt-0 space-y-3">
+        <div class="w-full sm:w-auto mt-3 sm:mt-0 space-y-2">
           <!-- Continue button -->
           <Button
             v-if="paperProgress.progress?.lastQuestionId"
@@ -303,11 +304,11 @@ const getLastEditDate = computed(() => {
 
     <DisclaimerBanner />
 
-    <!-- Progress Tracking Section -->
+    <!-- Progress Tracking Section with reduced padding -->
     <div
-      class="bg-white p-5 sm:p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300"
+      class="bg-white p-2 sm:p-3 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300"
     >
-      <div v-if="paperProgress.progress" class="flex items-center gap-3 mb-4">
+      <div v-if="paperProgress.progress" class="flex items-center gap-3 mb-3">
         <CheckCircle v-if="hasAttemptedPaper" class="h-5 w-5 text-green-500" />
         <XCircle v-else class="h-5 w-5 text-amber-500" />
         <span class="font-medium text-sm sm:text-base">{{ attemptCountText }}</span>
@@ -315,16 +316,16 @@ const getLastEditDate = computed(() => {
 
       <div
         v-if="paperProgress.completionPercentage > 0"
-        class="p-4 sm:p-5 bg-white/80 rounded-xl border border-[#55A9C4]/10 mb-4"
+        class="p-2 bg-white/80 rounded-xl border border-[#55A9C4]/10 mb-3"
       >
-        <div class="flex justify-between items-center mb-2 sm:mb-3">
+        <div class="flex justify-between items-center mb-1">
           <span class="font-medium text-sm sm:text-base">Your progress</span>
           <span class="text-sm sm:text-base font-semibold">
             {{ paperProgress.completionPercentage }}%
           </span>
         </div>
 
-        <div class="h-2.5 sm:h-3 bg-gray-200 rounded-full overflow-hidden">
+        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
             class="h-full bg-[#55A9C4] rounded-full transition-all duration-500"
             :style="{ width: `${paperProgress.completionPercentage}%` }"
@@ -339,9 +340,7 @@ const getLastEditDate = computed(() => {
           ></div>
         </div>
 
-        <div
-          class="mt-2 sm:mt-3 flex justify-between items-center text-xs sm:text-sm text-gray-500"
-        >
+        <div class="mt-1 flex justify-between items-center text-xs sm:text-sm text-gray-500">
           <span>
             {{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of
             {{ questions.length }} questions
@@ -356,29 +355,27 @@ const getLastEditDate = computed(() => {
       </div>
     </div>
 
-    <!-- Questions List -->
-    <div class="space-y-6 sm:space-y-8">
+    <!-- Questions List with reduced padding -->
+    <div class="space-y-4 sm:space-y-5 w-full">
       <div
         v-for="(question, index) in questions"
         :key="question.id"
         :id="`question-${question.id}`"
-        class="p-4 sm:p-6 md:p-8 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full"
+        class="p-2 sm:p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 w-full"
       >
-        <div class="space-y-4 sm:space-y-5">
-          <div class="flex flex-col gap-2 sm:gap-3">
+        <div class="space-y-3">
+          <div class="flex flex-col gap-1">
             <span
-              class="inline-block w-fit px-4 sm:px-5 py-1.5 sm:py-2 bg-[#55A9C4]/15 text-[#55A9C4] rounded-lg font-semibold text-base sm:text-lg shadow-sm"
+              class="inline-block w-fit px-2 py-1 bg-[#55A9C4]/15 text-[#55A9C4] rounded-lg font-semibold text-base sm:text-lg shadow-sm"
             >
               Question {{ index + 1 }}
             </span>
-            <p
-              class="text-gray-900 pl-1 text-sm sm:text-base md:text-lg break-words leading-relaxed"
-            >
+            <p class="text-gray-900 pl-1 text-sm sm:text-base break-words leading-relaxed">
               {{ question.questionText }}
             </p>
           </div>
 
-          <div v-if="question.questionImagePath" class="flex justify-center mt-4">
+          <div v-if="question.questionImagePath" class="flex justify-center mt-3">
             <img
               :src="question.questionImagePath"
               :alt="`Question ${index + 1} image`"
@@ -386,7 +383,8 @@ const getLastEditDate = computed(() => {
             />
           </div>
 
-          <div v-if="question.isMcq" class="p-auto space-y-4 sm:space-y-5 mt-4 sm:mt-6">
+          <!-- MCQ options with reduced padding -->
+          <div v-if="question.isMcq" class="p-auto space-y-2 sm:space-y-3 mt-3">
             <div
               v-for="choice in question.choices"
               :key="choice.id"
@@ -398,15 +396,15 @@ const getLastEditDate = computed(() => {
                 'hover:bg-gray-50 hover:shadow hover:border-[#55A9C4]/30': !showAnswer[question.id],
                 'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
               }"
-              class="flex items-center gap-4 sm:gap-5 p-4 sm:p-5 rounded-xl border transition-all duration-300 text-sm sm:text-base cursor-pointer group sm:hover:scale-[1.02]"
+              class="flex items-center gap-2 p-2 rounded-lg border transition-all duration-300 text-sm cursor-pointer group sm:hover:scale-[1.01]"
               @click="handleChoiceSelect(question.id, choice.id)"
             >
               <div
-                class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full group-hover:bg-[#55A9C4]/15 transition-colors duration-300"
+                class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full group-hover:bg-[#55A9C4]/15 transition-colors duration-300"
               >
                 <CheckCircle
                   v-if="showAnswer[question.id] && choice.isCorrect"
-                  class="h-5 w-5 text-green-500 sm:scale-110 animate-fadeIn"
+                  class="h-4 w-4 text-green-500 sm:scale-110 animate-fadeIn"
                 />
                 <XCircle
                   v-else-if="
@@ -414,9 +412,9 @@ const getLastEditDate = computed(() => {
                     selectedAnswers[question.id] === choice.id &&
                     !choice.isCorrect
                   "
-                  class="h-5 w-5 text-red-500 sm:scale-110 animate-fadeIn"
+                  class="h-4 w-4 text-red-500 sm:scale-110 animate-fadeIn"
                 />
-                <Circle v-else class="h-5 w-5 text-gray-400" />
+                <Circle v-else class="h-4 w-4 text-gray-400" />
               </div>
 
               <span
@@ -437,40 +435,36 @@ const getLastEditDate = computed(() => {
               </span>
             </div>
 
-            <div v-if="showAnswer[question.id]" class="mt-6 sm:mt-8 animate-fadeIn">
-              <div class="flex items-center gap-2 mb-4">
-                <div class="h-6 w-1 bg-green-500 rounded-full"></div>
-                <h3 class="text-lg font-bold text-gray-800">Solution Explanation</h3>
+            <div v-if="showAnswer[question.id]" class="mt-4 sm:mt-5 animate-fadeIn">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="h-5 w-1 bg-green-500 rounded-full"></div>
+                <h3 class="text-base font-bold text-gray-800">Solution Explanation</h3>
               </div>
 
-              <div
-                class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
-              >
+              <div class="relative overflow-hidden rounded-lg shadow-lg border border-gray-100 w-full">
                 <div
-                  class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-[#55A9C4]"
+                  class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-green-400 to-[#55A9C4]"
                 ></div>
 
-                <div
-                  class="p-4 sm:p-5 md:p-6 bg-gradient-to-r from-green-50 to-[#55A9C4]/10 border-b border-gray-100"
-                >
-                  <div class="flex items-center gap-3">
+                <div class="p-2 bg-gradient-to-r from-green-50 to-[#55A9C4]/10 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
                     <div
-                      class="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600"
+                      class="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600"
                     >
-                      <CheckCircle class="h-5 w-5" />
+                      <CheckCircle class="h-4 w-4" />
                     </div>
                     <div>
-                      <p class="text-sm text-gray-500 font-medium">Correct Answer</p>
-                      <p class="text-base sm:text-lg font-semibold text-gray-800">
+                      <p class="text-xs text-gray-500 font-medium">Correct Answer</p>
+                      <p class="text-sm sm:text-base font-semibold text-gray-800">
                         {{ getCorrectAnswer(question)?.choiceText }}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div class="p-4 sm:p-6 md:p-8 bg-white">
+                <div class="p-2 sm:p-3 bg-white">
                   <div
-                    class="text-sm sm:text-base text-gray-700 font-medium break-words leading-relaxed explanation-content w-full pt-2"
+                    class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full pt-1"
                   >
                     <ViewExplanation :content="getCorrectAnswer(question)?.explanation || ''" />
                   </div>
@@ -479,12 +473,12 @@ const getLastEditDate = computed(() => {
 
               <Button
                 variant="outline"
-                class="mt-5 sm:mt-6 flex items-center gap-3 sm:gap-4 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 transition-all duration-300 rounded-lg px-5 sm:px-6 py-3 sm:py-3.5 shadow-sm hover:shadow-md group text-xs sm:text-sm w-full sm:w-auto justify-center sm:justify-start animate-fadeIn"
+                class="mt-3 sm:mt-4 flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 transition-all duration-300 rounded-lg px-3 py-1.5 shadow-sm hover:shadow-md group text-xs sm:text-sm w-full sm:w-auto justify-center sm:justify-start animate-fadeIn"
                 @click="openFeedbackDialog(question)"
               >
-                <div class="p-1.5 rounded-full bg-gray-100 shadow-sm">
+                <div class="p-1 rounded-full bg-gray-100 shadow-sm">
                   <MessageSquare
-                    class="h-4 w-4 sm:h-5 sm:w-5 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 text-gray-600"
+                    class="h-3 w-3 sm:h-4 sm:w-4 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 text-gray-600"
                   />
                 </div>
                 <span class="font-medium">Provide Feedback</span>
@@ -492,20 +486,20 @@ const getLastEditDate = computed(() => {
             </div>
           </div>
 
-          <!-- Optimized SAQ section -->
-          <div v-if="question.isSaq" class="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
+          <!-- SAQ section with improved visual design -->
+          <div v-if="question.isSaq" class="mt-3 space-y-3">
             <div
-              class="bg-gradient-to-r from-[#55A9C4]/5 to-[#55A9C4]/0 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full"
+              class="bg-white rounded-lg overflow-hidden shadow-sm border border-[#55A9C4]/20 hover:shadow-md transition-all duration-300 w-full"
             >
               <div
-                class="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 bg-[#55A9C4]/15 border-b border-[#55A9C4]/10"
+                class="flex items-center justify-between px-2 py-2 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 border-b border-[#55A9C4]/10"
               >
                 <div class="flex items-center gap-2">
                   <BookOpen class="h-4 w-4 text-[#55A9C4]" />
                   <span class="text-sm font-medium text-[#55A9C4]">Short Answer Questions</span>
                 </div>
                 <div
-                  class="text-xs bg-white/70 backdrop-blur-sm px-2 py-1 rounded-full text-[#55A9C4]/80 font-medium shadow-sm"
+                  class="text-xs bg-white/70 backdrop-blur-sm px-2 py-0.5 rounded-full text-[#55A9C4]/80 font-medium shadow-sm"
                 >
                   {{ question.parts.length }} part{{ question.parts.length > 1 ? 's' : '' }}
                 </div>
@@ -515,17 +509,17 @@ const getLastEditDate = computed(() => {
                 <div
                   v-for="(part, partIndex) in question.parts"
                   :key="part.id"
-                  class="px-3 sm:px-5 py-3 sm:py-4 bg-white/80 hover:bg-white/100 transition-all duration-300 w-full"
+                  class="p-2 bg-white hover:bg-[#55A9C4]/5 transition-all duration-300 w-full"
                 >
-                  <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center justify-between mb-1.5">
                     <div class="flex items-baseline gap-2">
                       <span
-                        class="inline-flex items-center justify-center h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm"
+                        class="inline-flex items-center justify-center h-5 w-5 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm"
                       >
                         {{ partIndex + 1 }}
                       </span>
                       <span
-                        class="text-xs text-[#55A9C4]/80 font-medium px-2 py-0.5 bg-[#55A9C4]/5 rounded-md"
+                        class="text-xs text-[#55A9C4]/80 font-medium px-1.5 py-0.5 bg-[#55A9C4]/5 rounded-md"
                       >
                         {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }}
                       </span>
@@ -533,7 +527,7 @@ const getLastEditDate = computed(() => {
                   </div>
 
                   <div>
-                    <p class="text-sm text-gray-900 break-words mb-3 leading-relaxed">
+                    <p class="text-sm text-gray-900 break-words mb-2 leading-relaxed pl-1">
                       {{ part.partText }}
                     </p>
                   </div>
@@ -541,30 +535,30 @@ const getLastEditDate = computed(() => {
                   <button
                     v-if="!showAnswer[part.id]"
                     @click="handleSaqPartView(question.id, part.id)"
-                    class="group w-full flex items-center justify-center gap-2 mt-2 text-[#55A9C4] font-semibold text-xs rounded-lg p-2 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 hover:from-[#55A9C4]/25 hover:to-[#55A9C4]/15 border border-[#55A9C4]/20 transition-all duration-300 shadow-sm hover:shadow"
+                    class="group w-full flex items-center justify-center gap-1.5 mt-1.5 text-[#55A9C4] font-medium text-xs rounded-md p-1.5 bg-gradient-to-r from-[#55A9C4]/10 to-[#55A9C4]/5 hover:from-[#55A9C4]/20 hover:to-[#55A9C4]/10 border border-[#55A9C4]/10 transition-all duration-300 shadow-sm hover:shadow"
                   >
                     <ChevronDown
-                      class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300"
+                      class="h-3 w-3 group-hover:translate-y-0.5 transition-transform duration-300"
                     />
                     <span>Show Answer</span>
                   </button>
 
-                  <div v-if="showAnswer[part.id]" class="mt-3 sm:mt-4 animate-fadeIn">
+                  <div v-if="showAnswer[part.id]" class="mt-2 animate-fadeIn">
                     <div
-                      class="relative overflow-hidden rounded-xl shadow-lg border border-gray-100 w-full"
+                      class="relative overflow-hidden rounded-lg shadow-sm border border-gray-100 w-full"
                     >
                       <div
                         class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#55A9C4] to-blue-500"
                       ></div>
 
                       <div
-                        class="p-2 sm:p-3 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100"
+                        class="p-1.5 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100"
                       >
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5">
                           <div
-                            class="flex items-center justify-center w-6 h-6 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
+                            class="flex items-center justify-center w-5 h-5 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
                           >
-                            <CheckCircle class="h-4 w-4" />
+                            <CheckCircle class="h-3 w-3" />
                           </div>
                           <div>
                             <p class="text-xs text-gray-500 font-medium">Expected Answer</p>
@@ -575,10 +569,9 @@ const getLastEditDate = computed(() => {
                         </div>
                       </div>
 
-                      <div class="p-3 sm:p-4 bg-white w-full">
-                        <!-- Here we've removed the flex container and directly display the content -->
+                      <div class="p-2 bg-white/80 w-full">
                         <div
-                          class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full"
+                          class="text-sm text-gray-700 break-words leading-relaxed explanation-content w-full"
                         >
                           <ViewExplanation :content="part.expectedAnswer" />
                         </div>
@@ -587,11 +580,11 @@ const getLastEditDate = computed(() => {
 
                     <Button
                       variant="ghost"
-                      class="mt-2 sm:mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-300 text-xs w-full justify-center sm:justify-start group"
+                      class="mt-1.5 flex items-center gap-1.5 px-2 py-1 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-300 text-xs w-full justify-center sm:justify-start group"
                       @click="openFeedbackDialog(question)"
                     >
                       <MessageSquare
-                        class="h-4 w-4 text-gray-600 group-hover:scale-110 transition-all duration-300"
+                        class="h-3 w-3 text-gray-600 group-hover:scale-110 transition-all duration-300"
                       />
                       <span class="font-medium">Provide Feedback</span>
                     </Button>
@@ -607,46 +600,46 @@ const getLastEditDate = computed(() => {
     <!-- Floating Progress Indicator -->
     <div
       v-if="paperProgress.completionPercentage > 0"
-      class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg border border-[#55A9C4]/20 flex items-center gap-3 z-50 transition-all duration-300 hover:shadow-xl group"
+      class="fixed bottom-3 right-3 bg-white shadow-lg rounded-lg border border-[#55A9C4]/20 flex items-center gap-2 z-50 transition-all duration-300 hover:shadow-xl group"
       :class="{
-        'p-2 sm:p-4': true,
-        'sm:hover:w-auto hover:w-10': true,
+        'p-1.5 sm:p-2': true,
+        'sm:hover:w-auto hover:w-9': true,
       }"
     >
-      <div class="w-10 h-10 relative">
-        <svg class="w-10 h-10 -rotate-90 transform">
+      <div class="w-8 h-8 relative">
+        <svg class="w-8 h-8 -rotate-90 transform">
           <circle
             class="text-gray-200"
             stroke-width="3"
             stroke="currentColor"
             fill="transparent"
-            r="16"
-            cx="20"
-            cy="20"
+            r="14"
+            cx="16"
+            cy="16"
           />
           <circle
             class="text-[#55A9C4]"
             stroke-width="3"
-            :stroke-dasharray="100.5"
-            :stroke-dashoffset="100.5 - paperProgress.completionPercentage"
+            :stroke-dasharray="88"
+            :stroke-dashoffset="88 - paperProgress.completionPercentage * 0.88"
             stroke-linecap="round"
             stroke="currentColor"
             fill="transparent"
-            r="16"
-            cx="20"
-            cy="20"
+            r="14"
+            cx="16"
+            cy="16"
           />
         </svg>
         <span
-          class="absolute inset-0 flex items-center justify-center text-xs sm:text-xs font-medium"
-          style="font-size: 0.7rem"
+          class="absolute inset-0 flex items-center justify-center text-xs font-medium"
+          style="font-size: 0.65rem"
         >
           {{ Math.round(paperProgress.completionPercentage) }}%
         </span>
       </div>
 
       <div class="hidden sm:flex flex-col">
-        <span class="text-sm font-medium">Your progress</span>
+        <span class="text-xs font-medium">Your progress</span>
         <span class="text-xs text-gray-500">
           {{ Math.round((paperProgress.completionPercentage * questions.length) / 100) }} of
           {{ questions.length }}
@@ -658,10 +651,10 @@ const getLastEditDate = computed(() => {
         size="sm"
         variant="ghost"
         @click="continueFromLastQuestion"
-        class="hidden sm:flex"
+        class="hidden sm:flex p-1"
       >
-        <ArrowRight class="h-4 w-4 mr-1" />
-        Continue
+        <ArrowRight class="h-3 w-3 mr-1" />
+        <span class="text-xs">Continue</span>
       </Button>
     </div>
   </div>
