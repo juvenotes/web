@@ -229,6 +229,12 @@ router
 router
   .get('/api/papers/:paperId/my-responses', [IndexPapersController, 'getMyResponses'])
   .use(middleware.auth())
+router
+  .post('/api/papers/add-mcq-question', [
+    () => import('#controllers/api/papers_controller'),
+    'addMcqQuestion',
+  ])
+  .use(middleware.auth())
 
 // LEGAL -> TERMS
 router.get('/terms', [TermsController, 'handle']).as('legal.terms')
