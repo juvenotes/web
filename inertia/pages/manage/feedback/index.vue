@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type QuestionFeedbackDto from '#dtos/question_feedback'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
 import { toast } from 'vue-sonner'
 import { MessageSquare, ArrowUpRight, AlertCircle, Check } from 'lucide-vue-next'
@@ -27,6 +27,16 @@ interface Props {
 const props = defineProps<Props>()
 
 const activeTab = ref(props.filters.isResolved ? 'resolved' : 'unresolved')
+
+// Local reactive copy of feedbackItems
+const feedbackList = ref<QuestionFeedbackDto[]>([...props.feedbackItems])
+
+watch(
+  () => props.feedbackItems,
+  (newVal) => {
+    feedbackList.value = [...newVal]
+  }
+)
 
 // Filter functions
 const filterForm = useForm({
@@ -63,18 +73,32 @@ function viewQuestion(item: QuestionFeedbackDto) {
   }
 }
 
+const resolvingIds = ref<number[]>([])
+
 function markAsResolved(feedbackId: number) {
-  // Using the API endpoint for a clean approach
+  if (resolvingIds.value.includes(feedbackId)) return
+  resolvingIds.value.push(feedbackId)
   axios
     .post(`/api/feedback/${feedbackId}/resolve`)
-    .then(() => {
+    .then((response) => {
       toast.success('Feedback marked as resolved')
-      // Reload the current page with the same filters
-      applyFilters()
+      const updated = response.data?.feedback
+      if (updated) {
+        const idx = feedbackList.value.findIndex((f) => f.id === feedbackId)
+        if (idx !== -1) {
+          feedbackList.value.splice(idx, 1, updated)
+        }
+      } else {
+        applyFilters()
+      }
     })
     .catch((error) => {
       console.error('Failed to mark feedback as resolved:', error)
       toast.error('Failed to mark feedback as resolved')
+    })
+    .finally(() => {
+      const i = resolvingIds.value.indexOf(feedbackId)
+      if (i !== -1) resolvingIds.value.splice(i, 1)
     })
 }
 </script>
@@ -145,11 +169,11 @@ function markAsResolved(feedbackId: number) {
 
     <!-- Feedback Items -->
     <div class="space-y-4">
-      <div v-if="!feedbackItems.length" class="text-center py-12">
+      <div v-if="!feedbackList.length" class="text-center py-12">
         <p class="text-muted-foreground">No feedback items found</p>
       </div>
 
-      <Card v-for="item in feedbackItems" :key="item.id" class="overflow-hidden">
+      <Card v-for="item in feedbackList" :key="item.id" class="overflow-hidden">
         <CardHeader class="bg-muted/30">
           <div class="flex justify-between">
             <div>
@@ -201,11 +225,13 @@ function markAsResolved(feedbackId: number) {
           </div>
           <Button
             v-if="!item.isResolved"
+            :disabled="resolvingIds.includes(item.id)"
             @click="markAsResolved(item.id)"
             variant="outline"
             size="sm"
           >
-            Mark as Resolved
+            <span v-if="resolvingIds.includes(item.id)">Marking...</span>
+            <span v-else>Mark as Resolved</span>
           </Button>
           <Badge v-else variant="outline" class="bg-green-50 text-green-600">
             Resolved on
