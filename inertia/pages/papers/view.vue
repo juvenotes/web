@@ -35,6 +35,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const studySession = ref(props.studySession)
+const userAnswersLoaded = ref(false)
 
 onMounted(async () => {
   if (!studySession.value) {
@@ -48,10 +49,8 @@ onMounted(async () => {
       console.error('Failed to create study session:', error)
     }
   }
-
-  if ((paperProgress.progress?.attemptCount ?? 0) > 0) {
-    initializeUserAnswers()
-  }
+  await initializeUserAnswers()
+  userAnswersLoaded.value = true
 })
 
 const breadcrumbItems = computed(() => [
@@ -60,8 +59,8 @@ const breadcrumbItems = computed(() => [
   { label: props.paper.title },
 ])
 
-const selectedAnswers = ref<Record<number, number | null>>({})
-const showAnswer = ref<Record<number, boolean>>({})
+const selectedAnswers = reactive<Record<number, number | null>>({})
+const showAnswer = reactive<Record<number, boolean>>({})
 
 async function recordMcqResponse(questionId: number, choiceId: number, isCorrect: boolean) {
   try {
@@ -77,7 +76,7 @@ async function recordMcqResponse(questionId: number, choiceId: number, isCorrect
 }
 
 const handleSaqPartView = (questionId: number, partId: number) => {
-  showAnswer.value[partId] = true
+  showAnswer[partId] = true
 
   axios
     .post('/api/papers/record-saq-response', {
@@ -113,8 +112,8 @@ const closeFeedbackDialog = () => {
 }
 
 const handleChoiceSelect = (questionId: number, choiceId: number) => {
-  selectedAnswers.value[questionId] = choiceId
-  showAnswer.value[questionId] = true
+  selectedAnswers[questionId] = choiceId
+  showAnswer[questionId] = true
 
   const question = props.questions.find((q) => q.id === questionId)
   const choice = question?.choices.find((c) => c.id === choiceId)
@@ -161,19 +160,24 @@ const continueFromLastQuestion = () => {
 }
 
 const initializeUserAnswers = async () => {
-  if (!paperProgress.progress?.attemptCount) return
-
   try {
     const response = await axios.get(`/api/papers/${props.paper.id}/my-responses`)
     if (response.data.responses?.length) {
-      response.data.responses.forEach((item: { questionId: number; selectedOption: string }) => {
+      response.data.responses.forEach((item: { questionId: number; selectedOption: string, partId?: number }) => {
         const question = props.questions.find((q) => q.id === item.questionId)
         if (!question) return
 
-        const choiceIndex = item.selectedOption.charCodeAt(0) - 65
-        if (question.choices[choiceIndex]) {
-          selectedAnswers.value[question.id] = question.choices[choiceIndex].id
-          showAnswer.value[question.id] = true
+        // MCQ
+        if (item.selectedOption && question.choices) {
+          const choiceIndex = item.selectedOption.charCodeAt(0) - 65
+          if (question.choices[choiceIndex]) {
+            selectedAnswers[question.id] = question.choices[choiceIndex].id
+            showAnswer[question.id] = true
+          }
+        }
+        // SAQ (if backend provides partId for answered parts)
+        if (item.partId) {
+          showAnswer[item.partId] = true
         }
       })
     }
@@ -199,12 +203,6 @@ const updateProgress = async () => {
 const getCorrectAnswer = (question: QuestionDto) => {
   return question.choices.find((choice) => choice.isCorrect)
 }
-
-onMounted(() => {
-  if ((paperProgress.progress?.attemptCount ?? 0) > 0) {
-    initializeUserAnswers()
-  }
-})
 
 const getLastEditDate = computed(() => {
   const date = new Date(props.paper.metadata?.lastEditedBy?.timestamp ?? props.paper.createdAt)
@@ -360,7 +358,7 @@ const getLastEditDate = computed(() => {
     <div class="space-y-6 sm:space-y-8">
       <div
         v-for="(question, index) in questions"
-        :key="question.id"
+        :key="`${question.id}-${userAnswersLoaded}`"
         :id="`question-${question.id}`"
         class="p-4 sm:p-6 md:p-8 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 w-full max-w-full"
       >
@@ -381,7 +379,7 @@ const getLastEditDate = computed(() => {
           <div v-if="question.questionImagePath" class="flex justify-center mt-4">
             <img
               :src="question.questionImagePath"
-              :alt="`Question ${index + 1} image`"
+              :alt="`Question {{ index + 1 }} image`"
               class="max-w-full h-auto rounded-lg border shadow-sm max-h-[400px] object-contain"
             />
           </div>

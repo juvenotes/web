@@ -67,7 +67,7 @@ const closeInfo = () => {
           <p class="text-sm text-blue-700">
             While we have taken every precaution to ensure that the content of this site is both
             accurate, errors can occur. We are open to correction. In case of errors and omissions,
-            kindly use the feedback button (soon available to all questions).
+            kindly use the feedback button.
           </p>
         </div>
         <button
