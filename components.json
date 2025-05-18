@@ -12,7 +12,7 @@
   "aliases": {
     "components": "inertia/components",
     "composables": "inertia/composables",
-    "utils": "inertia/lib/utils",
+    "utils": "~/lib/utils",
     "ui": "inertia/components/ui",
     "lib": "inertia/lib"
   },
