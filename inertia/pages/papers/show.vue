@@ -43,12 +43,21 @@ const breadcrumbItems = computed(() => [
 const hasPapers = computed(() => props.papers.length > 0)
 
 const selectedStudyLevel = ref<StudyLevel | null>(null)
+const selectedExamType = ref<string | null>(null)
+
+const examTypes = computed(() => {
+  // Get unique exam types from papers
+  return Array.from(new Set(props.papers.map((p) => p.examType)))
+})
 
 const papersByYear = computed(() => {
-  const filtered = selectedStudyLevel.value
-    ? props.papers.filter((p) => p.studyLevel === selectedStudyLevel.value)
-    : props.papers
-
+  let filtered = props.papers
+  if (selectedStudyLevel.value) {
+    filtered = filtered.filter((p) => p.studyLevel === selectedStudyLevel.value)
+  }
+  if (selectedExamType.value) {
+    filtered = filtered.filter((p) => p.examType === selectedExamType.value)
+  }
   return filtered.reduce(
     (acc, paper) => {
       const year = paper.year
@@ -105,8 +114,17 @@ const papersByYear = computed(() => {
       </div>
     </div>
 
-    <div class="flex justify-end px-4 sm:px-0">
+    <div class="flex flex-col sm:flex-row items-start gap-2 px-0 sm:px-6 lg:px-8 mb-2">
       <ToggleStudyLevel v-model="selectedStudyLevel" :papers="papers" />
+      <div v-if="examTypes.length > 1" class="w-full sm:w-auto">
+        <select
+          v-model="selectedExamType"
+          class="max-w-[10rem] w-auto px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm"
+        >
+          <option :value="null">Exam</option>
+          <option v-for="type in examTypes" :key="type" :value="type">{{ type.toUpperCase() }}</option>
+        </select>
+      </div>
     </div>
 
     <!-- Papers by Year -->
@@ -142,6 +160,9 @@ const papersByYear = computed(() => {
               <div class="flex items-center gap-3 text-sm">
                 <span class="px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium">
                   {{ paper.examType.toUpperCase() }}
+                </span>
+                <span v-if="paper.paperType" class="px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium">
+                  {{ paper.paperType.toUpperCase() }}
                 </span>
                 <span class="text-gray-500"> {{ paper.questions?.length ?? 0 }} questions </span>
               </div>

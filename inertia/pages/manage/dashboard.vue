@@ -44,19 +44,25 @@ const quickLinks = [
     href: '/manage/papers',
     icon: FileText,
   },
+  {
+    title: 'Feedback',
+    description: 'Review and resolve question feedback',
+    href: '/manage/feedback',
+    icon: FileQuestion,
+  },
 ]
 </script>
 
 <template>
   <AppHead title="Admin Dashboard" description="Manage our content from here" />
-  <div class="container mx-auto p-6">
-    <div class="flex items-center justify-between mb-6">
+  <div class="container mx-auto p-4 sm:p-6">
+    <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-2 sm:gap-0">
       <h1 class="text-2xl font-bold">Dashboard</h1>
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div v-for="item in statItems" :key="item.key" class="p-6 bg-card rounded-lg border">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+      <div v-for="item in statItems" :key="item.key" class="p-4 sm:p-6 bg-card rounded-lg border flex flex-col items-start">
         <div class="flex items-center gap-2">
           <component :is="item.icon" class="w-5 h-5 text-primary" />
           <h3 class="font-medium text-muted-foreground">{{ item.label }}</h3>
@@ -66,12 +72,12 @@ const quickLinks = [
     </div>
 
     <!-- Quick Links -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
       <Link
         v-for="link in quickLinks"
         :key="link.title"
         :href="link.href"
-        class="p-6 rounded-lg border hover:border-primary transition-colors group"
+        class="p-4 sm:p-6 rounded-lg border hover:border-primary transition-colors group flex flex-col h-full"
       >
         <div class="flex items-center gap-2 mb-2">
           <component
@@ -80,8 +86,23 @@ const quickLinks = [
           />
           <h3 class="font-semibold">{{ link.title }}</h3>
         </div>
-        <p class="text-sm text-muted-foreground">{{ link.description }}</p>
+        <p class="text-sm text-muted-foreground flex-1">{{ link.description }}</p>
       </Link>
     </div>
   </div>
 </template>
+
+<style scoped>
+@media (max-width: 640px) {
+  .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .grid {
+    gap: 1rem;
+  }
+  .p-4 {
+    padding: 1rem !important;
+  }
+}
+</style>

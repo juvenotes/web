@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type QuestionFeedbackDto from '#dtos/question_feedback'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
 import { toast } from 'vue-sonner'
 import { MessageSquare, ArrowUpRight, AlertCircle, Check } from 'lucide-vue-next'
@@ -26,14 +26,29 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const activeTab = ref(props.filters.isResolved ? 'resolved' : 'unresolved')
+// Defensive defaults for props
+const safeFeedbackItems = props.feedbackItems || []
+const safePagination = props.pagination || { total: 0, perPage: 10, currentPage: 1, lastPage: 1 }
+const safeFilters = props.filters || { isResolved: false, target: '', questionId: '' }
+
+const activeTab = ref(safeFilters.isResolved ? 'resolved' : 'unresolved')
+
+// Local reactive copy of feedbackItems
+const feedbackList = ref<QuestionFeedbackDto[]>([...safeFeedbackItems])
+
+watch(
+  () => props.feedbackItems,
+  (newVal) => {
+    feedbackList.value = [...(newVal || [])]
+  }
+)
 
 // Filter functions
 const filterForm = useForm({
-  isResolved: props.filters.isResolved,
-  target: props.filters.target || '',
-  questionId: props.filters.questionId || '',
-  page: props.pagination?.currentPage || 1,
+  isResolved: safeFilters.isResolved,
+  target: safeFilters.target || '',
+  questionId: safeFilters.questionId || '',
+  page: safePagination.currentPage || 1,
 })
 
 function applyFilters() {
@@ -63,26 +78,43 @@ function viewQuestion(item: QuestionFeedbackDto) {
   }
 }
 
+const resolvingIds = ref<number[]>([])
+
 function markAsResolved(feedbackId: number) {
-  // Using the API endpoint for a clean approach
+  if (resolvingIds.value.includes(feedbackId)) return
+  resolvingIds.value.push(feedbackId)
   axios
     .post(`/api/feedback/${feedbackId}/resolve`)
-    .then(() => {
+    .then((response) => {
       toast.success('Feedback marked as resolved')
-      // Reload the current page with the same filters
-      applyFilters()
+      const updated = response.data?.feedback
+      if (updated) {
+        const idx = feedbackList.value.findIndex((f) => f.id === feedbackId)
+        if (idx !== -1) {
+          feedbackList.value.splice(idx, 1, updated)
+        }
+      } else {
+        applyFilters()
+      }
     })
     .catch((error) => {
       console.error('Failed to mark feedback as resolved:', error)
       toast.error('Failed to mark feedback as resolved')
+    })
+    .finally(() => {
+      const i = resolvingIds.value.indexOf(feedbackId)
+      if (i !== -1) resolvingIds.value.splice(i, 1)
     })
 }
 </script>
 
 <template>
   <AppHead title="Manage feedback" description="Manage feedback for all questions" />
-  <!-- Header and filter controls -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+  <div v-if="props.feedbackItems === undefined || props.feedbackItems === null" class="text-center py-12">
+    <p class="text-muted-foreground">Loading feedback...</p>
+  </div>
+  <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <!-- Header and filter controls -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <MessageSquare class="h-6 w-6 text-primary" />
@@ -145,11 +177,11 @@ function markAsResolved(feedbackId: number) {
 
     <!-- Feedback Items -->
     <div class="space-y-4">
-      <div v-if="!feedbackItems.length" class="text-center py-12">
+      <div v-if="!feedbackList.length" class="text-center py-12">
         <p class="text-muted-foreground">No feedback items found</p>
       </div>
 
-      <Card v-for="item in feedbackItems" :key="item.id" class="overflow-hidden">
+      <Card v-for="item in feedbackList" :key="item.id" class="overflow-hidden">
         <CardHeader class="bg-muted/30">
           <div class="flex justify-between">
             <div>
@@ -201,11 +233,13 @@ function markAsResolved(feedbackId: number) {
           </div>
           <Button
             v-if="!item.isResolved"
+            :disabled="resolvingIds.includes(item.id)"
             @click="markAsResolved(item.id)"
             variant="outline"
             size="sm"
           >
-            Mark as Resolved
+            <span v-if="resolvingIds.includes(item.id)">Marking...</span>
+            <span v-else>Mark as Resolved</span>
           </Button>
           <Badge v-else variant="outline" class="bg-green-50 text-green-600">
             Resolved on
@@ -216,12 +250,12 @@ function markAsResolved(feedbackId: number) {
     </div>
 
     <!-- Pagination -->
-    <div v-if="pagination && pagination.lastPage > 1" class="flex justify-center mt-8">
+    <div v-if="safePagination && safePagination.lastPage > 1" class="flex justify-center mt-8">
       <div class="flex items-center gap-2">
         <Button
           variant="outline"
           size="sm"
-          :disabled="pagination.currentPage === 1"
+          :disabled="safePagination.currentPage === 1"
           @click="goToPage(1)"
         >
           First
@@ -229,24 +263,24 @@ function markAsResolved(feedbackId: number) {
         <Button
           variant="outline"
           size="sm"
-          :disabled="pagination.currentPage === 1"
-          @click="goToPage(pagination.currentPage - 1)"
+          :disabled="safePagination.currentPage === 1"
+          @click="goToPage(safePagination.currentPage - 1)"
         >
           Previous
         </Button>
 
         <div class="flex items-center gap-1">
           <Button
-            v-for="page in pagination.lastPage"
+            v-for="page in safePagination.lastPage"
             :key="page"
-            :variant="pagination.currentPage === page ? 'default' : 'outline'"
+            :variant="safePagination.currentPage === page ? 'default' : 'outline'"
             size="sm"
             class="w-8 h-8 p-0"
             @click="goToPage(page)"
             v-show="
               page === 1 ||
-              page === pagination.lastPage ||
-              (page >= pagination.currentPage - 1 && page <= pagination.currentPage + 1)
+              page === safePagination.lastPage ||
+              (page >= safePagination.currentPage - 1 && page <= safePagination.currentPage + 1)
             "
           >
             {{ page }}
@@ -256,16 +290,16 @@ function markAsResolved(feedbackId: number) {
         <Button
           variant="outline"
           size="sm"
-          :disabled="pagination.currentPage === pagination.lastPage"
-          @click="goToPage(pagination.currentPage + 1)"
+          :disabled="safePagination.currentPage === safePagination.lastPage"
+          @click="goToPage(safePagination.currentPage + 1)"
         >
           Next
         </Button>
         <Button
           variant="outline"
           size="sm"
-          :disabled="pagination.currentPage === pagination.lastPage"
-          @click="goToPage(pagination.lastPage)"
+          :disabled="safePagination.currentPage === safePagination.lastPage"
+          @click="goToPage(safePagination.lastPage)"
         >
           Last
         </Button>
