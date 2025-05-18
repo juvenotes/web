@@ -14,6 +14,7 @@ import {
   X,
   Calendar,
   GraduationCap,
+  // FileQuestion,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type UserDto from '#dtos/user'
@@ -32,6 +33,7 @@ const menuItems = [
   { name: 'Osce', href: '/manage/osce', icon: Stethoscope },
   { name: 'Spot', href: '/manage/spot', icon: Pin },
   { name: 'Today', href: '/manage/today', icon: Calendar },
+//  { name: 'Feedback', href: '/manage/feedback', icon: FileQuestion },
   { name: 'Users', href: '/manage/users', icon: Users },
   { name: 'Institutions', href: '/manage/institutions', icon: School },
   { name: 'Courses', href: '/manage/courses', icon: GraduationCap },
@@ -74,8 +76,11 @@ const menuItems = [
       <aside
         :class="[
           'fixed md:static inset-y-0 left-0 z-30 w-64 border-r bg-background transition-transform duration-300 md:translate-x-0',
+          'bg-white shadow-lg md:shadow-none', // Always visible and clear on mobile
+          'overflow-y-auto', // Scrollable if needed
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
+        style="max-height: 100vh;"
       >
         <!-- Sidebar navigation -->
         <nav class="p-4 space-y-2">
@@ -91,7 +96,7 @@ const menuItems = [
             @click="isSidebarOpen = false"
           >
             <component :is="item.icon" class="w-5 h-5" />
-            {{ item.name }}
+            <span class="block">{{ item.name }}</span>
           </Link>
         </nav>
       </aside>
