@@ -14,7 +14,7 @@ import {
   X,
   Calendar,
   GraduationCap,
-  FileQuestion,
+  // FileQuestion,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type UserDto from '#dtos/user'
@@ -33,7 +33,7 @@ const menuItems = [
   { name: 'Osce', href: '/manage/osce', icon: Stethoscope },
   { name: 'Spot', href: '/manage/spot', icon: Pin },
   { name: 'Today', href: '/manage/today', icon: Calendar },
-  { name: 'Feedback', href: '/manage/feedback', icon: FileQuestion },
+//  { name: 'Feedback', href: '/manage/feedback', icon: FileQuestion },
   { name: 'Users', href: '/manage/users', icon: Users },
   { name: 'Institutions', href: '/manage/institutions', icon: School },
   { name: 'Courses', href: '/manage/courses', icon: GraduationCap },
