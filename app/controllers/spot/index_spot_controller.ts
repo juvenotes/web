@@ -91,6 +91,7 @@ export default class IndexSpotController {
       // Get progress for all papers (if you want per-paper, you can adjust this logic)
       // Here, just get the first paper's progress as an example
       if (paperIds.length > 0) {
+        // Note: The progress retrieved here corresponds only to the first paper in the list of SPOT papers.
         progress = await this.userProgressService.getPaperProgress(auth.user.id, paperIds[0])
         completionPercentage = await this.userProgressService.getCompletionPercentage(
           auth.user.id,

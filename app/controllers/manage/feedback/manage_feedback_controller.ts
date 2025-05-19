@@ -49,8 +49,9 @@ export default class ManageFeedbackController {
         message: 'Successfully retrieved feedback items',
       })
 
+      // Always pass a plain array for feedbackItems
       return inertia.render('manage/feedback/index', {
-        feedbackItems: feedbackItems.map((item) => new QuestionFeedbackDto(item)),
+        feedbackItems: feedbackItems.all().map((item) => new QuestionFeedbackDto(item)),
         pagination: feedbackItems.getMeta(),
         filters: {
           isResolved,
