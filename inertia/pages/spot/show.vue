@@ -137,7 +137,9 @@ const breadcrumbItems = computed(() => [
                 <span class="px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium">
                   SPOT
                 </span>
-                <span class="text-gray-500">Multiple stations</span>
+                <span class="text-gray-500">
+                  {{ paper.questions ? paper.questions.reduce((sum, q) => sum + (q.spotStations?.length || 0), 0) : 0 }} stations
+                </span>
               </div>
               <div
                 class="flex items-center text-sm text-[#55A9C4] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"

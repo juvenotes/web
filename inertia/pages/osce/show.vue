@@ -147,7 +147,9 @@ const breadcrumbItems = computed(() => [
                   >
                     OSCE
                   </span>
-                  <span class="text-gray-500"> A few stations </span>
+                  <span class="text-gray-500">
+                    {{ paper.questions ? paper.questions.reduce((sum, q) => sum + (q.stations?.length || 0), 0) : 0 }} stations
+                  </span>
                 </div>
 
                 <div
