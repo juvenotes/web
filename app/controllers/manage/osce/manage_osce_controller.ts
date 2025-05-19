@@ -77,6 +77,7 @@ export default class ManageOsceController {
           .where('paper_type', PaperType.OSCE)
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
           .orderBy('year', 'desc')
+          .preload('questions', (q) => q.preload('stations'))
       })
       .firstOrFail()
 

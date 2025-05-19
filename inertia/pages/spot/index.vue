@@ -37,6 +37,19 @@ onMounted(async () => {
 const getSpotPaperCount = (concept: ConceptDto) =>
   concept.pastPapers?.filter((paper) => paper.paperType === PaperType.SPOT).length ?? 0
 
+const getSpotStationCount = (concept: ConceptDto) => {
+  return (
+    concept.pastPapers
+      ?.filter((paper) => paper.paperType === PaperType.SPOT)
+      .reduce((total, paper) => {
+        return (
+          total +
+          (paper.questions?.reduce((sum, q) => sum + (q.spotStations?.length || 0), 0) || 0)
+        )
+      }, 0) || 0
+  )
+}
+
 const breadcrumbItems = [{ label: 'SPOT Papers' }]
 </script>
 
@@ -111,11 +124,13 @@ const breadcrumbItems = [{ label: 'SPOT Papers' }]
             {{ concept.title }}
           </h2>
 
-          <!-- Papers Count -->
+          <!-- Papers and Stations Count -->
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
             <span class="px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium">
-              {{ getSpotPaperCount(concept) }}
-              {{ getSpotPaperCount(concept) === 1 ? 'paper' : 'papers' }}
+              {{ getSpotPaperCount(concept) }} {{ getSpotPaperCount(concept) === 1 ? 'paper' : 'papers' }}
+            </span>
+            <span v-if="getSpotStationCount(concept) > 0" class="px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium">
+              {{ getSpotStationCount(concept) }} {{ getSpotStationCount(concept) === 1 ? 'station' : 'stations' }}
             </span>
           </div>
 
