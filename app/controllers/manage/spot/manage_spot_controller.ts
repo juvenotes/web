@@ -77,6 +77,7 @@ export default class ManageSpotController {
           .where('paper_type', PaperType.SPOT)
           .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
           .orderBy('year', 'desc')
+          .preload('questions', (q) => q.preload('spotStations'))
       })
       .firstOrFail()
 

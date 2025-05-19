@@ -60,7 +60,11 @@ export default class IndexSpotController {
     const concept = await Concept.query()
       .where('slug', params.slug)
       .preload('pastPapers', (query) => {
-        query.where('paper_type', PaperType.SPOT).orderBy('year', 'desc')
+        query
+          .where('paper_type', PaperType.SPOT)
+          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .orderBy('year', 'desc')
+          .preload('questions', (q) => q.preload('spotStations'))
       })
       .firstOrFail()
 
@@ -74,10 +78,35 @@ export default class IndexSpotController {
 
     const canManage = await bouncer.allows('canManage')
 
+    // Default values for progress stats
+    let progress = null
+    let completionPercentage = 0
+    let attemptCount = 0
+
+    if (auth.user) {
+      // Aggregate all SPOT paper IDs for this concept
+      const paperIds = concept.pastPapers?.map((p) => p.id) || []
+      // Optionally, record concept view (if you have such a method)
+      // await this.userProgressService.recordConceptView(auth.user.id, concept.id, 'spot')
+      // Get progress for all papers (if you want per-paper, you can adjust this logic)
+      // Here, just get the first paper's progress as an example
+      if (paperIds.length > 0) {
+        progress = await this.userProgressService.getPaperProgress(auth.user.id, paperIds[0])
+        completionPercentage = await this.userProgressService.getCompletionPercentage(
+          auth.user.id,
+          paperIds[0]
+        )
+        attemptCount = progress?.attemptCount || 0
+      }
+    }
+
     return inertia.render('spot/show', {
       concept: new ConceptDto(concept),
       papers: concept.pastPapers ? PastPaperDto.fromArray(concept.pastPapers) : [],
       canManage,
+      progress,
+      completionPercentage,
+      attemptCount,
     })
   }
 
@@ -114,11 +143,33 @@ export default class IndexSpotController {
 
     const canManage = await bouncer.allows('canManage')
 
+    // Default values
+    let progress = null
+    let completionPercentage = 0
+    let attemptCount = 0
+
+    if (auth.user) {
+      // Record paper view
+      await this.userProgressService.recordPaperView(auth.user.id, paper.id, 'spot')
+      // Get user progress
+      progress = await this.userProgressService.getPaperProgress(auth.user.id, paper.id)
+      // Get completion percentage
+      completionPercentage = await this.userProgressService.getCompletionPercentage(
+        auth.user.id,
+        paper.id
+      )
+      // Get attempt count from progress, fallback to 0
+      attemptCount = progress?.attemptCount || 0
+    }
+
     return inertia.render('spot/view', {
       paper: new PastPaperDto(paper),
       concept: new ConceptDto(paper.concept),
       questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
       canManage,
+      progress,
+      completionPercentage,
+      attemptCount,
     })
   }
 

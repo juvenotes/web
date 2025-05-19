@@ -5,8 +5,13 @@ import ConceptDto from '#dtos/concept'
 import PastPaperDto from '#dtos/past_paper'
 import QuestionDto from '#dtos/question'
 import PastPaper from '#models/past_paper'
+import { inject } from '@adonisjs/core'
+import UserProgressService from '#services/user_progress_service'
 
+@inject()
 export default class OsceController {
+  constructor(private userProgressService: UserProgressService) {}
+
   async index({ inertia, logger, bouncer }: HttpContext) {
     const context = { controller: 'OsceController', action: 'view' }
     logger.info({ ...context, message: 'Fetching concepts with OSCE papers' })
@@ -48,7 +53,11 @@ export default class OsceController {
     const concept = await Concept.query()
       .where('slug', params.slug)
       .preload('pastPapers', (query) => {
-        query.where('paper_type', PaperType.OSCE).orderBy('year', 'desc')
+        query
+          .where('paper_type', PaperType.OSCE)
+          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+          .orderBy('year', 'desc')
+          .preload('questions', (q) => q.preload('stations'))
       })
       .firstOrFail()
 
@@ -99,11 +108,33 @@ export default class OsceController {
 
     const canManage = await bouncer.allows('canManage')
 
+    // Default values
+    let progress = null
+    let completionPercentage = 0
+    let attemptCount = 0
+
+    if (auth.user) {
+      // Record paper view
+      await this.userProgressService.recordPaperView(auth.user.id, paper.id, 'osce')
+      // Get user progress
+      progress = await this.userProgressService.getPaperProgress(auth.user.id, paper.id)
+      // Get completion percentage
+      completionPercentage = await this.userProgressService.getCompletionPercentage(
+        auth.user.id,
+        paper.id
+      )
+      // Get attempt count from progress, fallback to 0
+      attemptCount = progress?.attemptCount || 0
+    }
+
     return inertia.render('osce/view', {
       paper: new PastPaperDto(paper),
       concept: new ConceptDto(paper.concept),
       questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
       canManage,
+      progress,
+      completionPercentage,
+      attemptCount,
     })
   }
 }
