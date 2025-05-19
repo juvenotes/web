@@ -28,7 +28,7 @@ const markAsResolved = async (id: number) => {
           <TableHead>Source</TableHead>
           <TableHead>Target</TableHead>
           <TableHead class="max-w-[300px]">Feedback</TableHead>
-          <TableHead class="w-[100px]">Action</TableHead>
+          <!-- <TableHead class="w-[100px]">Action</TableHead> -->
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -51,7 +51,7 @@ const markAsResolved = async (id: number) => {
               <p class="line-clamp-3">{{ item.feedbackText }}</p>
             </div>
           </TableCell>
-          <TableCell class="block sm:table-cell">
+          <!-- <TableCell class="block sm:table-cell">
             <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
               <span class="sm:hidden font-medium">Action:</span>
               <Button
@@ -64,7 +64,7 @@ const markAsResolved = async (id: number) => {
               </Button>
               <span v-else class="text-green-600 text-sm">Resolved</span>
             </div>
-          </TableCell>
+          </TableCell> -->
         </TableRow>
         <TableRow v-if="items.length === 0">
           <TableCell colspan="4" class="h-24 text-center">No feedback found</TableCell>
