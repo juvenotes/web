@@ -30,52 +30,56 @@ defineOptions({ layout: DashLayout })
   <div class="dashboard-content max-w-7xl mx-auto space-y-10 px-4 sm:px-6 py-6">
     <!-- Hero Welcome Section -->
     <div
-      class="relative bg-gradient-to-br from-[#55A9C4]/10 via-[#55A9C4]/15 to-transparent p-6 rounded-2xl shadow-sm backdrop-blur-sm border border-[#55A9C4]/10"
+      class="relative bg-gradient-to-br from-[#55A9C4]/20 via-[#55A9C4]/25 to-transparent p-8 rounded-3xl shadow-lg backdrop-blur-md border border-[#55A9C4]/20 overflow-hidden"
     >
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <!-- Decorative background elements -->
+      <div class="absolute -top-16 -right-16 w-64 h-64 bg-[#55A9C4]/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-[#55A9C4]/10 rounded-full blur-2xl"></div>
+      
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
         <!-- Welcome Text -->
-        <div class="space-y-2">
-          <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-2">
+        <div class="space-y-3">
+          <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
             Hey {{ user?.fullName }}!
             <div class="wave-animation">
               <div
-                class="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full shadow-md"
+                class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-yellow-100 to-yellow-300 rounded-full shadow-lg"
               >
                 <Hand class="h-6 w-6 text-yellow-600" />
               </div>
             </div>
           </h1>
-          <p class="text-sm text-[#4A6772]">Ready to continue your learning journey?</p>
+          <p class="text-sm text-[#4A6772] font-medium tracking-wide">Ready to continue your learning journey?</p>
         </div>
 
         <!-- Stats Grid -->
-        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <!-- Study Time -->
           <div
-            class="group flex items-center gap-3 bg-white/90 hover:bg-gradient-to-r hover:from-[#55A9C4]/5 hover:to-[#55A9C4]/20 p-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex-1 md:flex-initial border border-[#55A9C4]/20"
+            class="group flex items-center gap-4 bg-white/90 hover:bg-gradient-to-r hover:from-[#55A9C4]/5 hover:to-[#55A9C4]/20 p-4 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 flex-1 md:flex-initial border border-[#55A9C4]/20"
           >
             <div
-              class="rounded-lg bg-[#55A9C4]/20 p-2 group-hover:scale-110 transition-transform duration-300"
+              class="rounded-xl bg-[#55A9C4]/20 p-3 group-hover:scale-110 transition-transform duration-300"
             >
               <Clock class="h-5 w-5 text-[#55A9C4]" />
             </div>
             <div>
-              <p class="text-xs font-medium text-[#4A6772]">Study Time</p>
+              <p class="text-xs font-semibold text-[#4A6772] uppercase tracking-wider">Study Time</p>
               <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ formattedStudyTime }}</p> -->
             </div>
           </div>
 
           <!-- Streak Counter -->
           <div
-            class="group flex items-center gap-3 bg-white/90 hover:bg-gradient-to-r hover:from-orange-50 hover:to-[#55A9C4]/10 p-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex-1 md:flex-initial border border-[#55A9C4]/20 border-l-orange-200"
+            class="group flex items-center gap-4 bg-white/90 hover:bg-gradient-to-r hover:from-orange-50 hover:to-[#55A9C4]/10 p-4 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 flex-1 md:flex-initial border border-[#55A9C4]/20 border-l-orange-200"
           >
             <div
-              class="rounded-lg bg-orange-100 p-2 group-hover:scale-110 transition-transform duration-300"
+              class="rounded-xl bg-orange-100 p-3 group-hover:scale-110 transition-transform duration-300"
             >
               <Flame class="h-5 w-5 text-orange-600" />
             </div>
             <div>
-              <p class="text-xs font-medium text-[#4A6772]">Streak</p>
+              <p class="text-xs font-semibold text-[#4A6772] uppercase tracking-wider">Streak</p>
               <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ user?.streak_count ?? 0 }} days</p> -->
             </div>
           </div>
@@ -84,129 +88,149 @@ defineOptions({ layout: DashLayout })
     </div>
 
     <!-- Feature Cards Grid -->
-    <div class="grid md:grid-cols-2 gap-8 p-6">
+    <div class="grid md:grid-cols-2 gap-8 p-3 sm:p-6">
       <!-- Past Papers Card -->
       <div
         data-tour="papers"
         @click="$inertia.visit('/papers')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
+        class="group relative overflow-hidden rounded-3xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
+        <!-- Glass morphism effect -->
+        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <!-- Blob decoration -->
+        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+        
         <div class="relative space-y-6 z-10 animate-fade-in">
-          <div class="flex items-start gap-4">
+          <div class="flex items-start gap-5">
             <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300"
+              class="p-5 rounded-2xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-lg group-hover:shadow-xl group-hover:from-[#55A9C4]/20 group-hover:to-[#55A9C4]/30 transition-all duration-500"
             >
               <FileText class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
               <h3 class="text-2xl font-bold text-gray-900">Past Papers</h3>
-              <p class="text-sm text-gray-600 mt-2">Practice with previous exams</p>
+              <p class="text-sm text-gray-600 mt-2 font-medium">Practice with previous exams</p>
             </div>
           </div>
-          <!-- Hover Message (Hidden on Mobile) -->
+          
+          <!-- Hover Message with improved animation -->
           <div
-            class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex"
+            class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
           >
-            <span class="text-sm text-[#55A9C4] font-medium">Start Practicing</span>
-            <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+            <span class="text-sm text-[#55A9C4] font-semibold">Start Practicing</span>
+            <div class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300">
+              <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+            </div>
           </div>
         </div>
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"
-        ></div>
       </div>
 
       <!-- Concepts Card -->
       <div
         data-tour="concepts"
         @click="$inertia.visit('/concepts')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
+        class="group relative overflow-hidden rounded-3xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
+        <!-- Glass morphism effect -->
+        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <!-- Blob decoration -->
+        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+        
         <div class="relative space-y-6 z-10 animate-fade-in">
-          <div class="flex items-start gap-4">
+          <div class="flex items-start gap-5">
             <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300"
+              class="p-5 rounded-2xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-lg group-hover:shadow-xl group-hover:from-[#55A9C4]/20 group-hover:to-[#55A9C4]/30 transition-all duration-500"
             >
               <BookOpen class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
               <h3 class="text-2xl font-bold text-gray-900">Concepts</h3>
-              <p class="text-sm text-gray-600 mt-2">Master comprehensive study materials</p>
+              <p class="text-sm text-gray-600 mt-2 font-medium">Master comprehensive study materials</p>
             </div>
           </div>
-          <!-- Hover Message (Hidden on Mobile) -->
+          
+          <!-- Hover Message with improved animation -->
           <div
-            class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex"
+            class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
           >
-            <span class="text-sm text-[#55A9C4] font-medium">Explore Concepts</span>
-            <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+            <span class="text-sm text-[#55A9C4] font-semibold">Explore Concepts</span>
+            <div class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300">
+              <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+            </div>
           </div>
         </div>
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"
-        ></div>
       </div>
 
       <!-- OSCE Card -->
       <div
         data-tour="osce"
         @click="$inertia.visit('/osce')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
+        class="group relative overflow-hidden rounded-3xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
+        <!-- Glass morphism effect -->
+        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <!-- Blob decoration -->
+        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+        
         <div class="relative space-y-6 z-10 animate-fade-in">
-          <div class="flex items-start gap-4">
+          <div class="flex items-start gap-5">
             <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300"
+              class="p-5 rounded-2xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-lg group-hover:shadow-xl group-hover:from-[#55A9C4]/20 group-hover:to-[#55A9C4]/30 transition-all duration-500"
             >
               <Stethoscope class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
               <h3 class="text-2xl font-bold text-gray-900">OSCE</h3>
-              <p class="text-sm text-gray-600 mt-2">Clinical scenario-based practice</p>
+              <p class="text-sm text-gray-600 mt-2 font-medium">Clinical scenario-based practice</p>
             </div>
           </div>
-          <!-- Hover Message (Hidden on Mobile) -->
+          
+          <!-- Hover Message with improved animation -->
           <div
-            class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex"
+            class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
           >
-            <span class="text-sm text-[#55A9C4] font-medium">Practice Scenarios</span>
-            <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+            <span class="text-sm text-[#55A9C4] font-semibold">Practice Scenarios</span>
+            <div class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300">
+              <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+            </div>
           </div>
         </div>
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"
-        ></div>
       </div>
 
       <!-- Spot Card -->
       <div
         data-tour="spot"
         @click="$inertia.visit('/spot')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
+        class="group relative overflow-hidden rounded-3xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
+        <!-- Glass morphism effect -->
+        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <!-- Blob decoration -->
+        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+        
         <div class="relative space-y-6 z-10 animate-fade-in">
-          <div class="flex items-start gap-4">
+          <div class="flex items-start gap-5">
             <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-md group-hover:from-[#55A9C4]/10 group-hover:to-[#55A9C4]/20 transition-all duration-300"
+              class="p-5 rounded-2xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-lg group-hover:shadow-xl group-hover:from-[#55A9C4]/20 group-hover:to-[#55A9C4]/30 transition-all duration-500"
             >
               <Pin class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
               <h3 class="text-2xl font-bold text-gray-900">Spots</h3>
-              <p class="text-sm text-gray-600 mt-2">Sharpen your identification skills</p>
+              <p class="text-sm text-gray-600 mt-2 font-medium">Sharpen your identification skills</p>
             </div>
           </div>
-          <!-- Hover Message (Hidden on Mobile) -->
+          
+          <!-- Hover Message with improved animation -->
           <div
-            class="absolute bottom-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex"
+            class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
           >
-            <span class="text-sm text-[#55A9C4] font-medium">Identify Spots</span>
-            <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+            <span class="text-sm text-[#55A9C4] font-semibold">Identify Spots</span>
+            <div class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300">
+              <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+            </div>
           </div>
         </div>
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-white to-[#E3F5FA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block"
-        ></div>
       </div>
     </div>
   </div>
