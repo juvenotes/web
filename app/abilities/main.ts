@@ -29,3 +29,8 @@ export const viewAnswers = Bouncer.ability((user: User | null) => {
 export const canManage = Bouncer.ability((user: User | null) => {
   return !!user && [Role.EDITOR, Role.ADMIN].includes(user.roleId)
 })
+
+// Ability: canManageAdmin (only admins)
+export const canManageAdmin = Bouncer.ability((user: User | null) => {
+  return !!user && user.roleId === Role.ADMIN
+})

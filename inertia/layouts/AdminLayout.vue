@@ -7,7 +7,6 @@ import {
   School,
   FileText,
   Users,
-  // Settings,
   Menu,
   Stethoscope,
   Pin,
@@ -22,6 +21,7 @@ import type UserDto from '#dtos/user'
 defineProps<{
   messages: Record<string, string | Record<string, string>>
   user: UserDto | null
+  canManageAdmin?: boolean
 }>()
 
 const isSidebarOpen = ref(false) // Default closed for mobile
@@ -34,22 +34,23 @@ const menuItems = [
   { name: 'Spot', href: '/manage/spot', icon: Pin },
   { name: 'Today', href: '/manage/today', icon: Calendar },
   { name: 'Feedback', href: '/manage/feedback', icon: FileQuestion },
-  { name: 'Users', href: '/manage/users', icon: Users },
-  { name: 'Institutions', href: '/manage/institutions', icon: School },
-  { name: 'Courses', href: '/manage/courses', icon: GraduationCap },
+  // Admin-only items
+  { name: 'Users', href: '/manage/users', icon: Users, adminOnly: true },
+  { name: 'Institutions', href: '/manage/institutions', icon: School, adminOnly: true },
+  { name: 'Courses', href: '/manage/courses', icon: GraduationCap, adminOnly: true },
 ]
 </script>
 
 <template>
-  <div class="min-h-screen bg-background">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-100">
     <!-- Top Navigation -->
     <nav
-      class="sticky top-0 z-40 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60"
+      class="sticky top-0 z-40 border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm"
     >
       <div class="px-4 h-16 flex items-center justify-between">
         <button @click="isSidebarOpen = !isSidebarOpen" class="p-2 -ml-2 md:hidden">
-          <Menu v-if="!isSidebarOpen" class="w-5 h-5" />
-          <X v-else class="w-5 h-5" />
+          <Menu v-if="!isSidebarOpen" class="w-6 h-6 text-primary" />
+          <X v-else class="w-6 h-6 text-primary" />
         </button>
         <!-- Search - Full width -->
         <div class="flex-1 mx-auto max-w-2xl">
@@ -58,7 +59,7 @@ const menuItems = [
         <Button
           variant="ghost"
           @click="$inertia.post('/logout')"
-          class="bg-primary/40 rounded-lg px-4 py-2 hover:bg-primary/20 transition-colors"
+          class="bg-primary/40 rounded-lg px-4 py-2 hover:bg-primary/20 transition-colors shadow"
           >Logout</Button
         >
       </div>
@@ -68,41 +69,41 @@ const menuItems = [
       <!-- Mobile Overlay -->
       <div
         v-if="isSidebarOpen"
-        class="fixed inset-0 z-30 bg-black/20 md:hidden"
+        class="fixed inset-0 z-30 bg-black/30 md:hidden"
         @click="isSidebarOpen = false"
       />
 
       <!-- Sidebar -->
       <aside
         :class="[
-          'fixed md:static inset-y-0 left-0 z-30 w-64 border-r bg-background transition-transform duration-300 md:translate-x-0',
-          'bg-white shadow-lg md:shadow-none', // Always visible and clear on mobile
-          'overflow-y-auto', // Scrollable if needed
+          'fixed md:static inset-y-0 left-0 z-30 w-64 border-r bg-white/90 transition-transform duration-300 md:translate-x-0',
+          'shadow-xl md:shadow-none',
+          'overflow-y-auto',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
         style="max-height: 100vh;"
       >
         <!-- Sidebar navigation -->
-        <nav class="p-4 space-y-2">
+        <nav class="p-6 space-y-2">
           <Link
             v-for="item in menuItems"
             :key="item.name"
             :href="item.href"
-            class="flex items-center gap-2 p-2 rounded-lg text-foreground transition-colors"
+            class="flex items-center gap-3 p-3 rounded-xl text-foreground font-medium transition-colors text-lg"
             :class="{
-              'bg-accent': $page.url === item.href,
-              'hover:bg-accent/10': $page.url !== item.href,
+              'bg-blue-100 text-blue-700 shadow': $page.url === item.href,
+              'hover:bg-blue-50': $page.url !== item.href,
             }"
             @click="isSidebarOpen = false"
           >
-            <component :is="item.icon" class="w-5 h-5" />
+            <component :is="item.icon" class="w-6 h-6" />
             <span class="block">{{ item.name }}</span>
           </Link>
         </nav>
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 md:p-6 w-full">
+      <main class="flex-1 p-4 md:p-8 w-full">
         <slot />
       </main>
       <ToastManager :messages="messages" />
