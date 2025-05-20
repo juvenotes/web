@@ -44,12 +44,17 @@ const statsDisplay = [
             <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 tracking-tight font-inter">
               WELCOME TO JUVENOTES
             </h1>
-            <img src="/public/images/pen.webp" alt="Study Resources" class="w-16 h-16 animate-bounce" />
+            <img
+              src="/public/images/pen.webp"
+              alt="Study Resources"
+              class="w-16 h-16 animate-bounce"
+            />
           </div>
 
           <h2 class="text-xl font-semibold text-[#55A9C4] mb-4 mt-2">Study Smart, Excel Easy!</h2>
           <p class="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Welcome to Juvenotes, your destination for a transformative medical education experience. 🚀
+            Welcome to Juvenotes, your destination for a transformative medical education
+            experience. 🚀
           </p>
           <Button
             class="bg-[#55A9C4] text-white px-6 py-3 text-lg font-semibold rounded-lg shadow-lg hover:bg-[#55A9C4]/90 transition transform hover:scale-105 duration-300"
@@ -63,7 +68,9 @@ const statsDisplay = [
       <!-- Features Grid -->
       <section class="py-12 bg-white">
         <div class="container mx-auto px-6">
-          <h2 class="text-3xl font-bold text-center mb-10 text-gray-800 font-inter">Why Choose Juvenotes?</h2>
+          <h2 class="text-3xl font-bold text-center mb-10 text-gray-800 font-inter">
+            Why Choose Juvenotes?
+          </h2>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div
               v-for="feature in features"

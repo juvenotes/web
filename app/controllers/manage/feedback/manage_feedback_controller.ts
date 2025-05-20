@@ -3,6 +3,14 @@ import { inject } from '@adonisjs/core'
 import QuestionFeedback from '#models/question_feedback'
 import QuestionFeedbackDto from '#dtos/question_feedback'
 import { DateTime } from 'luxon'
+import Question from '#models/question'
+import QuestionDto from '#dtos/question'
+import McqChoice from '#models/mcq_choice'
+import SaqPart from '#models/saq_part'
+import Station from '#models/station'
+import SpotStation from '#models/spot_station'
+import transmit from '@adonisjs/transmit/services/main'
+import User from '#models/user'
 
 @inject()
 export default class ManageFeedbackController {
@@ -70,6 +78,45 @@ export default class ManageFeedbackController {
     }
   }
 
+  /**
+   * Show a single question (by slug) with all related feedback
+   */
+  async showQuestion({ params, inertia, logger, auth }: HttpContext) {
+    const { slug } = params
+    const context = {
+      controller: 'ManageFeedbackController',
+      action: 'showQuestion',
+      slug,
+      userId: auth.user?.id,
+    }
+    logger.info({ ...context, message: 'Fetching question and feedback' })
+    try {
+      const question = await Question.query()
+        .where('slug', slug)
+        .preload('pastPaper', (paperQuery: any) => {
+          paperQuery.preload('concept')
+        })
+        .preload('choices')
+        .preload('parts')
+        .preload('stations')
+        .preload('spotStations')
+        .firstOrFail()
+
+      const feedbackItems = await QuestionFeedback.query()
+        .where('questionId', question.id)
+        .preload('user')
+        .orderBy('createdAt', 'desc')
+
+      return inertia.render('manage/feedback/show', {
+        question: new QuestionDto(question),
+        feedbackItems: feedbackItems.map((item: any) => new QuestionFeedbackDto(item)),
+      })
+    } catch (error) {
+      logger.error({ ...context, error, message: 'Failed to fetch question or feedback' })
+      throw error
+    }
+  }
+
   async markAsResolved({ params, response, auth, logger }: HttpContext) {
     const { id } = params
     const context = {
@@ -89,6 +136,21 @@ export default class ManageFeedbackController {
       feedback.resolvedBy = auth.user!.id
 
       await feedback.save()
+
+      // Broadcast notification to feedback creator
+      const feedbackUser = await User.find(feedback.userId)
+      const question = await Question.find(feedback.questionId)
+      if (feedbackUser && question) {
+        transmit.broadcast(`users/${feedbackUser.id}`, {
+          type: 'feedback_resolved',
+          question: {
+            id: question.id,
+            title: question.questionText,
+            slug: question.slug,
+          },
+          message: `Your feedback to question "${question.questionText}" has been resolved.`,
+        })
+      }
 
       logger.info({
         ...context,
@@ -113,6 +175,146 @@ export default class ManageFeedbackController {
         success: false,
         message: 'Failed to update feedback status',
       })
+    }
+  }
+
+  /**
+   * Update MCQ Choice
+   */
+  async updateMcqChoice({ params, request, response, auth, logger }: HttpContext) {
+    const { id } = params
+    const data = request.only(['choiceText', 'explanation', 'isCorrect'])
+    try {
+      const choice = await McqChoice.findOrFail(id)
+      choice.merge(data)
+      await choice.save()
+      logger.info({
+        controller: 'ManageFeedbackController',
+        action: 'updateMcqChoice',
+        id,
+        userId: auth.user?.id,
+      })
+      return response.ok({ success: true, choice })
+    } catch (error: any) {
+      logger.error({
+        controller: 'ManageFeedbackController',
+        action: 'updateMcqChoice',
+        id,
+        error,
+      })
+      return response.badRequest({ success: false, error: error.message })
+    }
+  }
+
+  /**
+   * Update SAQ Part
+   */
+  async updateSaqPart({ params, request, response, auth, logger }: HttpContext) {
+    const { id } = params
+    const data = request.only(['partText'])
+    try {
+      const part = await SaqPart.findOrFail(id)
+      part.merge(data)
+      await part.save()
+      logger.info({
+        controller: 'ManageFeedbackController',
+        action: 'updateSaqPart',
+        id,
+        userId: auth.user?.id,
+      })
+      return response.ok({ success: true, part })
+    } catch (error: any) {
+      logger.error({
+        controller: 'ManageFeedbackController',
+        action: 'updateSaqPart',
+        id,
+        error,
+      })
+      return response.badRequest({ success: false, error: error.message })
+    }
+  }
+
+  /**
+   * Update OSCE Station
+   */
+  async updateOsceStation({ params, request, response, auth, logger }: HttpContext) {
+    const { id } = params
+    const data = request.only(['partText', 'expectedAnswer', 'marks'])
+    try {
+      const station = await Station.findOrFail(id)
+      station.merge(data)
+      await station.save()
+      logger.info({
+        controller: 'ManageFeedbackController',
+        action: 'updateOsceStation',
+        id,
+        userId: auth.user?.id,
+      })
+      return response.ok({ success: true, station })
+    } catch (error: any) {
+      logger.error({
+        controller: 'ManageFeedbackController',
+        action: 'updateOsceStation',
+        id,
+        error,
+      })
+      return response.badRequest({ success: false, error: error.message })
+    }
+  }
+
+  /**
+   * Update Spot Station
+   */
+  async updateSpotStation({ params, request, response, auth, logger }: HttpContext) {
+    const { id } = params
+    const data = request.only(['partText', 'expectedAnswer', 'marks'])
+    try {
+      const spot = await SpotStation.findOrFail(id)
+      spot.merge(data)
+      await spot.save()
+      logger.info({
+        controller: 'ManageFeedbackController',
+        action: 'updateSpotStation',
+        id,
+        userId: auth.user?.id,
+      })
+      return response.ok({ success: true, spot })
+    } catch (error: any) {
+      logger.error({
+        controller: 'ManageFeedbackController',
+        action: 'updateSpotStation',
+        id,
+        error,
+      })
+      return response.badRequest({ success: false, error: error.message })
+    }
+  }
+
+  /**
+   * Update Question Stem
+   */
+  async updateQuestionStem({ params, request, response, auth, logger }: HttpContext) {
+    const { id } = params
+    const data = request.only(['questionText'])
+    try {
+      const question = await Question.findOrFail(id)
+      question.questionText = data.questionText
+      await question.save()
+      logger.info({
+        controller: 'ManageFeedbackController',
+        action: 'updateQuestionStem',
+        id,
+        userId: auth.user?.id,
+      })
+      return response.ok({ success: true, question })
+    } catch (error: any) {
+      logger.error({
+        controller: 'ManageFeedbackController',
+        action: 'updateQuestionStem',
+        id,
+        error,
+      })
+      return response.badRequest({ success: false, error: error.message })
     }
   }
 }

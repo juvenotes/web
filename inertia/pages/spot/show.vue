@@ -138,7 +138,12 @@ const breadcrumbItems = computed(() => [
                   SPOT
                 </span>
                 <span class="text-gray-500">
-                  {{ paper.questions ? paper.questions.reduce((sum, q) => sum + (q.spotStations?.length || 0), 0) : 0 }} stations
+                  {{
+                    paper.questions
+                      ? paper.questions.reduce((sum, q) => sum + (q.spotStations?.length || 0), 0)
+                      : 0
+                  }}
+                  stations
                 </span>
               </div>
               <div

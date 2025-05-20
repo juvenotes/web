@@ -51,10 +51,10 @@ const isMobile = ref(false)
 onMounted(() => {
   // Set initial mobile state
   checkMobileState()
-  
+
   // Add window resize listener
   window.addEventListener('resize', checkMobileState)
-  
+
   initializeTour()
 })
 
@@ -147,14 +147,14 @@ function updatePosition() {
     tooltip.style.transform = 'translateX(-50%)'
     tooltip.style.bottom = '16px' // Fixed distance from bottom
     tooltip.style.top = 'auto' // Clear top position
-    
+
     // Always use top arrow on mobile (pointing to element from bottom of screen)
     tooltip.setAttribute('data-arrow', 'none') // Hide arrow on mobile
   } else {
     // On desktop, restore original width
     tooltip.style.width = '320px' // Original width
     tooltip.style.maxWidth = '90vw'
-    
+
     // Default to positioning below the element
     let topPosition = rect.bottom + 10
     let arrowPosition = 'top' // Default arrow position (pointing up)
@@ -220,13 +220,12 @@ function updatePosition() {
 // Ensure the highlighted element is visible in the viewport
 function ensureElementVisible(element: HTMLElement) {
   const rect = element.getBoundingClientRect()
-  const isInViewport = (
+  const isInViewport =
     rect.top >= 0 &&
     rect.left >= 0 &&
     rect.bottom <= window.innerHeight &&
     rect.right <= window.innerWidth
-  )
-  
+
   if (!isInViewport) {
     // If not in viewport, scroll element into view with some padding
     element.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -272,10 +271,7 @@ function completeTour() {
       :class="{ 'mobile-tooltip': isMobile }"
     >
       <!-- Dynamic arrows based on position (hidden on mobile) -->
-      <div
-        v-if="!isMobile"
-        class="arrow absolute w-4 h-4 bg-white rotate-45"
-      ></div>
+      <div v-if="!isMobile" class="arrow absolute w-4 h-4 bg-white rotate-45"></div>
 
       <div class="relative">
         <!-- Step Number -->

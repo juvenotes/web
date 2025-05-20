@@ -171,9 +171,15 @@ const handleDelete = () => {
           v-for="child in children"
           :key="child.id"
           :href="`/manage/concepts/${child.slug}`"
-          class="p-4 rounded-lg border hover:border-primary transition-colors"
+          class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
-          <h3 class="text-lg font-semibold">{{ child.title }}</h3>
+          <div class="relative space-y-3">
+            <h3
+              class="text-lg font-bold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300"
+            >
+              {{ child.title }}
+            </h3>
+          </div>
         </Link>
       </div>
 
