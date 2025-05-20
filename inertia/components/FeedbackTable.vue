@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import type QuestionFeedbackDto from '#dtos/question_feedback'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '~/components/ui/table'
 
 defineProps<{
   items: QuestionFeedbackDto[]
@@ -12,14 +19,26 @@ defineProps<{
     <Table>
       <TableHeader>
         <TableRow class="hidden sm:table-row">
-          <TableHead class="text-xs uppercase tracking-wider text-muted-foreground">Source</TableHead>
-          <TableHead class="text-xs uppercase tracking-wider text-muted-foreground">Target</TableHead>
-          <TableHead class="max-w-[300px] text-xs uppercase tracking-wider text-muted-foreground">Feedback</TableHead>
-          <TableHead class="w-[100px] text-xs uppercase tracking-wider text-muted-foreground">Action</TableHead>
+          <TableHead class="text-xs uppercase tracking-wider text-muted-foreground"
+            >Source</TableHead
+          >
+          <TableHead class="text-xs uppercase tracking-wider text-muted-foreground"
+            >Target</TableHead
+          >
+          <TableHead class="max-w-[300px] text-xs uppercase tracking-wider text-muted-foreground"
+            >Feedback</TableHead
+          >
+          <TableHead class="w-[100px] text-xs uppercase tracking-wider text-muted-foreground"
+            >Action</TableHead
+          >
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow v-for="item in items" :key="item.id" class="block sm:table-row hover:bg-accent/10 transition-colors">
+        <TableRow
+          v-for="item in items"
+          :key="item.id"
+          class="block sm:table-row hover:bg-accent/10 transition-colors"
+        >
           <TableCell data-label="Source" class="block sm:table-cell py-3">
             <div class="flex flex-col">
               <span class="sm:hidden font-medium mb-1">Source:</span>
@@ -51,7 +70,9 @@ defineProps<{
           </TableCell>
         </TableRow>
         <TableRow v-if="items.length === 0">
-          <TableCell colspan="4" class="h-24 text-center text-muted-foreground">No feedback found</TableCell>
+          <TableCell colspan="4" class="h-24 text-center text-muted-foreground"
+            >No feedback found</TableCell
+          >
         </TableRow>
       </TableBody>
     </Table>

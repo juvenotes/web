@@ -12,7 +12,9 @@ interface Props {
 const props = defineProps<Props>()
 
 const sortedFeedback = computed(() =>
-  [...props.feedbackItems].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  [...props.feedbackItems].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
 )
 </script>
 

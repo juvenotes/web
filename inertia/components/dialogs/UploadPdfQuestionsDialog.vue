@@ -129,16 +129,17 @@ async function handleUpload() {
               choicesArr = choicesArr.map((c: any) => c.choiceText || c.text || c)
             }
             let questionText = q.stem || q.questionText || q.text || ''
-            const mappedChoices: McqChoiceUpload[] = (choicesArr as any[]).map((c: any, idx: number) => {
-              return {
-                choiceText: typeof c === 'string' ? c : (c && c.choiceText) || (c && c.text) || '',
-                isCorrect: idx === correctIdx,
-                explanation:
-                  idx === correctIdx
-                    ? (q.explanation || explanationsArr[idx] || '')
-                    : '',
+            const mappedChoices: McqChoiceUpload[] = (choicesArr as any[]).map(
+              (c: any, idx: number) => {
+                return {
+                  choiceText:
+                    typeof c === 'string' ? c : (c && c.choiceText) || (c && c.text) || '',
+                  isCorrect: idx === correctIdx,
+                  explanation:
+                    idx === correctIdx ? q.explanation || explanationsArr[idx] || '' : '',
+                }
               }
-            })
+            )
             return {
               questionText,
               choices: mappedChoices,
@@ -224,10 +225,13 @@ async function saveAllQuestions() {
       </SheetHeader>
       <div class="space-y-6 max-h-[80vh] overflow-y-auto pr-2">
         <div v-if="isLoading" class="mb-2">
-          <div class="p-3 bg-yellow-50 border border-yellow-200 text-yellow-900 rounded text-sm flex items-center gap-2">
+          <div
+            class="p-3 bg-yellow-50 border border-yellow-200 text-yellow-900 rounded text-sm flex items-center gap-2"
+          >
             <AlertTriangle class="w-4 h-4" />
             <span>
-              Please do not close this dialog while processing. Progress will be lost if you close it early.
+              Please do not close this dialog while processing. Progress will be lost if you close
+              it early.
             </span>
           </div>
         </div>
@@ -236,7 +240,10 @@ async function saveAllQuestions() {
             {{ progressMessage }}
           </div>
         </div>
-        <div v-if="error" class="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+        <div
+          v-if="error"
+          class="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md"
+        >
           <AlertTriangle class="w-4 h-4" />
           <span>{{ error }}</span>
         </div>
@@ -340,10 +347,13 @@ async function saveAllQuestions() {
       </DialogHeader>
       <div class="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
         <div v-if="isLoading" class="mb-2">
-          <div class="p-3 bg-yellow-50 border border-yellow-200 text-yellow-900 rounded text-sm flex items-center gap-2">
+          <div
+            class="p-3 bg-yellow-50 border border-yellow-200 text-yellow-900 rounded text-sm flex items-center gap-2"
+          >
             <AlertTriangle class="w-4 h-4" />
             <span>
-              Please do not close this dialog while processing. Progress will be lost if you close it early.
+              Please do not close this dialog while processing. Progress will be lost if you close
+              it early.
             </span>
           </div>
         </div>
@@ -352,7 +362,10 @@ async function saveAllQuestions() {
             {{ progressMessage }}
           </div>
         </div>
-        <div v-if="error" class="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+        <div
+          v-if="error"
+          class="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md"
+        >
           <AlertTriangle class="w-4 h-4" />
           <span>{{ error }}</span>
         </div>

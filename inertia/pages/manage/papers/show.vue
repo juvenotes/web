@@ -82,7 +82,11 @@ const breadcrumbItems = computed(() => [
           class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
           <div class="relative space-y-3">
-            <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{{ paper.title }}</h3>
+            <h3
+              class="text-lg font-bold text-foreground group-hover:text-primary transition-colors"
+            >
+              {{ paper.title }}
+            </h3>
             <div class="flex items-center gap-3 text-sm">
               <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
                 {{ paper.examType.toUpperCase() }}

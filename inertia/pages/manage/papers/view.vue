@@ -247,7 +247,9 @@ const selectedQuestion = ref<QuestionDto | null>(null)
           <div class="space-y-3 sm:space-y-4">
             <!-- Question Header -->
             <div class="flex gap-2 sm:gap-3 items-center">
-              <span class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-xs sm:text-sm font-medium">
+              <span
+                class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-xs sm:text-sm font-medium"
+              >
                 Q{{ index + 1 }}
               </span>
               <p class="text-base text-foreground font-medium">{{ question.questionText }}</p>
@@ -363,7 +365,9 @@ const selectedQuestion = ref<QuestionDto | null>(null)
           </div>
         </div>
       </template>
-      <div v-else class="text-center text-muted-foreground py-10">No questions found for this paper.</div>
+      <div v-else class="text-center text-muted-foreground py-10">
+        No questions found for this paper.
+      </div>
     </div>
   </div>
   <!-- Progress Overlay -->

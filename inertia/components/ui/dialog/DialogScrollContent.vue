@@ -30,17 +30,22 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
         :class="
           cn(
             'relative z-50 grid w-full max-w-lg my-8 gap-4 border border-border bg-background p-6 shadow-lg duration-200 sm:rounded-lg md:w-full',
-            props.class,
+            props.class
           )
         "
         v-bind="forwarded"
-        @pointer-down-outside="(event) => {
-          const originalEvent = event.detail.originalEvent;
-          const target = originalEvent.target as HTMLElement;
-          if (originalEvent.offsetX > target.clientWidth || originalEvent.offsetY > target.clientHeight) {
-            event.preventDefault();
+        @pointer-down-outside="
+          (event) => {
+            const originalEvent = event.detail.originalEvent
+            const target = originalEvent.target as HTMLElement
+            if (
+              originalEvent.offsetX > target.clientWidth ||
+              originalEvent.offsetY > target.clientHeight
+            ) {
+              event.preventDefault()
+            }
           }
-        }"
+        "
       >
         <slot />
 

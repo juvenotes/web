@@ -93,7 +93,9 @@ async function handleDeleteQuestion(question: QuestionDto) {
             <h1 class="text-xl sm:text-2xl font-bold truncate">{{ paper.title }}</h1>
           </div>
           <!-- Metadata -->
-          <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground">
+          <div
+            class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground"
+          >
             <span class="truncate max-w-[150px] sm:max-w-none">{{ concept.title }}</span>
             <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
               SPOT
@@ -105,7 +107,11 @@ async function handleDeleteQuestion(question: QuestionDto) {
           </div>
         </div>
         <div class="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-4">
-          <Button @click="showEditPaperDialog = true" variant="outline" class="flex items-center gap-2">
+          <Button
+            @click="showEditPaperDialog = true"
+            variant="outline"
+            class="flex items-center gap-2"
+          >
             <Pencil class="h-4 w-4" /> Edit Paper
           </Button>
           <Button @click="handleDeletePaper" variant="destructive" class="flex items-center gap-2">
@@ -129,17 +135,29 @@ async function handleDeleteQuestion(question: QuestionDto) {
           <div class="relative space-y-3">
             <h3 class="text-lg font-bold text-foreground">{{ question.questionText }}</h3>
             <div v-if="question.questionImagePath" class="flex justify-center mt-2">
-              <img :src="question.questionImagePath" class="w-full h-auto rounded-lg border shadow-xs max-h-48 object-contain" />
+              <img
+                :src="question.questionImagePath"
+                class="w-full h-auto rounded-lg border shadow-xs max-h-48 object-contain"
+              />
             </div>
             <div class="mt-3 space-y-2">
-              <div v-for="(part, partIndex) in question.spotStations" :key="part.id" class="p-3 bg-primary/5 rounded-lg border border-primary/10">
+              <div
+                v-for="(part, partIndex) in question.spotStations"
+                :key="part.id"
+                class="p-3 bg-primary/5 rounded-lg border border-primary/10"
+              >
                 <div class="font-medium text-primary">Station {{ partIndex + 1 }}</div>
                 <div class="text-sm text-foreground font-semibold">{{ part.partText }}</div>
                 <div class="text-xs text-muted-foreground mt-1">Marks: {{ part.marks }}</div>
                 <div v-if="part.imagePath" class="mt-2 flex justify-center">
-                  <img :src="part.imagePath" class="w-full h-auto rounded border shadow-xs max-h-32 object-contain" />
+                  <img
+                    :src="part.imagePath"
+                    class="w-full h-auto rounded border shadow-xs max-h-32 object-contain"
+                  />
                 </div>
-                <div class="mt-2 text-xs text-muted-foreground">Answer: {{ part.expectedAnswer }}</div>
+                <div class="mt-2 text-xs text-muted-foreground">
+                  Answer: {{ part.expectedAnswer }}
+                </div>
               </div>
             </div>
             <div class="flex items-center gap-2 mt-2">
@@ -155,7 +173,9 @@ async function handleDeleteQuestion(question: QuestionDto) {
       </div>
     </div>
     <div v-else class="text-center p-8 bg-white rounded-2xl border">
-      <p class="text-muted-foreground">No SPOT questions added yet. Click "Add SPOT Question" to create one.</p>
+      <p class="text-muted-foreground">
+        No SPOT questions added yet. Click "Add SPOT Question" to create one.
+      </p>
     </div>
     <!-- Dialogs -->
     <EditSpotPaperDialog v-model:open="showEditPaperDialog" :paper="paper" />

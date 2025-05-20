@@ -81,7 +81,7 @@ const menuItems = [
           'overflow-y-auto',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
-        style="max-height: 100vh;"
+        style="max-height: 100vh"
       >
         <!-- Sidebar navigation -->
         <nav class="p-6 space-y-2">
