@@ -9,6 +9,8 @@ import McqChoice from '#models/mcq_choice'
 import SaqPart from '#models/saq_part'
 import Station from '#models/station'
 import SpotStation from '#models/spot_station'
+import transmit from '@adonisjs/transmit/services/main'
+import User from '#models/user'
 
 @inject()
 export default class ManageFeedbackController {
@@ -134,6 +136,21 @@ export default class ManageFeedbackController {
       feedback.resolvedBy = auth.user!.id
 
       await feedback.save()
+
+      // Broadcast notification to feedback creator
+      const feedbackUser = await User.find(feedback.userId)
+      const question = await Question.find(feedback.questionId)
+      if (feedbackUser && question) {
+        transmit.broadcast(`users/${feedbackUser.id}`, {
+          type: 'feedback_resolved',
+          question: {
+            id: question.id,
+            title: question.questionText,
+            slug: question.slug,
+          },
+          message: `Your feedback to question "${question.questionText}" has been resolved.`,
+        })
+      }
 
       logger.info({
         ...context,
