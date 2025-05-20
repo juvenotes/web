@@ -1,23 +1,10 @@
 <script setup lang="ts">
 import type QuestionFeedbackDto from '#dtos/question_feedback'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table'
-import { Button } from '~/components/ui/button'
-import { toast } from 'vue-sonner'
-import axios from 'axios'
 
 defineProps<{
   items: QuestionFeedbackDto[]
 }>()
-
-const markAsResolved = async (id: number) => {
-  try {
-    await axios.post(`/manage/feedback/${id}/resolve`)
-    toast.success('Feedback marked as resolved')
-  } catch (error) {
-    console.error('Failed to mark feedback as resolved:', error)
-    toast.error('Failed to mark feedback as resolved')
-  }
-}
 </script>
 
 <template>
@@ -28,7 +15,7 @@ const markAsResolved = async (id: number) => {
           <TableHead>Source</TableHead>
           <TableHead>Target</TableHead>
           <TableHead class="max-w-[300px]">Feedback</TableHead>
-          <!-- <TableHead class="w-[100px]">Action</TableHead> -->
+          <TableHead class="w-[100px]">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -51,20 +38,17 @@ const markAsResolved = async (id: number) => {
               <p class="line-clamp-3">{{ item.feedbackText }}</p>
             </div>
           </TableCell>
-          <!-- <TableCell class="block sm:table-cell">
+          <TableCell class="block sm:table-cell">
             <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
               <span class="sm:hidden font-medium">Action:</span>
-              <Button
-                v-if="!item.isResolved"
-                size="sm"
-                variant="outline"
-                @click="markAsResolved(item.id)"
+              <Link
+                :href="`/manage/feedback/question/${item.question?.slug}`"
+                class="inline-flex h-9 items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors text-primary border border-primary/20 font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 w-full sm:w-auto"
               >
-                Mark Resolved
-              </Button>
-              <span v-else class="text-green-600 text-sm">Resolved</span>
+                <span class="text-sm font-medium">Resolve</span>
+              </Link>
             </div>
-          </TableCell> -->
+          </TableCell>
         </TableRow>
         <TableRow v-if="items.length === 0">
           <TableCell colspan="4" class="h-24 text-center">No feedback found</TableCell>
