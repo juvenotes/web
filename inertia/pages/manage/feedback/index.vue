@@ -18,8 +18,13 @@ const sortedFeedback = computed(() =>
 
 <template>
   <AppHead :title="`Manage feedback`" :description="`Make changes based on user feedback`" />
-  <div class="max-w-5xl mx-auto py-8 px-4">
-    <h1 class="text-2xl font-bold mb-6">Latest Feedback</h1>
-    <FeedbackTable :items="sortedFeedback" />
+  <div class="max-w-5xl mx-auto py-10 px-4">
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h1 class="text-3xl font-bold text-foreground">Latest Feedback</h1>
+      <!-- Add filter/search here if needed -->
+    </div>
+    <div class="bg-white rounded-2xl border shadow-sm p-0 sm:p-2">
+      <FeedbackTable :items="sortedFeedback" />
+    </div>
   </div>
 </template>

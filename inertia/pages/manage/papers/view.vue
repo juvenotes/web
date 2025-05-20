@@ -242,19 +242,16 @@ const selectedQuestion = ref<QuestionDto | null>(null)
         <div
           v-for="(question, index) in questions"
           :key="question.id"
-          class="p-4 sm:p-6 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow"
+          class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
         >
           <div class="space-y-3 sm:space-y-4">
             <!-- Question Header -->
-            <div class="flex gap-2 sm:gap-3">
-              <span
-                class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-xs sm:text-sm font-medium"
-              >
+            <div class="flex gap-2 sm:gap-3 items-center">
+              <span class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-xs sm:text-sm font-medium">
                 Q{{ index + 1 }}
               </span>
-              <p class="text-sm sm:text-base text-foreground">{{ question.questionText }}</p>
+              <p class="text-base text-foreground font-medium">{{ question.questionText }}</p>
             </div>
-
             <!-- Add Question Image Display -->
             <div v-if="question.questionImagePath" class="mt-3 mb-3">
               <img
@@ -263,9 +260,8 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                 class="max-w-full h-auto rounded-lg border shadow-sm max-h-[300px] object-contain"
               />
             </div>
-
             <!-- Actions -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 mt-2">
               <Button variant="ghost" size="sm" @click="handleEditQuestion(question)">
                 <Pencil class="h-4 w-4" /> Edit
               </Button>
@@ -277,16 +273,15 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                 {{ feedbackCountMap?.[question.id] }}
               </Badge>
             </div>
-
             <!-- MCQ Choices -->
             <div v-if="question.isMcq" class="pl-6 sm:pl-10 space-y-2 sm:space-y-3">
               <div
                 v-for="choice in question.choices"
                 :key="choice.id"
-                class="flex items-start gap-3 p-2 sm:p-3 rounded-lg border"
+                class="flex items-start gap-3 p-2 sm:p-3 rounded-lg border border-slate-100"
               >
                 <div
-                  class="h-3 w-3 sm:h-4 sm:w-4 mt-1 rounded-full border"
+                  class="h-4 w-4 mt-1 rounded-full border border-primary/30"
                   :class="{ 'bg-primary border-primary': choice.isCorrect }"
                 />
                 <div class="space-y-2">
@@ -301,7 +296,6 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                 </div>
               </div>
             </div>
-
             <!-- SAQ Parts -->
             <div v-if="question.isSaq" class="pl-3 sm:pl-10 space-y-2 sm:space-y-4">
               <div
@@ -369,11 +363,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
           </div>
         </div>
       </template>
-      <div v-else class="text-center py-12 bg-white rounded-xl border">
-        <p class="text-muted-foreground">
-          No questions added yet. Click "Add Question" to start building your paper.
-        </p>
-      </div>
+      <div v-else class="text-center text-muted-foreground py-10">No questions found for this paper.</div>
     </div>
   </div>
   <!-- Progress Overlay -->
