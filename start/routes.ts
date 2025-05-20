@@ -394,6 +394,22 @@ router
   .post('/api/feedback/:id/resolve', [ManageFeedbackController, 'markAsResolved'])
   .use(middleware.auth())
 
+// Show a single question (by slug) with all related feedback
+router
+  .get('/manage/feedback/question/:slug', [ManageFeedbackController, 'showQuestion'])
+  .use(middleware.auth())
+
+// MCQ Choice
+router.patch('/api/manage/mcq-choices/:id', [ManageFeedbackController, 'updateMcqChoice'])
+// SAQ Part
+router.patch('/api/manage/saq-parts/:id', [ManageFeedbackController, 'updateSaqPart'])
+// OSCE Station
+router.patch('/api/manage/osce-stations/:id', [ManageFeedbackController, 'updateOsceStation'])
+// Spot Station
+router.patch('/api/manage/spot-stations/:id', [ManageFeedbackController, 'updateSpotStation'])
+// Question Stem
+router.patch('/api/manage/questions/:id', [ManageFeedbackController, 'updateQuestionStem'])
+
 // Today routes
 router
   .group(() => {

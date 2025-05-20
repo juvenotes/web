@@ -26,6 +26,9 @@ export default class ManageDashboardController {
       contentfulConcepts: Number(contentfulConcepts?.$extras.total) || 0,
     })
 
-    return inertia.render('manage/dashboard', { stats })
+    // Pass canManageAdmin to the frontend for admin-only UI
+    const canManageAdmin = await bouncer.allows('canManageAdmin')
+
+    return inertia.render('manage/dashboard', { stats, canManageAdmin })
   }
 }

@@ -122,7 +122,9 @@ const papersByYear = computed(() => {
           class="max-w-[10rem] w-auto px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm"
         >
           <option :value="null">Exam</option>
-          <option v-for="type in examTypes" :key="type" :value="type">{{ type.toUpperCase() }}</option>
+          <option v-for="type in examTypes" :key="type" :value="type">
+            {{ type.toUpperCase() }}
+          </option>
         </select>
       </div>
     </div>
@@ -161,7 +163,10 @@ const papersByYear = computed(() => {
                 <span class="px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium">
                   {{ paper.examType.toUpperCase() }}
                 </span>
-                <span v-if="paper.paperType" class="px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium">
+                <span
+                  v-if="paper.paperType"
+                  class="px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium"
+                >
                   {{ paper.paperType.toUpperCase() }}
                 </span>
                 <span class="text-gray-500"> {{ paper.questions?.length ?? 0 }} questions </span>

@@ -45,31 +45,23 @@ defineProps<Props>()
         v-for="concept in concepts"
         :key="concept.id"
         :href="`/manage/osce/${concept.slug}`"
-        class="group relative overflow-hidden rounded-xl bg-white/90 p-5 border border-white/20 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+        class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
       >
         <div
-          class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"
+          class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none"
         />
-
         <div class="relative space-y-3">
           <h2
-            class="text-lg font-semibold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300"
+            class="text-lg font-bold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300"
           >
             {{ concept.title }}
           </h2>
-
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
             <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
-              {{ concept.pastPapers?.filter((p) => p.paperType === PaperType.OSCE).length ?? 0 }}
-              {{
-                (concept.pastPapers?.filter((p) => p.paperType === PaperType.OSCE).length ?? 0) ===
-                1
-                  ? 'paper'
-                  : 'papers'
-              }}
+              {{ concept.pastPapers?.length ?? 0 }}
+              {{ (concept.pastPapers?.length ?? 0) === 1 ? 'paper' : 'papers' }}
             </span>
           </div>
-
           <div
             class="flex items-center text-sm text-primary font-medium transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
           >

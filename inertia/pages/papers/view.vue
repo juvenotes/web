@@ -163,23 +163,25 @@ const initializeUserAnswers = async () => {
   try {
     const response = await axios.get(`/api/papers/${props.paper.id}/my-responses`)
     if (response.data.responses?.length) {
-      response.data.responses.forEach((item: { questionId: number; selectedOption: string, partId?: number }) => {
-        const question = props.questions.find((q) => q.id === item.questionId)
-        if (!question) return
+      response.data.responses.forEach(
+        (item: { questionId: number; selectedOption: string; partId?: number }) => {
+          const question = props.questions.find((q) => q.id === item.questionId)
+          if (!question) return
 
-        // MCQ
-        if (item.selectedOption && question.choices) {
-          const choiceIndex = item.selectedOption.charCodeAt(0) - 65
-          if (question.choices[choiceIndex]) {
-            selectedAnswers[question.id] = question.choices[choiceIndex].id
-            showAnswer[question.id] = true
+          // MCQ
+          if (item.selectedOption && question.choices) {
+            const choiceIndex = item.selectedOption.charCodeAt(0) - 65
+            if (question.choices[choiceIndex]) {
+              selectedAnswers[question.id] = question.choices[choiceIndex].id
+              showAnswer[question.id] = true
+            }
+          }
+          // SAQ (if backend provides partId for answered parts)
+          if (item.partId) {
+            showAnswer[item.partId] = true
           }
         }
-        // SAQ (if backend provides partId for answered parts)
-        if (item.partId) {
-          showAnswer[item.partId] = true
-        }
-      })
+      )
     }
   } catch (error) {
     console.error('Failed to fetch user responses:', error)
@@ -439,12 +441,16 @@ const getLastEditDate = computed(() => {
                 <h3 class="text-base font-bold text-gray-800">Solution Explanation</h3>
               </div>
 
-              <div class="relative overflow-hidden rounded-lg shadow-lg border border-gray-100 w-full">
+              <div
+                class="relative overflow-hidden rounded-lg shadow-lg border border-gray-100 w-full"
+              >
                 <div
                   class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-green-400 to-[#55A9C4]"
                 ></div>
 
-                <div class="p-2 bg-gradient-to-r from-green-50 to-[#55A9C4]/10 border-b border-gray-100">
+                <div
+                  class="p-2 bg-gradient-to-r from-green-50 to-[#55A9C4]/10 border-b border-gray-100"
+                >
                   <div class="flex items-center gap-2">
                     <div
                       class="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600"

@@ -158,7 +158,8 @@ const continueFromLastQuestion = () => {
               </span>
               <span class="text-xs sm:text-sm text-gray-500">{{ paper.year }}</span>
               <span class="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
-                {{ paperProgress.attemptCount }} {{ paperProgress.attemptCount === 1 ? 'attempt' : 'attempts' }}
+                {{ paperProgress.attemptCount }}
+                {{ paperProgress.attemptCount === 1 ? 'attempt' : 'attempts' }}
               </span>
             </div>
           </div>
