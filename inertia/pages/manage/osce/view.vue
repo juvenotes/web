@@ -99,86 +99,113 @@ const breadcrumbItems = computed(() => [
             <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
               OSCE
             </span>
-            <span class="flex items-center gap-1">
-              <Clock class="w-3.5 h-3.5" />
-              Last edited: {{ lastEditDate }}
-            </span>
+            <span>{{ paper.year }}</span>
+          </div>
+          <div class="flex items-center gap-1 sm:gap-2 text-xs text-muted-foreground">
+            <Clock class="h-3 w-3" />
+            <span>Last edited {{ lastEditDate }}</span>
           </div>
         </div>
-        <div class="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-4">
-          <Button
-            @click="showEditPaperDialog = true"
-            variant="outline"
-            class="flex items-center gap-2"
-          >
-            <Pencil class="h-4 w-4" /> Edit Paper
-          </Button>
-          <Button @click="handleDeletePaper" variant="destructive" class="flex items-center gap-2">
-            <Trash2 class="h-4 w-4" /> Delete
-          </Button>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-2">
+          <ToggleUrl />
           <Button @click="showAddOsceDialog = true" class="flex items-center gap-2">
-            <Plus class="h-4 w-4" /> Add OSCE Question
+            <Plus class="h-4 w-4" />
+            Add OSCE Station
+          </Button>
+          <Button variant="outline" @click="showEditPaperDialog = true">
+            <Pencil class="h-4 w-4 mr-2" />Edit Paper
+          </Button>
+          <Button variant="destructive" @click="handleDeletePaper">
+            <Trash2 class="h-4 w-4 mr-2" />Delete Paper
           </Button>
         </div>
       </div>
     </div>
 
     <!-- Questions List -->
-    <div v-if="questions.length" class="space-y-4">
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="space-y-4">
+      <template v-if="questions.length">
         <div
-          v-for="question in questions"
+          v-for="(question, index) in questions"
           :key="question.id"
-          class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          class="p-4 sm:p-5 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2 sm:gap-3"
         >
-          <div class="relative space-y-3">
-            <h3 class="text-lg font-bold text-foreground">{{ question.questionText }}</h3>
-            <div v-if="question.questionImagePath" class="flex justify-center mt-2">
+          <div class="flex gap-2 sm:gap-3 items-start">
+            <span
+              class="shrink-0 px-2 py-1 bg-primary/10 text-primary rounded text-xs sm:text-sm font-medium mt-1"
+            >
+              Q{{ index + 1 }}
+            </span>
+            <div class="flex-1">
+              <p class="text-sm sm:text-base text-foreground font-medium">{{ question.questionText }}</p>
               <img
+                v-if="question.questionImagePath"
                 :src="question.questionImagePath"
-                class="w-full h-auto rounded-lg border shadow-xs max-h-48 object-contain"
+                :alt="`Question ${index + 1} image`"
+                class="mt-2 rounded border max-w-[220px] max-h-32 object-contain shadow-sm"
               />
             </div>
-            <div class="mt-3 space-y-2">
-              <div
-                v-for="(part, partIndex) in question.stations"
-                :key="part.id"
-                class="p-3 bg-primary/5 rounded-lg border border-primary/10"
-              >
-                <div class="font-medium text-primary">Station {{ partIndex + 1 }}</div>
-                <div class="text-sm text-foreground font-semibold">{{ part.partText }}</div>
-                <div class="text-xs text-muted-foreground mt-1">Marks: {{ part.marks }}</div>
-                <div v-if="part.imagePath" class="mt-2 flex justify-center">
-                  <img
-                    :src="part.imagePath"
-                    class="w-full h-auto rounded border shadow-xs max-h-32 object-contain"
-                  />
-                </div>
-                <div class="mt-2 text-xs text-muted-foreground">
-                  Answer: {{ part.expectedAnswer }}
+          </div>
+          <div class="flex items-center gap-2 mt-2">
+            <Button variant="ghost" size="sm" @click="handleEditQuestion(question)">
+              <Pencil class="h-4 w-4" /> Edit
+            </Button>
+            <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
+              <Trash2 class="h-4 w-4 text-destructive" /> Remove
+            </Button>
+          </div>
+          <div class="pl-6 sm:pl-10 space-y-3 sm:space-y-4">
+            <div
+              v-for="(part, index) in question.stations"
+              :key="part.id"
+              class="relative pl-4 border-l-2 border-primary/20 py-3"
+            >
+              <div class="flex justify-between items-start">
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium text-sm sm:text-base">Part {{ index + 1 }}</span>
+                    <span class="text-xs sm:text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                      {{ part.marks }} marks
+                    </span>
+                  </div>
+                  <p class="text-sm sm:text-base">{{ part.partText }}</p>
                 </div>
               </div>
-            </div>
-            <div class="flex items-center gap-2 mt-2">
-              <Button size="sm" variant="outline" @click="handleEditQuestion(question)">
-                <Pencil class="h-4 w-4" /> Edit
-              </Button>
-              <Button size="sm" variant="destructive" @click="handleDeleteQuestion(question)">
-                <Trash2 class="h-4 w-4" /> Delete
-              </Button>
+              <div class="mt-3 bg-muted/50 rounded-lg p-3">
+                <p class="text-sm font-medium text-muted-foreground">Expected Answer:</p>
+                <div class="mt-2 text-sm sm:text-base whitespace-pre-wrap">
+                  <ViewExplanation :content="part.expectedAnswer" />
+                </div>
+              </div>
+              <div v-if="part.imagePath" class="mt-3">
+                <img
+                  :src="part.imagePath"
+                  :alt="`Part ${index + 1} image`"
+                  class="rounded border max-w-[180px] max-h-24 object-contain"
+                />
+              </div>
             </div>
           </div>
         </div>
+      </template>
+      <div v-else class="text-center py-12 bg-white rounded-xl border">
+        <p class="text-muted-foreground">
+          No questions added yet. Click "Add Question" to start building your OSCE paper.
+        </p>
       </div>
     </div>
-    <div v-else class="text-center p-8 bg-white rounded-2xl border">
-      <p class="text-muted-foreground">
-        No OSCE questions added yet. Click "Add OSCE Question" to create one.
-      </p>
-    </div>
-    <!-- Dialogs -->
-    <EditOscePaperDialog v-model:open="showEditPaperDialog" :paper="paper" />
-    <CreateOsceQuestionDialog v-model:open="showAddOsceDialog" :paper="paper" />
-    <EditOsceQuestionDialog v-model:open="showEditOsceDialog" :question="selectedQuestion" />
   </div>
+
+  <!-- Dialogs -->
+  <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
+  <AddOsceDialog v-model:open="showAddOsceDialog" :paper="paper" :concept="concept" />
+  <EditOsceDialog
+    v-if="selectedQuestion"
+    v-model:open="showEditOsceDialog"
+    :concept="concept"
+    :paper="paper"
+    :question="selectedQuestion"
+  />
 </template>

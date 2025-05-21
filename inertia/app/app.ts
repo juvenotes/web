@@ -8,6 +8,9 @@ import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '~/layouts/AppLayout.vue'
+import { usePosthog } from '../composables/use_posthog'
+
+usePosthog()
 
 const appName = import.meta.env.VITE_APP_NAME || 'Juvenotes'
 

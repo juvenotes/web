@@ -76,20 +76,20 @@ const menuItems = [
       <!-- Sidebar -->
       <aside
         :class="[
-          'fixed md:static inset-y-0 left-0 z-30 w-64 border-r bg-white/90 transition-transform duration-300 md:translate-x-0',
+          'fixed md:sticky top-0 md:top-0 left-0 z-30 md:z-10 w-64 md:w-60 border-r bg-white/95 transition-transform duration-300 md:translate-x-0',
           'shadow-xl md:shadow-none',
           'overflow-y-auto',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
-        style="max-height: 100vh"
+        style="max-height: 100vh; min-height: 100vh;"
       >
         <!-- Sidebar navigation -->
-        <nav class="p-6 space-y-2">
+        <nav class="p-4 md:p-6 space-y-2 md:space-y-1 overflow-y-auto h-full">
           <Link
             v-for="item in menuItems"
             :key="item.name"
             :href="item.href"
-            class="flex items-center gap-3 p-3 rounded-xl text-foreground font-medium transition-colors text-lg"
+            class="flex items-center gap-3 p-3 rounded-xl text-foreground font-medium transition-colors text-base md:text-lg"
             :class="{
               'bg-blue-100 text-blue-700 shadow': $page.url === item.href,
               'hover:bg-blue-50': $page.url !== item.href,
@@ -103,7 +103,7 @@ const menuItems = [
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 md:p-8 w-full">
+      <main class="flex-1 p-2 sm:p-4 md:p-8 w-full max-w-full md:max-w-[calc(100vw-15rem)] mx-auto">
         <slot />
       </main>
       <ToastManager :messages="messages" />
