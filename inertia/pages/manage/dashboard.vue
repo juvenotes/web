@@ -35,7 +35,7 @@ const adminMenuItems = [
 
 <template>
   <AppHead title="Admin dashboard" description="All we have" />
-  <div class="container mx-auto p-4 sm:p-6">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
     <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-2 sm:gap-0">
       <h1 class="text-2xl font-bold">Dashboard</h1>
     </div>

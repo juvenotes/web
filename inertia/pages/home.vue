@@ -127,16 +127,6 @@ const statsDisplay = [
           </div>
         </div>
       </section>
-
-      <!-- Floating CTA -->
-      <div class="fixed bottom-6 right-6 z-50">
-        <button
-          @click="$inertia.visit('/register')"
-          class="bg-[#55A9C4] text-white px-5 py-3 rounded-full shadow-lg hover:bg-[#4793a9] transition-all duration-300"
-        >
-          Join Now
-        </button>
-      </div>
     </main>
   </div>
 </template>
