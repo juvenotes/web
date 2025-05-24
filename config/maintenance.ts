@@ -1,8 +1,8 @@
 import { defineConfig, drivers } from '@foadonis/maintenance'
 
 export default defineConfig({
-  default: 'cache',
+  default: 'file',
   drivers: {
-    cache: drivers.cache(),
+    file: drivers.file(),
   },
 })
