@@ -35,8 +35,10 @@ defineOptions({ layout: DashLayout })
       <!-- Decorative background elements -->
       <div class="absolute -top-16 -right-16 w-64 h-64 bg-[#55A9C4]/10 rounded-full blur-3xl"></div>
       <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-[#55A9C4]/10 rounded-full blur-2xl"></div>
-      
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+
+      <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10"
+      >
         <!-- Welcome Text -->
         <div class="space-y-3">
           <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
@@ -49,7 +51,9 @@ defineOptions({ layout: DashLayout })
               </div>
             </div>
           </h1>
-          <p class="text-sm text-[#4A6772] font-medium tracking-wide">Ready to continue your learning journey?</p>
+          <p class="text-sm text-[#4A6772] font-medium tracking-wide">
+            Ready to continue your learning journey?
+          </p>
         </div>
 
         <!-- Stats Grid -->
@@ -64,7 +68,9 @@ defineOptions({ layout: DashLayout })
               <Clock class="h-5 w-5 text-[#55A9C4]" />
             </div>
             <div>
-              <p class="text-xs font-semibold text-[#4A6772] uppercase tracking-wider">Study Time</p>
+              <p class="text-xs font-semibold text-[#4A6772] uppercase tracking-wider">
+                Study Time
+              </p>
               <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ formattedStudyTime }}</p> -->
             </div>
           </div>
@@ -96,10 +102,14 @@ defineOptions({ layout: DashLayout })
         class="group relative overflow-hidden rounded-3xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
         <!-- Glass morphism effect -->
-        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div
+          class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        ></div>
         <!-- Blob decoration -->
-        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-        
+        <div
+          class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"
+        ></div>
+
         <div class="relative space-y-6 z-10 animate-fade-in">
           <div class="flex items-start gap-5">
             <div
@@ -107,21 +117,32 @@ defineOptions({ layout: DashLayout })
             >
               <FileText class="h-8 w-8 text-[#55A9C4]" />
             </div>
+
             <div>
-              <h3 class="text-2xl font-bold text-gray-900">Past Papers</h3>
-              <p class="text-sm text-gray-600 mt-2 font-medium">Practice with previous exams</p>
+              <div>
+                <h3 class="text-2xl font-bold text-gray-900">Past Papers</h3>
+              </div>
+
+              <!-- Hover Message with improved animation -->
+              <div
+                class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
+              >
+                <span class="text-xs text-[#55A9C4] font-semibold hidden lg:inline"
+                  >Start Practicing</span
+                >
+                <div
+                  class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300"
+                >
+                  <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+                </div>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600 mt-2 font-medium">Practice with previous exams</p>
+              </div>
             </div>
           </div>
-          
-          <!-- Hover Message with improved animation -->
-          <div
-            class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
-          >
-            <span class="text-sm text-[#55A9C4] font-semibold">Start Practicing</span>
-            <div class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300">
-              <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
-            </div>
-          </div>
+
+          <!-- hover div was here -->
         </div>
       </div>
 
@@ -132,10 +153,14 @@ defineOptions({ layout: DashLayout })
         class="group relative overflow-hidden rounded-3xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
         <!-- Glass morphism effect -->
-        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div
+          class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        ></div>
         <!-- Blob decoration -->
-        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-        
+        <div
+          class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"
+        ></div>
+
         <div class="relative space-y-6 z-10 animate-fade-in">
           <div class="flex items-start gap-5">
             <div
@@ -144,18 +169,25 @@ defineOptions({ layout: DashLayout })
               <BookOpen class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
-              <h3 class="text-2xl font-bold text-gray-900">Concepts</h3>
-              <p class="text-sm text-gray-600 mt-2 font-medium">Master comprehensive study materials</p>
-            </div>
-          </div>
-          
-          <!-- Hover Message with improved animation -->
-          <div
-            class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
-          >
-            <span class="text-sm text-[#55A9C4] font-semibold">Explore Concepts</span>
-            <div class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300">
-              <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+              <div><h3 class="text-2xl font-bold text-gray-900">Concepts</h3></div>
+              <!-- Hover Message with improved animation -->
+              <div
+                class="pb-2 absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
+              >
+                <span class="text-xs text-[#55A9C4] font-semibold hidden lg:inline"
+                  >Explore Concepts</span
+                >
+                <div
+                  class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300"
+                >
+                  <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+                </div>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600 mt-2 font-medium">
+                  Master comprehensive study materials
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -168,10 +200,14 @@ defineOptions({ layout: DashLayout })
         class="group relative overflow-hidden rounded-3xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
         <!-- Glass morphism effect -->
-        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div
+          class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        ></div>
         <!-- Blob decoration -->
-        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-        
+        <div
+          class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"
+        ></div>
+
         <div class="relative space-y-6 z-10 animate-fade-in">
           <div class="flex items-start gap-5">
             <div
@@ -180,18 +216,25 @@ defineOptions({ layout: DashLayout })
               <Stethoscope class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
-              <h3 class="text-2xl font-bold text-gray-900">OSCE</h3>
-              <p class="text-sm text-gray-600 mt-2 font-medium">Clinical scenario-based practice</p>
-            </div>
-          </div>
-          
-          <!-- Hover Message with improved animation -->
-          <div
-            class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
-          >
-            <span class="text-sm text-[#55A9C4] font-semibold">Practice Scenarios</span>
-            <div class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300">
-              <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+              <div><h3 class="text-2xl font-bold text-gray-900">OSCE</h3></div>
+              <!-- Hover Message with improved animation -->
+              <div
+                class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
+              >
+                <span class="text-xs text-[#55A9C4] font-semibold hidden lg:inline"
+                  >Practice Scenarios</span
+                >
+                <div
+                  class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300"
+                >
+                  <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+                </div>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600 mt-2 font-medium">
+                  Clinical scenario-based practice
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -204,10 +247,14 @@ defineOptions({ layout: DashLayout })
         class="group relative overflow-hidden rounded-3xl bg-white p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-gray-100 hover:border-[#55A9C4]/40 transform hover:scale-[1.02] hover:-translate-y-2"
       >
         <!-- Glass morphism effect -->
-        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div
+          class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-[#E3F5FA]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        ></div>
         <!-- Blob decoration -->
-        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-        
+        <div
+          class="absolute -bottom-12 -right-12 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"
+        ></div>
+
         <div class="relative space-y-6 z-10 animate-fade-in">
           <div class="flex items-start gap-5">
             <div
@@ -216,18 +263,26 @@ defineOptions({ layout: DashLayout })
               <Pin class="h-8 w-8 text-[#55A9C4]" />
             </div>
             <div>
-              <h3 class="text-2xl font-bold text-gray-900">Spots</h3>
-              <p class="text-sm text-gray-600 mt-2 font-medium">Sharpen your identification skills</p>
-            </div>
-          </div>
-          
-          <!-- Hover Message with improved animation -->
-          <div
-            class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
-          >
-            <span class="text-sm text-[#55A9C4] font-semibold">Identify Spots</span>
-            <div class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300">
-              <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+              <div><h3 class="text-2xl font-bold text-gray-900">Spots</h3></div>
+              <!-- Hover Message with improved animation -->
+              <div
+                class="absolute bottom-6 right-6 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden md:flex"
+              >
+                <span class="text-xs text-[#55A9C4] font-semibold hidden lg:inline"
+                  >Identify Spots</span
+                >
+                <div
+                  class="bg-[#55A9C4]/10 rounded-full p-1 transform group-hover:translate-x-1 transition-transform duration-300"
+                >
+                  <ChevronRight class="h-5 w-5 text-[#55A9C4]" />
+                </div>
+              </div>
+
+              <div>
+                <p class="text-sm text-gray-600 mt-2 font-medium">
+                  Sharpen your identification skills
+                </p>
+              </div>
             </div>
           </div>
         </div>
