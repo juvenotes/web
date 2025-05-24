@@ -28,6 +28,9 @@ defineProps<{
           <TableHead class="max-w-[300px] text-xs uppercase tracking-wider text-muted-foreground"
             >Feedback</TableHead
           >
+          <TableHead class="text-xs uppercase tracking-wider text-muted-foreground"
+            >Status</TableHead
+          >
           <TableHead class="w-[100px] text-xs uppercase tracking-wider text-muted-foreground"
             >Action</TableHead
           >
@@ -57,6 +60,26 @@ defineProps<{
               <p class="line-clamp-3">{{ item.feedbackText }}</p>
             </div>
           </TableCell>
+          <TableCell data-label="Status" class="block sm:table-cell py-3">
+            <span
+              v-if="item.isResolved"
+              class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200"
+            >
+              Resolved
+            </span>
+            <span
+              v-else-if="item.resolvedAt || item.resolvedBy"
+              class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200"
+            >
+              Reviewed
+            </span>
+            <span
+              v-else
+              class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200"
+            >
+              New
+            </span>
+          </TableCell>
           <TableCell class="block sm:table-cell py-3">
             <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
               <span class="sm:hidden font-medium">Action:</span>
@@ -70,7 +93,7 @@ defineProps<{
           </TableCell>
         </TableRow>
         <TableRow v-if="items.length === 0">
-          <TableCell colspan="4" class="h-24 text-center text-muted-foreground"
+          <TableCell colspan="5" class="h-24 text-center text-muted-foreground"
             >No feedback found</TableCell
           >
         </TableRow>
