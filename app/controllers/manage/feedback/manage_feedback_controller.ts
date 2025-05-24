@@ -39,7 +39,11 @@ export default class ManageFeedbackController {
             paperQuery.preload('concept')
           })
         })
-        .where('isResolved', isResolved)
+
+      // Only filter by isResolved if the filter is explicitly set
+      if (typeof isResolved === 'boolean' && request.input('isResolved') !== undefined) {
+        query.where('isResolved', isResolved)
+      }
 
       if (target) {
         query.where('feedbackTarget', target)
@@ -58,9 +62,16 @@ export default class ManageFeedbackController {
       })
 
       // Always pass a plain array for feedbackItems
+      const meta = {
+        current_page: feedbackItems.currentPage,
+        last_page: feedbackItems.lastPage,
+        first_page: feedbackItems.firstPage,
+        per_page: feedbackItems.perPage,
+      }
       return inertia.render('manage/feedback/index', {
         feedbackItems: feedbackItems.all().map((item) => new QuestionFeedbackDto(item)),
-        pagination: feedbackItems.getMeta(),
+        totalFeedback: feedbackItems.total,
+        meta,
         filters: {
           isResolved,
           target,
