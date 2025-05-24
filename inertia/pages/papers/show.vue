@@ -72,6 +72,7 @@ const papersByYear = computed(() => {
 
 <template>
   <AppHead :title="`${concept.title} Papers`" :description="`Past papers for ${concept.title}`" />
+  <AppMeta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- <StudySessionTracker v-if="studySession" :sessionId="studySession.id" /> -->
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
@@ -95,7 +96,7 @@ const papersByYear = computed(() => {
             <FileText class="h-5 w-5 text-[#55A9C4]" />
           </div>
           <div class="space-y-1">
-            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">{{ concept.title }}</h1>
+            <h1 class="lg:text-xl sm:text-sm/3 font-semibold text-gray-900">{{ concept.title }}</h1>
             <p class="text-sm text-gray-500">Past Examination Papers</p>
           </div>
         </div>
