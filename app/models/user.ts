@@ -11,6 +11,7 @@ import PasswordResetToken from './password_reset_token.js'
 import Concept from './concept.js'
 import Question from './question.js'
 import PastPaper from './past_paper.js'
+import UserStreak from './user_streak.js'
 
 import { CountryCode } from '#enums/countries'
 import EmailVerification from './email_verification.js'
@@ -105,4 +106,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasMany(() => SessionLog)
   declare sessions: HasMany<typeof SessionLog>
+
+  @hasOne(() => UserStreak, {
+    foreignKey: 'userId',
+  })
+  declare streak: HasOne<typeof UserStreak>
 }

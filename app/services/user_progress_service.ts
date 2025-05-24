@@ -13,6 +13,7 @@ import Station from '#models/station'
 import UserSpotResponse from '#models/user_spot_response'
 import SpotStation from '#models/spot_station'
 import StudyTimeService from './study_time_service.js'
+import StreakService from '#services/streak_service'
 import { inject } from '@adonisjs/core'
 
 @inject()
@@ -59,6 +60,9 @@ export default class UserProgressService {
       originalChoiceText: choice.choiceText,
       source,
     })
+
+    // Streak update
+    await StreakService.updateStreak(userId, DateTime.now())
 
     // Based on source, update different stat tables
     if (source === 'today') {
@@ -213,6 +217,8 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE, // Add the status enum
         originalPartText: part.partText, // Store current text for historical reference
       })
+      // Streak update
+      await StreakService.updateStreak(userId, DateTime.now())
     }
 
     // Find existing progress record
@@ -271,6 +277,8 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE,
         originalStationText: station.partText, // Store text for historical reference
       })
+      // Streak update
+      await StreakService.updateStreak(userId, DateTime.now())
     }
 
     // Find existing progress record
@@ -330,6 +338,8 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE,
         originalStationText: station.partText, // Store text for historical reference
       })
+      // Streak update
+      await StreakService.updateStreak(userId, DateTime.now())
     }
 
     // Find existing progress record

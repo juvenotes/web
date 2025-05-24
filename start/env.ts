@@ -109,4 +109,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   POSTHOG_API_KEY: Env.schema.string(),
 
   POSTHOG_HOST: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the lock package
+  |----------------------------------------------------------
+  */
+  LOCK_STORE: Env.schema.enum(['redis', 'memory'] as const)
 })
