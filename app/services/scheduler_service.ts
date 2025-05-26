@@ -15,7 +15,11 @@ export default class SchedulerService {
         cronExpression,
         () => {
           logger.info(`[Scheduler] Running job: ${key}`)
-          job.run()
+          try {
+            job.run()
+          } catch (error) {
+            logger.error(`[Scheduler] Error running job: ${key}`, error)
+          }
         },
         null,
         true
