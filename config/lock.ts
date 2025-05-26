@@ -6,7 +6,7 @@ const lockConfig = defineConfig({
   stores: {
     
     /**
-     * Redis store to save manage locks
+     * Redis store to save and manage locks
      */
     redis: stores.redis({}),
     
