@@ -4,19 +4,16 @@ import { defineConfig, stores } from '@adonisjs/lock'
 const lockConfig = defineConfig({
   default: env.get('LOCK_STORE'),
   stores: {
-    
     /**
      * Redis store to save and manage locks
      */
     redis: stores.redis({}),
-    
-    
-    
+
     /**
      * Memory store could be used during
      * testing
      */
-    memory: stores.memory()
+    memory: stores.memory(),
   },
 })
 

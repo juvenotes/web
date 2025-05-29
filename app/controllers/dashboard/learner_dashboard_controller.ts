@@ -31,11 +31,10 @@ export default class DashboardController {
       totalStudyTime = await this.studyTimeService.getTotalStudyTime(auth.user.id)
       formattedStudyTime = this.studyTimeService.formatStudyTime(totalStudyTime)
 
-      const user = await User.find(auth.user.id)
+      const user = await User.query().where('id', auth.user.id).preload('streak').first()
       let streak = null
-      if (user) {
-        const userStreak = await UserStreakModel.query().where('user_id', user.id).first()
-        streak = userStreak ? new UserStreakDto(userStreak) : null
+      if (user && user.streak) {
+        streak = new UserStreakDto(user.streak)
       }
       userDto = new UserDto(user ?? undefined, streak)
     }

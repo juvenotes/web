@@ -115,5 +115,15 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring the lock package
   |----------------------------------------------------------
   */
-  LOCK_STORE: Env.schema.enum(['redis', 'memory'] as const)
+  LOCK_STORE: Env.schema.enum(['redis', 'memory'] as const),
+
+  LOKI_HOST: Env.schema.string(),
+
+  LOKI_USERNAME: Env.schema.string(),
+
+  LOKI_PASSWORD: Env.schema.string(),
+
+  LOKI_ORG_ID: Env.schema.string(),
+
+  APP_NAME: Env.schema.string(),
 })

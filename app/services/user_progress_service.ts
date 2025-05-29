@@ -61,8 +61,10 @@ export default class UserProgressService {
       source,
     })
 
-    // Streak update
-    await StreakService.updateStreak(userId, DateTime.now())
+    // Streak update: only update if this is the user's first activity today
+    if (await this.shouldUpdateStreak(userId)) {
+      await StreakService.updateStreak(userId, DateTime.now())
+    }
 
     // Based on source, update different stat tables
     if (source === 'today') {
@@ -217,8 +219,10 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE, // Add the status enum
         originalPartText: part.partText, // Store current text for historical reference
       })
-      // Streak update
-      await StreakService.updateStreak(userId, DateTime.now())
+      // Streak update: only update if this is the user's first activity today
+      if (await this.shouldUpdateStreak(userId)) {
+        await StreakService.updateStreak(userId, DateTime.now())
+      }
     }
 
     // Find existing progress record
@@ -277,8 +281,10 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE,
         originalStationText: station.partText, // Store text for historical reference
       })
-      // Streak update
-      await StreakService.updateStreak(userId, DateTime.now())
+      // Streak update: only update if this is the user's first activity today
+      if (await this.shouldUpdateStreak(userId)) {
+        await StreakService.updateStreak(userId, DateTime.now())
+      }
     }
 
     // Find existing progress record
@@ -338,8 +344,10 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE,
         originalStationText: station.partText, // Store text for historical reference
       })
-      // Streak update
-      await StreakService.updateStreak(userId, DateTime.now())
+      // Streak update: only update if this is the user's first activity today
+      if (await this.shouldUpdateStreak(userId)) {
+        await StreakService.updateStreak(userId, DateTime.now())
+      }
     }
 
     // Find existing progress record
@@ -558,5 +566,14 @@ export default class UserProgressService {
       seconds: totalSeconds,
       formatted: this.studyTimeService.formatStudyTime(totalSeconds),
     }
+  }
+
+  /**
+   * Returns true if the user's streak should be updated (first activity of the day)
+   */
+  private async shouldUpdateStreak(userId: number): Promise<boolean> {
+    const lastStreak = await StreakService.getLastActivity(userId)
+    const now = DateTime.now()
+    return !lastStreak || lastStreak.toISODate() !== now.toISODate()
   }
 }

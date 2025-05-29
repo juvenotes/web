@@ -52,4 +52,14 @@ export default class StreakService {
       .where('last_activity_at', '<', now.minus({ hours: 24 }).toSQL())
       .update({ currentStreak: 0 })
   }
+
+  /**
+   * Get the last activity date for a user
+   * @param userId number
+   * @returns Promise<DateTime | null>
+   */
+  public static async getLastActivity(userId: number): Promise<DateTime | null> {
+    const streak = await UserStreak.query().where('user_id', userId).first()
+    return streak?.lastActivityAt ?? null
+  }
 }
