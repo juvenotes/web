@@ -42,7 +42,10 @@ const sortedFeedback = computed(() =>
     <div class="bg-white rounded-2xl border shadow-sm p-0 sm:p-2">
       <FeedbackTable :items="sortedFeedback" />
     </div>
-    <div v-if="meta && meta.last_page > 1" class="mt-6 flex flex-wrap justify-center items-center gap-2">
+    <div
+      v-if="meta && meta.last_page > 1"
+      class="mt-6 flex flex-wrap justify-center items-center gap-2"
+    >
       <!-- Previous button -->
       <Link
         :href="`/manage/feedback?page=${meta.current_page > 1 ? meta.current_page - 1 : 1}&search=${filters?.search || ''}`"

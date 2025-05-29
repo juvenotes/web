@@ -57,7 +57,7 @@ export default defineConfig({
     () => import('@adonisjs/redis/redis_provider'),
     () => import('@adonisjs/transmit/transmit_provider'),
     () => import('@cavai/adonis-queue/queue_provider'),
-    () => import('@adonisjs/lock/lock_provider')
+    () => import('@adonisjs/lock/lock_provider'),
   ],
 
   /*

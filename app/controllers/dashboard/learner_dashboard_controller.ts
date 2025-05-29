@@ -8,7 +8,6 @@ import StatsDto from '#dtos/stats'
 import User from '#models/user'
 import UserDto from '#dtos/user'
 import UserStreakDto from '#dtos/user_streak'
-import UserStreakModel from '#models/user_streak'
 
 @inject()
 export default class DashboardController {

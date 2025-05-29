@@ -88,7 +88,9 @@ defineOptions({ layout: DashLayout })
               <p class="text-xs font-semibold text-[#4A6772] uppercase tracking-wider">Streak</p>
               <p class="text-lg font-bold text-[#2C5D6F]">
                 {{ user?.streak?.currentStreak ?? 0 }}
-                <span class="text-xs text-[#4A6772] font-medium">day<span v-if="(user?.streak?.currentStreak ?? 0) !== 1">s</span></span>
+                <span class="text-xs text-[#4A6772] font-medium"
+                  >day<span v-if="(user?.streak?.currentStreak ?? 0) !== 1">s</span></span
+                >
               </p>
             </div>
           </div>
