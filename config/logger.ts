@@ -1,6 +1,7 @@
 import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { defineConfig, targets } from '@adonisjs/core/logger'
+import type { LokiOptions } from 'pino-loki'
 
 const loggerConfig = defineConfig({
   default: 'app',
@@ -17,11 +18,47 @@ const loggerConfig = defineConfig({
       transport: {
         targets: targets()
           .pushIf(!app.inProduction, targets.pretty())
-          .pushIf(app.inProduction, targets.file({ destination: 1 }))
+          .pushIf(app.inProduction, {
+            target: 'pino-loki',
+            options: {
+              host: env.get('LOKI_HOST'),
+              basicAuth: {
+                username: env.get('LOKI_USERNAME'),
+                password: env.get('LOKI_PASSWORD'),
+              },
+              labels: {
+                application: env.get('APP_NAME'),
+                environment: env.get('NODE_ENV'),
+              },
+              batching: true,
+              interval: 5,
+              headers: {
+                'X-Scope-OrgID': env.get('LOKI_ORG_ID'),
+              },
+            } satisfies LokiOptions,
+          })
           .toArray(),
       },
       redact: {
         paths: ['password', '*.password'],
+      },
+    },
+    pretty: {
+      enabled: true,
+      name: 'pretty',
+      level: env.get('LOG_LEVEL'),
+      transport: {
+        targets: targets().push(targets.pretty()).toArray(),
+      },
+    },
+    pino: {
+      enabled: true,
+      name: 'pino',
+      level: env.get('LOG_LEVEL'),
+      transport: {
+        targets: targets()
+          .push(targets.file({ destination: 1 }))
+          .toArray(),
       },
     },
   },

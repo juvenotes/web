@@ -139,7 +139,9 @@ const breadcrumbItems = computed(() => [
               Q{{ index + 1 }}
             </span>
             <div class="flex-1">
-              <p class="text-sm sm:text-base text-foreground font-medium">{{ question.questionText }}</p>
+              <p class="text-sm sm:text-base text-foreground font-medium">
+                {{ question.questionText }}
+              </p>
               <img
                 v-if="question.questionImagePath"
                 :src="question.questionImagePath"
@@ -166,7 +168,9 @@ const breadcrumbItems = computed(() => [
                 <div class="space-y-2">
                   <div class="flex items-center gap-2">
                     <span class="font-medium text-sm sm:text-base">Part {{ index + 1 }}</span>
-                    <span class="text-xs sm:text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                    <span
+                      class="text-xs sm:text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary"
+                    >
                       {{ part.marks }} marks
                     </span>
                   </div>

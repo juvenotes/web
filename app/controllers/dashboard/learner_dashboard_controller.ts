@@ -5,6 +5,9 @@ import Concept from '#models/concept'
 import PastPaper from '#models/past_paper'
 import Question from '#models/question'
 import StatsDto from '#dtos/stats'
+import User from '#models/user'
+import UserDto from '#dtos/user'
+import UserStreakDto from '#dtos/user_streak'
 
 @inject()
 export default class DashboardController {
@@ -21,10 +24,18 @@ export default class DashboardController {
     // Get total study time for the user
     let totalStudyTime = 0
     let formattedStudyTime = '0m'
+    let userDto = null
 
     if (auth.user) {
       totalStudyTime = await this.studyTimeService.getTotalStudyTime(auth.user.id)
       formattedStudyTime = this.studyTimeService.formatStudyTime(totalStudyTime)
+
+      const user = await User.query().where('id', auth.user.id).preload('streak').first()
+      let streak = null
+      if (user && user.streak) {
+        streak = new UserStreakDto(user.streak)
+      }
+      userDto = new UserDto(user ?? undefined, streak)
     }
 
     const [rootConcepts, contentfulConcepts, questionCount, paperCount] = await Promise.all([
@@ -46,6 +57,7 @@ export default class DashboardController {
     })
 
     return inertia.render('dashboard', {
+      user: userDto,
       stats,
       totalStudyTime,
       formattedStudyTime,

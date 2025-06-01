@@ -86,7 +86,12 @@ defineOptions({ layout: DashLayout })
             </div>
             <div>
               <p class="text-xs font-semibold text-[#4A6772] uppercase tracking-wider">Streak</p>
-              <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ user?.streak_count ?? 0 }} days</p> -->
+              <p class="text-lg font-bold text-[#2C5D6F]">
+                {{ user?.streak?.currentStreak ?? 0 }}
+                <span class="text-xs text-[#4A6772] font-medium"
+                  >day<span v-if="(user?.streak?.currentStreak ?? 0) !== 1">s</span></span
+                >
+              </p>
             </div>
           </div>
         </div>
@@ -373,6 +378,22 @@ defineOptions({ layout: DashLayout })
 
   .dashboard-content .group .p-4 {
     padding: 0.75rem; /* Sufficient padding for icons */
+  }
+
+  .dashboard-content .flex.flex-col.sm\:flex-row.gap-4.w-full.md\:w-auto {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  .dashboard-content .group {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  .dashboard-content .group .flex.items-center.gap-4 {
+    gap: 0.75rem;
+  }
+  .dashboard-content .group .text-lg {
+    font-size: 1.1rem;
   }
 }
 
