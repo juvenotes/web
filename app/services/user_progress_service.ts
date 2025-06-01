@@ -62,7 +62,8 @@ export default class UserProgressService {
     })
 
     // Streak update: only update if this is the user's first activity today
-    if (await this.shouldUpdateStreak(userId)) {
+    const shouldUpdate = await this.shouldUpdateStreak(userId)
+    if (shouldUpdate) {
       await StreakService.updateStreak(userId, DateTime.now())
     }
 
@@ -220,7 +221,8 @@ export default class UserProgressService {
         originalPartText: part.partText, // Store current text for historical reference
       })
       // Streak update: only update if this is the user's first activity today
-      if (await this.shouldUpdateStreak(userId)) {
+      const shouldUpdate = await this.shouldUpdateStreak(userId)
+      if (shouldUpdate) {
         await StreakService.updateStreak(userId, DateTime.now())
       }
     }
@@ -282,7 +284,8 @@ export default class UserProgressService {
         originalStationText: station.partText, // Store text for historical reference
       })
       // Streak update: only update if this is the user's first activity today
-      if (await this.shouldUpdateStreak(userId)) {
+      const shouldUpdate = await this.shouldUpdateStreak(userId)
+      if (shouldUpdate) {
         await StreakService.updateStreak(userId, DateTime.now())
       }
     }
@@ -345,7 +348,8 @@ export default class UserProgressService {
         originalStationText: station.partText, // Store text for historical reference
       })
       // Streak update: only update if this is the user's first activity today
-      if (await this.shouldUpdateStreak(userId)) {
+      const shouldUpdate = await this.shouldUpdateStreak(userId)
+      if (shouldUpdate) {
         await StreakService.updateStreak(userId, DateTime.now())
       }
     }
