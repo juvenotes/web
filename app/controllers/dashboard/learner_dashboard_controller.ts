@@ -26,11 +26,20 @@ export default class DashboardController {
     let formattedStudyTime = '0m'
     let userDto = null
 
-    if (auth.user) {
-      totalStudyTime = await this.studyTimeService.getTotalStudyTime(auth.user.id)
-      formattedStudyTime = this.studyTimeService.formatStudyTime(totalStudyTime)
+    if (auth.user && auth.user.id) {
+      try {
+        totalStudyTime = await this.studyTimeService.getTotalStudyTime(auth.user.id)
+        if (typeof totalStudyTime !== 'number' || Number.isNaN(totalStudyTime)) {
+          totalStudyTime = 0
+        }
+        formattedStudyTime = this.studyTimeService.formatStudyTime(totalStudyTime)
+      } catch (error) {
+        logger.error('Failed to fetch study time', { error, userId: auth.user.id })
+        totalStudyTime = 0
+        formattedStudyTime = '0m'
+      }
 
-      const user = await User.query().where('id', auth.user.id).preload('streak').first()
+      let user = await User.query().where('id', auth.user.id).preload('streak').first()
       let streak = null
       if (user && user.streak) {
         streak = new UserStreakDto(user.streak)
