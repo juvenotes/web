@@ -273,6 +273,14 @@ export default class StudyTimeService {
   }
 
   /**
+   * Static method to invalidate cached total study time for a user (for jobs)
+   */
+  static async invalidateTotalStudyTimeCacheStatic(userId: number) {
+    const cacheKey = `user:study_time:total:${userId}`
+    await redis.del(cacheKey)
+  }
+
+  /**
    * Format study time into a human-readable string
    */
   formatStudyTime(seconds: number): string {
