@@ -10,6 +10,7 @@ import UserPaperProgress from '#models/user_paper_progress'
 import { inject } from '@adonisjs/core'
 import UserMcqResponse from '#models/user_mcq_response'
 import db from '@adonisjs/lucid/services/db'
+import redis from '#services/redis'
 
 @inject()
 export default class IndexController {
@@ -19,15 +20,25 @@ export default class IndexController {
     const context = { controller: 'PapersIndexController', action: 'index' }
     logger.info({ ...context, message: 'Fetching root level concepts with papers' })
 
-    const concepts = await Concept.query()
-      .where('level', 0)
-      .select(['id', 'title', 'slug', 'level', 'training_level'])
-      .preload('pastPapers', (query) => {
-        query
-          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
-          .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
-          .orderBy('year', 'desc')
-      })
+    const cacheKey = 'papers:concepts:list'
+    let concepts: any[]
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      concepts = JSON.parse(cached)
+      logger.info({ ...context, message: 'Returning concepts from cache' })
+    } else {
+      concepts = await Concept.query()
+        .where('level', 0)
+        .select(['id', 'title', 'slug', 'level', 'training_level'])
+        .preload('pastPapers', (query) => {
+          query
+            .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+            .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
+            .orderBy('year', 'desc')
+        })
+      await redis.set(cacheKey, JSON.stringify(concepts), 'EX', 3600) // 1 hour TTL
+      logger.info({ ...context, message: 'Set concepts in cache' })
+    }
 
     logger.info({
       ...context,
