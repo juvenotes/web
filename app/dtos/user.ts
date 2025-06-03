@@ -7,6 +7,7 @@ import PasswordResetTokenDto from '#dtos/password_reset_token'
 import ConceptDto from '#dtos/concept'
 import QuestionDto from '#dtos/question'
 import PastPaperDto from '#dtos/past_paper'
+import UserStreakDto from '#dtos/user_streak'
 
 export default class UserDto extends BaseModelDto {
   declare id: number
@@ -31,8 +32,9 @@ export default class UserDto extends BaseModelDto {
   declare concepts: ConceptDto[]
   declare questions: QuestionDto[]
   declare pastPapers: PastPaperDto[]
+  declare streak: UserStreakDto | null
 
-  constructor(user?: User) {
+  constructor(user?: User, streak?: UserStreakDto | null) {
     super()
 
     if (!user) return
@@ -58,5 +60,6 @@ export default class UserDto extends BaseModelDto {
     this.concepts = ConceptDto.fromArray(user.concepts)
     this.questions = QuestionDto.fromArray(user.questions)
     this.pastPapers = PastPaperDto.fromArray(user.pastPapers)
+    this.streak = streak ?? null
   }
 }

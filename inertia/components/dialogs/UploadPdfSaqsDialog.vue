@@ -22,7 +22,8 @@ const isDesktop = ref(true)
 const progressMessage = ref<string>('')
 
 // Use environment variable for FastAPI websocket endpoint for SAQ
-const FASTAPI_WS_SAQ_URL = import.meta.env.VITE_FASTAPI_WS_SAQ_URL || 'ws://localhost:8008/ws-saq-upload'
+const FASTAPI_WS_SAQ_URL =
+  import.meta.env.VITE_FASTAPI_WS_SAQ_URL || 'ws://localhost:8008/ws-saq-upload'
 
 onMounted(() => {
   isDesktop.value = window.innerWidth > 768
@@ -170,7 +171,9 @@ async function handleUpload() {
         </div>
         <div v-else>
           <div class="font-semibold mb-2">Raw SAQ Data Received:</div>
-          <pre class="bg-muted/50 rounded p-2 text-xs overflow-x-auto">{{ JSON.stringify(saqData, null, 2) }}</pre>
+          <pre class="bg-muted/50 rounded p-2 text-xs overflow-x-auto">{{
+            JSON.stringify(saqData, null, 2)
+          }}</pre>
         </div>
       </div>
       <SheetFooter class="mt-6">
@@ -232,7 +235,9 @@ async function handleUpload() {
         </div>
         <div v-else>
           <div class="font-semibold mb-2">Raw SAQ Data Received:</div>
-          <pre class="bg-muted/50 rounded p-2 text-xs overflow-x-auto">{{ JSON.stringify(saqData, null, 2) }}</pre>
+          <pre class="bg-muted/50 rounded p-2 text-xs overflow-x-auto">{{
+            JSON.stringify(saqData, null, 2)
+          }}</pre>
         </div>
       </div>
       <SheetFooter class="mt-6">

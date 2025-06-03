@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import UserStudySession from '#models/user_study_session'
 import db from '@adonisjs/lucid/services/db'
 import UserStudyTime from '#models/user_study_time'
+import redis from '@adonisjs/redis/services/main'
 
 export default class StudyTimeService {
   /**
@@ -86,6 +87,9 @@ export default class StudyTimeService {
 
       // 2. Update daily aggregation in user_study_times
       await this.updateDailyAggregation(userId, resourceType, now, trx, contentType)
+
+      // Invalidate cache after recording activity
+      await this.invalidateTotalStudyTimeCache(userId)
 
       return session
     })
@@ -217,6 +221,9 @@ export default class StudyTimeService {
         additionalSeconds
       )
     }
+
+    // Invalidate cache after closing sessions
+    await this.invalidateTotalStudyTimeCache(userId)
   }
 
   /**
@@ -231,11 +238,20 @@ export default class StudyTimeService {
   }
 
   /**
-   * Get total study time for a user
+   * Get total study time for a user (with Redis caching)
+   * Note: Active sessions are no longer closed here to avoid latency.
+   * Ensure a scheduled job/process closes sessions periodically for accurate totals.
    */
   async getTotalStudyTime(userId: number): Promise<number> {
-    // Close active sessions first to get accurate counts
-    await this.closeAllActiveSessions(userId)
+    const cacheKey = `user:study_time:total:${userId}`
+    // Try to get from cache
+    const cached = await redis.get(cacheKey)
+    if (cached !== null) {
+      return Number(cached)
+    }
+
+    // Do NOT close active sessions here; handled by scheduled job
+    // If you need real-time accuracy, ensure sessions are closed elsewhere
 
     // Get aggregated time from the sessions table
     const result = await db
@@ -244,7 +260,26 @@ export default class StudyTimeService {
       .sum('duration_seconds as total')
       .first()
 
-    return Number(result?.total || 0)
+    const total = Number(result?.total || 0)
+    // Cache for 10 minutes
+    await redis.setex(cacheKey, 600, total)
+    return total
+  }
+
+  /**
+   * Invalidate cached total study time for a user
+   */
+  async invalidateTotalStudyTimeCache(userId: number) {
+    const cacheKey = `user:study_time:total:${userId}`
+    await redis.del(cacheKey)
+  }
+
+  /**
+   * Static method to invalidate cached total study time for a user (for jobs)
+   */
+  static async invalidateTotalStudyTimeCacheStatic(userId: number) {
+    const cacheKey = `user:study_time:total:${userId}`
+    await redis.del(cacheKey)
   }
 
   /**
@@ -254,29 +289,23 @@ export default class StudyTimeService {
     if (seconds < 60) {
       return `${seconds}s`
     }
-
     const minutes = Math.floor(seconds / 60)
     if (minutes < 60) {
       return `${minutes}m`
     }
-
     const hours = Math.floor(minutes / 60)
     const remainingMinutes = minutes % 60
-
     if (hours < 24) {
       if (remainingMinutes === 0) {
         return `${hours}h`
       }
       return `${hours}h ${remainingMinutes}m`
     }
-
     const days = Math.floor(hours / 24)
     const remainingHours = hours % 24
-
     if (remainingHours === 0 && remainingMinutes === 0) {
       return `${days}d`
     }
-
     return `${days}d ${remainingHours}h ${remainingMinutes}m`
   }
 

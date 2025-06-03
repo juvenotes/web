@@ -13,6 +13,7 @@ import Station from '#models/station'
 import UserSpotResponse from '#models/user_spot_response'
 import SpotStation from '#models/spot_station'
 import StudyTimeService from './study_time_service.js'
+import StreakService from '#services/streak_service'
 import { inject } from '@adonisjs/core'
 
 @inject()
@@ -59,6 +60,12 @@ export default class UserProgressService {
       originalChoiceText: choice.choiceText,
       source,
     })
+
+    // Streak update: only update if this is the user's first activity today
+    const shouldUpdate = await this.shouldUpdateStreak(userId)
+    if (shouldUpdate) {
+      await StreakService.updateStreak(userId, DateTime.now())
+    }
 
     // Based on source, update different stat tables
     if (source === 'today') {
@@ -213,6 +220,11 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE, // Add the status enum
         originalPartText: part.partText, // Store current text for historical reference
       })
+      // Streak update: only update if this is the user's first activity today
+      const shouldUpdate = await this.shouldUpdateStreak(userId)
+      if (shouldUpdate) {
+        await StreakService.updateStreak(userId, DateTime.now())
+      }
     }
 
     // Find existing progress record
@@ -271,6 +283,11 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE,
         originalStationText: station.partText, // Store text for historical reference
       })
+      // Streak update: only update if this is the user's first activity today
+      const shouldUpdate = await this.shouldUpdateStreak(userId)
+      if (shouldUpdate) {
+        await StreakService.updateStreak(userId, DateTime.now())
+      }
     }
 
     // Find existing progress record
@@ -330,6 +347,11 @@ export default class UserProgressService {
         status: ResponseStatus.ACTIVE,
         originalStationText: station.partText, // Store text for historical reference
       })
+      // Streak update: only update if this is the user's first activity today
+      const shouldUpdate = await this.shouldUpdateStreak(userId)
+      if (shouldUpdate) {
+        await StreakService.updateStreak(userId, DateTime.now())
+      }
     }
 
     // Find existing progress record
@@ -548,5 +570,14 @@ export default class UserProgressService {
       seconds: totalSeconds,
       formatted: this.studyTimeService.formatStudyTime(totalSeconds),
     }
+  }
+
+  /**
+   * Returns true if the user's streak should be updated (first activity of the day)
+   */
+  private async shouldUpdateStreak(userId: number): Promise<boolean> {
+    const lastStreak = await StreakService.getLastActivity(userId)
+    const now = DateTime.now()
+    return !lastStreak || lastStreak.toISODate() !== now.toISODate()
   }
 }
