@@ -239,6 +239,8 @@ export default class StudyTimeService {
 
   /**
    * Get total study time for a user (with Redis caching)
+   * Note: Active sessions are no longer closed here to avoid latency.
+   * Ensure a scheduled job/process closes sessions periodically for accurate totals.
    */
   async getTotalStudyTime(userId: number): Promise<number> {
     const cacheKey = `user:study_time:total:${userId}`
@@ -248,8 +250,8 @@ export default class StudyTimeService {
       return Number(cached)
     }
 
-    // Close active sessions first to get accurate counts
-    await this.closeAllActiveSessions(userId)
+    // Do NOT close active sessions here; handled by scheduled job
+    // If you need real-time accuracy, ensure sessions are closed elsewhere
 
     // Get aggregated time from the sessions table
     const result = await db
