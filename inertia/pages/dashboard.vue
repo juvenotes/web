@@ -19,6 +19,8 @@ defineProps<{
   stats: StatsDto
   totalStudyTime: number
   formattedStudyTime: string
+  todayStudyTime: number
+  formattedTodayStudyTime: string
 }>()
 
 defineOptions({ layout: DashLayout })
@@ -69,9 +71,9 @@ defineOptions({ layout: DashLayout })
             </div>
             <div>
               <p class="text-xs font-semibold text-[#4A6772] uppercase tracking-wider">
-                Study Time
+                Study Time (Today)
               </p>
-              <!-- <p class="text-lg font-bold text-[#2C5D6F]">{{ formattedStudyTime }}</p> -->
+              <p class="text-lg font-bold text-[#2C5D6F]">{{ formattedTodayStudyTime }}</p>
             </div>
           </div>
 

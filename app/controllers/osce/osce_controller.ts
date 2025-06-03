@@ -7,6 +7,7 @@ import QuestionDto from '#dtos/question'
 import PastPaper from '#models/past_paper'
 import { inject } from '@adonisjs/core'
 import UserProgressService from '#services/user_progress_service'
+import redis from '#services/redis'
 
 @inject()
 export default class OsceController {
@@ -16,15 +17,25 @@ export default class OsceController {
     const context = { controller: 'OsceController', action: 'view' }
     logger.info({ ...context, message: 'Fetching concepts with OSCE papers' })
 
-    const concepts = await Concept.query()
-      .where('level', 0)
-      .where('has_osce', true)
-      .select(['id', 'title', 'slug', 'level'])
-      .preload('pastPapers', (query) => {
-        query
-          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
-          .orderBy('year', 'desc')
-      })
+    const cacheKey = 'osce:concepts:list'
+    let concepts: any[]
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      concepts = JSON.parse(cached)
+      logger.info({ ...context, message: 'Returning concepts from cache' })
+    } else {
+      concepts = await Concept.query()
+        .where('level', 0)
+        .where('has_osce', true)
+        .select(['id', 'title', 'slug', 'level'])
+        .preload('pastPapers', (query) => {
+          query
+            .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+            .orderBy('year', 'desc')
+        })
+      await redis.set(cacheKey, JSON.stringify(concepts), 'EX', 3600) // 1 hour TTL
+      logger.info({ ...context, message: 'Set concepts in cache' })
+    }
 
     logger.info({
       ...context,

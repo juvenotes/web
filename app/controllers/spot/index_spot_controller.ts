@@ -7,6 +7,7 @@ import QuestionDto from '#dtos/question'
 import PastPaper from '#models/past_paper'
 import { inject } from '@adonisjs/core'
 import UserProgressService from '#services/user_progress_service'
+import redis from '#services/redis'
 
 @inject()
 export default class IndexSpotController {
@@ -19,21 +20,34 @@ export default class IndexSpotController {
     const context = { controller: 'IndexSpotController', action: 'index' }
     logger.info({ ...context, message: 'Fetching concepts with SPOT papers' })
 
-    const concepts = await Concept.query()
-      .where('level', 0)
-      .where('has_spot', true)
-      .select(['id', 'title', 'slug', 'level'])
-      .preload('pastPapers', (query) => {
-        query
-          .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
-          .where('paper_type', PaperType.SPOT)
-          .orderBy('year', 'desc')
-      })
+    const cacheKey = 'spot:concepts:list'
+    let concepts: any[] | null = null
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      concepts = JSON.parse(cached)
+      logger.info({ ...context, message: 'Returning concepts from cache' })
+    } else {
+      concepts = await Concept.query()
+        .where('level', 0)
+        .where('has_spot', true)
+        .select(['id', 'title', 'slug', 'level'])
+        .preload('pastPapers', (query) => {
+          query
+            .select(['id', 'title', 'year', 'exam_type', 'paper_type', 'slug'])
+            .where('paper_type', PaperType.SPOT)
+            .orderBy('year', 'desc')
+        })
+      await redis.set(cacheKey, JSON.stringify(concepts), 'EX', 3600) // 1 hour TTL
+      logger.info({ ...context, message: 'Set concepts in cache' })
+    }
+
+    // Defensive: ensure concepts is always an array
+    concepts = concepts || []
 
     logger.info({
       ...context,
       conceptsCount: concepts.length,
-      papersCount: concepts.reduce((sum, c) => sum + (c.pastPapers?.length ?? 0), 0),
+      papersCount: concepts.reduce((sum: number, c: any) => sum + (c.pastPapers?.length ?? 0), 0),
       message: 'Retrieved concepts with SPOT papers',
     })
 

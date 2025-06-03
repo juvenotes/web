@@ -24,13 +24,32 @@ export default class DashboardController {
     // Get total study time for the user
     let totalStudyTime = 0
     let formattedStudyTime = '0m'
+    let todayStudyTime = 0
+    let formattedTodayStudyTime = '0m'
     let userDto = null
 
-    if (auth.user) {
-      totalStudyTime = await this.studyTimeService.getTotalStudyTime(auth.user.id)
-      formattedStudyTime = this.studyTimeService.formatStudyTime(totalStudyTime)
+    if (auth.user && auth.user.id) {
+      try {
+        totalStudyTime = await this.studyTimeService.getTotalStudyTime(auth.user.id)
+        if (typeof totalStudyTime !== 'number' || Number.isNaN(totalStudyTime)) {
+          totalStudyTime = 0
+        }
+        formattedStudyTime = this.studyTimeService.formatStudyTime(totalStudyTime)
 
-      const user = await User.query().where('id', auth.user.id).preload('streak').first()
+        // Fetch today's study time
+        const today = new Date().toISOString().split('T')[0]
+        const todayStats = await this.studyTimeService.getDailyStats(auth.user.id, today)
+        todayStudyTime = todayStats?.totalSeconds || 0
+        formattedTodayStudyTime = this.studyTimeService.formatStudyTime(todayStudyTime)
+      } catch (error) {
+        logger.error('Failed to fetch study time', { error, userId: auth.user.id })
+        totalStudyTime = 0
+        formattedStudyTime = '0m'
+        todayStudyTime = 0
+        formattedTodayStudyTime = '0m'
+      }
+
+      let user = await User.query().where('id', auth.user.id).preload('streak').first()
       let streak = null
       if (user && user.streak) {
         streak = new UserStreakDto(user.streak)
@@ -61,6 +80,8 @@ export default class DashboardController {
       stats,
       totalStudyTime,
       formattedStudyTime,
+      todayStudyTime,
+      formattedTodayStudyTime,
     })
   }
 }

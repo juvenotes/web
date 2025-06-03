@@ -8,7 +8,6 @@
 |
 */
 
-// import { StatsigService } from '#services/statsig'
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
 
@@ -17,13 +16,6 @@ import server from '@adonisjs/core/services/server'
  * to a HTTP response.
  */
 server.errorHandler(() => import('#exceptions/handler'))
-
-// class StatsigInitMiddleware {
-//   async handle(_: HttpContext, next: NextFn) {
-//     await StatsigService.init()
-//     return next()
-//   }
-// }
 
 /**
  * The server middleware stack runs middleware on all the HTTP
@@ -38,7 +30,6 @@ server.use([
   () => import('@adonisjs/vite/vite_middleware'),
   () => import('@adonisjs/inertia/inertia_middleware'),
   () => import('#middleware/session_check_middleware'),
-  // () => ({ default: StatsigInitMiddleware }),
 ])
 
 /**
@@ -52,11 +43,6 @@ router.use([
   () => import('@adonisjs/shield/shield_middleware'),
   () => import('#middleware/initialize_bouncer_middleware'),
 ])
-
-// process.on('SIGTERM', async () => {
-//   await StatsigService.shutdown()
-//   process.exit(0)
-// })
 
 /**
  * Named middleware collection must be explicitly assigned to
