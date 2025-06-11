@@ -105,6 +105,7 @@
     "@statsig/js-client": "^3.9.1",
     "@statsig/session-replay": "^3.9.1",
     "@statsig/web-analytics": "^3.9.1",
+    "@tailwindcss/typography": "^0.0.0-insiders.0339c42",
     "@tanstack/vue-table": "^8.21.3",
     "@tiptap/core": "^2.11.5",
     "@tiptap/extension-bubble-menu": "^2.11.5",
