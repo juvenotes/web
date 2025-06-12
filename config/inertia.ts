@@ -49,6 +49,17 @@ const inertiaConfig = defineConfig({
   ssr: {
     enabled: true,
     entrypoint: 'inertia/app/ssr.ts',
+
+    // Disable SSR for specific pages
+    // This is useful for pages that are not compatible with SSR or require client-side only features
+    pages(ctx) {
+      // Disable SSR for the library/show.vue page
+      const component = ctx.request.input('component')
+      if (component === 'library/show') {
+        return false
+      }
+      return true
+    },
   },
 })
 
