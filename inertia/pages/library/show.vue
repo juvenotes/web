@@ -106,6 +106,7 @@
 
           <!-- Article content with v-html -->
           <div
+            data-allow-mismatch="true"
             class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical"
             v-html="props.article.full_data_content.content"
           />
@@ -117,7 +118,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import type { RawArticleRow, Header } from '../../../app/types/medical_article'
+import type { RawArticleRow } from '../../../app/types/medical_article'
 
 const props = defineProps<{ article: RawArticleRow }>()
 const activeHeaderId = ref<string | null>(null)
