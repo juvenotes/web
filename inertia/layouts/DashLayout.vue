@@ -15,6 +15,7 @@ import {
   Search as SearchIcon,
   Stethoscope,
   Pin,
+  Library,
 } from 'lucide-vue-next'
 import { Twitter, Instagram, Linkedin } from 'lucide-vue-next'
 import UserDto from '#dtos/user'
@@ -31,6 +32,7 @@ const isSearchOpen = ref(false) // State to manage search modal visibility
 
 const sidebarLinks = [
   { name: 'Dashboard', href: '/learn', icon: Home },
+  { name: 'Library', href: '/library', icon: Library },
   { name: 'Concepts', href: '/concepts', icon: BookOpen },
   { name: 'Papers', href: '/papers', icon: FileText },
   { name: 'Osces', href: '/osce', icon: Stethoscope },

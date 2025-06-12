@@ -51,6 +51,7 @@ const StudyTimeController = () => import('#controllers/study_time_controller/stu
 const ManageConceptSectionController = () =>
   import('#controllers/manage/concepts/manage_concept_section_controller')
 const OnboardingController = () => import('#controllers/onboarding_controller')
+const MedicalArticleController = () => import('#controllers/medical_articles_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -517,3 +518,17 @@ router
   .post('/api/study-sessions/:id/heartbeat', [StudyTimeController, 'heartbeat'])
   .use(middleware.auth())
 router.post('/api/study-sessions', [StudyTimeController, 'create']).use(middleware.auth())
+
+// Medical Articles CRUD
+
+router.get('/medical-articles', [MedicalArticleController, 'index'])
+router.get('/medical-articles/:id', [MedicalArticleController, 'show'])
+router.post('/medical-articles', [MedicalArticleController, 'store'])
+router.put('/medical-articles/:id', [MedicalArticleController, 'update'])
+router.delete('/medical-articles/:id', [MedicalArticleController, 'destroy'])
+
+// Medical Library routes
+
+router.get('/library', [MedicalArticleController, 'library'])
+router.get('/library/article/:article_id', [MedicalArticleController, 'showByArticleId'])
+router.get('/library/:subject', [MedicalArticleController, 'showBySubject'])
