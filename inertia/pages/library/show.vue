@@ -122,7 +122,7 @@ import type { RawArticleRow } from '../../../app/types/medical_article'
 
 const props = defineProps<{ article: RawArticleRow }>()
 const activeHeaderId = ref<string | null>(null)
-const headers = props.article.full_data_content.headers || []
+const headers = props.article.full_data_content?.headers || []
 
 function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
   let timeout: ReturnType<typeof setTimeout> | null = null
