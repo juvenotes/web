@@ -530,4 +530,5 @@ router.delete('/medical-articles/:id', [MedicalArticleController, 'destroy'])
 // Medical Library routes
 
 router.get('/library', [MedicalArticleController, 'library'])
-router.get('/library/:article_id', [MedicalArticleController, 'showByArticleId'])
+router.get('/library/article/:article_id', [MedicalArticleController, 'showByArticleId'])
+router.get('/library/:subject', [MedicalArticleController, 'showBySubject'])
