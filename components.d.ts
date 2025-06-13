@@ -45,6 +45,7 @@ declare module 'vue' {
     CardHeader: typeof import('./inertia/components/ui/card/CardHeader.vue')['default']
     CardTitle: typeof import('./inertia/components/ui/card/CardTitle.vue')['default']
     Checkbox: typeof import('./inertia/components/ui/checkbox/Checkbox.vue')['default']
+    ClientOnly: typeof import('./inertia/components/ClientOnly.vue')['default']
     Collapsible: typeof import('./inertia/components/ui/collapsible/Collapsible.vue')['default']
     CollapsibleContent: typeof import('./inertia/components/ui/collapsible/CollapsibleContent.vue')['default']
     CollapsibleTrigger: typeof import('./inertia/components/ui/collapsible/CollapsibleTrigger.vue')['default']
