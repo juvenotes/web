@@ -142,6 +142,7 @@ onUnmounted(() => {
           <div
             class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical"
             v-html="props.article.full_data_content.content"
+            data-allow-mismatch="true"
           />
         </article>
       </div>
