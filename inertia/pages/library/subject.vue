@@ -1,10 +1,31 @@
+<script setup lang="ts">
+import { Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
+
+// Properly define types for component props
+interface Article {
+  pk_id: number | string
+  article_id: number | string
+  article_name: string
+}
+
+interface Props {
+  articles: Article[]
+  subjectName: string
+}
+
+const props = defineProps<Props>()
+
+// Computed properties for better reactivity management
+const hasArticles = computed(() => props.articles.length > 0)
+</script>
+
 <template>
-  <!-- Add a subtle background color to the whole page for better contrast -->
   <div class="bg-gray-50 min-h-screen">
     <div class="container mx-auto p-4 md:p-8">
-      <!-- Header Section with Animation -->
-      <div class="mb-8 md:mb-12 animate__animated animate__fadeInDown">
-        <!-- Enhanced "Back" link - looks more like a button -->
+      <!-- Header Section -->
+      <div class="mb-8 md:mb-12 header-animation">
+        <!-- Back link -->
         <Link
           href="/library"
           class="inline-flex items-center text-sm font-semibold text-gray-600 hover:text-blue-600 transition-colors duration-300 mb-4"
@@ -24,7 +45,7 @@
           All Subjects
         </Link>
 
-        <!-- A more visually appealing title with a gradient -->
+        <!-- Title with gradient -->
         <h1
           class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 pb-4 border-b"
         >
@@ -32,26 +53,22 @@
         </h1>
       </div>
 
-      <!-- Article List with Staggered Animation -->
-      <div v-if="articles.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!--
-            We use a v-for with an index to apply a staggered animation delay.
-            Each card will appear slightly after the one before it.
-          -->
+      <!-- Article List -->
+      <div v-if="hasArticles" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="(article, index) in articles"
           :key="article.pk_id"
-          class="animate__animated animate__fadeInUp"
-          :style="{ animationDelay: `${index * 100}ms` }"
+          class="article-card"
+          :style="`--animation-order: ${index};`"
         >
-          <!-- The link is now a full card, which is more clickable and visually pleasing -->
+          <!-- Article card -->
           <a
             :href="`/library/article/${article.article_id}`"
             data-inertia="false"
             class="block bg-white rounded-lg shadow-md p-6 h-full transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1"
           >
             <div class="flex items-start">
-              <!-- Icon for visual flair -->
+              <!-- Icon -->
               <div class="flex-shrink-0">
                 <svg
                   class="h-6 w-6 text-blue-500"
@@ -72,16 +89,14 @@
                 <p class="text-lg font-semibold text-gray-800 group-hover:text-blue-700">
                   {{ article.article_name }}
                 </p>
-                <!-- You could add a small description here later -->
-                <!-- <p class="text-sm text-gray-500 mt-1">Short article description...</p> -->
               </div>
             </div>
           </a>
         </div>
       </div>
 
-      <!-- Enhanced "No Articles" message -->
-      <div v-else class="text-center text-gray-500 mt-8 animate__animated animate__fadeIn">
+      <!-- No Articles message -->
+      <div v-else class="text-center text-gray-500 mt-8 empty-state">
         <div class="bg-white rounded-lg shadow-md p-10 max-w-lg mx-auto">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -106,14 +121,51 @@
   </div>
 </template>
 
-<script setup>
-import { Link } from '@inertiajs/vue3'
+<style scoped>
+/* Animation classes moved from inline to CSS for better maintainability */
+.header-animation {
+  animation: fadeInDown 1s ease forwards;
+}
 
-defineProps({
-  articles: Array,
-  subjectName: String,
-})
+.article-card {
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: calc(var(--animation-order) * 100ms);
+  opacity: 0;
+}
 
-// The script section remains the same, as the requested changes are purely presentational.
-// The `a` tag with `data-inertia="false"` performs a full page reload, bypassing Inertia's SPA behavior.
-</script>
+.empty-state {
+  animation: fadeIn 1s ease forwards;
+}
+
+/* Animation keyframes */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+</style>
