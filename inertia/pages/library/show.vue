@@ -1,70 +1,3 @@
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-
-interface Header {
-  id: string
-  name: string
-  level: number
-}
-
-interface FullDataContent {
-  content: string
-  headers: Header[]
-}
-
-interface RawArticleRow {
-  article_name: string
-  full_data_content: FullDataContent
-}
-
-const props = defineProps<{ article: RawArticleRow }>()
-
-const activeHeaderId = ref<string | null>(null)
-const headers = props.article.full_data_content.headers ?? []
-const isMounted = ref(false)
-
-/** Debounce utility with proper type safety */
-function debounce<T extends (...args: any[]) => void>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: number | undefined
-  return (...args: Parameters<T>) => {
-    if (timeout !== undefined) {
-      clearTimeout(timeout)
-    }
-    timeout = window.setTimeout(() => func(...args), wait)
-  }
-}
-
-/** Scroll handler to track active heading */
-function handleScroll() {
-  if (!isMounted.value) return
-
-  const scrollOffset = window.scrollY + 100
-  const visibleHeaders = headers
-    .map((header) => document.getElementById(header.id))
-    .filter((el): el is HTMLElement => el !== null && el.offsetTop <= scrollOffset)
-
-  activeHeaderId.value =
-    visibleHeaders.length > 0 ? visibleHeaders[visibleHeaders.length - 1].id : null
-}
-
-const debouncedScrollHandler = debounce(handleScroll, 50)
-
-onMounted(() => {
-  isMounted.value = true
-  nextTick(() => {
-    window.addEventListener('scroll', debouncedScrollHandler)
-    handleScroll()
-  })
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', debouncedScrollHandler)
-})
-</script>
-
 <template>
   <div class="bg-background text-foreground font-sans">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
@@ -171,8 +104,8 @@ onUnmounted(() => {
             </nav>
           </details>
 
-          <!-- Article content -->
           <div
+            data-allow-mismatch="true"
             class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical"
             v-html="props.article.full_data_content.content"
           ></div>
@@ -182,7 +115,45 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped>
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+import type { RawArticleRow } from '../../../app/types/medical_article'
+
+const props = defineProps<{ article: RawArticleRow }>()
+const activeHeaderId = ref<string | null>(null)
+const headers = props.article.full_data_content?.headers || []
+
+function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+  return (...args: Parameters<F>): void => {
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), waitFor)
+  }
+}
+
+function handleScroll() {
+  const scrollOffset = window.scrollY + 100
+  const visibleHeaders = headers
+    .map((h) => document.getElementById(h.id))
+    .filter((el): el is HTMLElement => el !== null && el.offsetTop <= scrollOffset)
+  if (visibleHeaders.length > 0) {
+    activeHeaderId.value = visibleHeaders[visibleHeaders.length - 1].id
+  } else {
+    activeHeaderId.value = null
+  }
+}
+
+const debouncedScrollHandler = debounce(handleScroll, 50)
+onMounted(() => {
+  window.addEventListener('scroll', debouncedScrollHandler)
+  handleScroll()
+})
+onUnmounted(() => {
+  window.removeEventListener('scroll', debouncedScrollHandler)
+})
+</script>
+
+<style>
 /* --- General Scaffolding & Utility Styles --- */
 .toc-scrollbar {
   scrollbar-width: thin;
@@ -211,10 +182,13 @@ details[open] .details-arrow {
   --tw-prose-headings: #0c0a09;
   --tw-prose-bold: #0c0a09;
   --tw-prose-links: #0d9488;
+  /* Dark mode overrides */
   --tw-prose-invert-body: #e7e5e4;
   --tw-prose-invert-headings: #ffffff;
   --tw-prose-invert-bold: #ffffff;
 }
+
+/* --- Readable Headings --- */
 .prose-medical h1,
 .prose-medical h2,
 .prose-medical h3 {
@@ -222,22 +196,30 @@ details[open] .details-arrow {
   letter-spacing: -0.02em;
   scroll-margin-top: 80px;
 }
+
+/* --- Appealing TEAL `<a>` Tags with NO Underline --- */
 .prose-medical a {
   font-weight: 600 !important;
   text-decoration: none !important;
   color: #0d9488 !important;
   transition: background-color 0.2s ease-in-out;
+  /* FIX: Increased border-radius for a more rounded hover effect */
   border-radius: 6px;
   padding: 2px 5px;
   margin: -2px -5px;
 }
+
+/* On hover, add a very light teal background for interaction feedback */
 .prose-medical a:hover {
-  background-color: #ccfbf1;
+  background-color: #ccfbf1; /* A very light teal */
   text-decoration: none !important;
 }
+
 .prose-medical a code {
   color: inherit !important;
 }
+
+/* --- Cleaner Tables --- */
 .prose-medical table {
   font-size: 0.9em;
 }
