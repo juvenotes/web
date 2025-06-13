@@ -2,10 +2,14 @@
   <div class="bg-background text-foreground font-sans">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       <!-- Header Section -->
-      <div class="relative p-6 sm:p-8 bg-card rounded-2xl border border-border shadow-md">
+      <!-- FIX: Added `overflow-hidden` to contain the absolute child -->
+      <div
+        class="relative overflow-hidden p-6 sm:p-8 bg-card rounded-2xl border border-border shadow-md"
+      >
+        <!-- FIX: Refined the gradient line to be a subtle, cleaner accent -->
         <div
-          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/70 to-transparent rounded-t-2xl"
-        />
+          class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary/20"
+        ></div>
         <div class="flex flex-col sm:flex-row gap-6 sm:items-center justify-between">
           <div class="flex items-center gap-5">
             <div class="p-3 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
@@ -25,7 +29,7 @@
             </div>
             <div class="space-y-1">
               <h1 class="text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
-                {{ props.article.article_name }}
+                {{ props.article?.article_name }}
               </h1>
               <p class="text-base text-muted-foreground">Medical Library Article</p>
             </div>
@@ -33,8 +37,8 @@
         </div>
       </div>
 
+      <!-- Rest of your template remains the same... -->
       <div class="lg:grid lg:grid-cols-12 lg:gap-12">
-        <!-- Table of Contents - Desktop -->
         <aside
           class="hidden lg:block lg:col-span-3 sticky top-24 self-start max-h-[calc(100vh-140px)] overflow-y-auto toc-scrollbar"
         >
@@ -42,7 +46,6 @@
             <h2 class="text-base font-semibold mb-3 pb-2 border-b border-border text-foreground">
               On this page
             </h2>
-            <!-- FIX: Reduced space-y and py to make the list more compact -->
             <nav class="space-y-0.5">
               <a
                 v-for="header in headers"
@@ -62,9 +65,7 @@
           </div>
         </aside>
 
-        <!-- Article content and Mobile TOC -->
         <article class="lg:col-span-9">
-          <!-- Table of Contents - Mobile -->
           <details class="lg:hidden bg-muted/50 p-4 rounded-lg mb-8 border border-border">
             <summary
               class="text-base font-semibold cursor-pointer list-none flex justify-between items-center text-foreground"
@@ -85,7 +86,6 @@
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </summary>
-            <!-- FIX: Reduced space-y and py to make the list more compact -->
             <nav class="mt-3 pt-3 border-t border-border space-y-0.5">
               <a
                 v-for="header in headers"
@@ -103,13 +103,20 @@
               </a>
             </nav>
           </details>
-
-          <!-- Article content with v-html -->
+          <!-- property hydration fix, ssr access content using snake_case, while client-side uses camelCase -->
           <div
             data-allow-mismatch="true"
             class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical"
-            v-html="props.article.full_data_content.content"
-          />
+            v-if="
+              props.article?.fullDataContent?.content || props.article?.full_data_content?.content
+            "
+            v-html="
+              props.article?.fullDataContent?.content || props.article?.full_data_content?.content
+            "
+          ></div>
+          <div v-else class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical">
+            <p>No content available for this article.</p>
+          </div>
         </article>
       </div>
     </div>
@@ -118,11 +125,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import type { RawArticleRow } from '../../../app/types/medical_article'
 
-const props = defineProps<{ article: RawArticleRow }>()
-const activeHeaderId = ref<string | null>(null)
-const headers = props.article.full_data_content?.headers || []
+const props = defineProps({
+  article: Object,
+})
+import type { Ref } from 'vue'
+const activeHeaderId: Ref<string | null> = ref(null)
+const headers =
+  props.article?.fullDataContent?.headers || props.article?.full_data_content?.headers || []
 
 function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
   let timeout: ReturnType<typeof setTimeout> | null = null
@@ -134,11 +144,42 @@ function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
 
 function handleScroll() {
   const scrollOffset = window.scrollY + 100
-  const visibleHeaders = headers
-    .map((h) => document.getElementById(h.id))
-    .filter((el): el is HTMLElement => el !== null && el.offsetTop <= scrollOffset)
+
+  interface HeaderElement {
+    id: string
+    name: string
+    level: number
+  }
+
+  interface VisibleHeader extends HTMLElement {
+    id: string
+    offsetTop: number
+  }
+
+  interface HeaderElement {
+    id: string
+    name: string
+    level: number
+  }
+
+  interface VisibleHeader extends HTMLElement {
+    id: string
+    offsetTop: number
+  }
+
+  const visibleHeaders: VisibleHeader[] = headers
+    .map((h: HeaderElement): VisibleHeader | null => {
+      const el: HTMLElement | null = document.getElementById(h.id)
+      return el && 'offsetTop' in el ? (el as VisibleHeader) : null
+    })
+    .filter(
+      (el: VisibleHeader | null): el is VisibleHeader => el !== null && el.offsetTop <= scrollOffset
+    )
   if (visibleHeaders.length > 0) {
-    activeHeaderId.value = visibleHeaders[visibleHeaders.length - 1].id
+    interface LastVisibleHeader extends HTMLElement {
+      id: string
+    }
+    activeHeaderId.value = (visibleHeaders[visibleHeaders.length - 1] as LastVisibleHeader).id
   } else {
     activeHeaderId.value = null
   }

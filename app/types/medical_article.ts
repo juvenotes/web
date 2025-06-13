@@ -2,14 +2,14 @@
  * Raw row structure from Supabase 'medical_articles' table
  */
 export interface RawArticleRow {
-  pk_id: number
-  original_filename: string
-  article_id: string
-  article_name: string
-  library_id: string
-  keywords: string // comma-separated string in CSV, maps to text[] in DB
-  full_data_content: FullDataContent
-  imported_at: string // ISO timestamp
+  pkId: number
+  originalFilename: string
+  articleId: string
+  articleName: string
+  libraryId: string
+  keywords: string
+  fullDataContent: FullDataContent // Note: camelCase for frontend
+  importedAt: string
 }
 
 /**
