@@ -29,7 +29,7 @@
             </div>
             <div class="space-y-1">
               <h1 class="text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
-                {{ props.article.article_name }}
+                {{ props.article?.article_name }}
               </h1>
               <p class="text-base text-muted-foreground">Medical Library Article</p>
             </div>
@@ -103,12 +103,20 @@
               </a>
             </nav>
           </details>
-
+          <!-- property hydration fix, ssr access content using snake_case, while client-side uses camelCase -->
           <div
             data-allow-mismatch="true"
             class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical"
-            v-html="props.article.full_data_content.content"
+            v-if="
+              props.article?.fullDataContent?.content || props.article?.full_data_content?.content
+            "
+            v-html="
+              props.article?.fullDataContent?.content || props.article?.full_data_content?.content
+            "
           ></div>
+          <div v-else class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical">
+            <p>No content available for this article.</p>
+          </div>
         </article>
       </div>
     </div>
@@ -117,11 +125,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import type { RawArticleRow } from '../../../app/types/medical_article'
 
-const props = defineProps<{ article: RawArticleRow }>()
-const activeHeaderId = ref<string | null>(null)
-const headers = props.article.full_data_content?.headers || []
+const props = defineProps({
+  article: Object,
+})
+import type { Ref } from 'vue'
+const activeHeaderId: Ref<string | null> = ref(null)
+const headers =
+  props.article?.fullDataContent?.headers || props.article?.full_data_content?.headers || []
 
 function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
   let timeout: ReturnType<typeof setTimeout> | null = null
@@ -133,11 +144,42 @@ function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
 
 function handleScroll() {
   const scrollOffset = window.scrollY + 100
-  const visibleHeaders = headers
-    .map((h) => document.getElementById(h.id))
-    .filter((el): el is HTMLElement => el !== null && el.offsetTop <= scrollOffset)
+
+  interface HeaderElement {
+    id: string
+    name: string
+    level: number
+  }
+
+  interface VisibleHeader extends HTMLElement {
+    id: string
+    offsetTop: number
+  }
+
+  interface HeaderElement {
+    id: string
+    name: string
+    level: number
+  }
+
+  interface VisibleHeader extends HTMLElement {
+    id: string
+    offsetTop: number
+  }
+
+  const visibleHeaders: VisibleHeader[] = headers
+    .map((h: HeaderElement): VisibleHeader | null => {
+      const el: HTMLElement | null = document.getElementById(h.id)
+      return el && 'offsetTop' in el ? (el as VisibleHeader) : null
+    })
+    .filter(
+      (el: VisibleHeader | null): el is VisibleHeader => el !== null && el.offsetTop <= scrollOffset
+    )
   if (visibleHeaders.length > 0) {
-    activeHeaderId.value = visibleHeaders[visibleHeaders.length - 1].id
+    interface LastVisibleHeader extends HTMLElement {
+      id: string
+    }
+    activeHeaderId.value = (visibleHeaders[visibleHeaders.length - 1] as LastVisibleHeader).id
   } else {
     activeHeaderId.value = null
   }
