@@ -62,7 +62,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="bg-background text-foreground font-sans">
+  <div class="bg-background text-foreground font-sans"
+  data-allow-mismatch="true">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       <!-- Header Section -->
       <div class="relative p-6 sm:p-8 bg-card rounded-2xl border border-border shadow-md">
