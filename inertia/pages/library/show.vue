@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 
 interface Header {
   id: string;
@@ -21,6 +21,7 @@ const props = defineProps<{ article: RawArticleRow }>()
 
 const activeHeaderId = ref<string | null>(null)
 const headers = props.article.full_data_content.headers ?? []
+const isMounted = ref(false)
 
 /** Debounce utility with proper type safety */
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
@@ -35,6 +36,8 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (.
 
 /** Scroll handler to track active heading */
 function handleScroll() {
+  if (!isMounted.value) return
+  
   const scrollOffset = window.scrollY + 100
   const visibleHeaders = headers
     .map(header => document.getElementById(header.id))
@@ -46,8 +49,11 @@ function handleScroll() {
 const debouncedScrollHandler = debounce(handleScroll, 50)
 
 onMounted(() => {
-  window.addEventListener('scroll', debouncedScrollHandler)
-  handleScroll()
+  isMounted.value = true
+  nextTick(() => {
+    window.addEventListener('scroll', debouncedScrollHandler)
+    handleScroll()
+  })
 })
 
 onUnmounted(() => {
@@ -134,7 +140,6 @@ onUnmounted(() => {
 
           <!-- Article content -->
           <div
-            data-allow-mismatch="true"
             class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical"
             v-html="props.article.full_data_content.content"
           />
