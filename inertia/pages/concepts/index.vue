@@ -42,130 +42,146 @@ onMounted(async () => {
 })
 
 const breadcrumbItems = [{ label: 'Concepts' }]
+const hasConcepts = computed(() => filteredConcepts.value.length > 0)
 </script>
 
 <template>
   <AppHead title="All available concepts" description="All available concepts in Juvenotes" />
   
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
-    <!-- Header Section -->
-    <div
-      class="relative p-6 sm:p-8 bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-xs hover:shadow-sm transition-all duration-300"
-    >
-      <!-- Gradient Top Border -->
-      <div
-        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent rounded-t-xl sm:rounded-t-2xl"
-      />
+  <div class="min-h-screen bg-gray-50/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <!-- Header Section -->
+      <div class="mb-6 sm:mb-10 header-animation">
+        <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
 
-      <BreadcrumbTrail :items="breadcrumbItems" class="mb-4" />
-
-      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
-        <!-- Icon and Title -->
-        <div class="flex items-start gap-3 sm:gap-4 flex-1">
-          <div
-            class="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
-          >
-            <BookOpen class="h-5 w-5 text-[#55A9C4]" />
+        <!-- Title and Description -->
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+          <div class="flex items-start gap-3 sm:gap-4 flex-1">
+            <div class="flex-shrink-0 mt-0.5">
+              <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
+                <BookOpen class="h-6 w-6 text-[#55A9C4]" />
+              </div>
+            </div>
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Medical Concepts</h1>
+              <p class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
+                Explore medical concepts organized by topics and training levels.
+              </p>
+            </div>
           </div>
-          <div class="space-y-1.5 sm:space-y-2">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Medical Concepts</h1>
-            <p class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
-              Explore medical concepts organized by topics and training levels.
-            </p>
+
+          <!-- Manage Button -->
+          <div class="w-full sm:w-auto flex-shrink-0">
+            <Link
+              v-if="canManage"
+              href="/manage/concepts"
+              class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] transition-colors text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              <Settings class="h-4 w-4" />
+              <span>Manage</span>
+            </Link>
           </div>
         </div>
 
-        <!-- Manage Button -->
-        <div class="w-full sm:w-auto flex-shrink-0">
+        <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 sm:mb-8">
+        <p class="text-sm text-gray-500">
+          Showing {{ filteredConcepts.length }} concepts
+          <span v-if="selectedLevel" class="font-medium text-[#55A9C4]">({{ selectedLevel }} level)</span>
+        </p>
+        <ToggleTrainingLevel v-model="selectedLevel" />
+      </div>
+
+      <!-- Concepts Grid - Similar to articles grid -->
+      <div v-if="hasConcepts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+        <div
+          v-for="(concept, index) in filteredConcepts"
+          :key="concept.id"
+          class="concept-card"
+          :style="`--animation-order: ${index};`"
+        >
           <Link
-            v-if="canManage"
-            href="/manage/concepts"
-            class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] transition-colors text-white text-sm font-medium hover:shadow-xs transition-all duration-200"
+            :href="`/concepts/${concept.slug}`"
+            class="group block p-4 sm:p-5 bg-white rounded-xl border border-gray-200 hover:border-[#55A9C4]/40 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
           >
-            <Settings class="h-4 w-4" />
-            <span>Manage</span>
+            <div class="flex items-start space-x-3">
+              <div class="flex-shrink-0 mt-0.5">
+                <div class="h-8 w-8 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
+                  <BookOpen class="h-5 w-5 text-[#55A9C4]" />
+                </div>
+              </div>
+              <div>
+                <h3 class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2">
+                  {{ concept.title }}
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">Explore concept</p>
+              </div>
+            </div>
           </Link>
         </div>
       </div>
-    </div>
 
-    <!-- Filter Section -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-1 sm:px-0">
-      <p class="text-sm text-gray-500">
-        Showing {{ filteredConcepts.length }} concepts
-        <span v-if="selectedLevel" class="font-medium text-[#55A9C4]">({{ selectedLevel }} level)</span>
-      </p>
-      <ToggleTrainingLevel v-model="selectedLevel" />
-    </div>
-
-    <!-- Concepts Grid -->
-    <div class="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      <Link
-        v-for="concept in filteredConcepts"
-        :key="concept.id"
-        :href="`/concepts/${concept.slug}`"
-        class="group relative overflow-hidden rounded-xl bg-white p-5 sm:p-6 border border-gray-100 hover:border-[#55A9C4]/30 hover:shadow-xs transition-all duration-300"
-      >
-        <!-- Gradient Overlay on Hover -->
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-[#55A9C4]/5 via-[#55A9C4]/3 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"
-        />
-        <div
-          class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent"
-        />
-
-        <div class="relative space-y-3 sm:space-y-4">
-          <!-- Concept Title -->
-          <h2
-            class="text-lg sm:text-xl font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-300"
-          >
-            {{ concept.title }}
-          </h2>
-          
-          <!-- Explore Concept Link -->
-          <div
-            class="flex items-center text-sm text-[#55A9C4] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300"
-          >
-            <span>Explore concept</span>
-            <svg
-              class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-300"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
+      <!-- No Concepts message -->
+      <div v-else class="text-center py-12 sm:py-16 empty-state">
+        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+          <BookOpen class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
         </div>
-      </Link>
-    </div>
-
-    <!-- Empty State -->
-    <div 
-      v-if="filteredConcepts.length === 0" 
-      class="text-center py-12 sm:py-16 bg-white rounded-xl border border-gray-100"
-    >
-      <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-50 rounded-full flex items-center justify-center mb-4 sm:mb-5">
-        <BookOpen class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No concepts found</h3>
+        <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
+          <span v-if="selectedLevel">No concepts match your current filters. Try adjusting your selection.</span>
+          <span v-else>We couldn't find any concepts. Check back later or contact support.</span>
+        </p>
+        <button
+          v-if="selectedLevel"
+          @click="selectedLevel = null"
+          class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#55A9C4] hover:bg-[#4795af] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#55A9C4] transition-colors duration-200"
+        >
+          Clear filters
+        </button>
       </div>
-      <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No concepts found</h3>
-      <p class="text-sm sm:text-base text-gray-600 max-w-md mx-auto mb-4">
-        No concepts match your current filters. Try adjusting your selection.
-      </p>
-      <button
-        @click="selectedLevel = null"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-xs text-white bg-[#55A9C4] hover:bg-[#4795af] focus:outline-none transition-colors duration-200"
-      >
-        Clear filters
-      </button>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
+.header-animation {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.concept-card {
+  animation: fadeInUp 0.4s ease-out forwards;
+  animation-delay: calc(var(--animation-order) * 0.05s);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.empty-state {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Base typography */
 html {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -174,15 +190,12 @@ html {
   html { font-family: 'Inter var', system-ui, -apple-system, sans-serif; }
 }
 
-/* Smooth transitions */
-a, button, .transition-all {
-  transition-property: color, background-color, border-color, transform, opacity, box-shadow;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
-}
-
-/* Responsive adjustments */
+/* Improved touch targets */
 @media (max-width: 640px) {
+  .group {
+    min-height: 56px;
+  }
+  
   .max-w-7xl {
     padding-left: 1rem;
     padding-right: 1rem;
