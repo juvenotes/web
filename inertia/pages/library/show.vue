@@ -113,7 +113,19 @@
             v-html="
               props.article?.fullDataContent?.content || props.article?.full_data_content?.content
             "
+            @click="handleContentClick"
           ></div>
+
+          <!-- Modal/Lightbox for displaying the image -->
+          <div v-if="lightboxImageUrl" class="lightbox" @click.self="closeLightbox">
+            <!-- The .self modifier on the click event ensures this only triggers
+           when clicking the dark background, not the image or button. -->
+
+            <!-- Close button in the corner -->
+            <button class="close-button" @click="closeLightbox">×</button>
+            <img :src="lightboxImageUrl" alt="Hint media" />
+          </div>
+
           <div v-else class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical">
             <p>No content available for this article.</p>
           </div>
@@ -125,6 +137,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import axios from 'axios' // Using axios for clean API requests
 
 const props = defineProps({
   article: Object,
@@ -193,6 +206,59 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', debouncedScrollHandler)
 })
+
+// images functionality
+// A reactive ref to hold the URL for our lightbox
+const lightboxImageUrl: Ref<string | null> = ref(null)
+
+// The method that will handle all clicks inside the article content
+interface HintLinkElement extends HTMLAnchorElement {
+  dataset: {
+    hintId: string
+    [key: string]: string
+  }
+}
+
+interface MediaApiResponse {
+  url: string
+}
+
+const handleContentClick = async (event: MouseEvent): Promise<void> => {
+  // Find the clicked link or its parent link with a 'data-hint-id'
+  const link = (event.target as HTMLElement).closest('a[data-hint-id]') as HintLinkElement | null
+
+  // If the click was not on one of our special links, do nothing.
+  if (!link) {
+    return
+  }
+
+  // Prevent the browser from trying to navigate
+  event.preventDefault()
+
+  const hintId: string = link.dataset.hintId
+
+  try {
+    // Make an API call to our new AdonisJS endpoint
+    const response = await axios.get<MediaApiResponse>(`/media/${hintId}`)
+
+    // Set the reactive ref to the URL from the API response
+    // This will cause the lightbox to appear
+    lightboxImageUrl.value = response.data.url
+  } catch (error: any) {
+    // Handle errors (e.g., 404 Not Found)
+    if (error.response && error.response.status === 404) {
+      console.warn(`Media not found for hint: ${hintId}`)
+      // Optionally, show a "not found" toast notification to the user
+    } else {
+      console.error('An error occurred while fetching media:', error)
+    }
+  }
+}
+
+// A simple method to close the lightbox
+const closeLightbox = () => {
+  lightboxImageUrl.value = null
+}
 </script>
 
 <style>
@@ -272,5 +338,53 @@ details[open] .details-arrow {
 }
 .prose-medical td {
   padding: 0.6rem 0.8rem;
+}
+
+/* image functionality css */
+/* A very basic lightbox style */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  cursor: pointer;
+}
+
+.lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 4px;
+}
+
+/* --- NEW: Close button styles --- */
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+
+  /* Styling the button */
+  background: none;
+  border: none;
+  color: white;
+  font-size: 40px; /* Makes the '×' bigger */
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+
+  /* Improve accessibility and appearance */
+  padding: 0;
+  text-shadow: 0 1px 0 #000;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.close-button:hover {
+  opacity: 1;
 }
 </style>
