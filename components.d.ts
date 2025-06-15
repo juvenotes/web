@@ -28,7 +28,6 @@ declare module 'vue' {
     AlertDialogTrigger: typeof import('./inertia/components/ui/alert-dialog/AlertDialogTrigger.vue')['default']
     AlertTitle: typeof import('./inertia/components/ui/alert/AlertTitle.vue')['default']
     AppHead: typeof import('./inertia/components/AppHead.vue')['default']
-    ArticleIcon: typeof import('./inertia/components/icons/ArticleIcon.vue')['default']
     Badge: typeof import('./inertia/components/ui/badge/Badge.vue')['default']
     Breadcrumb: typeof import('./inertia/components/ui/breadcrumb/Breadcrumb.vue')['default']
     BreadcrumbEllipsis: typeof import('./inertia/components/ui/breadcrumb/BreadcrumbEllipsis.vue')['default']
