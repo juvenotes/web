@@ -365,6 +365,53 @@ details[open] .details-arrow {
     overflow-x: auto;
   }
 }
+/* image functionality css */
+/* A very basic lightbox style */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  cursor: pointer;
+}
+
+.lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 4px;
+}
+
+/* --- NEW: Close button styles --- */
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+
+  /* Styling the button */
+  background: none;
+  border: none;
+  color: white;
+  font-size: 40px; /* Makes the '×' bigger */
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+
+  /* Improve accessibility and appearance */
+  padding: 0;
+  text-shadow: 0 1px 0 #000;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.close-button:hover {
+  opacity: 1;
+}
 
 /* image functionality css */
 /* A very basic lightbox style */
