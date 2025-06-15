@@ -9,7 +9,10 @@ import { PaperType } from '#enums/exam_type'
 import UserStudySessionDto from '#dtos/user_study_session'
 import axios from 'axios'
 
-defineOptions({ layout: DashLayout })
+defineOptions({
+  layout: DashLayout,
+  inheritAttrs: false,
+})
 
 interface Props {
   concept: ConceptDto
@@ -60,47 +63,48 @@ const breadcrumbItems = computed(() => [
 </script>
 
 <template>
-  <AppHead
-    :title="`${concept.title} SPOT Papers`"
-    :description="`SPOT papers for ${concept.title}`"
+  <AppHead 
+    :title="`${concept.title} SPOT Papers`" 
+    :description="`SPOT papers for ${concept.title}`" 
   />
 
-  <div class="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8 font-sans">
+  <div class="spot-papers-container max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
     <!-- Header Section -->
     <div
-      class="relative p-3 sm:p-4 md:p-6 bg-white rounded-lg sm:rounded-xl md:rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300"
+      class="relative p-6 sm:p-8 bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300"
     >
+      <!-- Gradient Top Border -->
       <div
-        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent"
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent rounded-t-xl sm:rounded-t-2xl"
       />
 
-      <BreadcrumbTrail :items="breadcrumbItems" />
+      <BreadcrumbTrail :items="breadcrumbItems" class="mb-4" />
 
-      <div class="mt-3 sm:mt-4 md:mt-5 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 md:gap-5">
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
         <!-- Icon and Title -->
-        <div class="flex items-start gap-2 sm:gap-3 md:gap-4 flex-1">
+        <div class="flex items-start gap-3 sm:gap-4 flex-1">
           <div
-            class="p-2 sm:p-2.5 rounded-lg bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
+            class="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 hover:bg-[#55A9C4]/20 transition-colors duration-200"
           >
-            <FileText class="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-[#55A9C4]" />
+            <FileText class="h-5 w-5 text-[#55A9C4]" />
           </div>
-          <div class="space-y-0.5 sm:space-y-1 min-w-0">
-            <h1 class="text-base sm:text-lg md:text-xl font-medium sm:font-semibold text-gray-900 truncate">
+          <div class="space-y-1.5 sm:space-y-2">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
               {{ concept.title }}
             </h1>
-            <p class="text-2xs sm:text-xs md:text-sm text-gray-500">SPOT Practice Papers</p>
+            <p class="text-sm sm:text-base text-gray-600">SPOT Practice Papers</p>
           </div>
         </div>
 
         <!-- Manage Button -->
-        <div class="w-full sm:w-auto mt-2 sm:mt-0">
+        <div class="w-full sm:w-auto flex-shrink-0">
           <Link
             v-if="canManage"
             :href="`/manage/spot/${concept.slug}`"
-            class="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg bg-[#55A9C4] hover:bg-[#55A9C4]/90 text-white border border-[#55A9C4] text-2xs sm:text-xs md:text-sm font-medium hover:shadow-md transition-all duration-200 group"
+            class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] transition-colors text-white text-sm font-medium hover:shadow-xs transition-all duration-200"
           >
-            <Settings class="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 transition-transform duration-500 group-hover:rotate-180" />
-            <span>Edit</span>
+            <Settings class="h-4 w-4" />
+            <span>Manage SPOTs</span>
           </Link>
         </div>
       </div>
@@ -108,49 +112,54 @@ const breadcrumbItems = computed(() => [
 
     <!-- Papers by Year -->
     <template v-if="hasPapers">
-      <div v-for="(papers, year) in papersByYear" :key="year" class="space-y-3 sm:space-y-4 md:space-y-5">
-        <div class="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-medium sm:font-semibold text-gray-900">
-          <Calendar class="h-4 w-4 sm:h-5 sm:w-5 text-[#55A9C4]" />
+      <div v-for="(yearPapers, year) in papersByYear" :key="year" class="space-y-5 sm:space-y-6">
+        <div class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-900">
+          <Calendar class="h-5 w-5 text-[#55A9C4]" />
           <h2>{{ year }}</h2>
         </div>
 
-        <div class="grid gap-3 sm:gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <Link
-            v-for="paper in papers"
+            v-for="paper in yearPapers"
             :key="paper.id"
             :href="`/spot/${concept.slug}/${paper.slug}`"
-            class="group relative overflow-hidden rounded-lg sm:rounded-xl bg-white p-3 sm:p-4 md:p-5 border border-gray-100 hover:border-[#55A9C4]/20 hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 sm:hover:-translate-y-1"
+            class="group relative overflow-hidden rounded-xl bg-white p-5 sm:p-6 border border-gray-100 hover:border-[#55A9C4]/30 hover:shadow-xs transition-all duration-300"
           >
+            <!-- Gradient Overlay on Hover -->
             <div
-              class="absolute inset-0 bg-gradient-to-br from-[#55A9C4]/10 via-[#55A9C4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out"
+              class="absolute inset-0 bg-gradient-to-br from-[#55A9C4]/5 via-[#55A9C4]/3 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"
+            />
+            <div
+              class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#55A9C4] via-[#55A9C4]/50 to-transparent"
             />
 
-            <div class="relative space-y-2 sm:space-y-3">
+            <div class="relative space-y-3 sm:space-y-4">
               <h3
-                class="text-sm sm:text-base md:text-lg font-medium sm:font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-300"
+                class="text-lg sm:text-xl font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-300"
               >
                 {{ paper.title }}
               </h3>
 
-              <div class="flex items-center gap-2 sm:gap-3 text-2xs sm:text-xs md:text-sm">
-                <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] font-medium">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-sm font-medium">
                   SPOT
                 </span>
-                <span class="text-gray-500">
+                <span class="text-sm text-gray-500">
                   {{
                     paper.questions
-                      ? paper.questions.reduce((sum: number, q: any) => sum + (q.spotStations?.length || 0), 0)
+                      ? paper.questions.reduce((sum, q) => sum + (q.spotStations?.length || 0), 0)
                       : 0
                   }}
                   stations
                 </span>
               </div>
+
               <div
-                class="flex items-center text-2xs sm:text-xs md:text-sm text-[#55A9C4] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"
+                class="flex items-center text-sm text-[#55A9C4] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300"
               >
                 <span>Practice SPOT</span>
                 <svg
-                  class="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 ml-1 sm:ml-2 transform group-hover:translate-x-1 transition-transform duration-300 ease-in-out"
+                  class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-300"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -167,20 +176,18 @@ const breadcrumbItems = computed(() => [
       </div>
     </template>
 
-    <!-- Empty State -->
+    <!-- No Papers Available -->
     <div
       v-else
-      class="relative p-3 sm:p-4 md:p-6 bg-white rounded-lg sm:rounded-xl md:rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300"
+      class="relative p-6 sm:p-8 bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm"
     >
-      <div class="flex items-start gap-2 sm:gap-3 md:gap-4">
-        <div
-          class="p-2 sm:p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition-colors duration-200"
-        >
-          <AlertCircle class="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-amber-500" />
+      <div class="flex items-start gap-3 sm:gap-4">
+        <div class="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-amber-500/10 border border-amber-500/20">
+          <AlertCircle class="h-5 w-5 text-amber-500" />
         </div>
-        <div class="space-y-1 sm:space-y-2">
-          <h2 class="text-sm sm:text-base md:text-lg font-medium sm:font-semibold text-gray-900">No SPOT Papers Available Yet</h2>
-          <p class="text-2xs sm:text-xs md:text-sm text-gray-500 max-w-2xl">
+        <div class="space-y-1.5 sm:space-y-2">
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900">No SPOT Papers Available Yet</h2>
+          <p class="text-sm sm:text-base text-gray-600">
             We're currently adding SPOT papers for {{ concept.title }}. Please check back later.
           </p>
         </div>
@@ -188,3 +195,44 @@ const breadcrumbItems = computed(() => [
     </div>
   </div>
 </template>
+
+<style scoped>
+.spot-papers-container {
+  font-family: 'Inter', sans-serif;
+}
+
+.spot-papers-container h1,
+.spot-papers-container h2,
+.spot-papers-container h3 {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.spot-papers-container p {
+  font-weight: 400;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.spot-papers-container a,
+.spot-papers-container button,
+.spot-papers-container .transition-all {
+  transition: all 0.2s ease;
+}
+
+@media (hover: hover) {
+  .spot-papers-container .group:hover .group-hover\:text-\[\#55A9C4\] {
+    color: #55a9c4;
+  }
+  .spot-papers-container .group:hover .group-hover\:opacity-100 {
+    opacity: 1;
+  }
+  .spot-papers-container .group:hover .group-hover\:translate-x-1 {
+    transform: translateX(0.25rem);
+  }
+}
+</style>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+</style>
