@@ -2,13 +2,19 @@
   <div class="bg-background text-foreground font-sans min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-10">
       <!-- Enhanced Header Section -->
-      <div class="relative overflow-hidden p-6 sm:p-8 bg-card rounded-xl sm:rounded-2xl border border-border shadow-sm">
+      <div
+        class="relative overflow-hidden p-6 sm:p-8 bg-card rounded-xl sm:rounded-2xl border border-border shadow-sm"
+      >
         <!-- Theme color gradient accent -->
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#55A9C4]/80 to-[#55A9C4]/10"></div>
-        
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#55A9C4]/80 to-[#55A9C4]/10"
+        ></div>
+
         <div class="flex flex-col sm:flex-row gap-6 sm:items-center justify-between">
           <div class="flex items-center gap-4 sm:gap-5">
-            <div class="p-3 rounded-lg sm:rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 shrink-0">
+            <div
+              class="p-3 rounded-lg sm:rounded-xl bg-[#55A9C4]/10 border border-[#55A9C4]/20 shrink-0"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 sm:h-7 sm:w-7 text-[#55A9C4]"
@@ -41,7 +47,9 @@
       <!-- Main Content Grid -->
       <div class="lg:grid lg:grid-cols-12 lg:gap-8">
         <!-- Table of Contents (Desktop) -->
-        <aside class="hidden lg:block lg:col-span-3 sticky top-24 self-start max-h-[calc(100vh-140px)] overflow-y-auto toc-scrollbar">
+        <aside
+          class="hidden lg:block lg:col-span-3 sticky top-24 self-start max-h-[calc(100vh-140px)] overflow-y-auto toc-scrollbar"
+        >
           <div class="p-4 bg-muted/50 rounded-lg border border-border">
             <h2 class="text-base font-semibold mb-3 pb-2 border-b border-border text-foreground">
               On this page
@@ -69,7 +77,9 @@
         <article class="lg:col-span-9">
           <!-- Table of Contents (Mobile) -->
           <details class="lg:hidden bg-muted/50 p-4 rounded-lg mb-6 border border-border">
-            <summary class="text-base font-semibold cursor-pointer list-none flex justify-between items-center text-foreground">
+            <summary
+              class="text-base font-semibold cursor-pointer list-none flex justify-between items-center text-foreground"
+            >
               On this page
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +117,7 @@
           <!-- Article Content -->
           <div
             data-allow-mismatch="true"
-            class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical"
+            class="prose prose-base sm:prose-lg dark:prose-invert max-w-none font-sans prose-medical"
             v-if="
               props.article?.fullDataContent?.content || props.article?.full_data_content?.content
             "
@@ -116,7 +126,6 @@
             "
             @click="handleContentClick"
           ></div>
-
           <!-- Modal/Lightbox for displaying the image -->
           <div v-if="lightboxImageUrl" class="lightbox" @click.self="closeLightbox">
             <!-- The .self modifier on the click event ensures this only triggers
@@ -127,8 +136,11 @@
             <img :src="lightboxImageUrl" alt="Hint media" />
           </div>
 
-          <div v-else class="prose prose-lg dark:prose-invert max-w-none font-sans prose-medical">
-            <p>No content available for this article.</p>
+          <div
+            v-else
+            class="prose prose-base sm:prose-lg dark:prose-invert max-w-none font-sans prose-medical"
+          >
+            <p class="text-muted-foreground">No content available for this article.</p>
           </div>
         </article>
       </div>
@@ -137,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed, type Ref } from 'vue'
 import axios from 'axios' // Using axios for clean API requests
 import BreadcrumbTrail from '../../components/BreadcrumbTrail.vue'
 
@@ -148,7 +160,7 @@ const props = defineProps({
 // Define breadcrumb items with Learn/Library/Article structure
 const breadcrumbItems = computed(() => [
   { label: 'Library', href: '/library' },
-  { label: props.article?.article_name || 'Article' }
+  { label: props.article?.article_name || 'Article' },
 ])
 
 interface Header {
@@ -158,7 +170,8 @@ interface Header {
 }
 
 const activeHeaderId = ref<string | null>(null)
-const headers: Header[] = props.article?.fullDataContent?.headers || props.article?.full_data_content?.headers || []
+const headers: Header[] =
+  props.article?.fullDataContent?.headers || props.article?.full_data_content?.headers || []
 
 function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
   let timeout: ReturnType<typeof setTimeout> | null = null
@@ -171,16 +184,15 @@ function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
 function handleScroll() {
   const scrollOffset = window.scrollY + 100
   const headerElements = headers
-    .map(header => {
+    .map((header) => {
       const el = document.getElementById(header.id)
       return el ? { id: header.id, offsetTop: el.offsetTop } : null
     })
     .filter(Boolean)
-    .filter(el => el!.offsetTop <= scrollOffset) as { id: string, offsetTop: number }[]
+    .filter((el) => el!.offsetTop <= scrollOffset) as { id: string; offsetTop: number }[]
 
-  activeHeaderId.value = headerElements.length > 0 
-    ? headerElements[headerElements.length - 1].id 
-    : null
+  activeHeaderId.value =
+    headerElements.length > 0 ? headerElements[headerElements.length - 1].id : null
 }
 
 const debouncedScrollHandler = debounce(handleScroll, 50)
@@ -275,11 +287,11 @@ details[open] .details-arrow {
   --tw-prose-body: hsl(var(--foreground));
   --tw-prose-headings: hsl(var(--foreground));
   --tw-prose-bold: hsl(var(--foreground));
-  --tw-prose-links: #55A9C4;
+  --tw-prose-links: #55a9c4;
   --tw-prose-invert-body: hsl(var(--foreground));
   --tw-prose-invert-headings: hsl(var(--foreground));
   --tw-prose-invert-bold: hsl(var(--foreground));
-  --tw-prose-invert-links: #55A9C4;
+  --tw-prose-invert-links: #55a9c4;
 }
 
 .prose-medical h1,
@@ -294,7 +306,7 @@ details[open] .details-arrow {
 .prose-medical a {
   font-weight: 600;
   text-decoration: none;
-  color: #55A9C4 !important;
+  color: #55a9c4 !important;
   transition: background-color 0.2s ease;
   border-radius: 4px;
   padding: 1px 4px;
@@ -333,15 +345,15 @@ details[open] .details-arrow {
     font-size: 1rem;
     line-height: 1.75;
   }
-  
+
   .prose-medical h1 {
     font-size: 1.8em;
   }
-  
+
   .prose-medical h2 {
     font-size: 1.5em;
   }
-  
+
   .prose-medical table {
     font-size: 0.85em;
   }
@@ -351,41 +363,20 @@ details[open] .details-arrow {
   .prose-medical {
     font-size: 0.95rem;
   }
-  
+
   .prose-medical h1 {
     font-size: 1.6em;
   }
-  
+
   .prose-medical h2 {
     font-size: 1.35em;
   }
-  
+
   .prose-medical table {
     display: block;
     overflow-x: auto;
   }
 }
-/* image functionality css */
-/* A very basic lightbox style */
-.lightbox {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  cursor: pointer;
-}
-
-.lightbox img {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 4px;
-}
 
 /* --- NEW: Close button styles --- */
 .close-button {
@@ -461,6 +452,3 @@ details[open] .details-arrow {
   opacity: 1;
 }
 </style>
-=======
-</style>
-
