@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import BreadcrumbTrail from '../../components/BreadcrumbTrail.vue'
 
 // Define proper interfaces for props
 interface SubjectData {
@@ -50,15 +51,26 @@ function getIconForSubject(subjectName: string): string {
 
 // Check if we have subjects
 const hasSubjects = computed(() => props.subjects && props.subjects.length > 0)
+
+// Breadcrumbs data
+const breadcrumbs = [
+  { label: 'Dashboard', href: '/learn' },
+  { label: 'Library' }
+]
 </script>
 
 <template>
   <div class="bg-gray-50 min-h-screen">
     <div class="container mx-auto p-4 md:p-8">
+      <!-- Breadcrumb Trail -->
+      <div class="mb-4">
+        <BreadcrumbTrail :items="breadcrumbs" />
+      </div>
+
       <!-- Header Section -->
       <div class="text-center mb-8 md:mb-12 fade-in-down">
         <h1
-          class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600 pb-2"
+          class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#55A9C4] to-[#4098b8] pb-2"
         >
           Medical Library
         </h1>
@@ -81,12 +93,12 @@ const hasSubjects = computed(() => props.subjects && props.subjects.length > 0)
             class="group p-6 bg-white rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 border border-gray-200 transition-all duration-300 h-full flex flex-col items-center text-center"
           >
             <div
-              class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 text-indigo-500 transition-colors duration-300 group-hover:bg-indigo-500 group-hover:text-white mb-4"
+              class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-[#55A9C4]/20 text-[#55A9C4] transition-colors duration-300 group-hover:bg-[#55A9C4] group-hover:text-white mb-4"
               v-html="getIconForSubject(subject)"
             ></div>
 
             <h2
-              class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-indigo-600 break-words"
+              class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-[#55A9C4] break-words"
             >
               {{ subject }}
             </h2>

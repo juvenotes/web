@@ -21,61 +21,48 @@ const hasArticles = computed(() => props.articles.length > 0)
 </script>
 
 <template>
-  <div class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto p-4 md:p-8">
+  <div class="min-h-screen bg-white">
+    <div class="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <!-- Header Section -->
-      <div class="mb-8 md:mb-12 header-animation">
+      <div class="mb-12 header-animation">
         <!-- Back link -->
         <Link
           href="/library"
-          class="inline-flex items-center text-sm font-semibold text-gray-600 hover:text-blue-600 transition-colors duration-300 mb-4"
+          class="inline-flex items-center text-sm text-gray-600 hover:text-[#55A9C4] transition-colors mb-6"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 mr-2"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-              clip-rule="evenodd"
-            />
+          <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
           All Subjects
         </Link>
 
-        <!-- Title with gradient -->
-        <h1
-          class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 pb-4 border-b"
-        >
+        <!-- Title -->
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
           {{ subjectName }}
         </h1>
+        <div class="w-12 h-0.5 bg-[#55A9C4]"></div>
       </div>
 
       <!-- Article List -->
-      <div v-if="hasArticles" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-if="hasArticles" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div
           v-for="(article, index) in articles"
           :key="article.pk_id"
           class="article-card"
           :style="`--animation-order: ${index};`"
         >
-          <!-- Article card -->
           <a
             :href="`/library/article/${article.article_id}`"
             data-inertia="false"
-            class="block bg-white rounded-lg shadow-md p-6 h-full transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1"
+            class="group block p-6 bg-gray-50 hover:bg-white border border-gray-200 hover:border-[#55A9C4] rounded-lg transition-all duration-200 hover:shadow-md"
           >
-            <div class="flex items-start">
-              <!-- Icon -->
+            <div class="flex items-center space-x-3">
               <div class="flex-shrink-0">
                 <svg
-                  class="h-6 w-6 text-blue-500"
-                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-[#55A9C4]"
                   fill="none"
-                  viewBox="0 0 24 24"
                   stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
                   <path
                     stroke-linecap="round"
@@ -85,67 +72,57 @@ const hasArticles = computed(() => props.articles.length > 0)
                   />
                 </svg>
               </div>
-              <div class="ml-4">
-                <p class="text-lg font-semibold text-gray-800 group-hover:text-blue-700">
-                  {{ article.article_name }}
-                </p>
-              </div>
+              <h3 class="font-medium text-gray-900 group-hover:text-[#55A9C4] transition-colors">
+                {{ article.article_name }}
+              </h3>
             </div>
           </a>
         </div>
       </div>
 
       <!-- No Articles message -->
-      <div v-else class="text-center text-gray-500 mt-8 empty-state">
-        <div class="bg-white rounded-lg shadow-md p-10 max-w-lg mx-auto">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="mx-auto h-16 w-16 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-            />
-          </svg>
-          <h3 class="mt-4 text-xl font-semibold text-gray-700">No Articles Found</h3>
-          <p class="mt-2 text-base">There are no articles available for this subject yet.</p>
-          <p class="mt-1 text-base">Please check back later!</p>
-        </div>
+      <div v-else class="text-center py-16 empty-state">
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400 mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+          />
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No articles found</h3>
+        <p class="text-gray-600">There are no articles available for this subject yet.</p>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Animation classes moved from inline to CSS for better maintainability */
 .header-animation {
-  animation: fadeInDown 1s ease forwards;
+  animation: fadeIn 0.6s ease-out forwards;
 }
 
 .article-card {
-  animation: fadeInUp 0.5s ease forwards;
-  animation-delay: calc(var(--animation-order) * 100ms);
+  animation: fadeInUp 0.4s ease-out forwards;
+  animation-delay: calc(var(--animation-order) * 0.05s);
   opacity: 0;
 }
 
 .empty-state {
-  animation: fadeIn 1s ease forwards;
+  animation: fadeIn 0.8s ease-out forwards;
 }
 
-/* Animation keyframes */
-@keyframes fadeInDown {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -160,12 +137,10 @@ const hasArticles = computed(() => props.articles.length > 0)
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
