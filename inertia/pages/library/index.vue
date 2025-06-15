@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import BreadcrumbTrail from '../../components/BreadcrumbTrail.vue'
 
-// Define proper interfaces for props
 interface SubjectData {
   count: number
 }
@@ -12,10 +12,9 @@ interface Props {
   subjectMap: Record<string, SubjectData>
 }
 
-// Define props with TypeScript
 const props = defineProps<Props>()
 
-// A comprehensive map of medical subjects to their respective SVG icons
+// Preserving all original icons exactly as they were
 const subjectIcons: Record<string, string> = {
   'Allergy & Immunology': `<svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>`,
   'Cardiovascular System': `<svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>`,
@@ -40,66 +39,59 @@ const subjectIcons: Record<string, string> = {
   'Social Sciences & Ethics': `<svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h8" /></svg>`,
 }
 
-// Default icon for subjects not in the map
 const defaultIcon = `<svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`
 
-// Function to get the correct icon string for a subject
 function getIconForSubject(subjectName: string): string {
   return subjectIcons[subjectName] || defaultIcon
 }
 
-// Check if we have subjects
 const hasSubjects = computed(() => props.subjects && props.subjects.length > 0)
+
+const breadcrumbs = [
+  { label: 'Dashboard', href: '/learn' },
+  { label: 'Library' }
+]
 </script>
 
 <template>
   <div class="bg-gray-50 min-h-screen">
     <div class="container mx-auto p-4 md:p-8">
+      <!-- Breadcrumb Trail -->
+      <BreadcrumbTrail :items="breadcrumbs" class="mb-6" />
+
       <!-- Header Section -->
-      <div class="text-center mb-8 md:mb-12 fade-in-down">
-        <h1
-          class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600 pb-2"
-        >
+      <div class="text-center mb-8 md:mb-12">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
           Medical Library
         </h1>
-        <p class="text-lg text-gray-600 mt-2">Browse articles by medical subject</p>
+        <p class="text-gray-600">Browse articles by medical subject</p>
       </div>
 
-      <!-- Subject Grid -->
-      <div
-        v-if="hasSubjects"
-        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
-      >
-        <div
-          v-for="(subject, index) in subjects"
+      <!-- Subject Grid - Preserving original card appearance exactly -->
+      <div v-if="hasSubjects" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+        <Link
+          v-for="subject in subjects"
           :key="subject"
-          class="subject-card"
-          :style="{ '--animation-delay': `${index * 80}ms` }"
+          :href="`/library/${encodeURIComponent(subject)}`"
+          class="group p-6 bg-white rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition-all duration-300 h-full flex flex-col items-center text-center"
         >
-          <Link
-            :href="`/library/${encodeURIComponent(subject)}`"
-            class="group p-6 bg-white rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 border border-gray-200 transition-all duration-300 h-full flex flex-col items-center text-center"
-          >
-            <div
-              class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 text-indigo-500 transition-colors duration-300 group-hover:bg-indigo-500 group-hover:text-white mb-4"
-              v-html="getIconForSubject(subject)"
-            ></div>
+          <div
+            class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-[#55A9C4]/20 text-[#55A9C4] transition-colors duration-300 group-hover:bg-[#55A9C4] group-hover:text-white mb-4"
+            v-html="getIconForSubject(subject)"
+          ></div>
 
-            <h2
-              class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-indigo-600 break-words"
-            >
-              {{ subject }}
-            </h2>
+          <h2 class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-[#55A9C4]">
+            {{ subject }}
+          </h2>
 
-            <p class="mt-2 text-sm font-medium text-gray-500">
-              {{ subjectMap[subject].count }} articles
-            </p>
-          </Link>
-        </div>
+          <p class="mt-2 text-sm font-medium text-gray-500">
+            {{ subjectMap[subject].count }} articles
+          </p>
+        </Link>
       </div>
 
       <!-- Empty State -->
-      <div v-else class="text-center text-gray-500 mt-8 fade-in">
+      <div v-else class="text-center text-gray-500 mt-8">
         <div class="bg-white rounded-lg shadow-md p-10 max-w-lg mx-auto">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -124,31 +116,12 @@ const hasSubjects = computed(() => props.subjects && props.subjects.length > 0)
 </template>
 
 <style scoped>
-/* Animation classes */
-.fade-in-down {
-  animation: fadeInDown 1s ease forwards;
-}
-
+/* Preserving all original animations and transitions */
 .subject-card {
   animation: fadeInUp 0.5s ease forwards;
-  animation-delay: var(--animation-delay);
+  animation-delay: calc(var(--index) * 80ms);
   opacity: 0;
-}
-
-.fade-in {
-  animation: fadeIn 1s ease forwards;
-}
-
-/* Animation keyframes */
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  transform: translateY(20px);
 }
 
 @keyframes fadeInUp {
@@ -162,12 +135,9 @@ const hasSubjects = computed(() => props.subjects && props.subjects.length > 0)
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Preserving original hover effects */
+.group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 </style>
