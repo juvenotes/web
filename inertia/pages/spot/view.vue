@@ -189,14 +189,13 @@ const continueFromLastQuestion = () => {
             <ArrowRight class="h-4 w-4" />
             Continue where you left off
           </Button>
-
           <Link
             v-if="canManage"
-            :href="`/manage/spot/${concept.slug}/${paper.slug}/edit`"
+            :href="`/manage/spot/${concept.slug}/${paper.slug}`"
             class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#55A9C4] hover:bg-[#55A9C4]/90 text-white border border-[#55A9C4] text-sm font-medium hover:shadow-md transition-all duration-200 group"
           >
             <Settings class="h-4 w-4 transition-transform duration-500 group-hover:rotate-180" />
-            <span>Edit Paper</span>
+            <span>Edit Spot</span>
           </Link>
         </div>
       </div>
