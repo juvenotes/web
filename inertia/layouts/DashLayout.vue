@@ -27,15 +27,15 @@ defineProps<{
 
 const logoPath = '/images/logo.webp'
 const isMenuOpen = ref(false)
-const isSidebarCollapsed = ref(true) // Keep this as true initially to avoid hydration mismatch
-const isSearchOpen = ref(false) // State to manage search modal visibility
+const isSidebarCollapsed = ref(true)
+const isSearchOpen = ref(false)
 
 const sidebarLinks = [
   { name: 'Dashboard', href: '/learn', icon: Home },
   { name: 'Library', href: '/library', icon: Library },
   { name: 'Concepts', href: '/concepts', icon: BookOpen },
   { name: 'Papers', href: '/papers', icon: FileText },
-  { name: 'Osces', href: '/osce', icon: Stethoscope },
+  { name: 'OSCE', href: '/osce', icon: Stethoscope },
   { name: 'Spot', href: '/spot', icon: Pin },
 ]
 
@@ -47,39 +47,26 @@ const closeOnClickOutside = (event: MouseEvent) => {
 }
 
 const handleResize = () => {
-  // Only set initial state on first load
   if (window.innerWidth >= 1024) {
-    isSidebarCollapsed.value = false // Set sidebar to open on large screens
+    isSidebarCollapsed.value = false
   } else {
-    isSidebarCollapsed.value = true // Collapse on small screens
+    isSidebarCollapsed.value = true
   }
 }
 
-// Function to conditionally collapse sidebar on mobile
 const handleSidebarLinkClick = () => {
   if (window.innerWidth < 1024) {
     isSidebarCollapsed.value = true
   }
-  // On desktop, do nothing - keep sidebar open
 }
 
 onMounted(() => {
   document.addEventListener('click', closeOnClickOutside)
-})
+  handleResize()
 
-onUnmounted(() => {
-  document.removeEventListener('click', closeOnClickOutside)
-})
-
-onMounted(() => {
-  handleResize() // Set initial state based on screen size - this will override the default true state
-
-  // Add resize listener but with a modified function that doesn't change the state
-  // once the user has manually toggled it
   let userHasToggled = false
 
   window.addEventListener('resize', () => {
-    // Only auto-adjust on resize if the user hasn't manually toggled the sidebar
     if (!userHasToggled) {
       if (window.innerWidth >= 1024) {
         isSidebarCollapsed.value = false
@@ -107,89 +94,81 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  document.removeEventListener('click', closeOnClickOutside)
   window.removeEventListener('resize', handleResize)
 })
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50">
-    <!-- Navigation - modern flat design with subtle shadow -->
-    <nav
-      class="sticky top-0 z-[50] w-screen bg-white border-b border-gray-100 shadow-sm backdrop-blur-md"
-    >
-      <div class="w-full px-4 sm:px-6">
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm">
+      <div class="px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
-          <!-- Left section - Logo only, no text -->
-          <div class="flex items-center gap-4 w-[200px]">
+          <!-- Left Section -->
+          <div class="flex items-center gap-4 min-w-[160px]">
             <button
-              class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-primary transition-all duration-200"
+              class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors"
               @click="isSidebarCollapsed = !isSidebarCollapsed"
             >
               <MenuIcon class="h-5 w-5" />
             </button>
             <Link href="/learn" class="flex items-center">
-              <img :src="logoPath" alt="Logo" class="h-20 w-auto" />
+              <img :src="logoPath" alt="Logo" class="h-9 w-auto" />
             </Link>
           </div>
 
-          <!-- Center search - modern rounded style -->
-          <div class="hidden md:flex flex-1 mx-auto max-w-2xl">
+          <!-- Center Search -->
+          <div class="hidden md:flex flex-1 mx-4 max-w-xl">
             <Search />
           </div>
           <button
-            class="block md:hidden p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 ease-in-out text-gray-600"
+            class="md:hidden p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-gray-500"
             @click="isSearchOpen = true"
           >
             <SearchIcon class="h-5 w-5" />
           </button>
 
-          <!-- User menu with modern avatar button -->
-          <div class="relative user-menu shrink-0">
+          <!-- User Menu -->
+          <div class="relative user-menu ml-4">
             <button
               @click="isMenuOpen = !isMenuOpen"
-              class="h-9 w-9 rounded-full bg-gradient-to-br from-[#55A9C4]/90 to-[#4a91aa] flex items-center justify-center hover:shadow-md transition-all duration-200 ease-in-out"
+              class="h-8 w-8 rounded-full bg-gradient-to-br from-[#55A9C4] to-[#4a91aa] flex items-center justify-center hover:shadow-sm transition-shadow"
             >
               <User class="h-4 w-4 text-white" />
             </button>
 
-            <!-- Modern user menu dropdown with sharper design -->
             <div
               v-show="isMenuOpen"
-              class="absolute right-0 mt-3 w-64 rounded-xl overflow-hidden shadow-lg bg-white border border-gray-100 py-0 z-[70]"
+              class="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white border border-gray-100 py-1 z-50"
             >
-              <!-- User Info Section -->
-              <div class="px-5 py-4 bg-gradient-to-r from-[#55A9C4]/10 to-[#4a91aa]/5">
-                <p class="text-sm font-medium text-gray-800">{{ user?.email }}</p>
-                <p class="text-xs text-gray-500 mt-1">{{ user?.fullName }}</p>
+              <div class="px-4 py-3 border-b border-gray-100">
+                <p class="text-sm font-medium text-gray-900">{{ user?.fullName }}</p>
+                <p class="text-xs text-gray-500 truncate">{{ user?.email }}</p>
               </div>
-
-              <!-- Settings Links -->
-              <div class="py-2">
+              <div class="py-1">
                 <Link
                   href="/settings/account"
-                  class="w-full px-5 py-3 text-sm text-left hover:bg-gray-50 flex items-center transition-colors duration-200"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                 >
-                  <Settings class="mr-3 h-4 w-4 text-[#55A9C4]" />
-                  Account Settings
+                  <Settings class="mr-3 h-4 w-4 text-gray-500" />
+                  Account
                 </Link>
-
                 <Link
                   href="/settings/profile"
-                  class="w-full px-5 py-3 text-sm text-left hover:bg-gray-50 flex items-center transition-colors duration-200"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                 >
-                  <User class="mr-3 h-4 w-4 text-[#55A9C4]" />
-                  Profile Settings
+                  <User class="mr-3 h-4 w-4 text-gray-500" />
+                  Profile
                 </Link>
               </div>
-
-              <!-- Logout Section -->
-              <div class="border-t border-gray-100 py-2">
+              <div class="py-1 border-t border-gray-100">
                 <button
-                  class="w-full px-5 py-3 text-sm text-left text-red-500 hover:bg-gray-50 flex items-center transition-colors duration-200"
+                  class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
                   @click="$inertia.post('/logout')"
                 >
                   <LogOut class="mr-3 h-4 w-4" />
-                  Logout
+                  Sign out
                 </button>
               </div>
             </div>
@@ -198,129 +177,98 @@ onUnmounted(() => {
       </div>
     </nav>
 
-    <!-- Modern Search Modal with enhanced aesthetics -->
+    <!-- Search Modal -->
     <div
       v-show="isSearchOpen"
-      class="fixed inset-0 z-[90] bg-black/40 backdrop-blur-sm flex items-center justify-center px-4"
+      class="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4"
       @click.self="isSearchOpen = false"
     >
-      <div
-        class="w-full max-w-lg p-6 bg-white rounded-xl shadow-xl relative border border-gray-100"
-      >
+      <div class="w-full max-w-md bg-white rounded-xl shadow-xl p-6 relative">
         <button
           @click="isSearchOpen = false"
-          class="absolute top-4 right-4 h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition-all duration-200"
+          class="absolute top-5 right-5 p-1 rounded-full hover:bg-gray-50"
         >
-          <ChevronRight class="h-4 w-4" />
+          <ChevronRight class="h-5 w-5 text-gray-500" />
         </button>
         <Search />
       </div>
     </div>
 
-    <div class="flex-1 flex">
-      <!-- Backdrop for sidebar on mobile -->
+    <!-- Main Content -->
+    <div class="flex flex-1">
+      <!-- Sidebar Backdrop -->
       <div
         v-show="!isSidebarCollapsed"
-        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[25] lg:hidden"
+        class="fixed inset-0 bg-black/20 lg:hidden z-40"
         @click="isSidebarCollapsed = true"
       />
 
-      <!-- Modern sidebar with card-style design -->
+      <!-- Sidebar (original behavior preserved) -->
       <aside
-        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col bg-white z-[30] -translate-x-full lg:translate-x-0 shadow-lg lg:shadow-sm border-r border-gray-100"
-        :class="[isSidebarCollapsed ? 'w-16' : 'w-72', !isSidebarCollapsed && 'translate-x-0']"
+        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col bg-white z-40 -translate-x-full lg:translate-x-0 shadow-lg lg:shadow-sm border-r border-gray-100"
+        :class="[isSidebarCollapsed ? 'w-16' : 'w-64', !isSidebarCollapsed && 'translate-x-0']"
         style="max-height: calc(100vh - 4rem)"
       >
         <!-- Desktop Toggle Button -->
         <button
-          class="hidden lg:block absolute -right-3 top-6 bg-white rounded-full p-1 border border-gray-200 shadow-md hover:shadow-lg hover:border-[#55A9C4]/30 transition-all duration-200 ease-in-out z-50"
+          class="hidden lg:block absolute -right-3 top-6 bg-white rounded-full p-1 border border-gray-200 shadow-sm hover:shadow-md z-50"
           @click="isSidebarCollapsed = !isSidebarCollapsed"
         >
           <ChevronLeft v-if="!isSidebarCollapsed" class="h-4 w-4 text-gray-600" />
           <ChevronRight v-else class="h-4 w-4 text-gray-600" />
         </button>
 
-        <!-- Modern sidebar navigation with active indicators -->
-        <div class="px-3 pt-6 pb-2 mb-2 border-b border-gray-100">
-          <div class="px-3 flex items-center mb-6" v-if="!isSidebarCollapsed">
-            <span class="text-sm font-medium text-gray-400 uppercase tracking-wider"
-              >Main Menu</span
-            >
+        <div class="h-full flex flex-col">
+          <div class="px-4 pt-6 pb-2">
+            <div class="px-3 mb-6" v-if="!isSidebarCollapsed">
+              <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Menu</span>
+            </div>
           </div>
+
+          <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
+            <Link
+              v-for="link in sidebarLinks"
+              :key="link.name"
+              :href="link.href"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#55A9C4]/5 text-gray-700 hover:text-[#55A9C4] transition-colors"
+              @click="handleSidebarLinkClick"
+            >
+              <div class="w-8 h-8 flex items-center justify-center rounded-lg">
+                <component
+                  :is="link.icon"
+                  class="h-5 w-5 text-gray-500 group-hover:text-[#55A9C4]"
+                />
+              </div>
+              <span
+                :class="[
+                  'text-sm font-medium whitespace-nowrap transition-opacity duration-300',
+                  isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100 w-auto',
+                ]"
+              >
+                {{ link.name }}
+              </span>
+            </Link>
+          </nav>
         </div>
-
-        <nav class="px-3 space-y-1 flex-1 overflow-y-auto">
-          <Link
-            v-for="link in sidebarLinks"
-            :key="link.name"
-            :href="link.href"
-            class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#55A9C4]/10 transition-colors duration-200 text-gray-700 hover:text-[#55A9C4] group"
-            @click="handleSidebarLinkClick"
-          >
-            <div
-              class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-[#55A9C4]/10 transition-colors"
-            >
-              <component
-                :is="link.icon"
-                class="h-5 w-5 shrink-0 text-gray-500 group-hover:text-[#55A9C4] transition-colors"
-              />
-            </div>
-            <span
-              :class="[
-                'transition-opacity duration-300 whitespace-nowrap text-sm font-medium',
-                isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100 w-auto',
-              ]"
-            >
-              {{ link.name }}
-            </span>
-          </Link>
-        </nav>
-
-        <!-- Logout positioned at bottom of sidebar -->
-        <!-- <div class="p-3 border-t border-gray-100">
-          <button
-            @click="$inertia.post('/logout')"
-            class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-red-50 transition-colors duration-200 w-full text-gray-700 hover:text-red-500 group"
-          >
-            <div
-              class="w-8 h-8 flex items-center justify-center rounded-lg bg-white group-hover:bg-red-50 transition-colors"
-            >
-              <LogOut
-                class="h-4 w-4 shrink-0 text-gray-500 group-hover:text-red-500 transition-colors"
-              />
-            </div>
-            <span
-              :class="[
-                'transition-opacity duration-300 whitespace-nowrap text-sm font-medium',
-                isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100 w-auto',
-              ]"
-            >
-              Log out
-            </span>
-          </button>
-        </div> -->
       </aside>
 
-      <!-- Main content with subtle pattern background -->
+      <!-- Main Content Area -->
       <main
-        class="flex-1 p-6 md:p-8 overflow-auto bg-gray-50 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cg fill=%27%23000000%27 fill-opacity=%270.03%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] relative z-[0]"
+        class="flex-1 p-6 lg:p-8 overflow-auto bg-gray-50 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cg fill=%27%23000000%27 fill-opacity=%270.03%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"
       >
-        <SurveyBanner />
         <slot />
       </main>
     </div>
 
-    <!-- Minimal compact footer with social icons -->
-    <footer class="w-screen border-t border-gray-200 bg-white">
-      <div class="container mx-auto px-6 py-3">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <!-- Logo only -->
-          <div class="flex items-center">
-            <img :src="logoPath" alt="Logo" class="h-9 w-auto" />
-            <span class="text-xs text-gray-400 ml-4">© 2025</span>
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 bg-white py-4">
+      <div class="px-6 mx-auto max-w-7xl">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <img :src="logoPath" alt="Logo" class="h-6 w-auto" />
+            <span class="text-xs text-gray-400">© {{ new Date().getFullYear() }}</span>
           </div>
 
-          <!-- Centered links -->
           <div class="flex items-center gap-6">
             <Link
               href="/terms"
@@ -343,39 +291,54 @@ onUnmounted(() => {
             </a>
           </div>
 
-          <!-- Social icons only, no labels -->
           <div class="flex items-center gap-3">
             <a
               href="https://x.com/juvenotes"
-              class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
-              aria-label="Twitter"
+              class="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
             >
-              <Twitter class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
+              <Twitter class="h-4 w-4 text-gray-500 hover:text-[#55A9C4]" />
             </a>
             <a
               href="https://www.instagram.com/juvenotes/"
-              class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
-              aria-label="Instagram"
+              class="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
             >
-              <Instagram class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
+              <Instagram class="h-4 w-4 text-gray-500 hover:text-[#55A9C4]" />
             </a>
             <a
               href="https://www.linkedin.com/company/juvenotes"
-              class="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 group"
-              aria-label="LinkedIn"
+              class="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
             >
-              <Linkedin class="h-4 w-4 text-gray-500 group-hover:text-[#55A9C4] transition-all" />
+              <Linkedin class="h-4 w-4 text-gray-500 hover:text-[#55A9C4]" />
             </a>
           </div>
         </div>
       </div>
     </footer>
-    <ToastManager :messages="messages" />
   </div>
 </template>
+
+<style scoped>
+/* Original sidebar behavior styles */
+aside {
+  transition: transform 0.3s ease, width 0.3s ease;
+}
+
+/* Accessibility improvements */
+button:focus {
+  outline: 2px solid #55A9C4;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for other elements */
+.transition-colors {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+</style>
