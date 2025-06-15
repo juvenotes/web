@@ -52,6 +52,7 @@ const ManageConceptSectionController = () =>
   import('#controllers/manage/concepts/manage_concept_section_controller')
 const OnboardingController = () => import('#controllers/onboarding_controller')
 const MedicalArticleController = () => import('#controllers/medical_articles_controller')
+const MediaAssetsController = () => import('#controllers/media_assets_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -532,3 +533,6 @@ router.delete('/medical-articles/:id', [MedicalArticleController, 'destroy'])
 router.get('/library', [MedicalArticleController, 'library'])
 router.get('/library/article/:article_id', [MedicalArticleController, 'showByArticleId'])
 router.get('/library/:subject', [MedicalArticleController, 'showBySubject'])
+
+// Media Assets
+router.get('/media/:hintId', [MediaAssetsController, 'show'])
