@@ -2,7 +2,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import Search from '~/components/Search.vue'
-import ThemeSwitcher from '~/components/ui/theme/ThemeSwitcher.vue'
+import { ThemeProvider, ThemeSwitcher } from '~/components/ui/theme'
+import ToastManager from '~/components/ToastManager.vue'
 import {
   User,
   Settings,
@@ -101,7 +102,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-background">
+  <ThemeProvider default-theme="system" storage-key="juvenotes-theme">
+    <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-background">
     <!-- Navigation Bar -->
     <nav class="sticky top-0 z-50 w-full bg-white border-b border-gray-100 dark:bg-background dark:border-border shadow-sm">
       <div class="px-4 sm:px-6 lg:px-8">
@@ -327,7 +329,9 @@ onUnmounted(() => {
         </div>
       </div>
     </footer>
+    <ToastManager :messages="messages" />
   </div>
+  </ThemeProvider>
 </template>
 
 <style scoped>
