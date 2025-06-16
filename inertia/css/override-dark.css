@@ -40,9 +40,29 @@
 [data-tour="library"],
 [data-tour="osce"],
 [data-tour="spot"] {
-  min-height: 140px !important;
+  min-height: auto !important; /* Remove min-height to let content dictate the height */
   height: auto !important;
   padding: 1rem 1.25rem !important; /* Reduced from p-6 (1.5rem) */
+}
+
+/* Fix the flex structure causing the extra height */
+[data-tour="papers"] .relative.space-y-4,
+[data-tour="concepts"] .relative.space-y-4,
+[data-tour="library"] .relative.space-y-4,
+[data-tour="osce"] .relative.space-y-4,
+[data-tour="spot"] .relative.space-y-4 {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  display: block !important; /* Override the flex display */
+}
+
+/* Fix the specific inner structure that causes spacing issues */
+[data-tour="papers"] .relative.space-y-4 .flex,
+[data-tour="concepts"] .relative.space-y-4 .flex,
+[data-tour="library"] .relative.space-y-4 .flex,
+[data-tour="osce"] .relative.space-y-4 .flex,
+[data-tour="spot"] .relative.space-y-4 .flex {
+  align-items: center !important; /* Better vertical alignment */
 }
 
 /* Dark mode overrides for dashboard cards */
@@ -762,4 +782,33 @@ body.dark,
 /* Dashboard stat cards and other colored elements */
 .dark .rounded-xl.bg-gradient-to-br {
   background-image: none !important;
+}
+
+/* Remove space-y-4 effects in dashboard cards */
+[data-tour] .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Position the hover text better for compact cards */
+[data-tour] .mt-4.flex.items-center.gap-2 {
+  margin-top: 0.5rem !important; /* Reduce from 1rem (mt-4) to 0.5rem */
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+/* Override the flex behavior completely */
+.dark [data-tour="papers"],
+.dark [data-tour="concepts"],
+.dark [data-tour="library"],
+.dark [data-tour="osce"],
+.dark [data-tour="spot"] {
+  display: block !important; /* Override the flex display */
+}
+
+/* Fix flex-1 behavior */
+[data-tour] .flex-1 {
+  flex: none !important;
 }
