@@ -184,6 +184,28 @@ onMounted(() => {
     updateTheme(theme.value)
     console.log('Theme updated to:', theme.value, 'system resolved to:', getSystemTheme())
     
+    // Create a MutationObserver to ensure dark mode is consistently applied after DOM changes
+    if (typeof MutationObserver !== 'undefined') {
+      const observer = new MutationObserver((mutations) => {
+        // If the current theme is dark, reapply dark mode styles to ensure consistency
+        if (theme.value === 'dark' || (theme.value === 'system' && getSystemTheme() === 'dark')) {
+          // Short delay to ensure styles apply after DOM updates
+          setTimeout(() => {
+            updateTheme(theme.value);
+            console.log('DOM changed, reapplying dark mode styles');
+          }, 10);
+        }
+      });
+      
+      // Start observing the document with the configured parameters
+      observer.observe(document.body, { 
+        childList: true,     // Watch for changes in the direct children
+        subtree: true,       // Watch the entire subtree
+        attributes: false,    // Don't watch attribute changes (to avoid infinite loops)
+        characterData: false  // Don't watch text content changes
+      });
+    }
+    
     // Listen for system theme changes
     try {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
