@@ -352,7 +352,7 @@ const getLastEditDate = computed(() => {
               >
                 Question {{ index + 1 }}
               </span>
-              <p class="text-gray-900 text-sm sm:text-base leading-relaxed">
+              <p class="text-gray-900 dark:text-foreground text-sm sm:text-base leading-relaxed">
                 {{ question.questionText }}
               </p>
             </div>
