@@ -144,10 +144,10 @@ onUnmounted(() => {
                 <User class="h-4 w-4 text-white" />
               </button>
 
-            <div
-              v-show="isMenuOpen"
-              class="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white border border-gray-100 py-1 z-50"
-            >
+              <div
+                v-show="isMenuOpen"
+                class="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white border border-gray-100 py-1 z-50"
+              >
               <div class="px-4 py-3 border-b border-gray-100">
                 <p class="text-sm font-medium text-gray-900">{{ user?.fullName }}</p>
                 <p class="text-xs text-gray-500 truncate">{{ user?.email }}</p>
@@ -178,7 +178,8 @@ onUnmounted(() => {
                 </button>
               </div>
             </div>
-          </div>
+            </div> <!-- close relative user-menu div -->
+          </div> <!-- close flex items-center gap-2 div -->
         </div>
       </div>
     </nav>
