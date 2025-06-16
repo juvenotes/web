@@ -18,12 +18,31 @@
   background-color: hsl(var(--card)) !important;
 }
 
+/* Additional aggressive targeting - catch any remaining gray backgrounds */
+.dark * > .bg-white,
+.dark * > .bg-gray-50,
+.dark * > .bg-gray-100,
+.dark * > [class*="bg-gray-"],
+.dark * > [class*="bg-white"],
+.dark * > [class*="bg-slate-"] {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
 /* Dashboard and common component backgrounds - preserve original sizing and spacing */
 .dark .dashboard-content .rounded-2xl,
 .dark .dashboard-content .rounded-xl,
 .dark .rounded-xl,
 .dark .rounded-2xl {
+  background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
+}
+
+/* Extra specificity for dashboard elements */
+.dark .dashboard-content > div,
+.dark .dashboard-content > div > div,
+.dark .dashboard-content > div > div.grid > div {
+  background-color: transparent !important;
 }
 
 /* Dashboard cards consistency - preserve original sizing but ensure uniform appearance */
