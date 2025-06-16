@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dark mode overrides must come after Tailwind loads but before our theme variables */
+@import './override-dark.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -90,6 +93,43 @@
   }
 
   body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+
+  /* Ensure proper dark mode for everything */
+  .dark body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Dark mode overrides for hardcoded backgrounds */
+@layer utilities {
+  .dark .bg-white,
+  .dark [class*="bg-white"],
+  .dark div[style*="background-color: white"],
+  .dark div[style*="background-color: #fff"],
+  .dark div[style*="background-color: #ffffff"] {
+    background-color: hsl(var(--card)) !important;
+  }
+
+  .dark .border,
+  .dark [class*="border"] {
+    border-color: hsl(var(--border)) !important;
+  }
+
+  .dark div[style*="background-color: rgba(255, 255, 255"],
+  .dark div[style*="background-color: rgba(249, 250, 251"] {
+    background-color: hsl(var(--background)) !important;
+  }
+  
+  /* Override hardcoded text colors in dark mode */
+  .dark [class*="text-gray-"],
+  .dark [class*="text-slate-"] {
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  /* Handle shadows better in dark mode */
+  .dark [class*="shadow"] {
+    --tw-shadow-color: rgba(0, 0, 0, 0.25) !important;
   }
 }

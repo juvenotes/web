@@ -32,7 +32,52 @@ export function initializeTheme() {
     // Apply the theme
     const theme = getTheme()
     const resolvedTheme = theme === 'system' ? getSystemTheme() : theme
+    
+    // Remove any existing theme classes first
+    document.documentElement.classList.remove('light', 'dark')
+    if (document.body) {
+      document.body.classList.remove('light', 'dark')
+    }
+    
+    // Add to both document element and body for maximum compatibility
     document.documentElement.classList.add(resolvedTheme)
+    if (document.body) {
+      document.body.classList.add(resolvedTheme)
+      // Also set color-scheme to improve native element styling
+      document.body.style.colorScheme = resolvedTheme
+    }
+    
+    // Ensure the class is applied to the body when it's available
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.remove('light', 'dark')
+        document.body.classList.add(resolvedTheme)
+        document.body.style.colorScheme = resolvedTheme
+      })
+    }
+    
+    // Create a style element to force dark mode styles
+    if (resolvedTheme === 'dark') {
+      const styleEl = document.createElement('style')
+      styleEl.id = 'force-dark-mode'
+      styleEl.textContent = `
+        [class*="bg-white"], .bg-white, .bg-gray-50, .bg-slate-50 {
+          background-color: hsl(var(--card)) !important;
+        }
+        [class*="text-gray-900"], [class*="text-gray-800"], .text-gray-900, .text-gray-800 {
+          color: hsl(var(--foreground)) !important;
+        }
+        [class*="text-gray-"], [class*="text-slate-"], .text-gray-700, .text-gray-600, .text-gray-500 {
+          color: hsl(var(--muted-foreground)) !important;
+        }
+      `
+      document.head.appendChild(styleEl)
+    } else {
+      // Remove the style if it exists
+      const styleEl = document.getElementById('force-dark-mode')
+      if (styleEl) styleEl.remove()
+    }
+    
     console.log('Theme initialized to:', resolvedTheme)
   } catch (e) {
     console.error('Error initializing theme:', e)
