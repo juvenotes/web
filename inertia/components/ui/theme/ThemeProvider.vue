@@ -56,6 +56,8 @@ const updateTheme = (newTheme: Theme) => {
       document.body.classList.add(resolvedTheme)
       // Also set color-scheme to improve native element styling
       document.body.style.colorScheme = resolvedTheme
+      // Add a data-theme attribute for components that might need it
+      document.body.setAttribute('data-theme', resolvedTheme)
     }
     
     // Handle the dynamic style element for forcing dark mode

@@ -108,39 +108,40 @@ defineOptions({ layout: DashLayout })
     <!-- Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       <!-- Past Papers -->
-      <Link href="/papers" preserve-scroll preserve-state
-        class="group relative overflow-hidden rounded-2xl bg-card p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-border hover:border-accent/30"
+      <div
+        data-tour="papers"
+        @click="$inertia.visit('/papers')"
+        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
       >
-        <!-- Decorative elements -->
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        ></div>
-        <div
-          class="absolute top-0 right-0 w-40 h-40 bg-accent/5 rounded-full -translate-y-20 translate-x-20 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-300"
-        ></div>
-
-        <div class="relative z-10">
-          <div
-            class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent"
-          >
-            <FileText class="h-6 w-6" />
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-foreground">Past Papers</h3>
-            <p class="text-sm text-muted-foreground mt-1 font-medium">Practice with previous exams</p>
-          </div>
-          <div class="mt-6 flex items-center text-primary">
-            <span class="text-sm font-medium">View papers</span>
-            <ChevronRight class="ml-1 h-4 w-4" />
+        <div class="relative space-y-4 z-10 animate-fade-in">
+          <div class="flex items-start gap-4">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
+            >
+              <FileText class="h-6 w-6 text-[#55A9C4]" />
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-900">Past Papers</h3>
+              <p class="text-sm text-gray-600 mt-1 font-medium">
+                Practice with previous exams
+              </p>
+              
+              <div
+                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+              >
+                <span class="text-xs text-[#55A9C4] font-semibold">View papers</span>
+                <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
+              </div>
+            </div>
           </div>
         </div>
-      </Link>
+      </div>
 
       <!-- Concepts Card -->
       <div
         data-tour="concepts"
         @click="$inertia.visit('/concepts')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100"
+        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">

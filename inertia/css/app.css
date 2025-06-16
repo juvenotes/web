@@ -72,12 +72,21 @@
     --secondary-foreground: 210 40% 98%;
 
     --accent: 196 80% 65%;
-    --accent-foreground: 222 47% 11%;
+    --accent-foreground: 222.2 47% 11%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
     --ring: 212.7 26.8% 83.9%;
+    
+    --success: 142 72% 29%;
+    --success-foreground: 210 40% 98%;
+    
+    --warning: 35 92% 65%;
+    --warning-foreground: 210 40% 98%;
+    
+    --info: 196 80% 70%;
+    --info-foreground: 222 47% 11%;
 
     --chart-1: 220 80% 60%;
     --chart-2: 160 70% 55%;
@@ -131,5 +140,33 @@
   /* Handle shadows better in dark mode */
   .dark [class*="shadow"] {
     --tw-shadow-color: rgba(0, 0, 0, 0.25) !important;
+  }
+}
+
+/* Ensure consistent dashboard card sizing in both light and dark mode */
+@layer utilities {
+  /* Dashboard card consistency */
+  [data-tour="papers"],
+  [data-tour="concepts"],
+  [data-tour="library"],
+  [data-tour="osce"],
+  [data-tour="spot"] {
+    min-height: 190px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-tour] > .relative.space-y-4 {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-tour] .flex-1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
   }
 }
