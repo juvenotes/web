@@ -28,7 +28,7 @@ watchEffect(async () => {
 })
 </script>
 <template>
-  <div class="prose dark:prose-invert max-w-none notion-like" v-html="html" />
+  <div class="prose dark:prose-invert max-w-none notion-like dark:text-foreground" v-html="html" />
 </template>
 
 <style>
