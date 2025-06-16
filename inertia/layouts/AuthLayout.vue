@@ -8,7 +8,7 @@ const logoPath = '/images/logo.webp'
 </script>
 
 <template>
-  <div>
+  <div class="bg-background text-foreground min-h-screen">
     <header>
       <nav class="flex items-center justify-between p-6 lg:px-8">
         <div class="flex lg:flex-1">
@@ -18,10 +18,10 @@ const logoPath = '/images/logo.webp'
           </Link>
         </div>
         <!-- <div class="flex flex-1 justify-end gap-4">
-          <Link href="/register" class="text-sm font-semibold leading-6 text-slate-900">
+          <Link href="/register" class="text-sm font-semibold leading-6">
             Register
           </Link>
-          <Link href="/login" class="text-sm font-semibold leading-6 text-slate-900"> Login </Link>
+          <Link href="/login" class="text-sm font-semibold leading-6"> Login </Link>
         </div> -->
       </nav>
     </header>
@@ -30,7 +30,7 @@ const logoPath = '/images/logo.webp'
         <slot />
       </div>
     </div>
-    <footer class="w-screen border-t bg-background/95">
+    <footer class="w-screen border-t border-border bg-background/95">
       <div class="container mx-auto px-4 sm:px-6 py-2">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
           <!-- Company Info -->

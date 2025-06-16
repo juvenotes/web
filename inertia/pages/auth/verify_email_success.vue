@@ -17,9 +17,9 @@ onMounted(() => {
   <AppHead title="Email Verified" description="Your email has been verified" />
   <div class="min-h-[80vh] flex items-center justify-center px-4">
     <div class="w-full max-w-md text-center space-y-6">
-      <div class="bg-white rounded-lg shadow p-8 space-y-4">
+      <div class="bg-card rounded-lg shadow p-8 space-y-4">
         <div
-          class="text-green-500 mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-green-50"
+          class="text-green-500 mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-green-500/10"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

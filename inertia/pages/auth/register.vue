@@ -24,10 +24,10 @@ const handleSubmit = () => {
   <div class="min-h-[80vh] flex items-center justify-center px-4">
     <div class="w-full max-w-md">
       <!-- Main Card -->
-      <div class="bg-white rounded-lg shadow p-8">
+      <div class="bg-card rounded-lg shadow p-8">
         <!-- Header -->
         <div class="text-center mb-8">
-          <img src="/public/images/logo.webp" alt="Juvenotes" class="h-10 mx-auto mb-6" />
+          <img src="/images/logo.webp" alt="Juvenotes" class="h-10 mx-auto mb-6" />
           <h1 class="text-xl font-medium mb-2">Create your account</h1>
           <p class="text-sm text-muted-foreground">
             Already have an account?
@@ -102,7 +102,7 @@ const handleSubmit = () => {
 
           <Button
             type="button"
-            class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4285F4]/50"
+            class="w-full bg-card hover:bg-secondary text-foreground font-medium py-3 px-4 border border-border rounded-lg shadow-sm transition-all duration-200 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50"
           >
             <a href="/auth/google/redirect" class="flex items-center justify-center gap-3">
               <svg class="h-5 w-5" viewBox="0 0 24 24">
