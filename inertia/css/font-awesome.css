@@ -1,0 +1,34 @@
+/* Font Awesome Typography Integration */
+
+/* Add Font Awesome to the font family stacks for consistent typography */
+@layer base {
+  html {
+    font-family: 'Font Awesome 5 Free', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  }
+
+  /* Typography classes that can be applied to any element */
+  .font-awesome {
+    font-family: 'Font Awesome 5 Free', sans-serif !important;
+  }
+
+  .font-awesome-brands {
+    font-family: 'Font Awesome 5 Brands', sans-serif !important;
+  }
+
+  /* Text with Font Awesome styling */
+  .text-fa {
+    font-family: 'Font Awesome 5 Free', sans-serif;
+    font-weight: 400;
+  }
+
+  /* Solid icons */
+  .text-fa-solid {
+    font-family: 'Font Awesome 5 Free', sans-serif;
+    font-weight: 900;
+  }
+
+  /* Brand icons */
+  .text-fa-brands {
+    font-family: 'Font Awesome 5 Brands', sans-serif;
+  }
+}

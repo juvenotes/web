@@ -4,6 +4,8 @@
 
 /* Dark mode overrides must come after Tailwind loads but before our theme variables */
 @import './override-dark.css';
+/* Font Awesome typography integration */
+@import './font-awesome.css';
 
 @layer base {
   :root {

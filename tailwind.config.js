@@ -68,6 +68,23 @@ export default {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      fontFamily: {
+        sans: [
+          '"Font Awesome 5 Free"',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+        ],
+        fa: ['"Font Awesome 5 Free"'],
+        'fa-brands': ['"Font Awesome 5 Brands"'],
+      },
       keyframes: {
         'accordion-down': {
           from: {
