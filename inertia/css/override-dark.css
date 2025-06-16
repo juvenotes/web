@@ -1,3 +1,34 @@
+/* Special rule to immediately apply on page load/reload to prevent flashing */
+html.dark,
+html.dark body,
+html.dark #app,
+html.dark main,
+html.dark main > div,
+html.dark #app > div,
+html.dark div[data-page] {
+  background-color: hsl(var(--background)) !important;
+  color-scheme: dark !important;
+}
+
+html.dark [class*="bg-white"],
+html.dark [class*="bg-gray-"],
+html.dark [class*="bg-slate-"],
+html.dark .bg-white,
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark div.bg-white,
+html.dark div.bg-gray-50 {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Extra high specificity rule to override any inline styles */
+html.dark div.bg-white[style],
+html.dark div.bg-gray-50[style],
+html.dark div.bg-gray-100[style] {
+  background-color: hsl(var(--card)) !important;
+}
+
 /* Global overrides for dark mode - Universal approach to eliminate all gray backgrounds */
 .dark [class*="bg-white"],
 .dark [class*="bg-gray-"],
@@ -43,6 +74,13 @@
 .dark .dashboard-content > div > div,
 .dark .dashboard-content > div > div.grid > div {
   background-color: transparent !important;
+}
+
+/* Ultra-specific rule for dashboard cards */
+.dark .dashboard-content .group.relative.overflow-hidden.rounded-2xl.bg-white,
+.dark .dashboard-content div[data-tour].group.relative.overflow-hidden.rounded-2xl.bg-white {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
 }
 
 /* Dashboard cards consistency - preserve original sizing but ensure uniform appearance */
