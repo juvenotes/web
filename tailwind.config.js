@@ -69,6 +69,7 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
+        // Make Font Awesome the primary font for the entire application
         sans: [
           '"Font Awesome 5 Free"',
           '-apple-system',
@@ -82,8 +83,27 @@ export default {
           '"Segoe UI Emoji"',
           '"Segoe UI Symbol"',
         ],
+        // Font Awesome specific variants
         fa: ['"Font Awesome 5 Free"'],
+        'fa-solid': ['"Font Awesome 5 Free"'],
         'fa-brands': ['"Font Awesome 5 Brands"'],
+        // Option to use system fonts without Font Awesome
+        system: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+        ],
+      },
+      fontWeight: {
+        normal: '400',
+        regular: '400',
+        solid: '900',
+        bold: '700',
+        medium: '500',
       },
       keyframes: {
         'accordion-down': {
