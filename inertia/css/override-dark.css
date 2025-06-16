@@ -1,12 +1,20 @@
-/* Global overrides for dark mode */
+/* Global overrides for dark mode - Universal approach to eliminate all gray backgrounds */
 .dark [class*="bg-white"],
-.dark [class*="bg-gray-50"],
-.dark [class*="bg-slate-50"],
-.dark [class*="bg-slate-100"],
+.dark [class*="bg-gray-"],
+.dark [class*="bg-slate-"],
 .dark .bg-white,
 .dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-gray-50\/50,
+.dark .bg-gray-100\/50,
 .dark .bg-slate-50,
-.dark .bg-slate-100 {
+.dark .bg-slate-100,
+.dark div.bg-gray-50,
+.dark div.bg-gray-50\/50,
+.dark div.bg-gray-100,
+.dark div.bg-gray-100\/50,
+.dark section.bg-gray-50,
+.dark section.bg-gray-50\/50 {
   background-color: hsl(var(--card)) !important;
 }
 
@@ -87,10 +95,18 @@
   border-color: hsl(var(--border)) !important;
 }
 
-/* Fix main content area backgrounds */
+/* Fix main content area backgrounds - Aggressive approach */
+.dark main,
+.dark .min-h-screen,
+.dark main.bg-gray-50,
 .dark main.bg-gray-50\/50,
+.dark div.min-h-screen,
+.dark div.bg-gray-50,
 .dark div.bg-gray-50\/50,
-.dark section.bg-gray-50\/50 {
+.dark section.bg-gray-50,
+.dark section.bg-gray-50\/50,
+.dark .min-h-screen.bg-gray-50,
+.dark .min-h-screen.bg-gray-50\/50 {
   background-color: hsl(var(--background)) !important;
 }
 
@@ -576,4 +592,30 @@
   color: hsl(var(--muted-foreground)) !important;
 }
 
-/* Make sure buttons are visible */
+/* Ensure ALL content pages have proper backgrounds without any gray showing through */
+html.dark, 
+body.dark,
+.dark #app,
+.dark #app > div,
+.dark main,
+.dark .min-h-screen,
+.dark body > div,
+.dark [data-page],
+.dark div[data-page] {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Force container elements to be transparent or use the right background */
+.dark .max-w-7xl,
+.dark .mx-auto,
+.dark .container,
+.dark .px-4,
+.dark .sm\:px-6,
+.dark .lg\:px-8,
+.dark .py-6,
+.dark .sm\:py-8,
+.dark .py-8 {
+  background-color: transparent !important;
+}
+
+/* Ensure any card or content area gets the card background */
