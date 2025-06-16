@@ -18,12 +18,31 @@
   background-color: hsl(var(--card)) !important;
 }
 
+/* Additional aggressive targeting - catch any remaining gray backgrounds */
+.dark * > .bg-white,
+.dark * > .bg-gray-50,
+.dark * > .bg-gray-100,
+.dark * > [class*="bg-gray-"],
+.dark * > [class*="bg-white"],
+.dark * > [class*="bg-slate-"] {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
 /* Dashboard and common component backgrounds - preserve original sizing and spacing */
 .dark .dashboard-content .rounded-2xl,
 .dark .dashboard-content .rounded-xl,
 .dark .rounded-xl,
 .dark .rounded-2xl {
+  background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
+}
+
+/* Extra specificity for dashboard elements */
+.dark .dashboard-content > div,
+.dark .dashboard-content > div > div,
+.dark .dashboard-content > div > div.grid > div {
+  background-color: transparent !important;
 }
 
 /* Dashboard cards consistency - preserve original sizing but ensure uniform appearance */
@@ -42,10 +61,8 @@
 .dark [data-tour="spot"] {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
-  /* Remove fixed height to match original sizing */
   height: auto !important;
-  display: flex !important;
-  flex-direction: column !important;
+  display: block !important; /* Match original card structure exactly */
   overflow: hidden !important;
   border-radius: 1rem !important;
 }
@@ -210,27 +227,24 @@
   background-color: hsl(var(--secondary)) !important;
 }
 
-/* Dashboard card size consistency - ensure all cards have same size in both dark and light mode */
+/* Dashboard card size consistency - ensure all cards have same size as the original */
 .group.relative.overflow-hidden.rounded-2xl {
-  height: auto;     /* Let cards size naturally based on content */
-  display: flex;
-  flex-direction: column;
+  height: auto !important;
+  display: block !important; /* Match original card structure */
 }
 
 .group.relative.overflow-hidden.rounded-2xl > .relative.space-y-4.z-10 {
-  display: flex;
-  flex-direction: column;
+  display: block !important;
 }
 
 .group.relative.overflow-hidden.rounded-2xl .flex-1 {
-  display: flex;
-  flex-direction: column;
+  display: block !important;
 }
 
 /* Ensure both light and dark mode cards have same proportions */
 .dark .group.relative.overflow-hidden.rounded-2xl,
 .group.relative.overflow-hidden.rounded-2xl {
-  height: auto;
+  height: auto !important;
 }
 
 /* Fix any size inconsistencies between cards */
@@ -239,12 +253,11 @@
 [data-tour="library"], 
 [data-tour="osce"], 
 [data-tour="spot"] {
-  height: auto;
-  display: flex;
-  flex-direction: column;
+  height: auto !important;
+  display: block !important; /* Match exactly the original card structure */
 }
 
-/* Fix dashboard card sizing to match original card design, removing extra space below content */
+/* Fix dashboard card sizing to match original card design exactly */
 [data-tour="papers"], 
 [data-tour="concepts"], 
 [data-tour="library"], 
@@ -255,18 +268,24 @@
 .dark [data-tour="library"], 
 .dark [data-tour="osce"], 
 .dark [data-tour="spot"] {
+  /* Use exact styling from the original card design */
   height: auto !important;
-  min-height: unset !important; /* Override any min-height settings */
-  padding: 1.5rem !important; /* Match the p-6 from the original design */
+  min-height: unset !important;
+  max-height: unset !important;
+  padding: 1.5rem !important; /* match p-6 */
+  display: block !important; /* Override flex display to match original */
+  flex-direction: initial !important;
+  justify-content: initial !important;
 }
 
-/* Ensure the inner content structure matches the original */
+/* Reset all flex properties to match the original structure */
 [data-tour] .relative.space-y-4.z-10,
 .dark [data-tour] .relative.space-y-4.z-10 {
   height: auto !important;
+  display: block !important;
 }
 
-/* Target the flex items inside dashboard cards to ensure proper spacing */
+/* Target the flex items inside dashboard cards to exactly match original */
 [data-tour] .flex.items-start.gap-4,
 .dark [data-tour] .flex.items-start.gap-4 {
   align-items: flex-start !important;
@@ -780,4 +799,36 @@ body.dark,
 /* Dashboard stat cards and other colored elements */
 .dark .rounded-xl.bg-gradient-to-br {
   background-image: none !important;
+}
+
+/* Additional specific rules to exactly match the original dashboard card structure */
+/* Target the inner elements to ensure they match the original design */
+.dark [data-tour] .flex-1,
+[data-tour] .flex-1 {
+  display: block !important;
+  flex: none !important;
+}
+
+/* Ensure the main card structure matches the original exactly */
+[data-v-9dc0a892][data-tour],
+.dark [data-v-9dc0a892][data-tour] {
+  height: auto !important;
+  display: block !important;
+}
+
+/* Match the original card container structure */
+.grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3.gap-4.md\:gap-6 > [data-tour] {
+  height: auto !important;
+  display: block !important;
+}
+
+/* Ensure proper spacing between elements within cards */
+[data-tour] p.text-sm.text-gray-600.mt-1.font-medium,
+.dark [data-tour] p.text-sm.text-gray-600.mt-1.font-medium {
+  margin-top: 0.25rem !important;
+}
+
+/* Override any flex styles on containers that might affect card sizing */
+.grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3.gap-4.md\:gap-6 {
+  display: grid !important;
 }

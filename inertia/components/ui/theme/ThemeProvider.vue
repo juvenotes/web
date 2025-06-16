@@ -72,7 +72,9 @@ const updateTheme = (newTheme: Theme) => {
         /* Force background colors in dark mode - aggressively target all gray backgrounds */
         [class*="bg-white"], .bg-white, 
         [class*="bg-gray-"], .bg-gray-50, .bg-gray-100, .bg-gray-50\\/50, .bg-gray-100\\/50,
-        [class*="bg-slate-"], .bg-slate-50, .bg-slate-100 {
+        [class*="bg-slate-"], .bg-slate-50, .bg-slate-100,
+        div.bg-white, div.bg-gray-50, div[class*="bg-gray-"],
+        section.bg-white, section.bg-gray-50, section[class*="bg-gray-"] {
           background-color: hsl(var(--card)) !important;
         }
         
@@ -88,6 +90,12 @@ const updateTheme = (newTheme: Theme) => {
         
         [class*="text-gray-"], [class*="text-slate-"], .text-gray-700, .text-gray-600, .text-gray-500 {
           color: hsl(var(--muted-foreground)) !important;
+        }
+        
+        /* Specific targets for dashboard and cards */
+        [data-tour="papers"], [data-tour="concepts"], [data-tour="library"], [data-tour="osce"], [data-tour="spot"] {
+          background-color: hsl(var(--card)) !important;
+          border-color: hsl(var(--border)) !important;
         }
         
         /* Specific targets for content pages */
