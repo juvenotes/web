@@ -117,6 +117,61 @@
     @vite(['inertia/app/app.ts', `inertia/pages/${page.component}.vue`])
     @inertiaHead()
 
+    <!-- Critical dark mode styles that load before JavaScript -->
+    <style>
+        /* Apply dark mode immediately if saved in localStorage or system preference is dark */
+        html.dark,
+        html.dark body,
+        html.dark #app {
+            background-color: #020817 !important; /* Fallback before CSS vars load */
+        }
+
+        /* Prevent gray backgrounds in dark mode */
+        html.dark [class*="bg-white"],
+        html.dark [class*="bg-gray-"],
+        html.dark [class*="bg-slate-"],
+        html.dark .bg-white,
+        html.dark .bg-gray-50,
+        html.dark .bg-gray-100 {
+            background-color: #0f172a !important; /* Fallback card color before CSS vars load */
+        }
+
+        /* Prevent flash of unstyled content */
+        html.dark .text-gray-900,
+        html.dark .text-gray-800 {
+            color: #f8fafc !important;
+        }
+
+        html.dark .text-gray-700,
+        html.dark .text-gray-600,
+        html.dark .text-gray-500 {
+            color: #94a3b8 !important;
+        }
+    </style>
+
+    <!-- Preload script to apply dark mode early -->
+    <script>
+        // Execute this as early as possible
+        (function() {
+            try {
+                const storageKey = 'juvenotes-theme';
+                const theme = localStorage.getItem(storageKey);
+                const isDark = theme === 'dark' || 
+                    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                    if (document.body) {
+                        document.body.classList.add('dark');
+                        document.body.style.colorScheme = 'dark';
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to initialize immediate dark mode:', e);
+            }
+        })();
+    </script>
 </head>
 
 <body class="min-h-screen w-screen font-sans">
