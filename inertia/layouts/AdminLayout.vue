@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
 import AdminSearch from '~/components/AdminSearch.vue'
-import ThemeSwitcher from '~/components/ui/theme/ThemeSwitcher.vue'
+import { ThemeProvider, ThemeSwitcher } from '~/components/ui/theme'
 import { Button } from '~/components/ui/button'
 import {
   LayoutDashboard,
@@ -44,7 +44,8 @@ const menuItems = [
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-100 dark:bg-background dark:bg-none">
+  <ThemeProvider default-theme="system" storage-key="juvenotes-theme">
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-100 dark:bg-background dark:bg-none">
     <!-- Top Navigation -->
     <nav
       class="sticky top-0 z-40 border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm dark:bg-background/80 dark:border-border dark:backdrop-blur-md"
@@ -114,4 +115,5 @@ const menuItems = [
       <ToastManager :messages="messages" />
     </div>
   </div>
+  </ThemeProvider>
 </template>
