@@ -369,7 +369,7 @@ html.dark div.bg-gray-100[style] {
 
 .dark td {
   background-color: hsl(var(--card)) !important;
-  color: hsl(var(--foreground)) !important;
+  color: hsl(var,--foreground) !important;
 }
 
 .dark tr:nth-child(even) td {
@@ -869,4 +869,90 @@ body.dark,
 /* Override any flex styles on containers that might affect card sizing */
 .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3.gap-4.md\:gap-6 {
   display: grid !important;
+}
+
+/* Improve text contrast in content pages for better readability in dark mode */
+.dark .prose,
+.dark .prose-sm,
+.dark .prose-base,
+.dark .prose-lg,
+.dark [class*="prose"] {
+  /* Ensure main text has high contrast */
+  --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-headings: hsl(var(--foreground));
+  --tw-prose-lead: hsl(var(--foreground));
+  --tw-prose-links: hsl(var(--primary));
+  --tw-prose-bold: hsl(var(--foreground));
+  --tw-prose-counters: hsl(var(--foreground));
+  --tw-prose-bullets: hsl(var(--primary));
+  --tw-prose-hr: hsl(var(--border));
+  --tw-prose-quotes: hsl(var(--foreground));
+  --tw-prose-quote-borders: hsl(var(--primary));
+  --tw-prose-captions: hsl(var(--muted-foreground));
+  --tw-prose-code: hsl(var(--primary));
+  --tw-prose-pre-code: hsl(var(--foreground));
+  --tw-prose-pre-bg: hsl(var(--card));
+  --tw-prose-th-borders: hsl(var(--border));
+  --tw-prose-td-borders: hsl(var(--border));
+}
+
+/* MdxContent Specific Enhancements */
+.dark .notion-like {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .notion-like pre {
+  background: hsl(var(--muted)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .notion-like code {
+  background: hsla(var(--primary), 0.2) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+.dark .notion-like blockquote {
+  background: hsla(var(--primary), 0.1) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Enhanced text contrast for paper/OSCE/spot question text */
+.dark .text-gray-900,
+.dark [class*="text-gray-900"],
+.dark .text-gray-800,
+.dark [class*="text-gray-800"] {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .text-gray-700,
+.dark [class*="text-gray-700"],
+.dark .text-gray-600,
+.dark [class*="text-gray-600"] {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Improved contrast for muted text that should still be readable */
+.dark .text-gray-500,
+.dark [class*="text-gray-500"] {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* ViewExplanation component enhancement */
+.dark .explanation-content {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Special case for question/answer blocks */
+.dark div[question-content],
+.dark div[answer-content],
+.dark div.question-wrapper,
+.dark div.answer-wrapper {
+  color: hsl(var(--foreground)) !important;
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Enhanced readability for interactive elements */
+.dark .hover\:text-gray-900:hover {
+  color: hsl(var(--primary)) !important;
 }

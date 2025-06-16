@@ -27,7 +27,7 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <div class="markdown-content prose prose-sm max-w-none" v-html="html" />
+  <div class="markdown-content prose prose-sm dark:prose-invert dark:text-foreground max-w-none" v-html="html" />
 </template>
 
 <style scoped>
@@ -49,59 +49,71 @@ watchEffect(async () => {
     max-width: 640px; /* Match YouTube width */
     width: 100%;
     height: auto;
-    margin: 1.5rem auto;
+    margin: 1rem auto;
     border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
-  :deep(iframe) {
-    display: block;
-    max-width: 640px;
-    width: 100%;
-    height: auto;
-    margin: 1.5rem auto;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Link styles */
-  :deep(a) {
-    color: #3b82f6;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-    transition: color 0.2s ease-in-out;
-
-    &:hover {
-      color: #2563eb;
-    }
-  }
-
-  /* Tables */
-  :deep(table) {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin: 1rem 0;
-    font-size: 0.95em;
-    border: 2px solid hsl(var(--border));
-    border-radius: 0.5rem;
-    overflow: hidden;
-    display: block;
+  :deep(iframe[src*="youtube.com"]) {
     max-width: 100%;
+    width: 640px;
+    height: 360px;
+    margin: 1rem auto;
+    display: block;
+    border-radius: 0.5rem;
+  }
+
+  /* Dark Mode Enhancements */
+  :deep(a) {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    transition: color 0.2s ease;
+  }
+
+  :deep(a:hover) {
+    color: hsl(var(--primary) / 0.8);
+  }
+
+  :deep(pre) {
+    background: hsl(var(--muted) / 0.5);
+    border-radius: 0.5rem;
+    padding: 1rem;
     overflow-x: auto;
   }
 
-  :deep(th),
-  :deep(td) {
+  :deep(code) {
+    background: hsl(var(--primary) / 0.1);
+    border-radius: 0.25rem;
+    padding: 0.2rem 0.4rem;
+    font-family: monospace;
+  }
+
+  :deep(blockquote) {
+    border-left: 4px solid hsl(var(--primary));
+    padding-left: 1rem;
+    font-style: italic;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  :deep(hr) {
+    border-color: hsl(var(--border));
+    margin: 2rem 0;
+  }
+
+  :deep(table) {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+  }
+
+  :deep(th, td) {
     border: 1px solid hsl(var(--border));
-    padding: 0.8em;
+    padding: 0.5rem;
     text-align: left;
-    position: relative;
   }
 
   :deep(th) {
-    background-color: hsl(var(--muted));
-    font-weight: 600;
+    background: hsl(var(--muted) / 0.5);
   }
 
   :deep(tr:nth-child(even)) {
