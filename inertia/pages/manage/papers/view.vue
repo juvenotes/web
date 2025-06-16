@@ -146,7 +146,7 @@ const showAddMcqDialog = ref(false)
 const showAddSaqDialog = ref(false)
 const showUploadDialog = ref(false)
 const showUploadPdfDialog = ref(false)
-// const showUploadPdfSaqDialog = ref(false)
+const showUploadPdfSaqDialog = ref(false)
 const showEditMcqDialog = ref(false)
 const showEditSaqDialog = ref(false)
 const showEditPaperDialog = ref(false)
@@ -224,9 +224,9 @@ const selectedQuestion = ref<QuestionDto | null>(null)
               <DropdownMenuItem @click="showUploadPdfDialog = true">
                 <Upload class="mr-2 h-4 w-4" /> Upload PDF (AI)
               </DropdownMenuItem>
-              <!-- <DropdownMenuItem @click="showUploadPdfSaqDialog = true">
+              <DropdownMenuItem @click="showUploadPdfSaqDialog = true">
                 <Upload class="mr-2 h-4 w-4" /> Upload PDF (SAQ)
-              </DropdownMenuItem> -->
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem @click="showEditPaperDialog = true">
                 <Pencil class="mr-2 h-4 w-4" /> Edit Paper
@@ -438,5 +438,5 @@ const selectedQuestion = ref<QuestionDto | null>(null)
   />
   <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
   <UploadPdfQuestionsDialog v-model:open="showUploadPdfDialog" :paper="paper" :concept="concept" />
-  <!-- <UploadPdfSaqsDialog v-model:open="showUploadPdfSaqDialog" :paper="paper" :concept="concept" /> -->
+<UploadPdfSaqsDialog v-model:open="showUploadPdfSaqDialog" :paper="paper" :concept="concept" />
 </template>

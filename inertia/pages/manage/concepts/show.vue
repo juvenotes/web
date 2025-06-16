@@ -186,7 +186,7 @@ const handleDelete = () => {
       <!-- Terminal Content Section -->
       <div v-if="concept.isTerminal" class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h2 class="text-xl sm:text-2xl font-bold">Content</h2>
+          <h2 class="text-xl sm:text-2xl font-bold dark:text-foreground">Content</h2>
           <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <Button variant="outline" @click="toggleContentEditor" class="w-full sm:w-auto">
               {{ showContentEditor ? 'Hide Editor' : 'Edit Content' }}
@@ -209,14 +209,14 @@ const handleDelete = () => {
           </Button>
         </form>
 
-        <div v-if="content">
+        <div v-if="content" class="dark:text-foreground">
           <MdxContent :content="content" />
         </div>
       </div>
 
       <!-- Questions -->
       <div v-if="questions?.length" class="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
-        <h2 class="text-xl sm:text-2xl font-bold">Practice Questions</h2>
+        <h2 class="text-xl sm:text-2xl font-bold dark:text-foreground">Practice Questions</h2>
         <div v-for="(question, index) in questions" :key="question.id" class="space-y-4">
           <div class="p-6 bg-white rounded-xl border shadow-sm">
             <!-- Question Header -->

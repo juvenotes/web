@@ -272,7 +272,7 @@ const continueFromLastQuestion = () => {
                 <span class="inline-block w-fit px-4 py-1.5 bg-[#55A9C4]/15 text-[#55A9C4] rounded-lg font-semibold text-sm shadow-sm">
                   Station {{ questionIndex + 1 }}
                 </span>
-                <p class="text-gray-900 text-base break-words leading-relaxed">
+                <p class="text-gray-900 dark:text-foreground text-base break-words leading-relaxed">
                   {{ question.questionText }}
                 </p>
               </div>

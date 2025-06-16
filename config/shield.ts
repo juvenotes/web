@@ -42,8 +42,15 @@ const shieldConfig = defineConfig({
         'https://*.brevo.com',
         'https://api.brevo.com',
         'https://tally.so',
+        'https://res.cloudinary.com/', // Cloudinary for media assets
       ],
-      frameSrc: ["'self'", '*.youtube.com', 'www.youtube.com', 'https://tally.so'],
+      frameSrc: [
+        "'self'",
+        '*.youtube.com',
+        'www.youtube.com',
+        'https://tally.so',
+        'https://res.cloudinary.com',
+      ],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://fonts.bunny.net'],
       mediaSrc: ["'self'", 'data:', '*'],
     },
