@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
 import AdminSearch from '~/components/AdminSearch.vue'
+import ThemeSwitcher from '~/components/ui/theme/ThemeSwitcher.vue'
+import { Button } from '~/components/ui/button'
 import {
   LayoutDashboard,
   BookOpen,
@@ -56,12 +58,15 @@ const menuItems = [
         <div class="flex-1 mx-auto max-w-2xl">
           <AdminSearch />
         </div>
-        <Button
-          variant="ghost"
-          @click="$inertia.post('/logout')"
-          class="bg-primary/40 rounded-lg px-4 py-2 hover:bg-primary/20 transition-colors shadow"
-          >Logout</Button
-        >
+        <div class="flex items-center gap-3">
+          <ThemeSwitcher />
+          <Button
+            variant="ghost"
+            @click="$inertia.post('/logout')"
+            class="bg-primary/40 rounded-lg px-4 py-2 hover:bg-primary/20 transition-colors shadow"
+            >Logout</Button
+          >
+        </div>
       </div>
     </nav>
 

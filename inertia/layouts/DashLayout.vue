@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import Search from '~/components/Search.vue'
+import ThemeSwitcher from '~/components/ui/theme/ThemeSwitcher.vue'
 import {
   User,
   Settings,
@@ -129,14 +130,19 @@ onUnmounted(() => {
             <SearchIcon class="h-5 w-5" />
           </button>
 
-          <!-- User Menu -->
-          <div class="relative user-menu ml-4">
-            <button
-              @click="isMenuOpen = !isMenuOpen"
-              class="h-8 w-8 rounded-full bg-gradient-to-br from-[#55A9C4] to-[#4a91aa] flex items-center justify-center hover:shadow-sm transition-shadow"
-            >
-              <User class="h-4 w-4 text-white" />
-            </button>
+          <!-- Theme Toggle and User Menu -->
+          <div class="flex items-center gap-2">
+            <!-- Theme Switcher -->
+            <ThemeSwitcher />
+            
+            <!-- User Menu -->
+            <div class="relative user-menu">
+              <button
+                @click="isMenuOpen = !isMenuOpen"
+                class="h-8 w-8 rounded-full bg-gradient-to-br from-[#55A9C4] to-[#4a91aa] flex items-center justify-center hover:shadow-sm transition-shadow"
+              >
+                <User class="h-4 w-4 text-white" />
+              </button>
 
             <div
               v-show="isMenuOpen"
