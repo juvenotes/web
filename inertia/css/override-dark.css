@@ -34,38 +34,7 @@
   flex-direction: column;
 }
 
-/* Make all dashboard cards consistent - height adjustment for both light and dark mode */
-[data-tour="papers"],
-[data-tour="concepts"],
-[data-tour="library"],
-[data-tour="osce"],
-[data-tour="spot"] {
-  min-height: auto !important; /* Remove min-height to let content dictate the height */
-  height: auto !important;
-  padding: 1rem 1.25rem !important; /* Reduced from p-6 (1.5rem) */
-}
-
-/* Fix the flex structure causing the extra height */
-[data-tour="papers"] .relative.space-y-4,
-[data-tour="concepts"] .relative.space-y-4,
-[data-tour="library"] .relative.space-y-4,
-[data-tour="osce"] .relative.space-y-4,
-[data-tour="spot"] .relative.space-y-4 {
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-  display: block !important; /* Override the flex display */
-}
-
-/* Fix the specific inner structure that causes spacing issues */
-[data-tour="papers"] .relative.space-y-4 .flex,
-[data-tour="concepts"] .relative.space-y-4 .flex,
-[data-tour="library"] .relative.space-y-4 .flex,
-[data-tour="osce"] .relative.space-y-4 .flex,
-[data-tour="spot"] .relative.space-y-4 .flex {
-  align-items: center !important; /* Better vertical alignment */
-}
-
-/* Dark mode overrides for dashboard cards */
+/* Make all dashboard cards consistent */
 .dark [data-tour="papers"],
 .dark [data-tour="concepts"],
 .dark [data-tour="library"],
@@ -73,6 +42,8 @@
 .dark [data-tour="spot"] {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
+  /* Remove fixed height to match original sizing */
+  height: auto !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
@@ -241,14 +212,12 @@
 
 /* Dashboard card size consistency - ensure all cards have same size in both dark and light mode */
 .group.relative.overflow-hidden.rounded-2xl {
-  min-height: 190px; /* Set minimum height for all cards */
-  height: 100%;     /* Make them fill their container height */
+  height: auto;     /* Let cards size naturally based on content */
   display: flex;
   flex-direction: column;
 }
 
 .group.relative.overflow-hidden.rounded-2xl > .relative.space-y-4.z-10 {
-  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -261,7 +230,7 @@
 /* Ensure both light and dark mode cards have same proportions */
 .dark .group.relative.overflow-hidden.rounded-2xl,
 .group.relative.overflow-hidden.rounded-2xl {
-  min-height: 190px;
+  height: auto;
 }
 
 /* Fix any size inconsistencies between cards */
@@ -270,9 +239,38 @@
 [data-tour="library"], 
 [data-tour="osce"], 
 [data-tour="spot"] {
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
+}
+
+/* Fix dashboard card sizing to match original card design, removing extra space below content */
+[data-tour="papers"], 
+[data-tour="concepts"], 
+[data-tour="library"], 
+[data-tour="osce"], 
+[data-tour="spot"],
+.dark [data-tour="papers"], 
+.dark [data-tour="concepts"], 
+.dark [data-tour="library"], 
+.dark [data-tour="osce"], 
+.dark [data-tour="spot"] {
+  height: auto !important;
+  min-height: unset !important; /* Override any min-height settings */
+  padding: 1.5rem !important; /* Match the p-6 from the original design */
+}
+
+/* Ensure the inner content structure matches the original */
+[data-tour] .relative.space-y-4.z-10,
+.dark [data-tour] .relative.space-y-4.z-10 {
+  height: auto !important;
+}
+
+/* Target the flex items inside dashboard cards to ensure proper spacing */
+[data-tour] .flex.items-start.gap-4,
+.dark [data-tour] .flex.items-start.gap-4 {
+  align-items: flex-start !important;
+  height: auto !important;
 }
 
 /* Form elements in dark mode */
@@ -782,33 +780,4 @@ body.dark,
 /* Dashboard stat cards and other colored elements */
 .dark .rounded-xl.bg-gradient-to-br {
   background-image: none !important;
-}
-
-/* Remove space-y-4 effects in dashboard cards */
-[data-tour] .space-y-4 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0 !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* Position the hover text better for compact cards */
-[data-tour] .mt-4.flex.items-center.gap-2 {
-  margin-top: 0.5rem !important; /* Reduce from 1rem (mt-4) to 0.5rem */
-  position: absolute;
-  right: 0;
-  bottom: 0;
-}
-
-/* Override the flex behavior completely */
-.dark [data-tour="papers"],
-.dark [data-tour="concepts"],
-.dark [data-tour="library"],
-.dark [data-tour="osce"],
-.dark [data-tour="spot"] {
-  display: block !important; /* Override the flex display */
-}
-
-/* Fix flex-1 behavior */
-[data-tour] .flex-1 {
-  flex: none !important;
 }
