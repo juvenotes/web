@@ -143,30 +143,37 @@
   }
 }
 
-/* Ensure consistent dashboard card sizing in both light and dark mode */
+/* Ensure dashboard cards match the example exactly */
 @layer utilities {
-  /* Dashboard card consistency */
+  /* Reset any overly specific styles that might be affecting the cards */
   [data-tour="papers"],
   [data-tour="concepts"],
   [data-tour="library"],
   [data-tour="osce"],
   [data-tour="spot"] {
-    min-height: 190px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+    /* Remove min-height and flex constraints that may be forcing card size */
+    min-height: unset;
+    height: auto;
+    display: block;
   }
 
+  /* Remove flex styling on card inner containers to match example */
   [data-tour] > .relative.space-y-4 {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+    height: auto;
+    display: block;
   }
 
+  /* Allow flex-1 to behave naturally */
   [data-tour] .flex-1 {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex-grow: 1;
+    display: block;
+  }
+  
+  /* Exactly match the example card */
+  .dashboard-card-fixed-size {
+    /* Make sure the padding stays exactly as in the example */
+    padding: 1.5rem !important; /* p-6 equivalent */
+    /* Ensure consistent sizing */
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 }

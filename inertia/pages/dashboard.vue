@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import UserDto from '#dtos/user'
 import DashLayout from '~/layouts/DashLayout.vue'
 import {
@@ -26,6 +27,15 @@ defineProps<{
 }>()
 
 defineOptions({ layout: DashLayout })
+
+// Card hover effect - this will ensure proper sizing just like the example
+onMounted(() => {
+  // Ensure all cards have consistent sizing and hover effects 
+  const cards = document.querySelectorAll('[data-tour]')
+  cards.forEach(card => {
+    card.classList.add('dashboard-card-fixed-size')
+  })
+})
 </script>
 
 <template>
