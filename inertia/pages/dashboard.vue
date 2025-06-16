@@ -115,21 +115,14 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
-            >
+            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
               <FileText class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Past Papers</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">
-                Practice with previous exams
-              </p>
-              
-              <div
-                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
-              >
-                <span class="text-xs text-[#55A9C4] font-semibold">View papers</span>
+              <p class="text-sm text-gray-600 mt-1 font-medium">Practice with previous exams</p>
+              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                <span class="text-xs text-[#55A9C4] font-semibold">Start Practicing</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
             </div>
@@ -145,20 +138,13 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
-            >
+            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
               <BookOpen class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Concepts</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">
-                Master comprehensive study materials
-              </p>
-              
-              <div
-                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
-              >
+              <p class="text-sm text-gray-600 mt-1 font-medium">Master comprehensive study materials</p>
+              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                 <span class="text-xs text-[#55A9C4] font-semibold">Explore Concepts</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
@@ -175,20 +161,13 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
-            >
+            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
               <Library class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Library</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">
-                Access all your saved resources
-              </p>
-              
-              <div
-                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
-              >
+              <p class="text-sm text-gray-600 mt-1 font-medium">Access all your saved resources</p>
+              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                 <span class="text-xs text-[#55A9C4] font-semibold">View Library</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
@@ -205,20 +184,13 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
-            >
+            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
               <Stethoscope class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">OSCE</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">
-                Clinical scenario-based practice
-              </p>
-              
-              <div
-                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
-              >
+              <p class="text-sm text-gray-600 mt-1 font-medium">Clinical scenario-based practice</p>
+              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                 <span class="text-xs text-[#55A9C4] font-semibold">Practice Scenarios</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
@@ -235,20 +207,13 @@ defineOptions({ layout: DashLayout })
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div
-              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
-            >
+            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
               <Pin class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Spots</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">
-                Sharpen your identification skills
-              </p>
-              
-              <div
-                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
-              >
+              <p class="text-sm text-gray-600 mt-1 font-medium">Sharpen your identification skills</p>
+              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                 <span class="text-xs text-[#55A9C4] font-semibold">Identify Spots</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
