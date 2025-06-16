@@ -48,6 +48,25 @@ export function initializeTheme() {
     }
     
     // Ensure the class is applied to the body when it's available
+    // Add a data-theme attribute for components that might need it
+    if (document.body) {
+      document.body.setAttribute('data-theme', resolvedTheme)
+    }
+    
+    // Add a style tag to prevent flashing
+    const styleEl = document.createElement('style')
+    styleEl.textContent = `
+      :root {
+        color-scheme: ${resolvedTheme};
+      }
+      
+      @media (prefers-color-scheme: dark) {
+        :root:not(.light) {
+          color-scheme: dark;
+        }
+      }
+    `
+    document.head.appendChild(styleEl)
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('light', 'dark')

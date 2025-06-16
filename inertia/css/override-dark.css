@@ -2,9 +2,11 @@
 .dark [class*="bg-white"],
 .dark [class*="bg-gray-50"],
 .dark [class*="bg-slate-50"],
+.dark [class*="bg-slate-100"],
 .dark .bg-white,
 .dark .bg-gray-50,
-.dark .bg-slate-50 {
+.dark .bg-slate-50,
+.dark .bg-slate-100 {
   background-color: hsl(var(--card)) !important;
 }
 
@@ -16,10 +18,43 @@
   border-color: hsl(var(--border)) !important;
 }
 
-/* Dashboard cards consistency - preserve original sizing */
+/* Dashboard cards consistency - preserve original sizing but ensure uniform appearance */
 .dark .group.relative.overflow-hidden.rounded-2xl {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make all dashboard cards consistent */
+.dark [data-tour="papers"],
+.dark [data-tour="concepts"],
+.dark [data-tour="library"],
+.dark [data-tour="osce"],
+.dark [data-tour="spot"] {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  min-height: 190px !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  border-radius: 1rem !important;
+}
+
+/* Fix card headers and footers */
+.dark [data-tour] h3,
+.dark [data-tour] h4,
+.dark .dashboard-content h3,
+.dark .dashboard-content h4 {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix dashboard card links container */
+.dark [data-tour] .absolute.bottom-0.left-0.right-0,
+.dark .dashboard-content .absolute.bottom-0.left-0.right-0 {
+  background-color: hsl(var(--card)) !important;
+  border-top: 1px solid hsl(var(--border)) !important;
 }
 
 /* Text colors for better readability */
@@ -84,6 +119,24 @@
 /* Fix background for gradient components */
 .dark [class*="bg-gradient-to"] {
   background: hsl(var(--card)) !important;
+}
+
+/* Home page specific dark mode adjustments */
+.dark .min-h-screen.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, hsl(var(--background)), hsl(222, 47%, 8%)) !important;
+}
+
+/* Hero sections in dark mode */
+.dark .py-16.md\:py-24.w-full,
+.dark .relative.py-12.md\:py-16.lg\:py-20 {
+  background-color: transparent !important;
+}
+
+/* Fix headings on home page */
+.dark .text-4xl.md\:text-5xl.lg\:text-6xl.font-bold.text-gray-900,
+.dark [class*="text-4xl"][class*="text-gray-900"],
+.dark h1[class*="text-gray-900"] {
+  color: hsl(var(--foreground)) !important;
 }
 
 /* Fix hardcoded shadow colors */
@@ -221,4 +274,308 @@
 
 .dark .hover\:bg-\[\#4796b0\]:hover {
   background-color: hsl(196 80% 40%) !important;
+}
+
+/* Button styles and interactive elements */
+.dark .bg-blue-50,
+.dark .bg-blue-100,
+.dark [class*="bg-blue-50"],
+.dark [class*="bg-blue-100"] {
+  background-color: hsl(var(--primary-foreground)/0.1) !important;
+}
+
+.dark .text-blue-500,
+.dark .text-blue-600,
+.dark .text-blue-700,
+.dark [class*="text-blue-500"],
+.dark [class*="text-blue-600"],
+.dark [class*="text-blue-700"] {
+  color: hsl(var(--primary)) !important;
+}
+
+/* Fix hover states */
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-white:hover,
+.dark [class*="hover:bg-gray-50"]:hover,
+.dark [class*="hover:bg-slate-50"]:hover,
+.dark [class*="hover:bg-white"]:hover {
+  background-color: hsl(var(--muted)) !important;
+}
+
+/* Fix selection, focus and active states */
+.dark .active\:bg-gray-50:active,
+.dark .active\:bg-slate-50:active,
+.dark .active\:bg-white:active,
+.dark [class*="active:bg-gray-50"]:active,
+.dark [class*="active:bg-slate-50"]:active,
+.dark [class*="active:bg-white"]:active,
+.dark .focus\:bg-gray-50:focus,
+.dark .focus\:bg-slate-50:focus,
+.dark .focus\:bg-white:focus,
+.dark [class*="focus:bg-gray-50"]:focus,
+.dark [class*="focus:bg-slate-50"]:focus,
+.dark [class*="focus:bg-white"]:focus {
+  background-color: hsl(var(--secondary)) !important;
+}
+
+/* Dashboard card size consistency - ensure all cards have same size in both dark and light mode */
+.group.relative.overflow-hidden.rounded-2xl {
+  min-height: 190px; /* Set minimum height for all cards */
+  height: 100%;     /* Make them fill their container height */
+  display: flex;
+  flex-direction: column;
+}
+
+.group.relative.overflow-hidden.rounded-2xl > .relative.space-y-4.z-10 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.group.relative.overflow-hidden.rounded-2xl .flex-1 {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure both light and dark mode cards have same proportions */
+.dark .group.relative.overflow-hidden.rounded-2xl,
+.group.relative.overflow-hidden.rounded-2xl {
+  min-height: 190px;
+}
+
+/* Fix any size inconsistencies between cards */
+[data-tour="papers"], 
+[data-tour="concepts"], 
+[data-tour="library"], 
+[data-tour="osce"], 
+[data-tour="spot"] {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Form elements in dark mode */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="search"],
+.dark input[type="tel"],
+.dark input[type="url"],
+.dark input[type="date"],
+.dark textarea,
+.dark select {
+  background-color: hsl(var(--input)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Placeholder color */
+.dark ::placeholder {
+  color: hsl(var(--muted-foreground)) !important;
+  opacity: 0.7;
+}
+
+/* Tables in dark mode */
+.dark table,
+.dark thead,
+.dark tbody,
+.dark tr,
+.dark th,
+.dark td {
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark th {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark td {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark tr:nth-child(even) td {
+  background-color: hsl(var(--accent)) !important;
+}
+
+/* Modal dialogs and popups */
+.dark .fixed.inset-0.bg-gray-500.bg-opacity-75,
+.dark .fixed.inset-0.bg-black.bg-opacity-50,
+.dark .fixed.inset-0.bg-slate-900.bg-opacity-50 {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.dark .modal-content,
+.dark .dialog-content,
+.dark [role="dialog"],
+.dark [class*="modal-"],
+.dark [class*="popup-"] {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .modal-header,
+.dark .dialog-header,
+.dark [class*="modal-header"],
+.dark [class*="dialog-header"] {
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .modal-footer,
+.dark .dialog-footer,
+.dark [class*="modal-footer"],
+.dark [class*="dialog-footer"] {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Fix dropdown menus */
+.dark .dropdown-menu,
+.dark [role="menu"],
+.dark [class*="dropdown-menu"] {
+  background-color: hsl(var(--popover)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+}
+
+.dark .dropdown-item:hover,
+.dark [role="menuitem"]:hover,
+.dark [class*="dropdown-item"]:hover {
+  background-color: hsl(var(--accent)) !important;
+}
+
+/* Code blocks and pre elements */
+.dark pre,
+.dark code,
+.dark .code,
+.dark [class*="pre-"],
+.dark [class*="code-"],
+.dark [class*="codeblock"] {
+  background-color: hsl(222, 47%, 8%) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Syntax highlighting in dark mode */
+.dark .token.comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.dark .token.punctuation {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .token.property,
+.dark .token.tag,
+.dark .token.boolean,
+.dark .token.number,
+.dark .token.constant,
+.dark .token.symbol {
+  color: hsl(var(--primary)) !important;
+}
+
+.dark .token.selector,
+.dark .token.attr-name,
+.dark .token.string,
+.dark .token.char,
+.dark .token.builtin {
+  color: hsl(var(--accent)) !important;
+}
+
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url,
+.dark .language-css .token.string,
+.dark .token.variable {
+  color: hsl(var(--secondary)) !important;
+}
+
+.dark .token.atrule,
+.dark .token.attr-value,
+.dark .token.keyword {
+  color: hsl(var(--primary)) !important;
+}
+
+.dark .token.function {
+  color: hsl(196, 80%, 70%) !important;
+}
+
+.dark .token.regex,
+.dark .token.important {
+  color: hsl(43, 74%, 66%) !important;
+}
+
+/* Status indicators */
+.dark .text-green-500,
+.dark .text-green-600,
+.dark .text-green-700,
+.dark [class*="text-green-"] {
+  color: hsl(142, 72%, 50%) !important;
+}
+
+.dark .text-red-500,
+.dark .text-red-600,
+.dark .text-red-700,
+.dark [class*="text-red-"] {
+  color: hsl(0, 84%, 60%) !important;
+}
+
+.dark .text-yellow-500,
+.dark .text-yellow-600,
+.dark .text-yellow-700,
+.dark [class*="text-yellow-"] {
+  color: hsl(35, 92%, 65%) !important;
+}
+
+/* Cards with images or media - ensure proper contrast */
+.dark .group .relative.h-48.overflow-hidden,
+.dark [class*="card-image"],
+.dark [class*="card-media"] {
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+/* Consistent shadow styles in dark mode */
+.dark .shadow,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl,
+.dark [class*="shadow-"] {
+  --tw-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4) !important;
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color) !important;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+}
+
+/* Fix any remaining header issues */
+.dark h1, 
+.dark h2,
+.dark h3, 
+.dark h4, 
+.dark h5, 
+.dark h6 {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Last few fixes for the hero section in home - background elements */
+.dark .absolute.-top-16.-right-16.w-64.h-64,
+.dark .absolute.-bottom-8.-left-8.w-40.h-40 {
+  background-color: rgba(196, 240, 255, 0.05) !important;
+}
+
+/* Cookie consent in dark mode */
+.dark #cookieconsent .cc-window {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark #cookieconsent .cc-btn {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
 }
