@@ -1,0 +1,834 @@
+/* Global overrides for dark mode - Universal approach to eliminate all gray backgrounds */
+.dark [class*="bg-white"],
+.dark [class*="bg-gray-"],
+.dark [class*="bg-slate-"],
+.dark .bg-white,
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-gray-50\/50,
+.dark .bg-gray-100\/50,
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark div.bg-gray-50,
+.dark div.bg-gray-50\/50,
+.dark div.bg-gray-100,
+.dark div.bg-gray-100\/50,
+.dark section.bg-gray-50,
+.dark section.bg-gray-50\/50 {
+  background-color: hsl(var(--card)) !important;
+}
+
+/* Additional aggressive targeting - catch any remaining gray backgrounds */
+.dark * > .bg-white,
+.dark * > .bg-gray-50,
+.dark * > .bg-gray-100,
+.dark * > [class*="bg-gray-"],
+.dark * > [class*="bg-white"],
+.dark * > [class*="bg-slate-"] {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Dashboard and common component backgrounds - preserve original sizing and spacing */
+.dark .dashboard-content .rounded-2xl,
+.dark .dashboard-content .rounded-xl,
+.dark .rounded-xl,
+.dark .rounded-2xl {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Extra specificity for dashboard elements */
+.dark .dashboard-content > div,
+.dark .dashboard-content > div > div,
+.dark .dashboard-content > div > div.grid > div {
+  background-color: transparent !important;
+}
+
+/* Dashboard cards consistency - preserve original sizing but ensure uniform appearance */
+.dark .group.relative.overflow-hidden.rounded-2xl {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make all dashboard cards consistent */
+.dark [data-tour="papers"],
+.dark [data-tour="concepts"],
+.dark [data-tour="library"],
+.dark [data-tour="osce"],
+.dark [data-tour="spot"] {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  height: auto !important;
+  display: block !important; /* Match original card structure exactly */
+  overflow: hidden !important;
+  border-radius: 1rem !important;
+}
+
+/* Fix card headers and footers */
+.dark [data-tour] h3,
+.dark [data-tour] h4,
+.dark .dashboard-content h3,
+.dark .dashboard-content h4 {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix card paragraph elements */
+.dark [data-tour] p,
+.dark .dashboard-content p {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Dashboard info panels with blue/primary background */
+.dark .bg-\[\#55A9C4\]\/10,
+.dark [class*="bg-\[\#55A9C4\]\/10"] {
+  background-color: hsla(var(--primary), 0.1) !important;
+}
+
+.dark .bg-\[\#55A9C4\]\/20,
+.dark [class*="bg-\[\#55A9C4\]\/20"] {
+  background-color: hsla(var(--primary), 0.2) !important;
+}
+
+.dark .group-hover\:bg-\[\#55A9C4\]\/20 {
+  background-color: hsla(var(--primary), 0.3) !important;
+}
+
+/* Page content backgrounds */
+.dark .bg-white\/90, 
+.dark .bg-gray-50\/50,
+.dark .bg-gray-100\/50,
+.dark .bg-slate-50\/50 {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Content pages background (concepts, papers, OSCE, spot, library) */
+.dark .container.mx-auto.px-4.py-8 > div,
+.dark .max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-8 > div {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Fix main content area backgrounds - Aggressive approach */
+.dark main,
+.dark .min-h-screen,
+.dark main.bg-gray-50,
+.dark main.bg-gray-50\/50,
+.dark div.min-h-screen,
+.dark div.bg-gray-50,
+.dark div.bg-gray-50\/50,
+.dark section.bg-gray-50,
+.dark section.bg-gray-50\/50,
+.dark .min-h-screen.bg-gray-50,
+.dark .min-h-screen.bg-gray-50\/50 {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Specifically target the concept/papers/OSCE/spot/library page containers */
+.dark .min-h-screen.bg-gray-50\/50 {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Target concept page cards and links */
+.dark .min-h-screen.bg-gray-50\/50 .bg-white,
+.dark .min-h-screen.bg-gray-50\/50 [class*="bg-white"],
+.dark .min-h-screen.bg-gray-50\/50 .group.block.p-4.bg-white,
+.dark .min-h-screen.bg-gray-50\/50 .group.block.p-5.bg-white,
+.dark .min-h-screen.bg-gray-50\/50 .p-4.sm\:p-5.bg-white,
+.dark .min-h-screen.bg-gray-50\/50 .concept-card .group.block.p-4.sm\:p-5.bg-white {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Target specific concept card structure */
+.dark .concept-card .group.block.p-4.sm\:p-5.bg-white.rounded-xl.border.border-gray-200,
+.dark .min-h-screen.bg-gray-50\/50 .concept-card .group.block.p-4.sm\:p-5.bg-white.rounded-xl.border.border-gray-200 {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* Explicitly target any group hover interactions */
+.dark .concept-card .group:hover,
+.dark .min-h-screen.bg-gray-50\/50 .concept-card .group:hover {
+  border-color: hsla(var(--primary), 0.4) !important;
+}
+
+.dark .concept-card .group h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\],
+.dark .min-h-screen.bg-gray-50\/50 .concept-card .group h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\] {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .concept-card .group:hover h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\],
+.dark .min-h-screen.bg-gray-50\/50 .concept-card .group:hover h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\] {
+  color: hsl(var(--primary)) !important;
+}
+
+/* Text colors for cards in concept pages */
+.dark .min-h-screen.bg-gray-50\/50 .text-gray-900,
+.dark .min-h-screen.bg-gray-50\/50 h3.text-base.font-semibold.text-gray-900,
+.dark .min-h-screen.bg-gray-50\/50 h3.text-lg.font-semibold.text-gray-900,
+.dark .min-h-screen.bg-gray-50\/50 h1.text-2xl.sm\:text-3xl.font-bold.text-gray-900 {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Make sure buttons are visible */
+.dark .bg-\[\#55A9C4\] {
+  background-color: hsl(var(--primary)) !important;
+}
+
+.dark .hover\:bg-\[\#4796b0\]:hover {
+  background-color: hsl(196 80% 40%) !important;
+}
+
+/* Button styles and interactive elements */
+.dark .bg-blue-50,
+.dark .bg-blue-100,
+.dark [class*="bg-blue-50"],
+.dark [class*="bg-blue-100"] {
+  background-color: hsl(var(--primary-foreground)/0.1) !important;
+}
+
+.dark .text-blue-500,
+.dark .text-blue-600,
+.dark .text-blue-700,
+.dark [class*="text-blue-500"],
+.dark [class*="text-blue-600"],
+.dark [class*="text-blue-700"] {
+  color: hsl(var(--primary)) !important;
+}
+
+/* Fix hover states */
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-white:hover,
+.dark [class*="hover:bg-gray-50"]:hover,
+.dark [class*="hover:bg-slate-50"]:hover,
+.dark [class*="hover:bg-white"]:hover {
+  background-color: hsl(var(--muted)) !important;
+}
+
+/* Fix selection, focus and active states */
+.dark .active\:bg-gray-50:active,
+.dark .active\:bg-slate-50:active,
+.dark .active\:bg-white:active,
+.dark [class*="active:bg-gray-50"]:active,
+.dark [class*="active:bg-slate-50"]:active,
+.dark [class*="active:bg-white"]:active,
+.dark .focus\:bg-gray-50:focus,
+.dark .focus\:bg-slate-50:focus,
+.dark .focus\:bg-white:focus,
+.dark [class*="focus:bg-gray-50"]:focus,
+.dark [class*="focus:bg-slate-50"]:focus,
+.dark [class*="focus:bg-white"]:focus {
+  background-color: hsl(var(--secondary)) !important;
+}
+
+/* Dashboard card size consistency - ensure all cards have same size as the original */
+.group.relative.overflow-hidden.rounded-2xl {
+  height: auto !important;
+  display: block !important; /* Match original card structure */
+}
+
+.group.relative.overflow-hidden.rounded-2xl > .relative.space-y-4.z-10 {
+  display: block !important;
+}
+
+.group.relative.overflow-hidden.rounded-2xl .flex-1 {
+  display: block !important;
+}
+
+/* Ensure both light and dark mode cards have same proportions */
+.dark .group.relative.overflow-hidden.rounded-2xl,
+.group.relative.overflow-hidden.rounded-2xl {
+  height: auto !important;
+}
+
+/* Fix any size inconsistencies between cards */
+[data-tour="papers"], 
+[data-tour="concepts"], 
+[data-tour="library"], 
+[data-tour="osce"], 
+[data-tour="spot"] {
+  height: auto !important;
+  display: block !important; /* Match exactly the original card structure */
+}
+
+/* Fix dashboard card sizing to match original card design exactly */
+[data-tour="papers"], 
+[data-tour="concepts"], 
+[data-tour="library"], 
+[data-tour="osce"], 
+[data-tour="spot"],
+.dark [data-tour="papers"], 
+.dark [data-tour="concepts"], 
+.dark [data-tour="library"], 
+.dark [data-tour="osce"], 
+.dark [data-tour="spot"] {
+  /* Use exact styling from the original card design */
+  height: auto !important;
+  min-height: unset !important;
+  max-height: unset !important;
+  padding: 1.5rem !important; /* match p-6 */
+  display: block !important; /* Override flex display to match original */
+  flex-direction: initial !important;
+  justify-content: initial !important;
+}
+
+/* Reset all flex properties to match the original structure */
+[data-tour] .relative.space-y-4.z-10,
+.dark [data-tour] .relative.space-y-4.z-10 {
+  height: auto !important;
+  display: block !important;
+}
+
+/* Target the flex items inside dashboard cards to exactly match original */
+[data-tour] .flex.items-start.gap-4,
+.dark [data-tour] .flex.items-start.gap-4 {
+  align-items: flex-start !important;
+  height: auto !important;
+}
+
+/* Form elements in dark mode */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="search"],
+.dark input[type="tel"],
+.dark input[type="url"],
+.dark input[type="date"],
+.dark textarea,
+.dark select {
+  background-color: hsl(var(--input)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Placeholder color */
+.dark ::placeholder {
+  color: hsl(var(--muted-foreground)) !important;
+  opacity: 0.7;
+}
+
+/* Tables in dark mode */
+.dark table,
+.dark thead,
+.dark tbody,
+.dark tr,
+.dark th,
+.dark td {
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark th {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark td {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark tr:nth-child(even) td {
+  background-color: hsl(var(--accent)) !important;
+}
+
+/* Modal dialogs and popups */
+.dark .fixed.inset-0.bg-gray-500.bg-opacity-75,
+.dark .fixed.inset-0.bg-black.bg-opacity-50,
+.dark .fixed.inset-0.bg-slate-900.bg-opacity-50 {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.dark .modal-content,
+.dark .dialog-content,
+.dark [role="dialog"],
+.dark [class*="modal-"],
+.dark [class*="popup-"] {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .modal-header,
+.dark .dialog-header,
+.dark [class*="modal-header"],
+.dark [class*="dialog-header"] {
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .modal-footer,
+.dark .dialog-footer,
+.dark [class*="modal-footer"],
+.dark [class*="dialog-footer"] {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Fix dropdown menus */
+.dark .dropdown-menu,
+.dark [role="menu"],
+.dark [class*="dropdown-menu"] {
+  background-color: hsl(var(--popover)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+}
+
+.dark .dropdown-item:hover,
+.dark [role="menuitem"]:hover,
+.dark [class*="dropdown-item"]:hover {
+  background-color: hsl(var(--accent)) !important;
+}
+
+/* Code blocks and pre elements */
+.dark pre,
+.dark code,
+.dark .code,
+.dark [class*="pre-"],
+.dark [class*="code-"],
+.dark [class*="codeblock"] {
+  background-color: hsl(222, 47%, 8%) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Syntax highlighting in dark mode */
+.dark .token.comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.dark .token.punctuation {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .token.property,
+.dark .token.tag,
+.dark .token.boolean,
+.dark .token.number,
+.dark .token.constant,
+.dark .token.symbol {
+  color: hsl(var(--primary)) !important;
+}
+
+.dark .token.selector,
+.dark .token.attr-name,
+.dark .token.string,
+.dark .token.char,
+.dark .token.builtin {
+  color: hsl(var(--accent)) !important;
+}
+
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url,
+.dark .language-css .token.string,
+.dark .token.variable {
+  color: hsl(var(--secondary)) !important;
+}
+
+.dark .token.atrule,
+.dark .token.attr-value,
+.dark .token.keyword {
+  color: hsl(var(--primary)) !important;
+}
+
+.dark .token.function {
+  color: hsl(196, 80%, 70%) !important;
+}
+
+.dark .token.regex,
+.dark .token.important {
+  color: hsl(43, 74%, 66%) !important;
+}
+
+/* Status indicators */
+.dark .text-green-500,
+.dark .text-green-600,
+.dark .text-green-700,
+.dark [class*="text-green-"] {
+  color: hsl(142, 72%, 50%) !important;
+}
+
+.dark .text-red-500,
+.dark .text-red-600,
+.dark .text-red-700,
+.dark [class*="text-red-"] {
+  color: hsl(0, 84%, 60%) !important;
+}
+
+.dark .text-yellow-500,
+.dark .text-yellow-600,
+.dark .text-yellow-700,
+.dark [class*="text-yellow-"] {
+  color: hsl(35, 92%, 65%) !important;
+}
+
+/* Cards with images or media - ensure proper contrast */
+.dark .group .relative.h-48.overflow-hidden,
+.dark [class*="card-image"],
+.dark [class*="card-media"] {
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+/* Consistent shadow styles in dark mode */
+.dark .shadow,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl,
+.dark [class*="shadow-"] {
+  --tw-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4) !important;
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color) !important;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+}
+
+/* Fix any remaining header issues */
+.dark h1, 
+.dark h2,
+.dark h3, 
+.dark h4, 
+.dark h5, 
+.dark h6 {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Last few fixes for the hero section in home - background elements */
+.dark .absolute.-top-16.-right-16.w-64.h-64,
+.dark .absolute.-bottom-8.-left-8.w-40.h-40 {
+  background-color: rgba(196, 240, 255, 0.05) !important;
+}
+
+/* Cookie consent in dark mode */
+.dark #cookieconsent .cc-window {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark #cookieconsent .cc-btn {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Fix layout backgrounds to use consistent blue in dark mode */
+.dark .min-h-screen.flex.flex-col.bg-gray-50,
+.dark .bg-gray-50,
+.dark [class*="bg-gray-50"] {
+  background-color: hsl(222 47% 11%) !important;
+}
+
+.dark .bg-white,
+.dark [class*="bg-white"] {
+  background-color: hsl(222 47% 11%) !important;
+}
+
+/* Content pages background fix */
+.dark .p-4.sm\:p-6.lg\:p-8,
+.dark .px-4.sm\:px-6.lg\:px-8.py-6,
+.dark .px-4.sm\:px-6.lg\:px-8.py-8,
+.dark .p-6.sm\:p-8.md\:p-10,
+.dark .p-4.sm\:p-6.lg\:p-8.py-6.md\:py-8 {
+  background-color: hsl(222 47% 11%) !important;
+}
+
+/* Fix main container for concepts/papers/library pages */
+.dark .flex-1.lg\:ml-16.xl\:ml-64,
+.dark .lg\:ml-16.xl\:ml-64 {
+  background-color: hsl(222 47% 11%) !important;
+}
+
+/* Fix sidebar and navbar in dark mode */
+.dark aside,
+.dark nav.sticky,
+.dark .fixed.lg\:sticky.top-16.bottom-0.left-0,
+.dark .sticky.top-0.z-50.w-full {
+  background-color: hsl(222 47% 11%) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Fix user dropdown menu in dark mode */
+.dark .absolute.right-0.mt-2.w-56.rounded-lg.shadow-lg.bg-white,
+.dark .py-1.border-t.border-gray-100,
+.dark .px-4.py-3.border-b.border-gray-100 {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .flex.items-center.px-4.py-2.text-sm.text-gray-700.hover\:bg-gray-50,
+.dark .w-full.flex.items-center.px-4.py-2.text-sm.text-red-600.hover\:bg-gray-50 {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .flex.items-center.px-4.py-2.text-sm.text-gray-700.hover\:bg-gray-50:hover,
+.dark .w-full.flex.items-center.px-4.py-2.text-sm.text-red-600.hover\:bg-gray-50:hover {
+  background-color: hsl(var(--muted)) !important;
+}
+
+/* Fix footer background */
+.dark footer,
+.dark .py-4.px-6.border-t.border-gray-100 {
+  background-color: hsl(222 47% 11%) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Ensure all content pages have the blue background */
+.dark div.min-h-screen.bg-gray-50,
+.dark div.min-h-screen.bg-gray-50\/50,
+.dark main.min-h-screen.bg-gray-50,
+.dark main.min-h-screen.bg-gray-50\/50,
+.dark section.min-h-screen.bg-gray-50,
+.dark section.min-h-screen.bg-gray-50\/50 {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Explicitly ensure the page containers have the right background */
+.dark .min-h-screen.bg-gray-50\/50 .max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-6.sm\:py-8,
+.dark .min-h-screen.bg-gray-50\/50 .max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-6.sm\:py-8 > div,
+.dark .min-h-screen.bg-gray-50\/50 .max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-8,
+.dark .min-h-screen.bg-gray-50\/50 .max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-8 > div,
+.dark .min-h-screen.bg-gray-50 .max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-6.sm\:py-8,
+.dark .min-h-screen.bg-gray-50 .max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-6.sm\:py-8 > div {
+  background-color: transparent !important;
+}
+
+/* Target all cards in all content pages */
+.dark .min-h-screen.bg-gray-50\/50 .group.block.p-4.sm\:p-5.bg-white.rounded-xl,
+.dark .min-h-screen.bg-gray-50\/50 .group.block.p-4.bg-white.rounded-xl,
+.dark .min-h-screen.bg-gray-50\/50 .group.block.p-5.bg-white.rounded-xl,
+.dark .min-h-screen.bg-gray-50 .group.block.p-4.sm\:p-5.bg-white.rounded-xl,
+.dark .min-h-screen.bg-gray-50 .group.block.p-4.bg-white.rounded-xl,
+.dark .min-h-screen.bg-gray-50 .group.block.p-5.bg-white.rounded-xl {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Catch any group-hover interactions across content pages */
+.dark .min-h-screen.bg-gray-50\/50 .group h3.group-hover\:text-\[\#55A9C4\],
+.dark .min-h-screen.bg-gray-50\/50 .group:hover h3.group-hover\:text-\[\#55A9C4\],
+.dark .min-h-screen.bg-gray-50 .group h3.group-hover\:text-\[\#55A9C4\],
+.dark .min-h-screen.bg-gray-50 .group:hover h3.group-hover\:text-\[\#55A9C4\] {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .min-h-screen.bg-gray-50\/50 .group:hover h3.group-hover\:text-\[\#55A9C4\],
+.dark .min-h-screen.bg-gray-50 .group:hover h3.group-hover\:text-\[\#55A9C4\] {
+  color: hsl(var(--primary)) !important;
+}
+
+/* Ensure all paper/concept badges have correct colors */
+.dark .min-h-screen.bg-gray-50\/50 .inline-flex.px-2.py-1.rounded-md.bg-\[\#55A9C4\]\/10.text-\[\#55A9C4\],
+.dark .min-h-screen.bg-gray-50 .inline-flex.px-2.py-1.rounded-md.bg-\[\#55A9C4\]\/10.text-\[\#55A9C4\] {
+  background-color: hsla(var(--primary), 0.1) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+/* Fix empty state backgrounds */
+.dark .empty-state .bg-gray-100 {
+  background-color: hsla(var(--muted), 0.2) !important;
+}
+
+.dark .empty-state .text-gray-400 {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Ensure ALL content pages have proper backgrounds without any gray showing through */
+html.dark, 
+body.dark,
+.dark #app,
+.dark #app > div,
+.dark main,
+.dark .min-h-screen,
+.dark body > div,
+.dark [data-page],
+.dark div[data-page] {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Force container elements to be transparent or use the right background */
+.dark .max-w-7xl,
+.dark .mx-auto,
+.dark .container,
+.dark .px-4,
+.dark .sm\:px-6,
+.dark .lg\:px-8,
+.dark .py-6,
+.dark .sm\:py-8,
+.dark .py-8 {
+  background-color: transparent !important;
+}
+
+/* Ensure any card or content area gets the card background */
+.dark .group.relative.overflow-hidden.rounded-2xl > .relative.space-y-4.z-10 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dark .group.relative.overflow-hidden.rounded-2xl .flex-1 {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Admin/Manage layout overrides */
+.dark .min-h-screen.bg-gradient-to-br.from-blue-50.via-white.to-slate-100,
+.dark .min-h-screen.bg-gradient-to-br,
+.dark [data-page^="manage"] .min-h-screen,
+.dark [data-page^="manage"] div.min-h-screen {
+  background: hsl(var(--background)) !important;
+  background-image: none !important;
+}
+
+/* Admin dashboard gradient cards */
+.dark .rounded-xl.bg-gradient-to-br.from-blue-100.via-white.to-blue-50,
+.dark .rounded-xl.bg-gradient-to-br.from-fuchsia-100.via-white.to-fuchsia-50,
+.dark .rounded-xl.bg-gradient-to-br.from-emerald-100.via-white.to-emerald-50 {
+  background: hsl(var(--card)) !important;
+  background-image: none !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Admin dashboard stat cards */
+.dark .rounded-xl.shadow.flex.flex-col.items-center.p-6.border {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Admin page headers and navigation */
+.dark .sticky.top-0.z-40.border-b.bg-white\/80.backdrop-blur.supports-\[backdrop-filter\]\:bg-white\/60.shadow-sm {
+  background-color: hsla(var(--background), 0.8) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Admin nav menu items */
+.dark .bg-blue-50.text-blue-700,
+.dark .hover\:bg-blue-50:hover,
+.dark .bg-gray-100.text-gray-900,
+.dark .hover\:bg-gray-100:hover {
+  background-color: hsla(var(--primary), 0.1) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+/* Ensure any admin pages with white backgrounds get the right color */
+.dark [data-page^="manage"] .bg-white {
+  background-color: hsl(var(--card)) !important;
+}
+
+/* Ensure all manage container divs have right background */
+.dark .relative.p-6.sm\:p-8.bg-white\/50.rounded-2xl.border.shadow-sm,
+.dark [class*="bg-white/50"],
+.dark .bg-white\/50,
+.dark div.bg-white\/50 {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Target manage pages cards like in concepts, papers, etc */
+.dark .group.relative.overflow-hidden.rounded-2xl.bg-white,
+.dark .group.relative.overflow-hidden.rounded-2xl.bg-white.p-6.border.border-slate-100 {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Fix manage page gradients */
+.dark .bg-gradient-to-br.from-blue-100.via-white.to-blue-50,
+.dark .bg-gradient-to-br.from-fuchsia-100.via-white.to-fuchsia-50,
+.dark .bg-gradient-to-br.from-emerald-100.via-white.to-emerald-50,
+.dark .bg-gradient-to-br.from-primary\/5.via-transparent.to-transparent {
+  background-image: none !important;
+  background-color: hsl(var(--card)) !important;
+}
+
+/* Fix admin dashboard card hover */
+.dark .group.block.rounded-2xl.bg-white.shadow-lg:hover,
+.dark .group.block.rounded-2xl.bg-white.shadow-lg.hover\:shadow-xl:hover,
+.dark .group.block.rounded-2xl.hover\:shadow-xl:hover {
+  border-color: hsl(var(--primary)/50) !important;
+}
+
+/* Fix admin page headers */
+.dark .bg-primary\/5,
+.dark .rounded-xl.bg-primary\/5 {
+  background-color: hsla(var(--primary), 0.1) !important;
+}
+
+.dark .border-primary\/10 {
+  border-color: hsla(var(--primary), 0.2) !important;
+}
+
+/* Fix dialog content in manage section */
+.dark .w-\[95vw\].max-w-\[800px\].sm\:w-\[90vw\],
+.dark [class*="max-w-[800px]"] {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Ensure any background gradients in headers are eliminated */
+.dark .absolute.top-0.left-0.right-0.h-0\.5.bg-gradient-to-r.from-primary.via-primary\/50.to-transparent {
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsla(var(--primary), 0.5), transparent) !important;
+}
+
+/* Ensure text in headers is readable */
+.dark h1.text-2xl.font-bold.text-foreground,
+.dark p.text-base.text-muted-foreground\/90 {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix gradient text in manage pages */
+.dark .text-lg.font-bold.bg-gradient-to-r.from-primary\/90.to-primary\/70.bg-clip-text.text-transparent,
+.dark h2.text-lg.font-bold.bg-gradient-to-r.from-primary\/90.to-primary\/70.bg-clip-text.text-transparent {
+  color: hsl(var(--primary)) !important;
+  background-image: none !important;
+  -webkit-text-fill-color: initial !important;
+}
+
+/* Admin/Manage section form inputs and buttons */
+.dark form .space-y-2 input,
+.dark form .space-y-2 select,
+.dark form .space-y-2 textarea {
+  background-color: hsl(var(--input)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Dashboard stat cards and other colored elements */
+.dark .rounded-xl.bg-gradient-to-br {
+  background-image: none !important;
+}
+
+/* Additional specific rules to exactly match the original dashboard card structure */
+/* Target the inner elements to ensure they match the original design */
+.dark [data-tour] .flex-1,
+[data-tour] .flex-1 {
+  display: block !important;
+  flex: none !important;
+}
+
+/* Ensure the main card structure matches the original exactly */
+[data-v-9dc0a892][data-tour],
+.dark [data-v-9dc0a892][data-tour] {
+  height: auto !important;
+  display: block !important;
+}
+
+/* Match the original card container structure */
+.grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3.gap-4.md\:gap-6 > [data-tour] {
+  height: auto !important;
+  display: block !important;
+}
+
+/* Ensure proper spacing between elements within cards */
+[data-tour] p.text-sm.text-gray-600.mt-1.font-medium,
+.dark [data-tour] p.text-sm.text-gray-600.mt-1.font-medium {
+  margin-top: 0.25rem !important;
+}
+
+/* Override any flex styles on containers that might affect card sizing */
+.grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3.gap-4.md\:gap-6 {
+  display: grid !important;
+}

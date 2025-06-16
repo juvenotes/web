@@ -37,18 +37,18 @@ defineOptions({ layout: DashLayout })
     
     <!-- Hero Welcome Section -->
     <div
-      class="relative bg-gradient-to-br from-[#55A9C4]/10 via-[#55A9C4]/15 to-transparent p-6 sm:p-8 rounded-3xl shadow-sm backdrop-blur-sm border border-[#55A9C4]/15 overflow-hidden"
+      class="relative bg-gradient-to-br from-accent/10 via-accent/15 to-transparent p-6 sm:p-8 rounded-3xl shadow-sm backdrop-blur-sm border border-accent/15 overflow-hidden"
     >
       <!-- Decorative background elements -->
-      <div class="absolute -top-16 -right-16 w-64 h-64 bg-[#55A9C4]/5 rounded-full blur-3xl"></div>
-      <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-[#55A9C4]/5 rounded-full blur-2xl"></div>
+      <div class="absolute -top-16 -right-16 w-64 h-64 bg-accent/5 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-accent/5 rounded-full blur-2xl"></div>
 
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10"
       >
         <!-- Welcome Text -->
         <div class="space-y-2">
-          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 class="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-3">
             Hey {{ user?.fullName }}!
             <div class="wave-animation">
               <div
@@ -58,7 +58,7 @@ defineOptions({ layout: DashLayout })
               </div>
             </div>
           </h1>
-          <p class="text-sm sm:text-base text-[#4A6772] font-medium">
+          <p class="text-sm sm:text-base text-muted-foreground font-medium">
             Ready to continue your learning journey?
           </p>
         </div>
@@ -67,18 +67,18 @@ defineOptions({ layout: DashLayout })
         <div class="grid grid-cols-2 gap-3 w-full sm:w-auto sm:flex">
           <!-- Study Time -->
           <div
-            class="group flex items-center gap-3 bg-white/95 hover:bg-gradient-to-r hover:from-[#55A9C4]/5 hover:to-[#55A9C4]/15 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-[#55A9C4]/15"
+            class="group flex items-center gap-3 bg-card hover:bg-gradient-to-r hover:from-primary/5 hover:to-primary/15 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-border"
           >
             <div
-              class="rounded-lg bg-[#55A9C4]/15 p-2 group-hover:scale-105 transition-transform duration-300"
+              class="rounded-lg bg-primary/15 p-2 group-hover:scale-105 transition-transform duration-300"
             >
-              <Clock class="h-4 w-4 sm:h-5 sm:w-5 text-[#55A9C4]" />
+              <Clock class="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
             <div>
-              <p class="text-xs font-medium text-[#4A6772] uppercase tracking-wider">
+              <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Today
               </p>
-              <p class="text-base sm:text-lg font-bold text-[#2C5D6F]">
+              <p class="text-base sm:text-lg font-bold text-foreground">
                 {{ formattedTodayStudyTime }}
               </p>
             </div>
@@ -86,7 +86,7 @@ defineOptions({ layout: DashLayout })
 
           <!-- Streak Counter -->
           <div
-            class="group flex items-center gap-3 bg-white/95 hover:bg-gradient-to-r hover:from-orange-50 hover:to-[#55A9C4]/10 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-[#55A9C4]/15 border-l-orange-200"
+            class="group flex items-center gap-3 bg-card hover:bg-gradient-to-r hover:from-orange-50 hover:to-accent/10 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-accent/15 border-l-orange-200"
           >
             <div
               class="rounded-lg bg-orange-100 p-2 group-hover:scale-105 transition-transform duration-300"
@@ -94,20 +94,20 @@ defineOptions({ layout: DashLayout })
               <Flame class="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
             </div>
             <div>
-              <p class="text-xs font-medium text-[#4A6772] uppercase tracking-wider">Streak</p>
-              <p class="text-base sm:text-lg font-bold text-[#2C5D6F]">
+              <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Streak</p>
+              <p class="text-base sm:text-lg font-bold text-foreground">
                 {{ user?.streak?.currentStreak ?? 0 }}
-                <span class="text-xs text-[#4A6772]">day<span v-if="(user?.streak?.currentStreak ?? 0) !== 1">s</span></span>
+                <span class="text-xs text-muted-foreground">day<span v-if="(user?.streak?.currentStreak ?? 0) !== 1">s</span></span>
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Feature Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-      <!-- Past Papers Card -->
+    
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      <!-- Past Papers -->
       <div
         data-tour="papers"
         @click="$inertia.visit('/papers')"
@@ -120,15 +120,16 @@ defineOptions({ layout: DashLayout })
             >
               <FileText class="h-6 w-6 text-[#55A9C4]" />
             </div>
-
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Past Papers</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">Practice with previous exams</p>
+              <p class="text-sm text-gray-600 mt-1 font-medium">
+                Practice with previous exams
+              </p>
               
               <div
                 class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
               >
-                <span class="text-xs text-[#55A9C4] font-semibold">Start Practicing</span>
+                <span class="text-xs text-[#55A9C4] font-semibold">View papers</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
             </div>

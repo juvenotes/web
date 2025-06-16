@@ -100,9 +100,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50">
+  <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-background">
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm">
+    <nav class="sticky top-0 z-50 w-full bg-white border-b border-gray-100 dark:bg-background dark:border-border shadow-sm">
       <div class="px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
           <!-- Left Section -->
@@ -205,7 +205,7 @@ onUnmounted(() => {
 
       <!-- Sidebar (original behavior preserved) -->
       <aside
-        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col bg-white z-40 -translate-x-full lg:translate-x-0 shadow-lg lg:shadow-sm border-r border-gray-100"
+        class="fixed lg:sticky top-16 bottom-0 left-0 transition-all duration-300 ease-in-out overflow-hidden flex flex-col bg-white dark:bg-background z-40 -translate-x-full lg:translate-x-0 shadow-lg lg:shadow-sm border-r border-gray-100 dark:border-border"
         :class="[isSidebarCollapsed ? 'w-16' : 'w-64', !isSidebarCollapsed && 'translate-x-0']"
         style="max-height: calc(100vh - 4rem)"
       >
@@ -254,14 +254,14 @@ onUnmounted(() => {
 
       <!-- Main Content Area -->
       <main
-        class="flex-1 p-6 lg:p-8 overflow-auto bg-gray-50 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cg fill=%27%23000000%27 fill-opacity=%270.03%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"
+        class="flex-1 p-6 lg:p-8 overflow-auto bg-gray-50 dark:bg-transparent bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cg fill=%27%23000000%27 fill-opacity=%270.03%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] dark:bg-none"
       >
         <slot />
       </main>
     </div>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-200 bg-white py-4">
+    <footer class="border-t border-gray-200 dark:border-border bg-white dark:bg-background py-4">
       <div class="px-6 mx-auto max-w-7xl">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-4">

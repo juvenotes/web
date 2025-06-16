@@ -182,6 +182,8 @@ declare module 'vue' {
     TagsInputItemText: typeof import('./inertia/components/ui/tags-input/TagsInputItemText.vue')['default']
     TallySurveyButton: typeof import('./inertia/components/TallySurveyButton.vue')['default']
     Textarea: typeof import('./inertia/components/ui/textarea/Textarea.vue')['default']
+    ThemeProvider: typeof import('./inertia/components/ui/theme/ThemeProvider.vue')['default']
+    ThemeSwitcher: typeof import('./inertia/components/ui/theme/ThemeSwitcher.vue')['default']
     Toast: typeof import('./inertia/components/ui/toast/Toast.vue')['default']
     ToastAction: typeof import('./inertia/components/ui/toast/ToastAction.vue')['default']
     ToastClose: typeof import('./inertia/components/ui/toast/ToastClose.vue')['default']
