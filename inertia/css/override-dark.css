@@ -579,3 +579,64 @@
   background-color: hsl(var(--primary)) !important;
   color: hsl(var(--primary-foreground)) !important;
 }
+
+/* Fix layout backgrounds to use consistent blue in dark mode */
+.dark .min-h-screen.flex.flex-col.bg-gray-50,
+.dark .bg-gray-50,
+.dark [class*="bg-gray-50"] {
+  background-color: hsl(222 47% 11%) !important;
+}
+
+.dark .bg-white,
+.dark [class*="bg-white"] {
+  background-color: hsl(222 47% 11%) !important;
+}
+
+/* Content pages background fix */
+.dark .p-4.sm\:p-6.lg\:p-8,
+.dark .px-4.sm\:px-6.lg\:px-8.py-6,
+.dark .px-4.sm\:px-6.lg\:px-8.py-8,
+.dark .p-6.sm\:p-8.md\:p-10,
+.dark .p-4.sm\:p-6.lg\:p-8.py-6.md\:py-8 {
+  background-color: hsl(222 47% 11%) !important;
+}
+
+/* Fix main container for concepts/papers/library pages */
+.dark .flex-1.lg\:ml-16.xl\:ml-64,
+.dark .lg\:ml-16.xl\:ml-64 {
+  background-color: hsl(222 47% 11%) !important;
+}
+
+/* Fix sidebar and navbar in dark mode */
+.dark aside,
+.dark nav.sticky,
+.dark .fixed.lg\:sticky.top-16.bottom-0.left-0,
+.dark .sticky.top-0.z-50.w-full {
+  background-color: hsl(222 47% 11%) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Fix user dropdown menu in dark mode */
+.dark .absolute.right-0.mt-2.w-56.rounded-lg.shadow-lg.bg-white,
+.dark .py-1.border-t.border-gray-100,
+.dark .px-4.py-3.border-b.border-gray-100 {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .flex.items-center.px-4.py-2.text-sm.text-gray-700.hover\:bg-gray-50,
+.dark .w-full.flex.items-center.px-4.py-2.text-sm.text-red-600.hover\:bg-gray-50 {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .flex.items-center.px-4.py-2.text-sm.text-gray-700.hover\:bg-gray-50:hover,
+.dark .w-full.flex.items-center.px-4.py-2.text-sm.text-red-600.hover\:bg-gray-50:hover {
+  background-color: hsl(var(--muted)) !important;
+}
+
+/* Fix footer background */
+.dark footer,
+.dark .py-4.px-6.border-t.border-gray-100 {
+  background-color: hsl(222 47% 11%) !important;
+  border-color: hsl(var(--border)) !important;
+}
