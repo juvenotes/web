@@ -99,6 +99,27 @@ const updateTheme = (newTheme: Theme) => {
         .max-w-7xl, .mx-auto, .container, .px-4, .sm\\:px-6, .lg\\:px-8 {
           background-color: transparent !important;
         }
+        
+        /* Manage section specific overrides */
+        .relative.p-6.sm\\:p-8.bg-white\\/50.rounded-2xl.border.shadow-sm,
+        [class*="bg-white/50"], .bg-white\\/50, div.bg-white\\/50 {
+          background-color: hsl(var(--card)) !important;
+          border-color: hsl(var(--border)) !important;
+        }
+        
+        /* Fix text in manage/admin pages */
+        .text-2xl.font-bold:not([class*="text-foreground"]) {
+          color: hsl(var(--foreground)) !important;
+        }
+        
+        /* Fix gradient text in manage pages */
+        .text-lg.font-bold.bg-gradient-to-r,
+        h2.text-lg.font-bold.bg-gradient-to-r {
+          color: hsl(var(--primary)) !important;
+          background-image: none !important;
+          -webkit-text-fill-color: initial !important;
+          text-fill-color: initial !important;
+        }
       `
     } else {
       // Remove the style if it exists

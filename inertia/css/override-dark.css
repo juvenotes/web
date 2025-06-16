@@ -619,3 +619,138 @@ body.dark,
 }
 
 /* Ensure any card or content area gets the card background */
+.dark .group.relative.overflow-hidden.rounded-2xl > .relative.space-y-4.z-10 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dark .group.relative.overflow-hidden.rounded-2xl .flex-1 {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Admin/Manage layout overrides */
+.dark .min-h-screen.bg-gradient-to-br.from-blue-50.via-white.to-slate-100,
+.dark .min-h-screen.bg-gradient-to-br,
+.dark [data-page^="manage"] .min-h-screen,
+.dark [data-page^="manage"] div.min-h-screen {
+  background: hsl(var(--background)) !important;
+  background-image: none !important;
+}
+
+/* Admin dashboard gradient cards */
+.dark .rounded-xl.bg-gradient-to-br.from-blue-100.via-white.to-blue-50,
+.dark .rounded-xl.bg-gradient-to-br.from-fuchsia-100.via-white.to-fuchsia-50,
+.dark .rounded-xl.bg-gradient-to-br.from-emerald-100.via-white.to-emerald-50 {
+  background: hsl(var(--card)) !important;
+  background-image: none !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Admin dashboard stat cards */
+.dark .rounded-xl.shadow.flex.flex-col.items-center.p-6.border {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Admin page headers and navigation */
+.dark .sticky.top-0.z-40.border-b.bg-white\/80.backdrop-blur.supports-\[backdrop-filter\]\:bg-white\/60.shadow-sm {
+  background-color: hsla(var(--background), 0.8) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Admin nav menu items */
+.dark .bg-blue-50.text-blue-700,
+.dark .hover\:bg-blue-50:hover,
+.dark .bg-gray-100.text-gray-900,
+.dark .hover\:bg-gray-100:hover {
+  background-color: hsla(var(--primary), 0.1) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+/* Ensure any admin pages with white backgrounds get the right color */
+.dark [data-page^="manage"] .bg-white {
+  background-color: hsl(var(--card)) !important;
+}
+
+/* Ensure all manage container divs have right background */
+.dark .relative.p-6.sm\:p-8.bg-white\/50.rounded-2xl.border.shadow-sm,
+.dark [class*="bg-white/50"],
+.dark .bg-white\/50,
+.dark div.bg-white\/50 {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Target manage pages cards like in concepts, papers, etc */
+.dark .group.relative.overflow-hidden.rounded-2xl.bg-white,
+.dark .group.relative.overflow-hidden.rounded-2xl.bg-white.p-6.border.border-slate-100 {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Fix manage page gradients */
+.dark .bg-gradient-to-br.from-blue-100.via-white.to-blue-50,
+.dark .bg-gradient-to-br.from-fuchsia-100.via-white.to-fuchsia-50,
+.dark .bg-gradient-to-br.from-emerald-100.via-white.to-emerald-50,
+.dark .bg-gradient-to-br.from-primary\/5.via-transparent.to-transparent {
+  background-image: none !important;
+  background-color: hsl(var(--card)) !important;
+}
+
+/* Fix admin dashboard card hover */
+.dark .group.block.rounded-2xl.bg-white.shadow-lg:hover,
+.dark .group.block.rounded-2xl.bg-white.shadow-lg.hover\:shadow-xl:hover,
+.dark .group.block.rounded-2xl.hover\:shadow-xl:hover {
+  border-color: hsl(var(--primary)/50) !important;
+}
+
+/* Fix admin page headers */
+.dark .bg-primary\/5,
+.dark .rounded-xl.bg-primary\/5 {
+  background-color: hsla(var(--primary), 0.1) !important;
+}
+
+.dark .border-primary\/10 {
+  border-color: hsla(var(--primary), 0.2) !important;
+}
+
+/* Fix dialog content in manage section */
+.dark .w-\[95vw\].max-w-\[800px\].sm\:w-\[90vw\],
+.dark [class*="max-w-[800px]"] {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Ensure any background gradients in headers are eliminated */
+.dark .absolute.top-0.left-0.right-0.h-0\.5.bg-gradient-to-r.from-primary.via-primary\/50.to-transparent {
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsla(var(--primary), 0.5), transparent) !important;
+}
+
+/* Ensure text in headers is readable */
+.dark h1.text-2xl.font-bold.text-foreground,
+.dark p.text-base.text-muted-foreground\/90 {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix gradient text in manage pages */
+.dark .text-lg.font-bold.bg-gradient-to-r.from-primary\/90.to-primary\/70.bg-clip-text.text-transparent,
+.dark h2.text-lg.font-bold.bg-gradient-to-r.from-primary\/90.to-primary\/70.bg-clip-text.text-transparent {
+  color: hsl(var(--primary)) !important;
+  background-image: none !important;
+  -webkit-text-fill-color: initial !important;
+}
+
+/* Admin/Manage section form inputs and buttons */
+.dark form .space-y-2 input,
+.dark form .space-y-2 select,
+.dark form .space-y-2 textarea {
+  background-color: hsl(var(--input)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Dashboard stat cards and other colored elements */
+.dark .rounded-xl.bg-gradient-to-br {
+  background-image: none !important;
+}
