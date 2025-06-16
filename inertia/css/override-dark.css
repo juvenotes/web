@@ -8,24 +8,27 @@
   background-color: hsl(var(--card)) !important;
 }
 
-/* Dashboard and common component backgrounds */
+/* Dashboard and common component backgrounds - preserve original sizing and spacing */
 .dark .dashboard-content .rounded-2xl,
 .dark .dashboard-content .rounded-xl,
-.dark .dashboard-content .group,
 .dark .rounded-xl,
 .dark .rounded-2xl {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Dashboard cards consistency - preserve original sizing */
+.dark .group.relative.overflow-hidden.rounded-2xl {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
 }
 
+/* Text colors for better readability */
 .dark [class*="text-gray-"],
 .dark [class*="text-slate-"],
 .dark [class*="text-[#4A6772]"],
-.dark .text-gray-900,
-.dark .text-gray-800,
-.dark .text-gray-700,
 .dark .text-gray-600,
-.dark .text-gray-500 {
+.dark .text-gray-500,
+.dark .text-gray-700 {
   color: hsl(var(--muted-foreground)) !important;
 }
 
@@ -35,6 +38,22 @@
 .dark [class*="text-gray-900"],
 .dark [class*="text-gray-800"] {
   color: hsl(var(--foreground)) !important;
+}
+
+/* Dashboard card icons - keep the nice gradient look but adjusted for dark mode */
+.dark .group .p-4.rounded-xl {
+  background: linear-gradient(to bottom right, hsla(196, 80%, 30%, 0.3), hsla(196, 80%, 25%, 0.4)) !important;
+}
+
+/* Make sure dashboard card links are visible */
+.dark .group [class*="text-[#55A9C4]"] {
+  color: hsl(var(--primary)) !important;
+}
+
+/* Ensure consistent card styling in dark mode */
+.dark .dashboard-content .group {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
 }
 
 /* Fix any inline color styles */
@@ -138,4 +157,68 @@
 /* Target specific identifiable elements */
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
   color: hsl(var(--foreground)) !important;
+}
+
+/* Home page overrides for dark mode */
+.dark .bg-gradient-to-br.from-\[\#f0f9ff\].via-\[\#e0f2fe\].to-\[\#bae6fd\] {
+  background: linear-gradient(to bottom right, hsl(222 47% 15%), hsl(222 47% 11%), hsl(222 47% 9%)) !important;
+}
+
+/* Home page text colors */
+.dark .text-gray-900.tracking-tight {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .text-\[\#55A9C4\] {
+  color: hsl(var(--primary)) !important;
+}
+
+.dark .text-gray-600.mb-8 {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Home page feature cards */
+.dark .bg-white.rounded-2xl.p-6.text-center {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .bg-\[\#55A9C4\]\/10 {
+  background-color: hsla(var(--primary), 0.2) !important;
+}
+
+.dark .group-hover\:bg-\[\#55A9C4\]\/20 {
+  background-color: hsla(var(--primary), 0.3) !important;
+}
+
+/* Page content backgrounds */
+.dark .bg-white\/90, 
+.dark .bg-gray-50\/50,
+.dark .bg-gray-100\/50,
+.dark .bg-slate-50\/50 {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Content pages background (concepts, papers, OSCE, spot, library) */
+.dark .container.mx-auto.px-4.py-8 > div,
+.dark .max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-8 > div {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Fix main content area backgrounds */
+.dark main.bg-gray-50\/50,
+.dark div.bg-gray-50\/50,
+.dark section.bg-gray-50\/50 {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Make sure buttons are visible */
+.dark .bg-\[\#55A9C4\] {
+  background-color: hsl(var(--primary)) !important;
+}
+
+.dark .hover\:bg-\[\#4796b0\]:hover {
+  background-color: hsl(196 80% 40%) !important;
 }
