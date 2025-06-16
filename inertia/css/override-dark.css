@@ -956,3 +956,39 @@ body.dark,
 .dark .hover\:text-gray-900:hover {
   color: hsl(var(--primary)) !important;
 }
+
+/* Ensure all headings in dark mode have proper contrast */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Force high contrast text in the admin sections */
+.dark .text-foreground {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Special focus for concept headings which might be dark in some views */
+.dark [class*="text-gray-900"],
+.dark [class*="text-slate-900"],
+.dark [class*="text-zinc-900"],
+.dark [class*="text-neutral-900"] {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix for the MdxContent in admin views */
+.dark .MdxContent > h1,
+.dark .MdxContent > h2,
+.dark .MdxContent > h3,
+.dark .MdxContent > h4,
+.dark .MdxContent > h5,
+.dark .MdxContent > h6,
+.dark .MdxContent p,
+.dark .MdxContent li,
+.dark .MdxContent td {
+  color: hsl(var(--foreground)) !important;
+}

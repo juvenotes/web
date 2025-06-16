@@ -108,7 +108,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
               </div>
             </div>
             <div>
-              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-foreground mb-2">
                 {{ concept.title }}
               </h1>
               <div
@@ -140,7 +140,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
       <div v-if="children?.length" class="space-y-5 sm:space-y-6">
         <div class="flex items-center gap-2">
           <Network class="h-5 w-5 flex-shrink-0 text-[#55A9C4]" />
-          <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Related Concepts</h2>
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-foreground">Related Concepts</h2>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
@@ -161,7 +161,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
                   </div>
                 </div>
                 <div>
-                  <h3 class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2">
+                  <h3 class="text-base font-semibold text-gray-900 dark:text-foreground group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2">
                     {{ child.title }}
                   </h3>
                   <p class="mt-1 text-sm text-gray-500">Explore concept</p>
@@ -175,7 +175,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
       <!-- Content Section -->
       <div
         v-if="content"
-        class="prose prose-sm sm:prose-base max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-[#55A9C4] hover:prose-a:text-[#4795af] prose-video:mx-auto prose-video:w-full"
+        class="prose prose-sm sm:prose-base max-w-none prose-headings:text-gray-900 dark:prose-headings:text-foreground prose-p:text-gray-600 dark:prose-p:text-foreground prose-a:text-[#55A9C4] hover:prose-a:text-[#4795af] dark:prose-a:text-primary dark:hover:prose-a:text-primary/80 prose-video:mx-auto prose-video:w-full"
       >
         <MdxContent :content="content" />
       </div>
@@ -184,7 +184,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
       <div v-if="questions?.length" class="space-y-6">
         <div class="flex items-center gap-2">
           <HelpCircle class="h-5 w-5 text-[#55A9C4]" />
-          <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Practice Questions</h2>
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-foreground">Practice Questions</h2>
         </div>
 
         <div class="space-y-4 sm:space-y-5">
@@ -195,7 +195,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
             :style="`--animation-order: ${index};`"
           >
             <div class="p-4 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
-              <p class="font-medium text-gray-900 mb-4">{{ question.questionText }}</p>
+              <p class="font-medium text-gray-900 dark:text-foreground mb-4">{{ question.questionText }}</p>
 
               <!-- MCQ Choices -->
               <div v-if="question.choices?.length" class="space-y-2">
@@ -223,7 +223,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
                   <div
                     class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#55A9C4]/40 to-[#55A9C4]/10 rounded-full"
                   />
-                  <p class="font-medium text-gray-900">{{ part.partText }}</p>
+                  <p class="font-medium text-gray-900 dark:text-foreground">{{ part.partText }}</p>
                   <p class="mt-2 text-gray-600">{{ part.expectedAnswer }}</p>
                   <div class="flex items-center gap-2 mt-2">
                     <Award class="h-4 w-4 text-[#55A9C4]/70" />
@@ -237,7 +237,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
                 v-if="showAnswer[question.id]"
                 class="mt-4 p-4 rounded-lg bg-[#55A9C4]/5 text-gray-700 border border-[#55A9C4]/10"
               >
-                <p class="font-medium text-gray-900">
+                <p class="font-medium text-gray-900 dark:text-foreground">
                   <span class="text-[#55A9C4]">Correct Answer:</span> {{ getCorrectAnswer(question)?.choiceText }}
                 </p>
                 <p class="mt-2">
