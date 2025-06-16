@@ -168,31 +168,6 @@ export default class ManagePastPapersController {
     })
   }
 
-  // async viewPaper({ params, inertia, logger, auth }: HttpContext) {
-  //   const context = {
-  //     controller: 'ManagePastPapersController',
-  //     action: 'viewPaper',
-  //     paperSlug: params.paperSlug,
-  //     userId: auth.user?.id,
-  //   }
-  //   logger.info({ ...context, message: 'fetching paper details' })
-
-  //   const paper = await PastPaper.query()
-  //     .where('slug', params.paperSlug)
-  //     .whereIn('paper_type', [PaperType.MCQ, PaperType.SAQ, PaperType.MIXED])
-  //     .preload('concept')
-  //     .preload('questions', (query) => {
-  //       query.orderBy('id', 'asc').preload('choices').preload('parts')
-  //     })
-  //     .firstOrFail()
-
-  //   return inertia.render('manage/papers/view', {
-  //     paper: new PastPaperDto(paper),
-  //     concept: new ConceptDto(paper.concept),
-  //     questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
-  //   })
-  // }
-
   /**
    * Store a new paper
    */
@@ -661,35 +636,6 @@ export default class ManagePastPapersController {
       throw error
     }
   }
-
-  // async deleteQuestion({ params, response, auth, session, logger }: HttpContext) {
-  //   try {
-  //     // Load question with pastPaper relationship
-  //     const question = await Question.query()
-  //       .where('slug', params.questionSlug)
-  //       .preload('pastPaper')
-  //       .firstOrFail()
-
-  //     await db.transaction(async (trx) => {
-  //       // Update paper metadata
-  //       await question.pastPaper
-  //         .merge({
-  //           metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
-  //         })
-  //         .useTransaction(trx)
-  //         .save()
-
-  //       // Delete the question
-  //       await question.useTransaction(trx).delete()
-  //     })
-
-  //     session.flash('success', 'Question deleted successfully')
-  //     return response.redirect().back()
-  //   } catch (error) {
-  //     logger.error('failed to delete question', { error })
-  //     throw error
-  //   }
-  // }
 
   /**
    * Delete a paper
