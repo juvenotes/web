@@ -34,7 +34,18 @@
   flex-direction: column;
 }
 
-/* Make all dashboard cards consistent */
+/* Make all dashboard cards consistent - height adjustment for both light and dark mode */
+[data-tour="papers"],
+[data-tour="concepts"],
+[data-tour="library"],
+[data-tour="osce"],
+[data-tour="spot"] {
+  min-height: 140px !important;
+  height: auto !important;
+  padding: 1rem 1.25rem !important; /* Reduced from p-6 (1.5rem) */
+}
+
+/* Dark mode overrides for dashboard cards */
 .dark [data-tour="papers"],
 .dark [data-tour="concepts"],
 .dark [data-tour="library"],
@@ -42,8 +53,6 @@
 .dark [data-tour="spot"] {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
-  min-height: 190px !important;
-  height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
