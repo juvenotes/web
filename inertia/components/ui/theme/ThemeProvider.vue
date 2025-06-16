@@ -45,11 +45,42 @@ const updateTheme = (newTheme: Theme) => {
     root.classList.remove('light', 'dark')
     
     // Set the appropriate class based on the theme
-    if (newTheme === 'system') {
-      const systemTheme = getSystemTheme()
-      root.classList.add(systemTheme)
+    const resolvedTheme = newTheme === 'system' ? getSystemTheme() : newTheme
+    
+    // Apply to document element
+    root.classList.add(resolvedTheme)
+    
+    // Apply to body as well for maximum compatibility
+    if (document.body) {
+      document.body.classList.remove('light', 'dark')
+      document.body.classList.add(resolvedTheme)
+      // Also set color-scheme to improve native element styling
+      document.body.style.colorScheme = resolvedTheme
+    }
+    
+    // Handle the dynamic style element for forcing dark mode
+    if (resolvedTheme === 'dark') {
+      let styleEl = document.getElementById('force-dark-mode')
+      if (!styleEl) {
+        styleEl = document.createElement('style')
+        styleEl.id = 'force-dark-mode'
+        document.head.appendChild(styleEl)
+      }
+      styleEl.textContent = `
+        [class*="bg-white"], .bg-white, .bg-gray-50, .bg-slate-50 {
+          background-color: hsl(var(--card)) !important;
+        }
+        [class*="text-gray-900"], [class*="text-gray-800"], .text-gray-900, .text-gray-800 {
+          color: hsl(var(--foreground)) !important;
+        }
+        [class*="text-gray-"], [class*="text-slate-"], .text-gray-700, .text-gray-600, .text-gray-500 {
+          color: hsl(var(--muted-foreground)) !important;
+        }
+      `
     } else {
-      root.classList.add(newTheme)
+      // Remove the style if it exists
+      const styleEl = document.getElementById('force-dark-mode')
+      if (styleEl) styleEl.remove()
     }
     
     // Save to localStorage
@@ -58,6 +89,12 @@ const updateTheme = (newTheme: Theme) => {
     } catch (e) {
       console.error('Failed to save theme to localStorage:', e)
     }
+    
+    // Force a reflow to ensure all components update
+    document.body.offsetHeight;
+    
+    // Event to notify components that the theme has changed
+    window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: resolvedTheme } }))
   } catch (e) {
     console.error('Error updating theme:', e)
   }
