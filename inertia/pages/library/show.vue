@@ -136,11 +136,34 @@
             <img :src="lightboxImageUrl" alt="Hint media" />
           </div>
 
+          <!-- NEW MODAL/LIGHTBOX FOR TABLES -->
+          <div v-if="lightboxHtmlContent" class="table-lightbox" @click.self="closeLightbox">
+            <!-- The 'ref' links this div to our 'tableLightboxContentRef' variable -->
+            <div class="table-lightbox-content" ref="tableLightboxContentRef">
+              <!-- NEW: Draggable Header / Handle -->
+              <div
+                class="drag-handle flex items-center justify-center !bg-gray-200"
+                ref="tableDragHandleRef"
+              >
+                <span class="text-center">Table</span>
+              </div>
+
+              <!-- Close button inside the content box -->
+              <button class="close-button-table" @click="closeLightbox">×</button>
+
+              <!-- The main content area -->
+              <div class="table-content-area !bg-gray-100">
+                <div v-if="isLoadingMedia" class="loading-spinner">Loading Table...</div>
+                <div v-else v-html="lightboxHtmlContent"></div>
+              </div>
+            </div>
+          </div>
+
           <div
             v-else
             class="prose prose-base sm:prose-lg dark:prose-invert max-w-none font-sans prose-medical"
           >
-            <p class="text-muted-foreground">No content available for this article.</p>
+            <p class="text-muted-foreground"></p>
           </div>
         </article>
       </div>
@@ -150,14 +173,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, type Ref } from 'vue'
-import axios from 'axios' // Using axios for clean API requests
+import axios from 'axios'
 import BreadcrumbTrail from '../../components/BreadcrumbTrail.vue'
 
 const props = defineProps({
   article: Object,
 })
 
-// Define breadcrumb items with Learn/Library/Article structure
 const breadcrumbItems = computed(() => [
   { label: 'Library', href: '/library' },
   { label: props.article?.article_name || 'Article' },
@@ -173,6 +195,7 @@ const activeHeaderId = ref<string | null>(null)
 const headers: Header[] =
   props.article?.fullDataContent?.headers || props.article?.full_data_content?.headers || []
 
+// --- (Keep your existing scroll and debounce logic here) ---
 function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
   let timeout: ReturnType<typeof setTimeout> | null = null
   return (...args: Parameters<F>): void => {
@@ -180,7 +203,6 @@ function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
     timeout = setTimeout(() => func(...args), waitFor)
   }
 }
-
 function handleScroll() {
   const scrollOffset = window.scrollY + 100
   const headerElements = headers
@@ -190,27 +212,23 @@ function handleScroll() {
     })
     .filter(Boolean)
     .filter((el) => el!.offsetTop <= scrollOffset) as { id: string; offsetTop: number }[]
-
   activeHeaderId.value =
     headerElements.length > 0 ? headerElements[headerElements.length - 1].id : null
 }
-
 const debouncedScrollHandler = debounce(handleScroll, 50)
-
 onMounted(() => {
   window.addEventListener('scroll', debouncedScrollHandler)
   handleScroll()
 })
-
 onUnmounted(() => {
   window.removeEventListener('scroll', debouncedScrollHandler)
 })
+// --- (End of scroll logic) ---
 
-// images functionality
-// A reactive ref to hold the URL for our lightbox
-const lightboxImageUrl: Ref<string | null> = ref(null)
+// ================================================================
+// === NEW AND UPDATED MEDIA HANDLING LOGIC =======================
+// ================================================================
 
-// The method that will handle all clicks inside the article content
 interface HintLinkElement extends HTMLAnchorElement {
   dataset: {
     hintId: string
@@ -219,44 +237,58 @@ interface HintLinkElement extends HTMLAnchorElement {
 }
 
 interface MediaApiResponse {
-  url: string
+  url: string // The URL from Cloudinary
 }
 
+// --- STATE MANAGEMENT ---
+const lightboxImageUrl: Ref<string | null> = ref(null) // For images
+const lightboxHtmlContent: Ref<string | null> = ref(null) // NEW: For HTML tables
+const isLoadingMedia: Ref<boolean> = ref(false) // NEW: For loading feedback
+
+// --- CLICK HANDLER (This is the main change) ---
 const handleContentClick = async (event: MouseEvent): Promise<void> => {
-  // Find the clicked link or its parent link with a 'data-hint-id'
   const link = (event.target as HTMLElement).closest('a[data-hint-id]') as HintLinkElement | null
-
-  // If the click was not on one of our special links, do nothing.
-  if (!link) {
-    return
-  }
-
-  // Prevent the browser from trying to navigate
+  if (!link) return
   event.preventDefault()
 
   const hintId: string = link.dataset.hintId
+  const isTableLink = !!link.querySelector('.article-icon-table') // Check if it's a table link
+
+  // Reset state and show loading indicator
+  isLoadingMedia.value = true
+  lightboxImageUrl.value = null
+  lightboxHtmlContent.value = null
 
   try {
-    // Make an API call to our new AdonisJS endpoint
+    // Step 1: Get the Cloudinary URL from our own backend
     const response = await axios.get<MediaApiResponse>(`/media/${hintId}`)
+    const cloudinaryUrl = response.data.url
 
-    // Set the reactive ref to the URL from the API response
-    // This will cause the lightbox to appear
-    lightboxImageUrl.value = response.data.url
-  } catch (error: any) {
-    // Handle errors (e.g., 404 Not Found)
-    if (error.response && error.response.status === 404) {
-      console.warn(`Media not found for hint: ${hintId}`)
-      // Optionally, show a "not found" toast notification to the user
+    if (isTableLink) {
+      // --- HANDLE TABLE ---
+      // Step 2: Fetch the actual HTML content from Cloudinary
+      const tableResponse = await axios.get<string>(cloudinaryUrl)
+
+      // Put the fetched HTML string into our new state variable
+      lightboxHtmlContent.value = tableResponse.data
     } else {
-      console.error('An error occurred while fetching media:', error)
+      // --- HANDLE IMAGE (Original logic) ---
+      // For images, we just need the URL
+      lightboxImageUrl.value = cloudinaryUrl
     }
+  } catch (error: any) {
+    console.error(`Error fetching media for hint ${hintId}:`, error)
+    // You could show a toast notification here
+  } finally {
+    // Hide loading indicator regardless of success or failure
+    isLoadingMedia.value = false
   }
 }
 
-// A simple method to close the lightbox
+// --- CLOSE LIGHTBOX (Updated to reset both states) ---
 const closeLightbox = () => {
   lightboxImageUrl.value = null
+  lightboxHtmlContent.value = null
 }
 </script>
 
@@ -450,5 +482,112 @@ details[open] .details-arrow {
 
 .close-button:hover {
   opacity: 1;
+}
+
+/* --- UPDATED: Styles for the Table Lightbox --- */
+.table-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Remove display flex properties to allow manual positioning */
+  z-index: 999;
+  /* The dark overlay is still useful, but clicking it should close the modal */
+}
+.table-lightbox::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.table-lightbox-content {
+  position: absolute; /* Changed from relative to allow dragging */
+  /* Centering the initial position */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: 12px;
+  max-width: 900px;
+  width: 90%; /* Use percentage for better responsiveness */
+  max-height: 90vh;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+  /* Use flexbox to structure the header and content */
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- NEW: Draggable Handle Styles --- */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background-color: hsl(var(--muted)); /* A slightly different background for the header */
+  border-bottom: 1px solid hsl(var(--border));
+  border-radius: 12px 12px 0 0; /* Match top corners */
+  cursor: grab; /* The 'grab' cursor indicates something is draggable */
+  user-select: none; /* Prevent text selection on the handle */
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+.drag-handle:active {
+  cursor: grabbing; /* Change cursor while actively dragging */
+}
+.drag-handle svg {
+  color: hsl(var(--muted-foreground));
+}
+
+/* --- NEW: Hover Effects on the Drag Handle --- */
+.drag-handle {
+  transition: background-color 0.2s ease-in-out;
+}
+.drag-handle:hover {
+  background-color: hsl(var(--muted) / 0.8); /* Slightly lighten/change on hover */
+}
+
+/* --- NEW: Scrollable content area inside the modal --- */
+.table-content-area {
+  padding: 1.5rem;
+  overflow-y: auto; /* This makes ONLY the content scroll, not the header */
+}
+/* This ensures the table itself doesn't cause overflow issues */
+.table-content-area div[v-html] {
+  overflow-x: auto;
+}
+
+.close-button-table {
+  /* Position relative to the drag handle for consistency */
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.75rem 1.25rem; /* Give it the same padding as the handle */
+  color: hsl(var(--muted-foreground));
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+
+  /* --- NEW: Hover effects for the close button --- */
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+  border-radius: 0 12px 0 0;
+}
+.close-button-table:hover {
+  transform: scale(1.2);
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--accent) / 0.1);
 }
 </style>
