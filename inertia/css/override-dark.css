@@ -87,11 +87,10 @@ html.dark div.bg-gray-100[style] {
 .dark .group.relative.overflow-hidden.rounded-2xl {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
-  display: flex;
-  flex-direction: column;
+  /* Removed flex display to match example card structure */
 }
 
-/* Make all dashboard cards consistent */
+/* Make all dashboard cards consistent with the provided example */
 .dark [data-tour="papers"],
 .dark [data-tour="concepts"],
 .dark [data-tour="library"],
@@ -100,9 +99,10 @@ html.dark div.bg-gray-100[style] {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
   height: auto !important;
-  display: block !important; /* Match original card structure exactly */
+  display: block !important;
   overflow: hidden !important;
   border-radius: 1rem !important;
+  /* Exact match to example card */
 }
 
 /* Fix card headers and footers */
