@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dark mode overrides must come after Tailwind loads but before our theme variables */
+@import './override-dark.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -47,44 +50,49 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222 47% 11%;
     --foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 20.2% 85%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 216 34% 23%;
+    --input: 216 34% 23%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 196 80% 70%;
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 217 32% 22%;
     --secondary-foreground: 210 40% 98%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 196 80% 65%;
+    --accent-foreground: 222.2 47% 11%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
     --ring: 212.7 26.8% 83.9%;
+    
+    --success: 142 72% 29%;
+    --success-foreground: 210 40% 98%;
+    
+    --warning: 35 92% 65%;
+    --warning-foreground: 210 40% 98%;
+    
+    --info: 196 80% 70%;
+    --info-foreground: 222 47% 11%;
 
-    --chart-1: 220 70% 50%;
-
-    --chart-2: 160 60% 45%;
-
-    --chart-3: 30 80% 55%;
-
-    --chart-4: 280 65% 60%;
-
-    --chart-5: 340 75% 55%;
+    --chart-1: 220 80% 60%;
+    --chart-2: 160 70% 55%;
+    --chart-3: 30 90% 65%;
+    --chart-4: 280 75% 70%;
+    --chart-5: 340 85% 65%;
   }
 }
 
@@ -94,6 +102,78 @@
   }
 
   body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+
+  /* Ensure proper dark mode for everything */
+  .dark body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Dark mode overrides for hardcoded backgrounds */
+@layer utilities {
+  .dark .bg-white,
+  .dark [class*="bg-white"],
+  .dark div[style*="background-color: white"],
+  .dark div[style*="background-color: #fff"],
+  .dark div[style*="background-color: #ffffff"] {
+    background-color: hsl(var(--card)) !important;
+  }
+
+  .dark .border,
+  .dark [class*="border"] {
+    border-color: hsl(var(--border)) !important;
+  }
+
+  .dark div[style*="background-color: rgba(255, 255, 255"],
+  .dark div[style*="background-color: rgba(249, 250, 251"] {
+    background-color: hsl(var(--background)) !important;
+  }
+  
+  /* Override hardcoded text colors in dark mode */
+  .dark [class*="text-gray-"],
+  .dark [class*="text-slate-"] {
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  /* Handle shadows better in dark mode */
+  .dark [class*="shadow"] {
+    --tw-shadow-color: rgba(0, 0, 0, 0.25) !important;
+  }
+}
+
+/* Ensure dashboard cards match the example exactly */
+@layer utilities {
+  /* Reset any overly specific styles that might be affecting the cards */
+  [data-tour="papers"],
+  [data-tour="concepts"],
+  [data-tour="library"],
+  [data-tour="osce"],
+  [data-tour="spot"] {
+    /* Remove min-height and flex constraints that may be forcing card size */
+    min-height: unset;
+    height: auto;
+    display: block;
+  }
+
+  /* Remove flex styling on card inner containers to match example */
+  [data-tour] > .relative.space-y-4 {
+    height: auto;
+    display: block;
+  }
+
+  /* Allow flex-1 to behave naturally */
+  [data-tour] .flex-1 {
+    display: block;
+  }
+  
+  /* Exactly match the example card */
+  .dashboard-card-fixed-size {
+    /* Make sure the padding stays exactly as in the example */
+    padding: 1.5rem !important; /* p-6 equivalent */
+    /* Ensure consistent sizing */
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 }

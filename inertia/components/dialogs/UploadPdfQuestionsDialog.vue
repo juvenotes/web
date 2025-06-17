@@ -140,9 +140,10 @@ async function handleUpload() {
                 }
               }
             )
+            // Allow questions with 0 or 1 choice (flexible)
             return {
               questionText,
-              choices: mappedChoices,
+              choices: mappedChoices, // can be empty or single
               explanation: q.explanation || '',
               questionImagePath: q.questionImagePath || null,
             }

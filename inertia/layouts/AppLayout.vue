@@ -4,6 +4,7 @@ import { Button } from '~/components/ui/button'
 import type UserDto from '#dtos/user'
 import { Twitter, Instagram, Linkedin } from 'lucide-vue-next'
 import { onMounted } from 'vue'
+import { ThemeProvider, ThemeSwitcher } from '~/components/ui/theme'
 
 declare global {
   interface Window {
@@ -81,23 +82,25 @@ const logoPath = '/images/logo.webp'
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-background">
-    <!-- Navigation -->
-    <nav
-      class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-    >
-      <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div class="flex items-center">
-          <Link href="/">
-            <img :src="logoPath" alt="Juvenotes Logo" class="h-12 w-auto" />
-          </Link>
-        </div>
+  <ThemeProvider default-theme="system" storage-key="juvenotes-theme">
+    <div class="min-h-screen flex flex-col bg-background">
+      <!-- Navigation -->
+      <nav
+        class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      >
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div class="flex items-center">
+            <Link href="/">
+              <img :src="logoPath" alt="Juvenotes Logo" class="h-12 w-auto" />
+            </Link>
+          </div>
 
-        <div class="flex items-center gap-4">
-          <template v-if="user">
-            <span class="text-sm text-muted-foreground"> Welcome, {{ user?.fullName }} </span>
-            <Button variant="ghost" @click="() => $inertia.post('/logout')"> Logout </Button>
-          </template>
+          <div class="flex items-center gap-4">
+            <ThemeSwitcher />
+            <template v-if="user">
+              <span class="text-sm text-muted-foreground"> Welcome, {{ user?.fullName }} </span>
+              <Button variant="ghost" @click="() => $inertia.post('/logout')"> Logout </Button>
+            </template>
           <template v-else>
             <Button variant="ghost" asChild>
               <Link href="/login">Login</Link>
@@ -190,6 +193,7 @@ const logoPath = '/images/logo.webp'
 
     <ToastManager :messages="messages" />
   </div>
+  </ThemeProvider>
 </template>
 <style>
 .cc-window {

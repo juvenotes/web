@@ -44,8 +44,7 @@ export class MCQParser {
 
       try {
         const lines = block.split('\n').filter(Boolean)
-
-        if (lines.length < 7) {
+        if (lines.length < 3) {
           console.warn('skipping invalid block', {
             ...blockContext,
             reason: 'insufficient_lines',
@@ -55,26 +54,40 @@ export class MCQParser {
         }
 
         const stem = lines[0]
-        const choices = lines.slice(1, 6).map((line) => line.substring(3).trim())
+        // Dynamically collect choices (lines starting with A. ... E. ... etc.)
+        const choiceRegex = /^[A-E][\.|\)]\s+/ // Accepts A. ... or A) ...
+        const choices: string[] = []
+        let i = 1
+        while (i < lines.length && choiceRegex.test(lines[i])) {
+          choices.push(lines[i].substring(3).trim())
+          i++
+        }
+        if (choices.length < 2) {
+          console.warn('skipping block with less than 2 choices', {
+            ...blockContext,
+            reason: 'not_enough_choices',
+            choicesFound: choices.length,
+          })
+          continue
+        }
 
+        // Find answer and explanation lines
         const answerLine = lines.find((l) => l.startsWith('ANSWER:'))
         if (!answerLine) {
           console.warn('skipping block without answer', blockContext)
           continue
         }
-
         const answer = answerLine.split(':')[1].trim()
-
         const explanationLine = lines.find(
           (l) => l.startsWith('EXPLANATION:') || l.startsWith('FEEDBACK:')
         )
         const explanation = explanationLine ? explanationLine.split(':')[1].trim() : null
 
         questions.push({ stem, choices, answer, explanation })
-
         console.info('parsed question block', {
           ...blockContext,
           stemPreview: stem.substring(0, 50),
+          choicesCount: choices.length,
         })
       } catch (error) {
         console.error('failed to parse block', {
