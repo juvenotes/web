@@ -11,7 +11,7 @@ const props = defineProps<{
 }>()
 
 // Default values
-const storageKey = props.storageKey || 'vite-ui-theme'
+const storageKey = props.storageKey || 'juvenotes-theme'
 const defaultTheme = props.defaultTheme || 'system'
 
 // State
