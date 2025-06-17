@@ -11,7 +11,7 @@ const props = defineProps<{
 }>()
 
 // Default values
-const storageKey = props.storageKey || 'vite-ui-theme'
+const storageKey = props.storageKey || 'juvenotes-theme'
 const defaultTheme = props.defaultTheme || 'system'
 
 // State
@@ -147,6 +147,22 @@ const updateTheme = (newTheme: Theme) => {
     
     // Event to notify components that the theme has changed
     window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: resolvedTheme } }))
+    
+    // Apply theme-specific classes to all major containers to ensure proper rendering
+    const containers = document.querySelectorAll('#app, main, [data-page], .min-h-screen');
+    containers.forEach(container => {
+      if (container instanceof HTMLElement) {
+        container.classList.remove('light-theme', 'dark-theme');
+        container.classList.add(`${resolvedTheme}-theme`);
+        
+        // Force repaint by temporarily modifying a style property
+        const originalDisplay = container.style.display;
+        container.style.display = 'none';
+        setTimeout(() => {
+          container.style.display = originalDisplay;
+        }, 5);
+      }
+    });
   } catch (e) {
     console.error('Error updating theme:', e)
   }
@@ -184,16 +200,29 @@ onMounted(() => {
     updateTheme(theme.value)
     console.log('Theme updated to:', theme.value, 'system resolved to:', getSystemTheme())
     
-    // Create a MutationObserver to ensure dark mode is consistently applied after DOM changes
+    // Create a MutationObserver to ensure theme is consistently applied after DOM changes
     if (typeof MutationObserver !== 'undefined') {
       const observer = new MutationObserver((mutations) => {
-        // If the current theme is dark, reapply dark mode styles to ensure consistency
-        if (theme.value === 'dark' || (theme.value === 'system' && getSystemTheme() === 'dark')) {
-          // Short delay to ensure styles apply after DOM updates
-          setTimeout(() => {
-            updateTheme(theme.value);
-            console.log('DOM changed, reapplying dark mode styles');
-          }, 10);
+        // Reapply the current theme on substantial DOM changes
+        for (const mutation of mutations) {
+          if (mutation.type === 'childList' && 
+              mutation.addedNodes.length > 0 &&
+              Array.from(mutation.addedNodes).some(node => 
+                node.nodeType === 1 && 
+                (
+                  (node as Element).classList?.contains('bg-white') || 
+                  (node as Element).classList?.contains('bg-card') ||
+                  (node as Element).tagName === 'DIV' && 
+                  ((node as Element).childNodes.length > 3 || (node as Element).id === 'app')
+                )
+              )) {
+            // Short delay to ensure styles apply after DOM updates
+            setTimeout(() => {
+              updateTheme(theme.value);
+              console.log('Significant DOM change detected, reapplying theme styles');
+            }, 50);
+            break;
+          }
         }
       });
       
