@@ -420,28 +420,28 @@ const getLastEditDate = computed(() => {
               <div v-if="showAnswer[question.id]" class="mt-5">
                 <div class="flex items-center gap-2 mb-3">
                   <div class="h-5 w-1 bg-green-500 rounded-full"></div>
-                  <h3 class="text-base font-bold text-gray-800">Solution Explanation</h3>
+                  <h3 class="text-base font-bold text-foreground">Solution Explanation</h3>
                 </div>
 
                 <div
-                  class="relative overflow-hidden rounded-lg shadow-sm border border-gray-100"
+                  class="relative overflow-hidden rounded-lg shadow-sm border border-border"
                 >
                   <div
                     class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-green-400 to-[#55A9C4]"
                   ></div>
 
                   <div
-                    class="p-3 bg-gradient-to-r from-green-50 to-[#55A9C4]/10 border-b border-gray-100"
+                    class="p-3 bg-gradient-to-r from-green-500/10 to-[#55A9C4]/10 border-b border-border"
                   >
                     <div class="flex items-center gap-3">
                       <div
-                        class="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600"
+                        class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-600 dark:text-green-400"
                       >
                         <CheckCircle class="h-4 w-4" />
                       </div>
                       <div>
-                        <p class="text-xs text-gray-500 font-medium">Correct Answer</p>
-                        <p class="text-sm sm:text-base font-semibold text-gray-800">
+                        <p class="text-xs text-muted-foreground font-medium">Correct Answer</p>
+                        <p class="text-sm sm:text-base font-semibold text-foreground">
                           {{ getCorrectAnswer(question)?.choiceText }}
                         </p>
                       </div>
@@ -515,7 +515,7 @@ const getLastEditDate = computed(() => {
                     <button
                       v-if="!showAnswer[part.id]"
                       @click="handleSaqPartView(question.id, part.id)"
-                      class="w-full flex items-center justify-center gap-2 mt-3 text-[#55A9C4] font-medium text-sm rounded-md p-2 bg-gradient-to-r from-[#55A9C4]/10 to-[#55A9C4]/5 border border-[#55A9C4]/10"
+                      class="w-full flex items-center justify-center gap-2 mt-3 text-primary font-medium text-sm rounded-md p-2 bg-primary/10 border border-primary/20"
                     >
                       <ChevronDown class="h-4 w-4" />
                       <span>Show Answer</span>
@@ -523,31 +523,31 @@ const getLastEditDate = computed(() => {
 
                     <div v-if="showAnswer[part.id]" class="mt-4">
                       <div
-                        class="relative overflow-hidden rounded-lg shadow-sm border border-gray-100"
+                        class="relative overflow-hidden rounded-lg shadow-sm border border-border"
                       >
                         <div
                           class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#55A9C4] to-blue-500"
                         ></div>
 
                         <div
-                          class="p-3 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100"
+                          class="p-3 bg-gradient-to-r from-[#55A9C4]/15 to-blue-500/10 border-b border-border"
                         >
                           <div class="flex items-center gap-2">
                             <div
-                              class="flex items-center justify-center w-5 h-5 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
+                              class="flex items-center justify-center w-5 h-5 rounded-full bg-[#55A9C4]/20 text-[#55A9C4] dark:text-[#7AC7E3]"
                             >
                               <CheckCircle class="h-3 w-3" />
                             </div>
                             <div>
-                              <p class="text-xs text-gray-500 font-medium">Expected Answer</p>
-                              <p class="text-xs text-[#55A9C4]/80 font-medium">
+                              <p class="text-xs text-muted-foreground font-medium">Expected Answer</p>
+                              <p class="text-xs text-[#55A9C4] dark:text-[#7AC7E3] font-medium">
                                 {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }} available
                               </p>
                             </div>
                           </div>
                         </div>
 
-                        <div class="p-4 bg-white">
+                        <div class="p-4 bg-background">
                           <div class="text-sm text-gray-700 leading-relaxed">
                             <ViewExplanation :content="part.expectedAnswer" />
                           </div>
