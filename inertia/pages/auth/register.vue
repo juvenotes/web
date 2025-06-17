@@ -8,6 +8,8 @@ import { Label } from '~/components/ui/label'
 
 defineOptions({ layout: AuthLayout })
 
+const logoPath = '/images/logo.webp'
+
 const form = useForm({
   fullName: '',
   email: '',
@@ -27,7 +29,7 @@ const handleSubmit = () => {
       <div class="bg-card rounded-lg shadow p-8">
         <!-- Header -->
         <div class="text-center mb-8">
-          <img src="/images/logo.webp" alt="Juvenotes" class="h-10 mx-auto mb-6" />
+          <img :src="logoPath" alt="Juvenotes" class="h-10 mx-auto mb-6" />
           <h1 class="text-xl font-medium mb-2">Create your account</h1>
           <p class="text-sm text-muted-foreground">
             Already have an account?
