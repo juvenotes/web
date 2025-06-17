@@ -147,7 +147,7 @@ const continueFromLastQuestion = () => {
     @close="closeFeedbackDialog"
   />
 
-  <div class="min-h-screen bg-gray-50/50">
+  <div class="min-h-screen bg-background">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <!-- Header Section - Match exact styling from first file -->
       <div class="mb-6 sm:mb-10 header-animation">
@@ -161,8 +161,8 @@ const continueFromLastQuestion = () => {
               </div>
             </div>
             <div>
-              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ paper.title }}</h1>
-              <p class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{{ paper.title }}</h1>
+              <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl leading-relaxed">
                 SPOT stations for {{ paper.title }} in {{ concept.title }}
               </p>
             </div>
@@ -261,13 +261,13 @@ const continueFromLastQuestion = () => {
             v-for="(question, index) in questions"
             :key="question.id"
             :id="`question-${question.id}`"
-            class="question-card bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+            class="question-card bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
             :style="`--animation-order: ${index};`"
           >
             <div class="p-4 sm:p-5 space-y-4">
               <!-- Question Header -->
-              <div class="bg-[#F5FBFD] border border-gray-100 p-4 rounded-lg">
-                <p class="font-medium text-base text-gray-900">{{ question.questionText }}</p>
+              <div class="bg-[#F5FBFD] dark:bg-[#1e293b] border border-gray-100 dark:border-gray-700 p-4 rounded-lg">
+                <p class="font-medium text-base text-gray-900 dark:text-gray-100">{{ question.questionText }}</p>
               </div>
 
               <!-- Question Image -->
@@ -284,7 +284,7 @@ const continueFromLastQuestion = () => {
                 <div
                   v-for="(station, stationIndex) in question.spotStations"
                   :key="station.id"
-                  class="p-4 bg-white rounded-lg border border-[#55A9C4]/10 shadow-sm hover:shadow-md transition-all duration-300"
+                  class="p-4 bg-card rounded-lg border border-[#55A9C4]/10 dark:border-[#55A9C4]/30 shadow-sm hover:shadow-md transition-all duration-300"
                 >
                   <!-- Station Header -->
                   <div class="flex items-center justify-between mb-3">
@@ -299,7 +299,7 @@ const continueFromLastQuestion = () => {
                   </div>
 
                   <!-- Station Instructions -->
-                  <div class="text-sm text-gray-700 prose prose-sm max-w-none mb-4 leading-relaxed">
+                  <div class="text-sm text-gray-700 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none mb-4 leading-relaxed">
                     <div v-html="station.partText"></div>
                   </div>
 
@@ -307,7 +307,7 @@ const continueFromLastQuestion = () => {
                   <button
                     v-if="!showAnswers[station.id]"
                     @click="handleSpotStationView(question.id, station.id)"
-                    class="group w-full flex items-center justify-center gap-2 mt-3 text-[#55A9C4] font-semibold text-sm rounded-lg p-2.5 bg-gradient-to-r from-[#55A9C4]/10 to-[#55A9C4]/5 hover:from-[#55A9C4]/20 hover:to-[#55A9C4]/10 border border-[#55A9C4]/20 transition-all duration-300 shadow-sm hover:shadow"
+                    class="group w-full flex items-center justify-center gap-2 mt-3 text-[#55A9C4] font-semibold text-sm rounded-lg p-2.5 bg-gradient-to-r from-[#55A9C4]/10 to-[#55A9C4]/5 hover:from-[#55A9C4]/20 hover:to-[#55A9C4]/10 dark:from-[#55A9C4]/20 dark:to-[#55A9C4]/10 dark:hover:from-[#55A9C4]/30 dark:hover:to-[#55A9C4]/20 border border-[#55A9C4]/20 dark:border-[#55A9C4]/30 transition-all duration-300 shadow-sm hover:shadow"
                   >
                     <ChevronDown class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300" />
                     <span>Show Expected Response</span>
@@ -331,8 +331,8 @@ const continueFromLastQuestion = () => {
                         </div>
                       </div>
 
-                      <div class="p-4 bg-white">
-                        <div class="text-sm text-gray-700 font-medium break-words leading-relaxed explanation-content w-full">
+                      <div class="p-4 bg-card">
+                        <div class="text-sm text-gray-700 dark:text-gray-300 font-medium break-words leading-relaxed explanation-content w-full">
                           <ViewExplanation :content="station.expectedAnswer" />
                         </div>
                       </div>
