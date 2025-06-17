@@ -139,7 +139,11 @@ const form = useForm({
 </template>
 
 <style scoped>
-.bg-card {
+html:not(.dark) .bg-card {
   background: linear-gradient(to bottom right, rgb(255, 255, 255), rgb(251, 251, 251));
+}
+
+html.dark .bg-card {
+  background: linear-gradient(to bottom right, hsl(222, 47%, 13%), hsl(222, 47%, 11%));
 }
 </style>
