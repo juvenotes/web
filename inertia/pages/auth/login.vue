@@ -5,6 +5,8 @@ import AuthLayout from '~/layouts/AuthLayout.vue'
 
 defineOptions({ layout: AuthLayout })
 
+const logoPath = '/images/logo.webp'
+
 defineProps<{
   exceptions: Record<string, string>
 }>()
@@ -24,7 +26,7 @@ const form = useForm({
       <div class="bg-card rounded-xl shadow-lg p-8 space-y-6">
         <!-- Header -->
         <div class="text-center space-y-2">
-          <img src="/public/images/logo.webp" alt="Juvenotes" class="h-12 mx-auto mb-4" />
+          <img :src="logoPath" alt="Juvenotes" class="h-12 mx-auto mb-4" />
           <h1 class="text-2xl font-semibold">Welcome back</h1>
           <p class="text-sm text-muted-foreground">
             New to Juvenotes?
@@ -106,7 +108,7 @@ const form = useForm({
 
           <Button
             type="button"
-            class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4285F4]/50"
+            class="w-full bg-card hover:bg-secondary text-foreground font-medium py-3 px-4 border border-border rounded-lg shadow-sm transition-all duration-200 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50"
           >
             <a href="/auth/google/redirect" class="flex items-center justify-center gap-3">
               <svg class="h-5 w-5" viewBox="0 0 24 24">
@@ -137,7 +139,11 @@ const form = useForm({
 </template>
 
 <style scoped>
-.bg-card {
+html:not(.dark) .bg-card {
   background: linear-gradient(to bottom right, rgb(255, 255, 255), rgb(251, 251, 251));
+}
+
+html.dark .bg-card {
+  background: linear-gradient(to bottom right, hsl(222, 47%, 13%), hsl(222, 47%, 11%));
 }
 </style>
