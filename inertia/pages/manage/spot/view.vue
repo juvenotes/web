@@ -130,7 +130,7 @@ async function handleDeleteQuestion(question: QuestionDto) {
         <div
           v-for="question in questions"
           :key="question.id"
-          class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
           <div class="relative space-y-3">
             <h3 class="text-lg font-bold text-foreground">{{ question.questionText }}</h3>

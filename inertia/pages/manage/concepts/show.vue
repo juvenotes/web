@@ -115,7 +115,7 @@ const handleDelete = () => {
   />
   <div class="container mx-auto px-4 py-4 sm:py-8">
     <!-- Enhanced Title Section -->
-    <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
+    <div class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
@@ -171,7 +171,7 @@ const handleDelete = () => {
           v-for="child in children"
           :key="child.id"
           :href="`/manage/concepts/${child.slug}`"
-          class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
           <div class="relative space-y-3">
             <h3
@@ -218,7 +218,7 @@ const handleDelete = () => {
       <div v-if="questions?.length" class="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
         <h2 class="text-xl sm:text-2xl font-bold dark:text-foreground">Practice Questions</h2>
         <div v-for="(question, index) in questions" :key="question.id" class="space-y-4">
-          <div class="p-6 bg-white rounded-xl border shadow-sm">
+          <div class="p-6 bg-white dark:bg-card rounded-xl border shadow-sm dark:border-border">
             <!-- Question Header -->
             <div class="flex items-start justify-between">
               <div class="flex gap-3 items-start">
@@ -230,7 +230,7 @@ const handleDelete = () => {
               <!-- Action Buttons -->
               <div class="flex items-center gap-2">
                 <Button variant="ghost" size="sm" @click="handleEditQuestion(question)">
-                  <Pencil class="h-4 w-4" />
+                  <Pencil class="h-4 w-4 dark:text-foreground" />
                 </Button>
                 <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
                   <Trash2 class="h-4 w-4 text-destructive" />

@@ -130,7 +130,7 @@ const breadcrumbItems = computed(() => [
         <div
           v-for="(question, index) in questions"
           :key="question.id"
-          class="p-4 sm:p-5 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2 sm:gap-3"
+          class="p-4 sm:p-5 bg-white dark:bg-card rounded-xl border dark:border-border shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2 sm:gap-3"
         >
           <div class="flex gap-2 sm:gap-3 items-start">
             <span

@@ -92,7 +92,7 @@ watch(searchQuery, () => {
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
+          <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-card/80">
             <td class="px-4 sm:px-6 py-4 text-sm">
               <div class="font-medium">{{ user.fullName }}</div>
             </td>
@@ -104,7 +104,7 @@ watch(searchQuery, () => {
               <select
                 :value="user.roleId"
                 @change="(e) => updateRole(user.id, e)"
-                class="w-full sm:w-auto border rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full sm:w-auto border rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-card dark:border-border dark:text-foreground"
               >
                 <option :value="1">User</option>
                 <option :value="3">Editor</option>

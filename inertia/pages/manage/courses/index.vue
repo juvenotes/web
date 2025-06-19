@@ -151,7 +151,7 @@ const onDelete = () => {
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card v-for="course in courses" :key="course.id" class="overflow-hidden">
+        <Card v-for="course in courses" :key="course.id" class="overflow-hidden dark:bg-card dark:border-border">
           <CardHeader class="pb-3">
             <CardTitle>{{ course.name }}</CardTitle>
             <CardDescription>

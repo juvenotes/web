@@ -39,7 +39,7 @@ const sortedFeedback = computed(() =>
         </span>
       </div>
     </div>
-    <div class="bg-white rounded-2xl border shadow-sm p-0 sm:p-2">
+    <div class="bg-white dark:bg-card rounded-2xl border dark:border-border shadow-sm p-0 sm:p-2">
       <FeedbackTable :items="sortedFeedback" />
     </div>
     <div
