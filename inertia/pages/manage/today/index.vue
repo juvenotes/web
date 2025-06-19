@@ -54,7 +54,7 @@ const formatScheduledDate = (dateString: string) => {
   <AppHead title="Today" description="Your daily question of the day" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header Section -->
-    <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
+    <div class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
@@ -75,7 +75,7 @@ const formatScheduledDate = (dateString: string) => {
         </div>
         <Link
           href="/today"
-          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white hover:bg-gray-50 transition-all duration-200 text-gray-700 border border-gray-200 shadow-sm hover:shadow"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-card hover:bg-gray-50 dark:hover:bg-card/80 transition-all duration-200 text-gray-700 dark:text-foreground border border-gray-200 dark:border-border shadow-sm hover:shadow"
         >
           <Eye class="h-4 w-4" />
           <span class="text-sm font-medium">View</span>
@@ -97,7 +97,7 @@ const formatScheduledDate = (dateString: string) => {
 
       <Link
         :href="`/manage/today/${activeToday.slug}`"
-        class="block p-6 bg-white rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-shadow"
+        class="block p-6 bg-white dark:bg-card rounded-xl border border-green-200 dark:border-green-900/30 shadow-sm hover:shadow-md transition-shadow dark:text-foreground"
       >
         <div class="flex flex-col sm:flex-row justify-between gap-4">
           <div>

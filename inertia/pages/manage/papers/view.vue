@@ -246,7 +246,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
         <div
           v-for="(question, index) in questions"
           :key="question.id"
-          class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+          class="p-5 sm:p-6 bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm hover:shadow-md transition-shadow"
         >
           <div class="space-y-3 sm:space-y-4">
             <!-- Question Header -->
@@ -284,7 +284,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
               <div
                 v-for="choice in question.choices"
                 :key="choice.id"
-                class="flex items-start gap-3 p-2 sm:p-3 rounded-lg border border-slate-100"
+                class="flex items-start gap-3 p-2 sm:p-3 rounded-lg border border-slate-100 dark:border-border"
               >
                 <div
                   class="h-4 w-4 mt-1 rounded-full border border-primary/30"
@@ -311,10 +311,10 @@ const selectedQuestion = ref<QuestionDto | null>(null)
               >
                 <p class="font-medium text-sm sm:text-base">{{ part.partText }}</p>
                 <div
-                  class="mt-3 sm:mt-4 p-3 sm:p-6 bg-[#CDE5ED] shadow-sm sm:shadow-md rounded-lg border border-[#A8D3E7]"
+                  class="mt-3 sm:mt-4 p-3 sm:p-6 bg-[#CDE5ED] dark:bg-blue-900/20 shadow-sm sm:shadow-md rounded-lg border border-[#A8D3E7] dark:border-blue-800/50"
                 >
                   <div
-                    class="text-sm sm:text-base text-muted-foreground text-[#1F2937] font-medium"
+                    class="text-sm sm:text-base text-[#1F2937] dark:text-foreground font-medium"
                   >
                     <strong class="block sm:inline mb-1 sm:mb-0">Explanation:</strong>
                     <ViewExplanation :content="part.expectedAnswer" />
@@ -337,7 +337,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                   <div
                     v-for="feedback in questionFeedbackMap[question.id]"
                     :key="feedback.id"
-                    class="p-3 rounded-md bg-amber-50/50 border border-amber-100"
+                    class="p-3 rounded-md bg-amber-50/50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50"
                   >
                     <div class="flex justify-between">
                       <Badge>{{ feedback.feedbackTarget }}</Badge>
@@ -379,7 +379,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
     v-if="parsingStatus.isProcessing"
     class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center"
   >
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+    <div class="bg-white dark:bg-card p-6 rounded-lg shadow-lg max-w-md w-full mx-4 dark:border dark:border-border">
       <div class="space-y-4">
         <div class="space-y-2">
           <div class="flex justify-between text-sm">

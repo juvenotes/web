@@ -224,10 +224,10 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
     </div>
 
     <!-- Institution Info Card -->
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white dark:bg-card rounded-lg shadow p-6 dark:border dark:border-border">
       <div class="flex items-start justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">{{ institution.name }}</h1>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-foreground">{{ institution.name }}</h1>
         </div>
       </div>
 
@@ -236,7 +236,7 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
         <div class="bg-primary/5 rounded-lg p-4 flex items-center gap-3">
           <School class="h-5 w-5 text-primary" />
           <div>
-            <p class="text-sm text-gray-600">Total Courses</p>
+            <p class="text-sm text-gray-600 dark:text-muted-foreground">Total Courses</p>
             <p class="text-xl font-semibold text-primary">
               {{
                 Object.values(coursesByLevel).reduce((sum, level) => sum + level.courses.length, 0)
@@ -248,7 +248,7 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
         <div class="bg-primary/5 rounded-lg p-4 flex items-center gap-3">
           <GraduationCap class="h-5 w-5 text-primary" />
           <div>
-            <p class="text-sm text-gray-600">Education Levels</p>
+            <p class="text-sm text-gray-600 dark:text-muted-foreground">Education Levels</p>
             <p class="text-xl font-semibold text-primary">
               {{ Object.keys(coursesByLevel).length }}
             </p>
@@ -261,10 +261,10 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
     <div
       v-for="(level, levelId) in coursesByLevel"
       :key="levelId"
-      class="bg-white rounded-lg shadow"
+      class="bg-white dark:bg-card rounded-lg shadow dark:border dark:border-border"
     >
-      <div class="p-4 border-b">
-        <h2 class="text-lg font-semibold text-gray-900">{{ level.levelName }}</h2>
+      <div class="p-4 border-b dark:border-border">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-foreground">{{ level.levelName }}</h2>
       </div>
 
       <div class="p-4">
@@ -272,9 +272,9 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
           <div
             v-for="course in level.courses"
             :key="course.id"
-            class="p-4 rounded-lg border bg-gray-50/50"
+            class="p-4 rounded-lg border dark:border-border bg-gray-50/50 dark:bg-muted/20"
           >
-            <h3 class="font-medium text-gray-900">{{ course.name }}</h3>
+            <h3 class="font-medium text-gray-900 dark:text-foreground">{{ course.name }}</h3>
           </div>
         </div>
       </div>

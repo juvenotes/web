@@ -79,7 +79,7 @@ const onDelete = () => {
               <div class="space-y-2">
                 <Label for="name">Course Name</Label>
                 <Input id="name" v-model="editForm.name" :error="editForm.errors.name" />
-                <p v-if="editForm.errors.name" class="text-sm text-red-500">
+                <p v-if="editForm.errors.name" class="text-sm text-destructive">
                   {{ editForm.errors.name }}
                 </p>
               </div>
@@ -96,7 +96,7 @@ const onDelete = () => {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <p v-if="editForm.errors.educationLevelId" class="text-sm text-red-500">
+                <p v-if="editForm.errors.educationLevelId" class="text-sm text-destructive">
                   {{ editForm.errors.educationLevelId }}
                 </p>
               </div>
@@ -119,11 +119,11 @@ const onDelete = () => {
     </div>
 
     <!-- Course Info Card -->
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white dark:bg-card rounded-lg shadow p-6 dark:border dark:border-border">
       <div class="flex items-start justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">{{ course.name }}</h1>
-          <p class="text-gray-500 mt-1">
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-foreground">{{ course.name }}</h1>
+          <p class="text-gray-500 dark:text-muted-foreground mt-1">
             {{ course.educationLevel?.name || 'No education level assigned' }}
           </p>
         </div>
@@ -134,7 +134,7 @@ const onDelete = () => {
         <div class="bg-primary/5 rounded-lg p-4 flex items-center gap-3">
           <School class="h-5 w-5 text-primary" />
           <div>
-            <p class="text-sm text-gray-600">Institutions offering this course</p>
+            <p class="text-sm text-gray-600 dark:text-muted-foreground">Institutions offering this course</p>
             <p class="text-xl font-semibold text-primary">
               {{ course.institutions.length }}
             </p>
@@ -144,9 +144,9 @@ const onDelete = () => {
     </div>
 
     <!-- Institutions List -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="p-4 border-b">
-        <h2 class="text-lg font-semibold text-gray-900">Institutions Offering This Course</h2>
+    <div class="bg-white dark:bg-card rounded-lg shadow dark:border dark:border-border">
+      <div class="p-4 border-b dark:border-border">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-foreground">Institutions Offering This Course</h2>
       </div>
 
       <div class="p-4">
@@ -154,7 +154,7 @@ const onDelete = () => {
           <div
             v-for="institution in course.institutions"
             :key="institution.id"
-            class="p-4 rounded-lg border bg-gray-50/50"
+            class="p-4 rounded-lg border dark:border-border bg-gray-50/50 dark:bg-card/50"
           >
             <Link
               :href="`/manage/institutions/${institution.id}`"
@@ -164,7 +164,7 @@ const onDelete = () => {
             </Link>
           </div>
         </div>
-        <div v-else class="text-center py-6 text-gray-500">
+        <div v-else class="text-center py-6 text-gray-500 dark:text-muted-foreground">
           No institutions are offering this course yet.
           <br />
           You can add courses to institutions from the institutions management page.

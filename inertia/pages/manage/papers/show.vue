@@ -35,7 +35,7 @@ const breadcrumbItems = computed(() => [
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
-    <div class="relative p-6 sm:p-8 bg-white/50 rounded-2xl border shadow-sm">
+    <div class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border">
       <div
         class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
       />
@@ -79,7 +79,7 @@ const breadcrumbItems = computed(() => [
           v-for="paper in filteredPapers"
           :key="paper.id"
           :href="`/manage/papers/${concept.slug}/${paper.slug}`"
-          class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
           <div class="relative space-y-3">
             <h3
@@ -102,7 +102,7 @@ const breadcrumbItems = computed(() => [
     </div>
 
     <!-- Empty State -->
-    <div v-else class="text-center p-8 bg-white rounded-2xl border border-slate-100">
+    <div v-else class="text-center p-8 bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border">
       <p class="text-muted-foreground">No papers added yet. Click "Add Paper" to create one.</p>
     </div>
 
