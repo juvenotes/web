@@ -67,7 +67,7 @@ const breadcrumbItems = computed(() => [
           v-for="paper in papers"
           :key="paper.id"
           :href="`/manage/spot/${concept.slug}/${paper.slug}`"
-          class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
           <div
             class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none"
@@ -106,7 +106,7 @@ const breadcrumbItems = computed(() => [
     </div>
 
     <!-- Empty State -->
-    <div v-else class="text-center p-8 bg-white rounded-2xl border">
+    <div v-else class="text-center p-8 bg-white dark:bg-card rounded-2xl border dark:border-border">
       <p class="text-muted-foreground">No SPOT papers added yet. Click "Add SPOT" to create one.</p>
     </div>
     <CreateSpotPaperDialog v-model:open="isCreateDialogOpen" :concept="concept" />

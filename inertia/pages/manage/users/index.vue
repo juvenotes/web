@@ -73,33 +73,33 @@ watch(searchQuery, () => {
       <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
     </div>
 
-    <div class="bg-white rounded-lg shadow overflow-x-auto">
+    <div class="bg-white dark:bg-card rounded-lg shadow overflow-x-auto border dark:border-border">
       <table class="w-full border-collapse min-w-[640px]">
-        <thead class="bg-gray-50">
+        <thead class="bg-gray-50 dark:bg-muted">
           <tr>
-            <th class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600">
+            <th class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 dark:text-foreground">
               Name
             </th>
-            <th class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600">
+            <th class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 dark:text-foreground">
               Email
             </th>
-            <th class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600">
+            <th class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 dark:text-foreground">
               Role
             </th>
-            <th class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600">
+            <th class="text-left px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 dark:text-foreground">
               Actions
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
+        <tbody class="divide-y divide-gray-200 dark:divide-border">
           <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-card/80">
-            <td class="px-4 sm:px-6 py-4 text-sm">
+            <td class="px-4 sm:px-6 py-4 text-sm dark:text-foreground">
               <div class="font-medium">{{ user.fullName }}</div>
             </td>
-            <td class="px-4 sm:px-6 py-4 text-sm">
+            <td class="px-4 sm:px-6 py-4 text-sm dark:text-foreground">
               <div class="truncate max-w-[200px]">{{ user.email }}</div>
             </td>
-            <td class="px-4 sm:px-6 py-4 text-sm">{{ user.role?.name }}</td>
+            <td class="px-4 sm:px-6 py-4 text-sm dark:text-foreground">{{ user.role?.name }}</td>
             <td class="px-4 sm:px-6 py-4">
               <select
                 :value="user.roleId"
@@ -119,7 +119,7 @@ watch(searchQuery, () => {
       <!-- Previous button -->
       <Link
         :href="`/manage/users?page=${meta.current_page > 1 ? meta.current_page - 1 : 1}&search=${searchQuery}`"
-        class="px-3 py-2 text-sm rounded-md bg-gray-100 hover:bg-gray-200 flex items-center"
+        class="px-3 py-2 text-sm rounded-md bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-muted/80 flex items-center dark:text-foreground"
         :class="{ 'opacity-50 pointer-events-none': meta.current_page === 1 }"
       >
         <span class="sr-only">Previous</span>
@@ -145,18 +145,17 @@ watch(searchQuery, () => {
         class="px-3 py-2 text-sm rounded-md hidden sm:block"
         :class="{
           'bg-primary text-white': 1 === meta.current_page,
-          'bg-gray-100 hover:bg-gray-200': 1 !== meta.current_page,
+          'bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-muted/80 dark:text-foreground': 1 !== meta.current_page,
         }"
       >
         1
       </Link>
 
       <!-- Ellipsis if needed -->
-      <span v-if="meta.current_page > 3" class="px-2 text-gray-500 hidden sm:block">...</span>
+      <span v-if="meta.current_page > 3" class="px-2 text-gray-500 dark:text-muted-foreground hidden sm:block">...</span>
 
       <!-- Pages around current page -->
-      <template v-for="page in meta.last_page" :key="page">
-        <Link
+      <template v-for="page in meta.last_page" :key="page">          <Link
           v-if="
             page !== 1 &&
             page !== meta.last_page &&
@@ -170,7 +169,7 @@ watch(searchQuery, () => {
           class="px-3 py-2 text-sm rounded-md"
           :class="{
             'bg-primary text-white': page === meta.current_page,
-            'bg-gray-100 hover:bg-gray-200': page !== meta.current_page,
+            'bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-muted/80 dark:text-foreground': page !== meta.current_page,
           }"
         >
           {{ page }}
@@ -178,7 +177,7 @@ watch(searchQuery, () => {
       </template>
 
       <!-- Ellipsis if needed -->
-      <span v-if="meta.current_page < meta.last_page - 2" class="px-2 text-gray-500 hidden sm:block"
+      <span v-if="meta.current_page < meta.last_page - 2" class="px-2 text-gray-500 dark:text-muted-foreground hidden sm:block"
         >...</span
       >
 
@@ -189,21 +188,21 @@ watch(searchQuery, () => {
         class="px-3 py-2 text-sm rounded-md hidden sm:block"
         :class="{
           'bg-primary text-white': meta.last_page === meta.current_page,
-          'bg-gray-100 hover:bg-gray-200': meta.last_page !== meta.current_page,
+          'bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-muted/80 dark:text-foreground': meta.last_page !== meta.current_page,
         }"
       >
         {{ meta.last_page }}
       </Link>
 
       <!-- Mobile current page indicator -->
-      <span class="px-3 py-2 text-sm sm:hidden">
+      <span class="px-3 py-2 text-sm sm:hidden dark:text-foreground">
         {{ meta.current_page }} of {{ meta.last_page }}
       </span>
 
       <!-- Next button -->
       <Link
         :href="`/manage/users?page=${meta.current_page < meta.last_page ? meta.current_page + 1 : meta.last_page}&search=${searchQuery}`"
-        class="px-3 py-2 text-sm rounded-md bg-gray-100 hover:bg-gray-200 flex items-center"
+        class="px-3 py-2 text-sm rounded-md bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-muted/80 flex items-center dark:text-foreground"
         :class="{ 'opacity-50 pointer-events-none': meta.current_page === meta.last_page }"
       >
         <span class="sr-only">Next</span>

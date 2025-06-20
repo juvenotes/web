@@ -172,7 +172,7 @@ async function handleDeleteQuestion(question: QuestionDto) {
         </div>
       </div>
     </div>
-    <div v-else class="text-center p-8 bg-white rounded-2xl border">
+    <div v-else class="text-center p-8 bg-white dark:bg-card rounded-2xl border dark:border-border">
       <p class="text-muted-foreground">
         No SPOT questions added yet. Click "Add SPOT Question" to create one.
       </p>
