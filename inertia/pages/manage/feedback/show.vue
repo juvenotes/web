@@ -77,10 +77,10 @@ async function markFeedbackResolved() {
     <AppHead :title="props.question.questionText" :description="props.question.questionText" />
     <div class="max-w-3xl mx-auto py-6 px-2 sm:px-4">
       <h1 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">Question Details</h1>
-      <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-8 border border-gray-100">
+      <div class="bg-white dark:bg-card rounded-2xl shadow-lg p-4 sm:p-8 mb-8 border border-gray-100 dark:border-border">
         <div class="mb-6">
           <div
-            class="mb-4 text-lg sm:text-xl font-semibold text-gray-900 max-w-full"
+            class="mb-4 text-lg sm:text-xl font-semibold text-gray-900 dark:text-foreground max-w-full"
             style="line-height: 1.4"
           >
             <span title="{{ props.question.questionText }}">{{ props.question.questionText }}</span>
@@ -89,7 +89,7 @@ async function markFeedbackResolved() {
             <img
               :src="props.question.questionImagePath"
               alt="Question Image"
-              class="max-w-full sm:max-w-xs rounded-lg border border-gray-200 shadow"
+              class="max-w-full sm:max-w-xs rounded-lg border border-gray-200 dark:border-border shadow"
             />
           </div>
         </div>
@@ -99,7 +99,7 @@ async function markFeedbackResolved() {
             <li
               v-for="part in props.question.parts"
               :key="part.id"
-              class="bg-slate-50 rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-100"
+              class="bg-slate-50 dark:bg-card rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-100 dark:border-border"
             >
               <input
                 v-model="part.partText"
@@ -122,7 +122,7 @@ async function markFeedbackResolved() {
             <li
               v-for="choice in props.question.choices"
               :key="choice.id"
-              class="bg-slate-50 rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-100"
+              class="bg-slate-50 dark:bg-card rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-100 dark:border-border"
             >
               <input
                 v-model="choice.choiceText"
@@ -161,7 +161,7 @@ async function markFeedbackResolved() {
             <li
               v-for="station in props.question.stations"
               :key="station.id"
-              class="bg-slate-50 rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-100"
+              class="bg-slate-50 dark:bg-card rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-100 dark:border-border"
             >
               <input
                 v-model="station.partText"
@@ -199,7 +199,7 @@ async function markFeedbackResolved() {
             <li
               v-for="spot in props.question.spotStations"
               :key="spot.id"
-              class="bg-slate-50 rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-100"
+              class="bg-slate-50 dark:bg-card rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-100 dark:border-border"
             >
               <input
                 v-model="spot.partText"
@@ -257,7 +257,7 @@ async function markFeedbackResolved() {
         <div v-if="editing" class="mt-6">
           <textarea
             v-model="editedQuestion.questionText"
-            class="w-full border rounded p-3 mb-4 text-lg focus:ring-2 focus:ring-primary/30"
+            class="w-full border dark:border-border rounded p-3 mb-4 text-lg focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
             rows="4"
           />
           <div class="flex flex-col sm:flex-row gap-3 justify-end">
@@ -298,30 +298,30 @@ async function markFeedbackResolved() {
       <div class="flex flex-col sm:flex-row justify-end mt-6 gap-2">
         <button
           v-if="props.feedbackItems.some((fb) => !fb.isResolved)"
-          class="btn btn-success px-6 py-2 text-base w-full sm:w-auto"
+          class="btn btn-success px-6 py-2 text-base w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white dark:bg-green-600 dark:hover:bg-green-700 dark:text-white rounded"
           @click="markFeedbackResolved"
         >
           Mark Feedback as Resolved
         </button>
       </div>
       <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-primary mt-10">Feedback</h2>
-      <div v-if="props.feedbackItems.length === 0" class="text-gray-500 text-center">
+      <div v-if="props.feedbackItems.length === 0" class="text-gray-500 dark:text-muted-foreground text-center">
         No feedback found for this question.
       </div>
       <div v-else class="space-y-4">
         <div
           v-for="item in props.feedbackItems"
           :key="item.id"
-          class="bg-gray-50 rounded-lg p-4 border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-center gap-2"
+          class="bg-gray-50 dark:bg-card rounded-lg p-4 border border-gray-200 dark:border-border shadow-sm flex flex-col sm:flex-row sm:items-center gap-2"
         >
-          <div class="font-medium text-gray-900 mb-1">{{ item.user?.fullName || 'User' }}</div>
-          <div class="text-gray-700 mb-1 break-words">{{ item.feedbackText }}</div>
-          <div class="text-xs text-gray-400 mb-1">
+          <div class="font-medium text-gray-900 dark:text-foreground mb-1">{{ item.user?.fullName || 'User' }}</div>
+          <div class="text-gray-700 dark:text-muted-foreground mb-1 break-words">{{ item.feedbackText }}</div>
+          <div class="text-xs text-gray-400 dark:text-muted-foreground mb-1">
             Target: {{ item.feedbackTarget }} | Source: {{ item.feedbackSource }}
           </div>
-          <div class="text-xs text-gray-400">
+          <div class="text-xs text-gray-400 dark:text-muted-foreground">
             Resolved:
-            <span :class="item.isResolved ? 'text-green-600' : 'text-red-600'">{{
+            <span :class="item.isResolved ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">{{
               item.isResolved ? 'Yes' : 'No'
             }}</span>
           </div>
