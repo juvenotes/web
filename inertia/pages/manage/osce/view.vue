@@ -114,7 +114,7 @@ const breadcrumbItems = computed(() => [
             <Plus class="h-4 w-4" />
             Add OSCE Station
           </Button>
-          <Button variant="outline" @click="showEditPaperDialog = true">
+          <Button variant="outline" class="dark:text-foreground dark:border-border dark:hover:bg-muted dark:hover:text-foreground" @click="showEditPaperDialog = true">
             <Pencil class="h-4 w-4 mr-2" />Edit Paper
           </Button>
           <Button variant="destructive" @click="handleDeletePaper">
@@ -151,11 +151,11 @@ const breadcrumbItems = computed(() => [
             </div>
           </div>
           <div class="flex items-center gap-2 mt-2">
-            <Button variant="ghost" size="sm" @click="handleEditQuestion(question)">
+            <Button variant="ghost" size="sm" class="dark:text-foreground dark:hover:bg-muted dark:hover:text-foreground" @click="handleEditQuestion(question)">
               <Pencil class="h-4 w-4" /> Edit
             </Button>
-            <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
-              <Trash2 class="h-4 w-4 text-destructive" /> Remove
+            <Button variant="ghost" size="sm" class="dark:text-foreground dark:hover:bg-muted" @click="handleDeleteQuestion(question)">
+              <Trash2 class="h-4 w-4 text-destructive dark:text-destructive" /> Remove
             </Button>
           </div>
           <div class="pl-6 sm:pl-10 space-y-3 sm:space-y-4">
@@ -194,8 +194,8 @@ const breadcrumbItems = computed(() => [
           </div>
         </div>
       </template>
-      <div v-else class="text-center py-12 bg-white rounded-xl border">
-        <p class="text-muted-foreground">
+      <div v-else class="text-center py-12 bg-white dark:bg-card rounded-xl border dark:border-border">
+        <p class="text-muted-foreground dark:text-muted-foreground">
           No questions added yet. Click "Add Question" to start building your OSCE paper.
         </p>
       </div>

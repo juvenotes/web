@@ -104,7 +104,7 @@ async function markFeedbackResolved() {
               <input
                 v-model="part.partText"
                 @blur="saveSaqPart(part)"
-                class="border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
               />
               <Button
                 size="sm"
@@ -127,13 +127,13 @@ async function markFeedbackResolved() {
               <input
                 v-model="choice.choiceText"
                 @blur="saveMcqChoice(choice)"
-                class="border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
                 placeholder="Choice text"
               />
               <input
                 v-model="choice.explanation"
                 @blur="saveMcqChoice(choice)"
-                class="border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
                 placeholder="Explanation (optional)"
               />
               <div class="flex items-center gap-1">
@@ -166,19 +166,19 @@ async function markFeedbackResolved() {
               <input
                 v-model="station.partText"
                 @blur="saveOsceStation(station)"
-                class="border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
                 placeholder="Station description"
               />
               <input
                 v-model="station.expectedAnswer"
                 @blur="saveOsceStation(station)"
-                class="border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
                 placeholder="Expected Answer"
               />
               <input
                 v-model.number="station.marks"
                 @blur="saveOsceStation(station)"
-                class="border rounded px-2 py-1 w-20 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 w-20 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
                 placeholder="Marks"
                 type="number"
                 min="0"
@@ -204,19 +204,19 @@ async function markFeedbackResolved() {
               <input
                 v-model="spot.partText"
                 @blur="saveSpotStation(spot)"
-                class="border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
                 placeholder="Station description"
               />
               <input
                 v-model="spot.expectedAnswer"
                 @blur="saveSpotStation(spot)"
-                class="border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 flex-1 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
                 placeholder="Expected Answer"
               />
               <input
                 v-model.number="spot.marks"
                 @blur="saveSpotStation(spot)"
-                class="border rounded px-2 py-1 w-20 text-sm focus:ring-2 focus:ring-primary/30"
+                class="border dark:border-border rounded px-2 py-1 w-20 text-sm focus:ring-2 focus:ring-primary/30 dark:bg-card dark:text-foreground"
                 placeholder="Marks"
                 type="number"
                 min="0"
@@ -235,7 +235,7 @@ async function markFeedbackResolved() {
         <div class="flex flex-col sm:flex-row justify-end mt-8 gap-2">
           <button
             v-if="!editing"
-            class="btn btn-primary px-6 py-2 text-base w-full sm:w-auto flex items-center gap-2 shadow hover:bg-primary/90 transition"
+            class="btn btn-primary px-6 py-2 text-base w-full sm:w-auto flex items-center gap-2 shadow hover:bg-primary/90 transition bg-primary text-white dark:bg-primary dark:text-white"
             @click="startEdit"
           >
             <svg
@@ -262,7 +262,7 @@ async function markFeedbackResolved() {
           />
           <div class="flex flex-col sm:flex-row gap-3 justify-end">
             <button
-              class="btn btn-success px-6 py-2 text-base w-full sm:w-auto flex items-center gap-2 shadow hover:bg-green-600 transition"
+              class="btn btn-success px-6 py-2 text-base w-full sm:w-auto flex items-center gap-2 shadow hover:bg-green-600 transition bg-green-500 text-white dark:bg-green-500 dark:text-white"
               @click="saveEdit"
             >
               <svg
@@ -277,7 +277,7 @@ async function markFeedbackResolved() {
               Save
             </button>
             <button
-              class="btn btn-secondary px-6 py-2 text-base w-full sm:w-auto flex items-center gap-2 shadow hover:bg-gray-300 transition"
+              class="btn btn-secondary px-6 py-2 text-base w-full sm:w-auto flex items-center gap-2 shadow hover:bg-gray-300 transition bg-gray-200 text-gray-800 dark:bg-muted dark:text-foreground dark:hover:bg-muted/80"
               @click="cancelEdit"
             >
               <svg
@@ -298,7 +298,7 @@ async function markFeedbackResolved() {
       <div class="flex flex-col sm:flex-row justify-end mt-6 gap-2">
         <button
           v-if="props.feedbackItems.some((fb) => !fb.isResolved)"
-          class="btn btn-success px-6 py-2 text-base w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white dark:bg-green-600 dark:hover:bg-green-700 dark:text-white rounded"
+          class="btn btn-success px-6 py-2 text-base w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white dark:bg-green-600 dark:hover:bg-green-700 dark:text-white rounded shadow"
           @click="markFeedbackResolved"
         >
           Mark Feedback as Resolved

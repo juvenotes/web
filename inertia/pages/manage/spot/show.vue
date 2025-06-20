@@ -51,7 +51,7 @@ const breadcrumbItems = computed(() => [
           <ToggleUrl />
           <Button
             @click="isCreateDialogOpen = true"
-            class="flex items-center justify-center gap-2 w-full sm:w-auto"
+            class="flex items-center justify-center gap-2 w-full sm:w-auto dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
           >
             <Plus class="h-4 w-4" />
             Add SPOT Paper

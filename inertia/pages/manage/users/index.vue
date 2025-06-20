@@ -104,7 +104,7 @@ watch(searchQuery, () => {
               <select
                 :value="user.roleId"
                 @change="(e) => updateRole(user.id, e)"
-                class="w-full sm:w-auto border rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-card dark:border-border dark:text-foreground"
+                class="w-full sm:w-auto border rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-card dark:border-border dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted"
               >
                 <option :value="1">User</option>
                 <option :value="3">Editor</option>

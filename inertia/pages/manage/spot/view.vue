@@ -110,14 +110,14 @@ async function handleDeleteQuestion(question: QuestionDto) {
           <Button
             @click="showEditPaperDialog = true"
             variant="outline"
-            class="flex items-center gap-2"
+            class="flex items-center gap-2 dark:text-foreground dark:border-border dark:hover:bg-muted"
           >
             <Pencil class="h-4 w-4" /> Edit Paper
           </Button>
-          <Button @click="handleDeletePaper" variant="destructive" class="flex items-center gap-2">
+          <Button @click="handleDeletePaper" variant="destructive" class="flex items-center gap-2 dark:bg-destructive dark:text-destructive-foreground dark:hover:bg-destructive/90">
             <Trash2 class="h-4 w-4" /> Delete
           </Button>
-          <Button @click="showAddQuestionDialog = true" class="flex items-center gap-2">
+          <Button @click="showAddQuestionDialog = true" class="flex items-center gap-2 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90">
             <Plus class="h-4 w-4" /> Add SPOT Question
           </Button>
         </div>
@@ -161,10 +161,10 @@ async function handleDeleteQuestion(question: QuestionDto) {
               </div>
             </div>
             <div class="flex items-center gap-2 mt-2">
-              <Button size="sm" variant="outline" @click="handleEditQuestion(question)">
+              <Button size="sm" variant="outline" class="dark:text-foreground dark:border-border dark:hover:bg-muted dark:hover:text-foreground" @click="handleEditQuestion(question)">
                 <Pencil class="h-4 w-4" /> Edit
               </Button>
-              <Button size="sm" variant="destructive" @click="handleDeleteQuestion(question)">
+              <Button size="sm" variant="destructive" class="dark:bg-destructive dark:text-destructive-foreground dark:hover:bg-destructive/90" @click="handleDeleteQuestion(question)">
                 <Trash2 class="h-4 w-4" /> Delete
               </Button>
             </div>
@@ -173,7 +173,7 @@ async function handleDeleteQuestion(question: QuestionDto) {
       </div>
     </div>
     <div v-else class="text-center p-8 bg-white dark:bg-card rounded-2xl border dark:border-border">
-      <p class="text-muted-foreground">
+      <p class="text-muted-foreground dark:text-muted-foreground">
         No SPOT questions added yet. Click "Add SPOT Question" to create one.
       </p>
     </div>
