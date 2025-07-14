@@ -40,6 +40,7 @@ const CiteController = () => import('#controllers/api/cite_controller')
 const QuestionFeedbackController = () => import('#controllers/papers/question_feedback_controller')
 const ManageFeedbackController = () =>
   import('#controllers/manage/feedback/manage_feedback_controller')
+const FeedbackMastraController = () => import('#controllers/api/feedback_mastra_controller')
 const ManageTodayController = () => import('#controllers/manage/today/manage_today_controller')
 const IndexTodayController = () => import('#controllers/today/index_today_controller')
 const ManageSpotController = () => import('#controllers/manage/spot/manage_spot_controller')
@@ -411,6 +412,20 @@ router.patch('/api/manage/osce-stations/:id', [ManageFeedbackController, 'update
 router.patch('/api/manage/spot-stations/:id', [ManageFeedbackController, 'updateSpotStation'])
 // Question Stem
 router.patch('/api/manage/questions/:id', [ManageFeedbackController, 'updateQuestionStem'])
+
+// Mastra AI-powered feedback resolution API routes
+router
+  .group(() => {
+    router.get('/feedback', [FeedbackMastraController, 'index'])
+    router.get('/feedback/stats', [FeedbackMastraController, 'stats'])
+    router.get('/feedback/:id', [FeedbackMastraController, 'show'])
+    router.post('/feedback/:id/process', [FeedbackMastraController, 'process'])
+    router.post('/feedback/:id/resolve', [FeedbackMastraController, 'resolve'])
+    router.post('/feedback/bulk-process', [FeedbackMastraController, 'bulkProcess'])
+    router.post('/feedback/bulk-resolve', [FeedbackMastraController, 'bulkResolve'])
+  })
+  .prefix('/api/mastra')
+  .use(middleware.auth())
 
 // Today routes
 router
