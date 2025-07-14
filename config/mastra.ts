@@ -17,16 +17,19 @@ export const mastraConfig = {
 
   // AI/LLM provider configuration
   llm: {
-    provider: 'openai', // Default to OpenAI
-    apiKey: env.get('OPENAI_API_KEY', ''), // Optional OpenAI key
-    model: env.get('LLM_MODEL', 'gpt-3.5-turbo'), // Default model
+    provider: 'azure-openai', // Azure OpenAI
+    apiKey: env.get('AZURE_OPENAI_API_KEY', ''), // Azure OpenAI key
+    endpoint: env.get('AZURE_OPENAI_ENDPOINT', ''), // Azure OpenAI endpoint
+    apiVersion: env.get('AZURE_OPENAI_API_VERSION', '2024-02-01'), // Azure OpenAI API version
+    deploymentName: env.get('AZURE_OPENAI_DEPLOYMENT_NAME', ''), // Azure OpenAI deployment name
+    model: env.get('LLM_MODEL', 'gpt-4o-mini'), // Default model
   },
 
   // Agent configuration
   agents: {
     questionFeedbackResolver: {
       enabled: true,
-      model: env.get('FEEDBACK_AGENT_MODEL', 'gpt-3.5-turbo'),
+      model: env.get('FEEDBACK_AGENT_MODEL', 'gpt-4o-mini'),
       systemPrompt: `You are a helpful assistant that analyzes question feedback and provides resolution suggestions. 
         You help resolve student feedback about questions in an educational platform.
         Always be constructive and provide actionable suggestions.`,

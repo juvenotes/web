@@ -32,9 +32,12 @@ Add the following optional environment variables to your `.env` file:
 ```env
 # Mastra Configuration (Optional)
 MASTRA_TELEMETRY_ENABLED=false
-OPENAI_API_KEY=your_openai_key_here
-LLM_MODEL=gpt-3.5-turbo
-FEEDBACK_AGENT_MODEL=gpt-3.5-turbo
+AZURE_OPENAI_API_KEY=your_azure_openai_key_here
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2024-02-01
+AZURE_OPENAI_DEPLOYMENT_NAME=your_deployment_name
+LLM_MODEL=gpt-4o-mini
+FEEDBACK_AGENT_MODEL=gpt-4o-mini
 ```
 
 ### Configuration File
@@ -45,16 +48,19 @@ The Mastra configuration is defined in `config/mastra.ts`:
 export const mastraConfig = {
   // AI/LLM provider configuration
   llm: {
-    provider: 'openai',
-    apiKey: env.get('OPENAI_API_KEY', ''),
-    model: env.get('LLM_MODEL', 'gpt-3.5-turbo'),
+    provider: 'azure-openai',
+    apiKey: env.get('AZURE_OPENAI_API_KEY', ''),
+    endpoint: env.get('AZURE_OPENAI_ENDPOINT', ''),
+    apiVersion: env.get('AZURE_OPENAI_API_VERSION', '2024-02-01'),
+    deploymentName: env.get('AZURE_OPENAI_DEPLOYMENT_NAME', ''),
+    model: env.get('LLM_MODEL', 'gpt-4o-mini'),
   },
   
   // Agent configuration
   agents: {
     questionFeedbackResolver: {
       enabled: true,
-      model: env.get('FEEDBACK_AGENT_MODEL', 'gpt-3.5-turbo'),
+      model: env.get('FEEDBACK_AGENT_MODEL', 'gpt-4o-mini'),
       systemPrompt: `You are a helpful assistant that analyzes question feedback...`,
     },
   },
