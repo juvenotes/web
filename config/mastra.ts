@@ -29,7 +29,6 @@ export const mastraConfig = {
   agents: {
     questionFeedbackResolver: {
       enabled: true,
-      model: env.get('FEEDBACK_AGENT_MODEL', 'gpt-4o-mini'),
       systemPrompt: `You are a helpful assistant that analyzes question feedback and provides resolution suggestions. 
         You help resolve student feedback about questions in an educational platform.
         Always be constructive and provide actionable suggestions.`,

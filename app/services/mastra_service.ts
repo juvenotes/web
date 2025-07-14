@@ -4,6 +4,10 @@ import mastraConfig from '#config/mastra'
 import { DateTime } from 'luxon'
 import logger from '@adonisjs/core/services/logger'
 
+// Mastra imports
+import { Mastra } from '@mastra/core'
+import { Agent } from '@mastra/core'
+
 export interface FeedbackResolutionResult {
   success: boolean
   resolution?: string
@@ -20,7 +24,8 @@ export interface FeedbackResolutionResult {
 
 class MastraService {
   private initialized = false
-  private feedbackAgent: any = null
+  private mastra: Mastra | null = null
+  private feedbackAgent: Agent | null = null
 
   constructor() {
     // Initialize service with minimal setup
@@ -33,7 +38,7 @@ class MastraService {
     if (this.initialized) return
 
     try {
-      // Set up the question feedback resolver functionality
+      // Set up the question feedback resolver agent
       await this.setupQuestionFeedbackAgent()
 
       this.initialized = true
@@ -56,13 +61,24 @@ class MastraService {
     }
 
     try {
-      // For now, we'll skip the complex AI integration and focus on the structure
-      // The agent will be set up when proper dependencies are available
-      logger.info('Question feedback resolver agent configuration prepared')
-      
-      // In a real implementation, this would create the Agent with proper model
-      // but for now we'll use the fallback resolution
-      this.feedbackAgent = null
+      // Create the feedback resolution agent
+      this.feedbackAgent = new Agent({
+        name: 'question-feedback-resolver',
+        instructions: agentConfig.systemPrompt,
+        model: {
+          provider: 'openai',
+          config: {
+            model: mastraConfig.llm.model,
+            apiKey: mastraConfig.llm.apiKey,
+            baseURL: `${mastraConfig.llm.endpoint}/openai/deployments/${mastraConfig.llm.deploymentName}`,
+            defaultQuery: {
+              'api-version': mastraConfig.llm.apiVersion,
+            },
+          },
+        },
+      })
+
+      logger.info('Question feedback resolver agent initialized successfully')
     } catch (error: any) {
       logger.error('Failed to setup Mastra agent:', error)
       throw error
@@ -187,7 +203,7 @@ class MastraService {
   }
 
   /**
-   * Generate resolution suggestions using enhanced analysis with question update capabilities
+   * Generate resolution suggestions using Mastra AI agent
    */
   private async generateResolution(feedback: QuestionFeedback): Promise<{
     text: string
@@ -201,17 +217,120 @@ class MastraService {
     }
   }> {
     if (this.feedbackAgent) {
-      // Use the Mastra agent if available (future implementation)
       try {
-        // This would use the agent when properly configured
-        // For now, fallback to enhanced rule-based logic
-        return this.generateEnhancedResolution(feedback)
+        // Load the question and its choices for context
+        let question: Question | null = null
+        try {
+          question = await Question.query()
+            .where('id', feedback.questionId)
+            .preload('choices')
+            .first()
+        } catch (error) {
+          logger.error('Failed to load question for analysis:', error)
+        }
+
+        // Prepare context for the AI agent
+        const contextInfo = {
+          feedbackText: feedback.feedbackText,
+          questionText: question?.questionText || 'Question not available',
+          choices: question?.choices?.map(c => ({
+            id: c.id,
+            text: c.choiceText,
+            isCorrect: c.isCorrect
+          })) || [],
+          difficultyLevel: question?.difficultyLevel || 'unknown'
+        }
+
+        // Create a structured prompt for the agent
+        const prompt = `
+        Please analyze the following question feedback and provide a resolution:
+
+        Feedback: "${feedback.feedbackText}"
+        
+        Question Context:
+        - Question Text: "${contextInfo.questionText}"
+        - Difficulty Level: ${contextInfo.difficultyLevel}
+        - Choices: ${JSON.stringify(contextInfo.choices, null, 2)}
+
+        Please provide:
+        1. A resolution text explaining the issue and recommended action
+        2. A list of specific suggestions for improvement
+        3. If applicable, recommend specific actions for question updates
+
+        Focus on being constructive and actionable. Consider whether the feedback indicates:
+        - Incorrect answers
+        - Unclear question wording
+        - Inappropriate difficulty level
+        - Issues with specific choices
+
+        Return your response in this JSON format:
+        {
+          "resolution": "Your resolution text here",
+          "suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"],
+          "questionUpdate": {
+            "questionId": ${feedback.questionId},
+            "action": "update_choice|correct_answer|clarify_text",
+            "choiceId": null,
+            "newText": null,
+            "newIsCorrect": null
+          }
+        }
+        `
+
+        // Use the agent to generate resolution
+        const response = await this.feedbackAgent.generate([
+          {
+            role: 'user',
+            content: prompt
+          }
+        ])
+        
+        try {
+          // Parse the AI response
+          let responseText = '';
+          
+          // Handle different response formats
+          if (typeof response === 'string') {
+            responseText = response;
+          } else if (response && typeof response === 'object') {
+            responseText = response.text || response.content || JSON.stringify(response);
+          } else {
+            responseText = String(response);
+          }
+          
+          const aiResult = JSON.parse(responseText)
+          
+          return {
+            text: aiResult.resolution || 'AI analysis completed. Please review the feedback.',
+            suggestions: aiResult.suggestions || ['Review feedback content', 'Consider necessary improvements'],
+            questionUpdate: aiResult.questionUpdate
+          }
+        } catch (parseError) {
+          logger.error('Failed to parse AI response:', parseError)
+          
+          // Return the raw response if JSON parsing fails
+          let responseText = '';
+          if (typeof response === 'string') {
+            responseText = response;
+          } else if (response && typeof response === 'object') {
+            responseText = response.text || response.content || JSON.stringify(response);
+          } else {
+            responseText = String(response);
+          }
+          
+          return {
+            text: responseText || 'AI analysis completed. Please review the feedback.',
+            suggestions: ['Review AI analysis above', 'Determine appropriate action']
+          }
+        }
       } catch (error: any) {
         logger.error('Error using Mastra agent for resolution:', error)
+        // Fall back to enhanced rule-based logic if AI fails
         return this.generateEnhancedResolution(feedback)
       }
     }
 
+    // Fallback to enhanced rule-based logic if agent is not available
     return this.generateEnhancedResolution(feedback)
   }
 
