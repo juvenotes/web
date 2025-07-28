@@ -2,6 +2,7 @@
 import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import BreadcrumbTrail from '../../components/BreadcrumbTrail.vue'
+import DashLayout from '~/layouts/DashLayout.vue'
 
 interface SubjectData {
   count: number
