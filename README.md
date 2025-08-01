@@ -68,4 +68,4 @@ web/
 See [Contribution Guidline](CONTRIBUTING.md) for guidelines.
 
 ## License
-The Juvenotes Web Application is open-sourced software licensed under the [MIT license](LICENSE.md).
+The Juvenotes Web Application is open-sourced software licensed under the [GPL license](LICENSE.md).
