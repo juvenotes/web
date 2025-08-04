@@ -14,8 +14,7 @@ export default class IndexEventsController {
 
     const events = await Event.query()
       .if(search, (query) => {
-        query.whereILike('title', `%${search}%`)
-          .orWhereILike('description', `%${search}%`)
+        query.whereILike('title', `%${search}%`).orWhereILike('description', `%${search}%`)
       })
       .if(eventType, (query) => query.where('eventType', eventType))
       .where('status', status)
@@ -26,15 +25,30 @@ export default class IndexEventsController {
 
     const eventDtos = events.serialize({
       fields: {
-        pick: ['id', 'title', 'slug', 'description', 'eventType', 'status', 
-               'startDate', 'endDate', 'venue', 'isOnline', 'isFree', 'price', 'currency',
-               'maxParticipants', 'currentParticipants', 'createdAt']
-      }
+        pick: [
+          'id',
+          'title',
+          'slug',
+          'description',
+          'eventType',
+          'status',
+          'startDate',
+          'endDate',
+          'venue',
+          'isOnline',
+          'isFree',
+          'price',
+          'currency',
+          'maxParticipants',
+          'currentParticipants',
+          'createdAt',
+        ],
+      },
     })
 
     return inertia.render('events/index', {
       events: eventDtos,
-      filters: { search, eventType, status }
+      filters: { search, eventType, status },
     })
   }
 
@@ -52,7 +66,7 @@ export default class IndexEventsController {
     const eventDto = new EventDto(event)
 
     return inertia.render('events/show', {
-      event: eventDto
+      event: eventDto,
     })
   }
 
@@ -75,14 +89,16 @@ export default class IndexEventsController {
     // TODO: Implement actual registration logic
     // This could involve creating a user_event_registrations table
     // For now, just increment the participant count
-    
-    await event.merge({
-      currentParticipants: event.currentParticipants + 1
-    }).save()
 
-    return response.ok({ 
+    await event
+      .merge({
+        currentParticipants: event.currentParticipants + 1,
+      })
+      .save()
+
+    return response.ok({
       message: 'Successfully registered for event',
-      event: new EventDto(event)
+      event: new EventDto(event),
     })
   }
 }

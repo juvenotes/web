@@ -16,8 +16,7 @@ export default class ManageEventsController {
 
     const events = await Event.query()
       .if(search, (query) => {
-        query.whereILike('title', `%${search}%`)
-          .orWhereILike('description', `%${search}%`)
+        query.whereILike('title', `%${search}%`).orWhereILike('description', `%${search}%`)
       })
       .if(status, (query) => query.where('status', status))
       .if(eventType, (query) => query.where('eventType', eventType))
@@ -27,15 +26,29 @@ export default class ManageEventsController {
 
     const eventDtos = events.serialize({
       fields: {
-        pick: ['id', 'title', 'slug', 'description', 'eventType', 'status', 
-               'startDate', 'endDate', 'venue', 'isOnline', 'isFree', 
-               'currentParticipants', 'maxParticipants', 'createdAt', 'updatedAt']
-      }
+        pick: [
+          'id',
+          'title',
+          'slug',
+          'description',
+          'eventType',
+          'status',
+          'startDate',
+          'endDate',
+          'venue',
+          'isOnline',
+          'isFree',
+          'currentParticipants',
+          'maxParticipants',
+          'createdAt',
+          'updatedAt',
+        ],
+      },
     })
 
     return inertia.render('manage/events/index', {
       events: eventDtos,
-      filters: { search, status, eventType }
+      filters: { search, status, eventType },
     })
   }
 
@@ -92,15 +105,12 @@ export default class ManageEventsController {
    * Show a single event for management
    */
   async show({ params, inertia }: HttpContext) {
-    const event = await Event.query()
-      .where('slug', params.slug)
-      .preload('user')
-      .firstOrFail()
+    const event = await Event.query().where('slug', params.slug).preload('user').firstOrFail()
 
     const eventDto = new EventDto(event)
 
     return inertia.render('manage/events/show', {
-      event: eventDto
+      event: eventDto,
     })
   }
 
@@ -108,15 +118,12 @@ export default class ManageEventsController {
    * Show edit form for an event
    */
   async edit({ params, inertia }: HttpContext) {
-    const event = await Event.query()
-      .where('slug', params.slug)
-      .preload('user')
-      .firstOrFail()
+    const event = await Event.query().where('slug', params.slug).preload('user').firstOrFail()
 
     const eventDto = new EventDto(event)
 
     return inertia.render('manage/events/edit', {
-      event: eventDto
+      event: eventDto,
     })
   }
 
@@ -143,25 +150,27 @@ export default class ManageEventsController {
       event.slug = newSlug
     }
 
-    await event.merge({
-      title: data.title,
-      description: data.description,
-      content: data.content,
-      eventType: data.eventType,
-      status: data.status,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      registrationDeadline: data.registrationDeadline,
-      venue: data.venue,
-      address: data.address,
-      onlineLink: data.onlineLink,
-      isOnline: data.isOnline,
-      isFree: data.isFree,
-      price: data.price,
-      currency: data.currency,
-      maxParticipants: data.maxParticipants,
-      metadata: data.metadata,
-    }).save()
+    await event
+      .merge({
+        title: data.title,
+        description: data.description,
+        content: data.content,
+        eventType: data.eventType,
+        status: data.status,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        registrationDeadline: data.registrationDeadline,
+        venue: data.venue,
+        address: data.address,
+        onlineLink: data.onlineLink,
+        isOnline: data.isOnline,
+        isFree: data.isFree,
+        price: data.price,
+        currency: data.currency,
+        maxParticipants: data.maxParticipants,
+        metadata: data.metadata,
+      })
+      .save()
 
     session.flash('success', 'Event updated successfully')
     return response.redirect().toRoute('manage.events.show', { slug: event.slug })
@@ -172,7 +181,7 @@ export default class ManageEventsController {
    */
   async destroy({ params, response, session }: HttpContext) {
     const event = await Event.findByOrFail('slug', params.slug)
-    
+
     await event.delete()
 
     session.flash('success', 'Event deleted successfully')

@@ -2,13 +2,13 @@ import { test } from '@japa/runner'
 import {
   generateSectionSlug,
   extractPositionIdentifier,
-  generateSectionSlugFromModels
+  generateSectionSlugFromModels,
 } from '#utils/generate_section_slug'
 
 test.group('Utils - Generate Section Slug', () => {
   test('should generate top-level section slug', ({ assert }) => {
     const slug = generateSectionSlug('hypertension', 'Introduction', 1)
-    
+
     assert.equal(slug, 'hypertension/Introduction#a')
   })
 
@@ -20,31 +20,31 @@ test.group('Utils - Generate Section Slug', () => {
 
   test('should generate subsection slug with parent identifier', ({ assert }) => {
     const slug = generateSectionSlug('cancer', 'Chemotherapy', 1, 'b')
-    
+
     assert.equal(slug, 'cancer/Chemotherapy#ba')
   })
 
   test('should generate deep nested subsection slug', ({ assert }) => {
     const slug = generateSectionSlug('cardiology', 'Side Effects', 2, 'ab')
-    
+
     assert.equal(slug, 'cardiology/Side-Effects#abb')
   })
 
   test('should handle special characters in section title', ({ assert }) => {
     const slug = generateSectionSlug('neurology', 'Signs & Symptoms', 1)
-    
+
     assert.equal(slug, 'neurology/Signs-and-Symptoms#a')
   })
 
   test('should handle spaces and punctuation in titles', ({ assert }) => {
     const slug = generateSectionSlug('psychiatry', 'Diagnosis: Clinical Assessment', 3)
-    
+
     assert.equal(slug, 'psychiatry/Diagnosis:-Clinical-Assessment#c')
   })
 
   test('should handle high position numbers', ({ assert }) => {
     const slug = generateSectionSlug('medicine', 'Section Z', 26)
-    
+
     assert.equal(slug, 'medicine/Section-Z#z')
   })
 })
@@ -79,9 +79,9 @@ test.group('Utils - Generate Section Slug From Models', () => {
   test('should generate slug for top-level section from models', async ({ assert }) => {
     const section = { title: 'Introduction', position: 1 }
     const concept = { slug: 'hypertension' }
-    
+
     const slug = await generateSectionSlugFromModels(section, concept)
-    
+
     assert.equal(slug, 'hypertension/Introduction#a')
   })
 
@@ -89,9 +89,9 @@ test.group('Utils - Generate Section Slug From Models', () => {
     const section = { title: 'Medications', position: 2 }
     const concept = { slug: 'diabetes' }
     const parentSection = { slug: 'diabetes/treatment#b' }
-    
+
     const slug = await generateSectionSlugFromModels(section, concept, parentSection)
-    
+
     assert.equal(slug, 'diabetes/Medications#bb')
   })
 
@@ -99,7 +99,7 @@ test.group('Utils - Generate Section Slug From Models', () => {
     const section = { title: 'Subsection', position: 1 }
     const concept = { slug: 'cardiology' }
     const parentSection = { slug: 'invalid-slug-format' }
-    
+
     await assert.rejects(
       async () => await generateSectionSlugFromModels(section, concept, parentSection),
       'Parent section has invalid slug format'
@@ -110,9 +110,9 @@ test.group('Utils - Generate Section Slug From Models', () => {
     const section = { title: 'Drug Interactions', position: 3 }
     const concept = { slug: 'pharmacology' }
     const parentSection = { slug: 'pharmacology/beta-blockers#ab' }
-    
+
     const slug = await generateSectionSlugFromModels(section, concept, parentSection)
-    
+
     assert.equal(slug, 'pharmacology/Drug-Interactions#abc')
   })
 })

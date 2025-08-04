@@ -20,10 +20,21 @@ export const createEventValidator = vine.compile(
     title: vine.string().trim().minLength(2).maxLength(255),
     description: vine.string().trim().optional(),
     content: vine.string().optional(),
-    eventType: vine.enum(['webinar', 'workshop', 'conference', 'exam', 'seminar', 'meeting', 'other']),
+    eventType: vine.enum([
+      'webinar',
+      'workshop',
+      'conference',
+      'exam',
+      'seminar',
+      'meeting',
+      'other',
+    ]),
     startDate: vine.date().transform((value) => DateTime.fromJSDate(value)),
     endDate: vine.date().transform((value) => DateTime.fromJSDate(value)),
-    registrationDeadline: vine.date().optional().transform((value) => value ? DateTime.fromJSDate(value) : null),
+    registrationDeadline: vine
+      .date()
+      .optional()
+      .transform((value) => (value ? DateTime.fromJSDate(value) : null)),
     venue: vine.string().trim().optional(),
     address: vine.string().trim().optional(),
     onlineLink: vine.string().url().optional(),
@@ -41,11 +52,22 @@ export const updateEventValidator = vine.compile(
     title: vine.string().trim().minLength(2).maxLength(255).optional(),
     description: vine.string().trim().optional(),
     content: vine.string().optional(),
-    eventType: vine.enum(['webinar', 'workshop', 'conference', 'exam', 'seminar', 'meeting', 'other']).optional(),
+    eventType: vine
+      .enum(['webinar', 'workshop', 'conference', 'exam', 'seminar', 'meeting', 'other'])
+      .optional(),
     status: vine.enum(['draft', 'published', 'cancelled', 'completed']).optional(),
-    startDate: vine.date().optional().transform((value) => value ? DateTime.fromJSDate(value) : undefined),
-    endDate: vine.date().optional().transform((value) => value ? DateTime.fromJSDate(value) : undefined),
-    registrationDeadline: vine.date().optional().transform((value) => value ? DateTime.fromJSDate(value) : undefined),
+    startDate: vine
+      .date()
+      .optional()
+      .transform((value) => (value ? DateTime.fromJSDate(value) : undefined)),
+    endDate: vine
+      .date()
+      .optional()
+      .transform((value) => (value ? DateTime.fromJSDate(value) : undefined)),
+    registrationDeadline: vine
+      .date()
+      .optional()
+      .transform((value) => (value ? DateTime.fromJSDate(value) : undefined)),
     venue: vine.string().trim().optional(),
     address: vine.string().trim().optional(),
     onlineLink: vine.string().url().optional(),

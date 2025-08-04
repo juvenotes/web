@@ -13,11 +13,11 @@ test.group('Utils - JSON to Markdown', () => {
       content: [
         {
           type: 'paragraph',
-          content: [{ text: 'Hello world' }]
-        }
-      ]
+          content: [{ text: 'Hello world' }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, 'Hello world')
   })
@@ -28,16 +28,16 @@ test.group('Utils - JSON to Markdown', () => {
         {
           type: 'heading',
           attrs: { level: 1 },
-          content: [{ text: 'Main Title' }]
+          content: [{ text: 'Main Title' }],
         },
         {
           type: 'heading',
           attrs: { level: 3 },
-          content: [{ text: 'Subsection' }]
-        }
-      ]
+          content: [{ text: 'Subsection' }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, '# Main Title\n\n### Subsection')
   })
@@ -47,14 +47,11 @@ test.group('Utils - JSON to Markdown', () => {
       content: [
         {
           type: 'bulletList',
-          content: [
-            { content: [{ text: 'First item' }] },
-            { content: [{ text: 'Second item' }] }
-          ]
-        }
-      ]
+          content: [{ content: [{ text: 'First item' }] }, { content: [{ text: 'Second item' }] }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, '* First item\n* Second item')
   })
@@ -64,14 +61,11 @@ test.group('Utils - JSON to Markdown', () => {
       content: [
         {
           type: 'orderedList',
-          content: [
-            { content: [{ text: 'First step' }] },
-            { content: [{ text: 'Second step' }] }
-          ]
-        }
-      ]
+          content: [{ content: [{ text: 'First step' }] }, { content: [{ text: 'Second step' }] }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, '1. First step\n1. Second step')
   })
@@ -82,14 +76,11 @@ test.group('Utils - JSON to Markdown', () => {
         {
           type: 'codeBlock',
           attrs: { language: 'javascript' },
-          content: [
-            { text: 'console.log("hello")' },
-            { text: 'const x = 1' }
-          ]
-        }
-      ]
+          content: [{ text: 'console.log("hello")' }, { text: 'const x = 1' }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, '```javascript\nconsole.log("hello")\nconst x = 1\n```')
   })
@@ -100,11 +91,11 @@ test.group('Utils - JSON to Markdown', () => {
         {
           type: 'codeBlock',
           attrs: {},
-          content: [{ text: 'plain code' }]
-        }
-      ]
+          content: [{ text: 'plain code' }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, '```\nplain code\n```')
   })
@@ -120,12 +111,12 @@ test.group('Utils - JSON to Markdown', () => {
             { text: ' and ' },
             { text: 'italic', marks: [{ type: 'italic' }] },
             { text: ' and ' },
-            { text: 'code', marks: [{ type: 'code' }] }
-          ]
-        }
-      ]
+            { text: 'code', marks: [{ type: 'code' }] },
+          ],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, 'This is **bold** and *italic* and `code`')
   })
@@ -135,15 +126,15 @@ test.group('Utils - JSON to Markdown', () => {
       content: [
         {
           type: 'paragraph',
-          content: [{ text: 'First paragraph' }]
+          content: [{ text: 'First paragraph' }],
         },
         {
           type: 'paragraph',
-          content: [{ text: 'Second paragraph' }]
-        }
-      ]
+          content: [{ text: 'Second paragraph' }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, 'First paragraph\n\nSecond paragraph')
   })
@@ -153,15 +144,15 @@ test.group('Utils - JSON to Markdown', () => {
       content: [
         {
           type: 'unknownType',
-          content: [{ text: 'Should be ignored' }]
+          content: [{ text: 'Should be ignored' }],
         },
         {
           type: 'paragraph',
-          content: [{ text: 'Should be processed' }]
-        }
-      ]
+          content: [{ text: 'Should be processed' }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, '\n\nShould be processed')
   })
@@ -170,11 +161,11 @@ test.group('Utils - JSON to Markdown', () => {
     const json = {
       content: [
         {
-          type: 'paragraph'
-        }
-      ]
+          type: 'paragraph',
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
     assert.equal(result, '')
   })
@@ -185,28 +176,26 @@ test.group('Utils - JSON to Markdown', () => {
         {
           type: 'heading',
           attrs: { level: 2 },
-          content: [{ text: 'Documentation' }]
+          content: [{ text: 'Documentation' }],
         },
         {
           type: 'paragraph',
           content: [
             { text: 'Here is some ' },
             { text: 'important', marks: [{ type: 'bold' }] },
-            { text: ' information.' }
-          ]
+            { text: ' information.' },
+          ],
         },
         {
           type: 'bulletList',
-          content: [
-            { content: [{ text: 'Point one' }] },
-            { content: [{ text: 'Point two' }] }
-          ]
-        }
-      ]
+          content: [{ content: [{ text: 'Point one' }] }, { content: [{ text: 'Point two' }] }],
+        },
+      ],
     }
-    
+
     const result = jsonToMarkdown(json)
-    const expected = '## Documentation\n\nHere is some **important** information.\n\n* Point one\n* Point two'
+    const expected =
+      '## Documentation\n\nHere is some **important** information.\n\n* Point one\n* Point two'
     assert.equal(result, expected)
   })
 })
