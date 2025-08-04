@@ -53,6 +53,8 @@ const ManageConceptSectionController = () =>
 const OnboardingController = () => import('#controllers/onboarding_controller')
 const MedicalArticleController = () => import('#controllers/medical_articles_controller')
 const MediaAssetsController = () => import('#controllers/media_assets_controller')
+const IndexEventsController = () => import('#controllers/events/index_events_controller')
+const ManageEventsController = () => import('#controllers/manage/events/manage_events_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -536,3 +538,27 @@ router.get('/library/:subject', [MedicalArticleController, 'showBySubject'])
 
 // Media Assets
 router.get('/media/:hintId', [MediaAssetsController, 'show'])
+
+//* EVENTS -> VIEW
+router
+  .group(() => {
+    router.get('/', [IndexEventsController, 'index']).as('events.index')
+    router.get('/:slug', [IndexEventsController, 'show']).as('events.show')
+    router.post('/:slug/register', [IndexEventsController, 'register']).as('events.register')
+  })
+  .prefix('/events')
+  .use(middleware.auth())
+
+//* EVENTS -> MANAGE
+router
+  .group(() => {
+    router.get('/', [ManageEventsController, 'index']).as('manage.events.index')
+    router.get('/create', [ManageEventsController, 'create']).as('manage.events.create')
+    router.post('/', [ManageEventsController, 'store']).as('manage.events.store')
+    router.get('/:slug', [ManageEventsController, 'show']).as('manage.events.show')
+    router.get('/:slug/edit', [ManageEventsController, 'edit']).as('manage.events.edit')
+    router.put('/:slug', [ManageEventsController, 'update']).as('manage.events.update')
+    router.delete('/:slug', [ManageEventsController, 'destroy']).as('manage.events.destroy')
+  })
+  .prefix('/manage/events')
+  .use(middleware.auth())
