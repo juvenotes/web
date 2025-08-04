@@ -97,6 +97,12 @@ function getEventTypeColor(type: string) {
   return colors[type as keyof typeof colors] || colors.other
 }
 
+function onDeleteEvent(e: Event) {
+  if (!confirm('Are you sure you want to delete this event?')) {
+    e.preventDefault()
+  }
+}
+
 const hasEvents = props.events.data.length > 0
 </script>
 
@@ -354,7 +360,7 @@ const hasEvents = props.events.data.length > 0
                       size="sm"
                       class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                       title="Delete Event"
-                      @click="return confirm('Are you sure you want to delete this event?')"
+                      @click="onDeleteEvent"
                     >
                       <Trash2 class="h-4 w-4" />
                     </Button>

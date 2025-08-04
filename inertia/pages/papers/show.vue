@@ -68,6 +68,11 @@ const papersByYear = computed(() => {
     {} as Record<string, PastPaperDto[]>
   )
 })
+
+function clearFilters() {
+  selectedStudyLevel.value = null
+  selectedExamType.value = null
+}
 </script>
 
 <template>
@@ -220,10 +225,7 @@ const papersByYear = computed(() => {
         </p>
         <button
           v-if="selectedStudyLevel || selectedExamType"
-          @click="
-            selectedStudyLevel = null
-            selectedExamType = null
-          "
+          @click="clearFilters"
           class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#55A9C4] hover:bg-[#4795af] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#55A9C4] transition-colors duration-200"
         >
           Clear filters

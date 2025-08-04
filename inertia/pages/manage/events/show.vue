@@ -92,6 +92,18 @@ function openEditQuiz(quiz: EventQuizDto) {
 }
 
 const isEventCompleted = new Date(props.event.endDate) < new Date()
+
+function onDeleteQuiz(e: Event) {
+  if (!confirm('Are you sure you want to delete this quiz?')) {
+    e.preventDefault()
+  }
+}
+
+function onDeleteEvent(e: Event) {
+  if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+    e.preventDefault()
+  }
+}
 </script>
 
 <template>
@@ -241,17 +253,33 @@ const isEventCompleted = new Date(props.event.endDate) < new Date()
                     >
                       <Edit class="h-4 w-4" />
                     </Button>
-                    <Button
-                      as="form"
-                      method="DELETE"
-                      :href="`/manage/events/${event.slug}/quiz/${quiz.id}`"
-                      variant="outline"
-                      size="sm"
-                      class="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      @click="return confirm('Are you sure you want to delete this quiz?')"
-                    >
-                      <Trash2 class="h-4 w-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger as-child>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          class="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 class="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the quiz.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction as-child>
+                            <form method="DELETE" :action="`/manage/events/${event.slug}/quiz/${quiz.id}`">
+                              <Button type="submit" variant="destructive">Confirm Delete</Button>
+                            </form>
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>
@@ -403,17 +431,33 @@ const isEventCompleted = new Date(props.event.endDate) < new Date()
               View Public Page
             </Link>
 
-            <Button
-              as="form"
-              method="DELETE"
-              :href="`/manage/events/${event.slug}`"
-              variant="outline"
-              class="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-              @click="return confirm('Are you sure you want to delete this event? This action cannot be undone.')"
-            >
-              <Trash2 class="h-4 w-4 mr-2" />
-              Delete Event
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger as-child>
+                <Button
+                  variant="outline"
+                  class="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                >
+                  <Trash2 class="h-4 w-4 mr-2" />
+                  Delete Event
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the event.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction as-child>
+                    <form method="DELETE" :action="`/manage/events/${event.slug}`">
+                      <Button type="submit" variant="destructive">Confirm Delete</Button>
+                    </form>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
       </div>
