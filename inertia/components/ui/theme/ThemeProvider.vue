@@ -35,7 +35,7 @@ const updateTheme = (newTheme: Theme) => {
   try {
     // Check if we're in a browser environment
     if (typeof window === 'undefined' || !window.document) {
-      console.log('Not in browser environment, skipping theme update')
+      // Not in browser environment, skip theme update
       return
     }
 
@@ -155,11 +155,11 @@ const updateTheme = (newTheme: Theme) => {
 // Initialize theme
 onMounted(() => {
   try {
-    console.log('ThemeProvider mounted, initializing theme')
-
+    // Theme initialization
+    
     // Check if we're in a browser environment
     if (typeof window === 'undefined') {
-      console.log('Not in browser environment, skipping theme initialization in component')
+      // Not in browser environment, skip theme initialization
       return
     }
 
@@ -177,15 +177,15 @@ onMounted(() => {
       (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')
     ) {
       theme.value = savedTheme
-      console.log('Using saved theme from localStorage:', savedTheme)
+      // Using saved theme from localStorage
     } else {
       theme.value = defaultTheme
-      console.log('Using default theme:', defaultTheme)
+      // Using default theme
     }
 
     // Set initial theme
     updateTheme(theme.value)
-    console.log('Theme updated to:', theme.value, 'system resolved to:', getSystemTheme())
+    // Theme updated
 
     // Create a MutationObserver to ensure dark mode is consistently applied after DOM changes
     if (typeof MutationObserver !== 'undefined') {
@@ -195,7 +195,7 @@ onMounted(() => {
           // Short delay to ensure styles apply after DOM updates
           setTimeout(() => {
             updateTheme(theme.value)
-            console.log('DOM changed, reapplying dark mode styles')
+            // DOM changed, reapplying dark mode styles
           }, 10)
         }
       })
@@ -216,7 +216,7 @@ onMounted(() => {
       const handleChange = () => {
         if (theme.value === 'system') {
           updateTheme('system')
-          console.log('System theme changed, updating to:', getSystemTheme())
+          // System theme changed, updating
         }
       }
 
