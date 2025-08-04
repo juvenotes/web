@@ -24,6 +24,7 @@ export default class EventDto extends BaseModelDto {
   declare maxParticipants: number | null
   declare currentParticipants: number
   declare metadata: Record<string, any>
+  declare imageUrl: string | null
   declare createdAt: string
   declare updatedAt: string
   declare user: UserDto | null
@@ -53,6 +54,7 @@ export default class EventDto extends BaseModelDto {
     this.maxParticipants = event.maxParticipants
     this.currentParticipants = event.currentParticipants
     this.metadata = event.metadata
+    this.imageUrl = event.imageUrl
     this.createdAt = event.createdAt.toISO()!
     this.updatedAt = event.updatedAt.toISO()!
     this.user = event.user && new UserDto(event.user)

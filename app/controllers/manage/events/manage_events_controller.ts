@@ -5,6 +5,9 @@ import EventQuizDto from '#dtos/event_quiz'
 import EventQuiz from '#models/event_quiz'
 import { createEventValidator, updateEventValidator } from '#validators/event'
 import string from '@adonisjs/core/helpers/string'
+import { CloudinaryService } from '#services/cloudinary_service'
+import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
+import fs from 'node:fs/promises'
 
 export default class ManageEventsController {
   /**
@@ -58,6 +61,22 @@ export default class ManageEventsController {
       return response.redirect().back()
     }
 
+    // Handle image upload if provided
+    let imageUrl = data.imageUrl || null
+    const imageFile = request.file('image')
+    if (imageFile && imageFile.isValid) {
+      try {
+        imageUrl = await CloudinaryService.uploadImage(imageFile.tmpPath!, {
+          folder: 'events',
+          subFolder: 'covers',
+        })
+      } catch (error) {
+        console.error('Image upload failed:', error)
+        session.flash('error', 'Failed to upload image')
+        return response.redirect().back()
+      }
+    }
+
     const event = await Event.create({
       userId: user.id,
       title: data.title,
@@ -76,6 +95,7 @@ export default class ManageEventsController {
       price: data.price,
       currency: data.currency || 'USD',
       maxParticipants: data.maxParticipants,
+      imageUrl,
       metadata: data.metadata || {},
     })
 
@@ -138,6 +158,22 @@ export default class ManageEventsController {
       event.slug = newSlug
     }
 
+    // Handle image upload if provided
+    let imageUrl = data.imageUrl || event.imageUrl
+    const imageFile = request.file('image')
+    if (imageFile && imageFile.isValid) {
+      try {
+        imageUrl = await CloudinaryService.uploadImage(imageFile.tmpPath!, {
+          folder: 'events',
+          subFolder: 'covers',
+        })
+      } catch (error) {
+        console.error('Image upload failed:', error)
+        session.flash('error', 'Failed to upload image')
+        return response.redirect().back()
+      }
+    }
+
     await event
       .merge({
         title: data.title,
@@ -156,6 +192,7 @@ export default class ManageEventsController {
         price: data.price,
         currency: data.currency,
         maxParticipants: data.maxParticipants,
+        imageUrl,
         metadata: data.metadata,
       })
       .save()
@@ -253,5 +290,55 @@ export default class ManageEventsController {
 
     session.flash('success', 'Quiz deleted successfully')
     return response.redirect().toRoute('manage.events.show', { slug: event.slug })
+  }
+
+  /**
+   * Upload quiz questions from file
+   */
+  async uploadQuiz({ request, response, params, session, logger }: HttpContext) {
+    const event = await Event.findByOrFail('slug', params.slug)
+    const file = request.file('file')
+    const title = request.input('title')
+    const description = request.input('description')
+
+    if (!file) return response.badRequest('No file uploaded')
+    if (!title) return response.badRequest('Quiz title is required')
+
+    try {
+      const content = await fs.readFile(file.tmpPath!, 'utf-8')
+      const parsedQuestions = MCQParser.parse(content)
+
+      logger.info('quiz questions parsed', {
+        count: parsedQuestions.length,
+        eventId: event.id,
+        title,
+      })
+
+      // Convert parsed questions to the format expected by EventQuiz
+      const mcqs = parsedQuestions.map((question, index) => ({
+        question: question.stem,
+        choices: question.choices,
+        correctAnswer: question.choices.findIndex((choice) => choice === question.answer),
+        explanation: question.explanation || '',
+      }))
+
+      // Create the quiz with the parsed questions
+      await EventQuiz.create({
+        eventId: event.id,
+        title,
+        description: description || null,
+        mcqs,
+      })
+
+      session.flash('success', `Successfully uploaded quiz with ${parsedQuestions.length} questions`)
+      return response.redirect().toRoute('manage.events.show', { slug: event.slug })
+    } catch (error) {
+      if (error instanceof MCQParserError) {
+        logger.error('quiz parsing failed', { error })
+        return response.badRequest(`Parse error: ${error.message}`)
+      }
+      logger.error('failed to upload quiz', { error })
+      throw error
+    }
   }
 }

@@ -43,6 +43,7 @@ export const createEventValidator = vine.compile(
     price: vine.number().positive().optional(),
     currency: vine.string().trim().minLength(3).maxLength(3).optional(),
     maxParticipants: vine.number().positive().optional(),
+    imageUrl: vine.string().url().optional(),
     metadata: metadataSchema.optional(),
   })
 )
@@ -76,6 +77,7 @@ export const updateEventValidator = vine.compile(
     price: vine.number().positive().optional(),
     currency: vine.string().trim().minLength(3).maxLength(3).optional(),
     maxParticipants: vine.number().positive().optional(),
+    imageUrl: vine.string().url().optional(),
     metadata: metadataSchema.optional(),
   })
 )

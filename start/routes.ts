@@ -567,6 +567,9 @@ router
       .as('manage.events.quiz.create')
     router.post('/:slug/quiz', [ManageEventsController, 'storeQuiz']).as('manage.events.quiz.store')
     router
+      .post('/:slug/quiz/upload', [ManageEventsController, 'uploadQuiz'])
+      .as('manage.events.quiz.upload')
+    router
       .get('/:slug/quiz/:quizId/edit', [ManageEventsController, 'editQuiz'])
       .as('manage.events.quiz.edit')
     router

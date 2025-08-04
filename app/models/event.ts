@@ -71,6 +71,9 @@ export default class Event extends BaseModel {
   })
   declare metadata: Record<string, any>
 
+  @column()
+  declare imageUrl: string | null
+
   @column.dateTime()
   declare deletedAt: DateTime | null
 
