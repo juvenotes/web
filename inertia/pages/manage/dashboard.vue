@@ -45,15 +45,25 @@ const adminMenuItems = [
         class="rounded-xl bg-gradient-to-br from-blue-100 via-white to-blue-50 dark:bg-card dark:bg-none shadow flex flex-col items-center p-6 border border-blue-100 dark:border-border"
       >
         <component :is="BookOpen" class="w-10 h-10 mb-3 text-blue-600 dark:text-primary" />
-        <div class="text-3xl font-extrabold text-blue-900 dark:text-foreground">{{ props.stats.concepts ?? 0 }}</div>
-        <div class="text-sm text-blue-700 dark:text-primary font-semibold mt-1 tracking-wide uppercase">Concepts</div>
+        <div class="text-3xl font-extrabold text-blue-900 dark:text-foreground">
+          {{ props.stats.concepts ?? 0 }}
+        </div>
+        <div
+          class="text-sm text-blue-700 dark:text-primary font-semibold mt-1 tracking-wide uppercase"
+        >
+          Concepts
+        </div>
       </div>
       <div
         class="rounded-xl bg-gradient-to-br from-fuchsia-100 via-white to-fuchsia-50 dark:bg-card dark:bg-none shadow flex flex-col items-center p-6 border border-fuchsia-100 dark:border-border"
       >
         <component :is="FileText" class="w-10 h-10 mb-3 text-fuchsia-600 dark:text-primary" />
-        <div class="text-3xl font-extrabold text-fuchsia-900 dark:text-foreground">{{ props.stats.papers ?? 0 }}</div>
-        <div class="text-sm text-fuchsia-700 dark:text-primary font-semibold mt-1 tracking-wide uppercase">
+        <div class="text-3xl font-extrabold text-fuchsia-900 dark:text-foreground">
+          {{ props.stats.papers ?? 0 }}
+        </div>
+        <div
+          class="text-sm text-fuchsia-700 dark:text-primary font-semibold mt-1 tracking-wide uppercase"
+        >
           Papers
         </div>
       </div>
@@ -61,8 +71,12 @@ const adminMenuItems = [
         class="rounded-xl bg-gradient-to-br from-emerald-100 via-white to-emerald-50 dark:bg-card dark:bg-none shadow flex flex-col items-center p-6 border border-emerald-100 dark:border-border"
       >
         <component :is="FileQuestion" class="w-10 h-10 mb-3 text-emerald-600 dark:text-primary" />
-        <div class="text-3xl font-extrabold text-emerald-900 dark:text-foreground">{{ props.stats.questions ?? 0 }}</div>
-        <div class="text-sm text-emerald-700 dark:text-primary font-semibold mt-1 tracking-wide uppercase">
+        <div class="text-3xl font-extrabold text-emerald-900 dark:text-foreground">
+          {{ props.stats.questions ?? 0 }}
+        </div>
+        <div
+          class="text-sm text-emerald-700 dark:text-primary font-semibold mt-1 tracking-wide uppercase"
+        >
           Questions
         </div>
       </div>
@@ -81,7 +95,9 @@ const adminMenuItems = [
             class="w-10 h-10 text-blue-500 dark:text-primary group-hover:text-blue-700 dark:group-hover:text-primary/80 transition-colors"
           />
         </div>
-        <div class="text-lg font-semibold text-slate-800 dark:text-foreground group-hover:text-blue-700 dark:group-hover:text-primary">
+        <div
+          class="text-lg font-semibold text-slate-800 dark:text-foreground group-hover:text-blue-700 dark:group-hover:text-primary"
+        >
           {{ item.name }}
         </div>
       </Link>
@@ -98,7 +114,9 @@ const adminMenuItems = [
             class="w-10 h-10 text-blue-500 dark:text-primary group-hover:text-blue-700 dark:group-hover:text-primary/80 transition-colors"
           />
         </div>
-        <div class="text-lg font-semibold text-slate-800 dark:text-foreground group-hover:text-blue-700 dark:group-hover:text-primary">
+        <div
+          class="text-lg font-semibold text-slate-800 dark:text-foreground group-hover:text-blue-700 dark:group-hover:text-primary"
+        >
           {{ item.name }}
         </div>
       </Link>

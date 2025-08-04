@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
+import EventQuizDto from '#dtos/event_quiz'
 
 export default class IndexEventsController {
   /**
@@ -23,28 +24,7 @@ export default class IndexEventsController {
       .preload('user')
       .paginate(page, 12)
 
-    const eventDtos = events.serialize({
-      fields: {
-        pick: [
-          'id',
-          'title',
-          'slug',
-          'description',
-          'eventType',
-          'status',
-          'startDate',
-          'endDate',
-          'venue',
-          'isOnline',
-          'isFree',
-          'price',
-          'currency',
-          'maxParticipants',
-          'currentParticipants',
-          'createdAt',
-        ],
-      },
-    })
+    const eventDtos = events.serialize().data.map((event: any) => new EventDto(event))
 
     return inertia.render('events/index', {
       events: eventDtos,
@@ -61,12 +41,40 @@ export default class IndexEventsController {
       .where('status', 'published')
       .whereNull('deletedAt')
       .preload('user')
+      .preload('quizzes')
       .firstOrFail()
 
     const eventDto = new EventDto(event)
+    const quizDtos = event.quizzes.map((quiz) => new EventQuizDto(quiz))
 
     return inertia.render('events/show', {
       event: eventDto,
+      quizzes: quizDtos,
+    })
+  }
+
+  /**
+   * Show quiz page for an event
+   */
+  async quiz({ params, inertia }: HttpContext) {
+    const event = await Event.query()
+      .where('slug', params.slug)
+      .where('status', 'published')
+      .whereNull('deletedAt')
+      .preload('quizzes')
+      .firstOrFail()
+
+    const quiz = event.quizzes.find((q) => q.id === Number(params.quizId))
+    if (!quiz) {
+      throw new Error('Quiz not found')
+    }
+
+    const eventDto = new EventDto(event)
+    const quizDto = new EventQuizDto(quiz)
+
+    return inertia.render('events/quiz', {
+      event: eventDto,
+      quiz: quizDto,
     })
   }
 

@@ -11,10 +11,10 @@ import {
   Stethoscope,
   Pin,
   Hand,
-  Library
+  Library,
 } from 'lucide-vue-next'
 import StatsDto from '#dtos/stats'
-import SurveyBanner from '~/components/SurveyBanner.vue';
+import SurveyBanner from '~/components/SurveyBanner.vue'
 
 defineProps<{
   messages: Record<string, string | Record<string, string>>
@@ -30,9 +30,9 @@ defineOptions({ layout: DashLayout })
 
 // Card hover effect - this will ensure proper sizing just like the example
 onMounted(() => {
-  // Ensure all cards have consistent sizing and hover effects 
+  // Ensure all cards have consistent sizing and hover effects
   const cards = document.querySelectorAll('[data-tour]')
-  cards.forEach(card => {
+  cards.forEach((card) => {
     card.classList.add('dashboard-card-fixed-size')
   })
 })
@@ -44,7 +44,7 @@ onMounted(() => {
   <div class="dashboard-content max-w-7xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8 py-6 md:py-8">
     <!-- Tally Survey Banner -->
     <SurveyBanner />
-    
+
     <!-- Hero Welcome Section -->
     <div
       class="relative bg-gradient-to-br from-accent/10 via-accent/15 to-transparent p-6 sm:p-8 rounded-3xl shadow-sm backdrop-blur-sm border border-accent/15 overflow-hidden"
@@ -104,17 +104,21 @@ onMounted(() => {
               <Flame class="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
             </div>
             <div>
-              <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Streak</p>
+              <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Streak
+              </p>
               <p class="text-base sm:text-lg font-bold text-foreground">
                 {{ user?.streak?.currentStreak ?? 0 }}
-                <span class="text-xs text-muted-foreground">day<span v-if="(user?.streak?.currentStreak ?? 0) !== 1">s</span></span>
+                <span class="text-xs text-muted-foreground"
+                  >day<span v-if="(user?.streak?.currentStreak ?? 0) !== 1">s</span></span
+                >
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <!-- Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       <!-- Past Papers -->
@@ -125,13 +129,17 @@ onMounted(() => {
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
+            >
               <FileText class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Past Papers</h3>
               <p class="text-sm text-gray-600 mt-1 font-medium">Practice with previous exams</p>
-              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+              <div
+                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+              >
                 <span class="text-xs text-[#55A9C4] font-semibold">Start Practicing</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
@@ -148,13 +156,19 @@ onMounted(() => {
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
+            >
               <BookOpen class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Concepts</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">Master comprehensive study materials</p>
-              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+              <p class="text-sm text-gray-600 mt-1 font-medium">
+                Master comprehensive study materials
+              </p>
+              <div
+                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+              >
                 <span class="text-xs text-[#55A9C4] font-semibold">Explore Concepts</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
@@ -171,13 +185,17 @@ onMounted(() => {
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
+            >
               <Library class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Library</h3>
               <p class="text-sm text-gray-600 mt-1 font-medium">Access all your saved resources</p>
-              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+              <div
+                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+              >
                 <span class="text-xs text-[#55A9C4] font-semibold">View Library</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
@@ -194,13 +212,17 @@ onMounted(() => {
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
+            >
               <Stethoscope class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">OSCE</h3>
               <p class="text-sm text-gray-600 mt-1 font-medium">Clinical scenario-based practice</p>
-              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+              <div
+                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+              >
                 <span class="text-xs text-[#55A9C4] font-semibold">Practice Scenarios</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
@@ -217,13 +239,19 @@ onMounted(() => {
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
+            >
               <Pin class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Spots</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">Sharpen your identification skills</p>
-              <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+              <p class="text-sm text-gray-600 mt-1 font-medium">
+                Sharpen your identification skills
+              </p>
+              <div
+                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+              >
                 <span class="text-xs text-[#55A9C4] font-semibold">Identify Spots</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
@@ -314,11 +342,11 @@ onMounted(() => {
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stat-card {
     padding: 0.75rem;
   }
-  
+
   .stat-card p:last-child {
     font-size: 0.9375rem;
   }

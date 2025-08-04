@@ -59,8 +59,9 @@ const form = useForm<FormData>({
 const filteredCourses = computed(() => {
   if (!form.education_level_id) return []
 
-  return props.availableCourses.filter((course) =>
-    course.educationLevel && course.educationLevel.id === parseInt(form.education_level_id)
+  return props.availableCourses.filter(
+    (course) =>
+      course.educationLevel && course.educationLevel.id === parseInt(form.education_level_id)
   )
 })
 
@@ -139,16 +140,22 @@ const handleCourseChange = () => {
   <AppHead title="Personalize" description="Personalize your experience" />
   <div class="min-h-[75vh] flex items-center justify-center">
     <div class="w-full max-w-md mx-auto px-4 sm:px-6">
-      <div class="bg-card rounded-lg border border-gray-100 shadow-sm p-5 sm:p-6 md:p-7 space-y-4 sm:space-y-5 md:space-y-6">
+      <div
+        class="bg-card rounded-lg border border-gray-100 shadow-sm p-5 sm:p-6 md:p-7 space-y-4 sm:space-y-5 md:space-y-6"
+      >
         <div class="text-center space-y-1 sm:space-y-2">
           <h1 class="text-lg sm:text-xl md:text-2xl font-medium">{{ stepTitles[currentStep] }}</h1>
-          <p class="text-xs sm:text-sm text-muted-foreground">Step {{ currentStep }} of {{ totalSteps }}</p>
+          <p class="text-xs sm:text-sm text-muted-foreground">
+            Step {{ currentStep }} of {{ totalSteps }}
+          </p>
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-5">
           <!-- Education Level Step -->
           <div v-show="currentStep === 1" class="space-y-2">
-            <Label for="education_level" class="text-xs sm:text-sm font-medium">Education Level</Label>
+            <Label for="education_level" class="text-xs sm:text-sm font-medium"
+              >Education Level</Label
+            >
             <Select v-model="form.education_level_id" @update:modelValue="handleLevelChange">
               <SelectTrigger id="education_level" class="text-xs sm:text-sm">
                 <SelectValue placeholder="Select Level" />
@@ -217,7 +224,9 @@ const handleCourseChange = () => {
 
           <!-- Graduation Year Step -->
           <div v-show="currentStep === 4" class="space-y-2">
-            <Label for="graduation_year" class="text-xs sm:text-sm font-medium">Expected Graduation Year</Label>
+            <Label for="graduation_year" class="text-xs sm:text-sm font-medium"
+              >Expected Graduation Year</Label
+            >
             <Select v-model="form.graduation_year">
               <SelectTrigger id="graduation_year" class="text-xs sm:text-sm">
                 <SelectValue placeholder="Select Year" />
@@ -236,22 +245,25 @@ const handleCourseChange = () => {
           </div>
 
           <div class="flex justify-between pt-2">
-            <Button 
-              type="button" 
-              variant="outline" 
-              @click="handlePreviousStep" 
-              v-if="currentStep > 1" 
+            <Button
+              type="button"
+              variant="outline"
+              @click="handlePreviousStep"
+              v-if="currentStep > 1"
               class="text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4"
             >
               Back
             </Button>
 
-            <Button 
-              type="submit" 
-              class="ml-auto text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4 transition-colors duration-200" 
+            <Button
+              type="submit"
+              class="ml-auto text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4 transition-colors duration-200"
               :disabled="!isStepValid || form.processing"
             >
-              <Loader v-if="form.processing" class="mr-1.5 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4 animate-spin" />
+              <Loader
+                v-if="form.processing"
+                class="mr-1.5 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4 animate-spin"
+              />
               {{ currentStep === totalSteps ? 'Complete Setup' : 'Continue' }}
             </Button>
           </div>
@@ -271,21 +283,29 @@ const handleCourseChange = () => {
   .bg-card {
     transition: box-shadow 0.2s ease;
   }
-  
+
   .bg-card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 }
 
 @media (min-width: 768px) {
   .bg-card {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow:
+      0 1px 3px 0 rgba(0, 0, 0, 0.1),
+      0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
-  
+
   .bg-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 }
 

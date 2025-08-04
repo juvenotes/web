@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, hasMany, column } from '@adonisjs/lucid/orm'
 import User from '#models/user'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import EventQuiz from '#models/event_quiz'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class Event extends BaseModel {
   @column({ isPrimary: true })
@@ -81,6 +82,9 @@ export default class Event extends BaseModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @hasMany(() => EventQuiz)
+  declare quizzes: HasMany<typeof EventQuiz>
 
   // Manual soft delete implementation
   async delete() {

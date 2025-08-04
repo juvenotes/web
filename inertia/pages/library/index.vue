@@ -48,10 +48,7 @@ function getIconForSubject(subjectName: string): string {
 
 const hasSubjects = computed(() => props.subjects && props.subjects.length > 0)
 
-const breadcrumbs = [
-  { label: 'Dashboard', href: '/learn' },
-  { label: 'Library' }
-]
+const breadcrumbs = [{ label: 'Dashboard', href: '/learn' }, { label: 'Library' }]
 </script>
 
 <template>
@@ -62,14 +59,15 @@ const breadcrumbs = [
 
       <!-- Header Section -->
       <div class="text-center mb-8 md:mb-12">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          Medical Library
-        </h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Medical Library</h1>
         <p class="text-gray-600">Browse articles by medical subject</p>
       </div>
 
       <!-- Subject Grid - Preserving original card appearance exactly -->
-      <div v-if="hasSubjects" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+      <div
+        v-if="hasSubjects"
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
+      >
         <Link
           v-for="subject in subjects"
           :key="subject"
@@ -81,7 +79,9 @@ const breadcrumbs = [
             v-html="getIconForSubject(subject)"
           ></div>
 
-          <h2 class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-[#55A9C4]">
+          <h2
+            class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-[#55A9C4]"
+          >
             {{ subject }}
           </h2>
 
@@ -139,6 +139,8 @@ const breadcrumbs = [
 /* Preserving original hover effects */
 .group:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 </style>

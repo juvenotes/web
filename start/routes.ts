@@ -544,6 +544,7 @@ router
   .group(() => {
     router.get('/', [IndexEventsController, 'index']).as('events.index')
     router.get('/:slug', [IndexEventsController, 'show']).as('events.show')
+    router.get('/:slug/quiz/:quizId', [IndexEventsController, 'quiz']).as('events.quiz')
     router.post('/:slug/register', [IndexEventsController, 'register']).as('events.register')
   })
   .prefix('/events')
@@ -559,6 +560,21 @@ router
     router.get('/:slug/edit', [ManageEventsController, 'edit']).as('manage.events.edit')
     router.put('/:slug', [ManageEventsController, 'update']).as('manage.events.update')
     router.delete('/:slug', [ManageEventsController, 'destroy']).as('manage.events.destroy')
+
+    // Quiz management routes
+    router
+      .get('/:slug/quiz/create', [ManageEventsController, 'createQuiz'])
+      .as('manage.events.quiz.create')
+    router.post('/:slug/quiz', [ManageEventsController, 'storeQuiz']).as('manage.events.quiz.store')
+    router
+      .get('/:slug/quiz/:quizId/edit', [ManageEventsController, 'editQuiz'])
+      .as('manage.events.quiz.edit')
+    router
+      .put('/:slug/quiz/:quizId', [ManageEventsController, 'updateQuiz'])
+      .as('manage.events.quiz.update')
+    router
+      .delete('/:slug/quiz/:quizId', [ManageEventsController, 'destroyQuiz'])
+      .as('manage.events.quiz.destroy')
   })
   .prefix('/manage/events')
   .use(middleware.auth())

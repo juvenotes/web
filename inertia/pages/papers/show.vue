@@ -72,7 +72,7 @@ const papersByYear = computed(() => {
 
 <template>
   <AppHead :title="`${concept.title} Papers`" :description="`Past papers for ${concept.title}`" />
-  
+
   <div class="min-h-screen bg-gray-50/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <!-- Header Section -->
@@ -80,7 +80,9 @@ const papersByYear = computed(() => {
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
 
         <!-- Title and Description -->
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -112,10 +114,14 @@ const papersByYear = computed(() => {
       </div>
 
       <!-- Filter Section -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 sm:mb-8">
+      <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 sm:mb-8"
+      >
         <p class="text-sm text-gray-500">
           Showing {{ Object.values(papersByYear).flat().length }} papers
-          <span v-if="selectedStudyLevel || selectedExamType" class="font-medium text-[#55A9C4]">(filtered)</span>
+          <span v-if="selectedStudyLevel || selectedExamType" class="font-medium text-[#55A9C4]"
+            >(filtered)</span
+          >
         </p>
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <ToggleStudyLevel v-model="selectedStudyLevel" :papers="papers" />
@@ -136,7 +142,9 @@ const papersByYear = computed(() => {
       <!-- Papers by Year -->
       <template v-if="hasPapers">
         <div v-for="(yearPapers, year) in papersByYear" :key="year" class="mb-8 sm:mb-10">
-          <div class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-5">
+          <div
+            class="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-5"
+          >
             <Calendar class="h-5 w-5 text-[#55A9C4]" />
             <h2>{{ year }}</h2>
           </div>
@@ -155,17 +163,23 @@ const papersByYear = computed(() => {
               >
                 <div class="flex items-start space-x-3">
                   <div class="flex-shrink-0 mt-0.5">
-                    <div class="h-8 w-8 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
+                    <div
+                      class="h-8 w-8 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center"
+                    >
                       <FileText class="h-5 w-5 text-[#55A9C4]" />
                     </div>
                   </div>
                   <div>
-                    <h3 class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2">
+                    <h3
+                      class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2"
+                    >
                       {{ paper.title }}
                     </h3>
-                    
+
                     <div class="flex flex-wrap items-center gap-1 mt-1 mb-1">
-                      <span class="inline-flex px-2 py-0.5 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium">
+                      <span
+                        class="inline-flex px-2 py-0.5 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium"
+                      >
                         {{ paper.examType.toUpperCase() }}
                       </span>
                       <span
@@ -175,7 +189,7 @@ const papersByYear = computed(() => {
                         {{ paper.paperType.toUpperCase() }}
                       </span>
                     </div>
-                    
+
                     <p class="text-sm text-gray-500">
                       {{ paper.questions?.length ?? 0 }} questions
                     </p>
@@ -189,17 +203,27 @@ const papersByYear = computed(() => {
 
       <!-- No Papers Available -->
       <div v-else class="text-center py-12 sm:py-16 empty-state">
-        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+        <div
+          class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5"
+        >
           <AlertCircle class="h-8 w-8 sm:h-10 sm:w-10 text-amber-500" />
         </div>
         <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No Papers Available Yet</h3>
         <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
-          <span v-if="selectedStudyLevel || selectedExamType">No papers match your current filters. Try adjusting your selection.</span>
-          <span v-else>We're currently adding past papers for {{ concept.title }}. Please check back later.</span>
+          <span v-if="selectedStudyLevel || selectedExamType"
+            >No papers match your current filters. Try adjusting your selection.</span
+          >
+          <span v-else
+            >We're currently adding past papers for {{ concept.title }}. Please check back
+            later.</span
+          >
         </p>
         <button
           v-if="selectedStudyLevel || selectedExamType"
-          @click="selectedStudyLevel = null; selectedExamType = null"
+          @click="
+            selectedStudyLevel = null
+            selectedExamType = null
+          "
           class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#55A9C4] hover:bg-[#4795af] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#55A9C4] transition-colors duration-200"
         >
           Clear filters
@@ -247,10 +271,20 @@ const papersByYear = computed(() => {
 
 /* Base typography */
 html {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 @supports (font-variation-settings: normal) {
-  html { font-family: 'Inter var', system-ui, -apple-system, sans-serif; }
+  html {
+    font-family:
+      'Inter var',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
 }
 
 /* Improved touch targets */
@@ -258,7 +292,7 @@ html {
   .group {
     min-height: 56px;
   }
-  
+
   .max-w-7xl {
     padding-left: 1rem;
     padding-right: 1rem;

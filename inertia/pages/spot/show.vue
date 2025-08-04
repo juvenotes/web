@@ -64,15 +64,20 @@ const breadcrumbItems = computed(() => [
 </script>
 
 <template>
-  <AppHead :title="`${concept.title} SPOT Papers`" :description="`SPOT papers for ${concept.title}`" />
-  
+  <AppHead
+    :title="`${concept.title} SPOT Papers`"
+    :description="`SPOT papers for ${concept.title}`"
+  />
+
   <div class="min-h-screen bg-gray-50/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <!-- Updated Header Section -->
       <div class="mb-6 sm:mb-10 header-animation">
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
 
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -123,24 +128,36 @@ const breadcrumbItems = computed(() => [
               class="concept-card"
               :style="`--animation-order: ${index};`"
             >
-              <div class="group block p-4 sm:p-5 bg-white rounded-xl border border-gray-200 hover:border-[#55A9C4]/40 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+              <div
+                class="group block p-4 sm:p-5 bg-white rounded-xl border border-gray-200 hover:border-[#55A9C4]/40 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+              >
                 <div class="flex items-start space-x-3">
                   <div class="flex-shrink-0 mt-0.5">
-                    <div class="h-8 w-8 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
+                    <div
+                      class="h-8 w-8 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center"
+                    >
                       <FileText class="h-5 w-5 text-[#55A9C4]" />
                     </div>
                   </div>
                   <div>
-                    <h3 class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2">
+                    <h3
+                      class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2"
+                    >
                       {{ paper.title }}
                     </h3>
                     <div class="mt-1 mb-1">
-                      <span class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium">
+                      <span
+                        class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium"
+                      >
                         {{
                           paper.questions
-                            ? paper.questions.reduce((sum, q) => sum + (q.spotStations?.length || 0), 0)
+                            ? paper.questions.reduce(
+                                (sum, q) => sum + (q.spotStations?.length || 0),
+                                0
+                              )
                             : 0
-                        }} stations
+                        }}
+                        stations
                       </span>
                     </div>
                     <p class="text-sm text-gray-500">Practice SPOT</p>
@@ -154,10 +171,14 @@ const breadcrumbItems = computed(() => [
 
       <!-- No Papers Available - Same logic, updated styling -->
       <div v-else class="text-center py-12 sm:py-16 empty-state">
-        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+        <div
+          class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5"
+        >
           <AlertCircle class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
         </div>
-        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No SPOT Papers Available Yet</h3>
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+          No SPOT Papers Available Yet
+        </h3>
         <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
           We're currently adding SPOT papers for {{ concept.title }}. Please check back later.
         </p>
@@ -205,10 +226,20 @@ const breadcrumbItems = computed(() => [
 
 /* Base typography - Matched to other pages */
 html {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 @supports (font-variation-settings: normal) {
-  html { font-family: 'Inter var', system-ui, -apple-system, sans-serif; }
+  html {
+    font-family:
+      'Inter var',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
 }
 
 /* Line clamp utility - Matched to other pages */

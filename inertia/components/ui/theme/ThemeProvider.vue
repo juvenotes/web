@@ -38,18 +38,18 @@ const updateTheme = (newTheme: Theme) => {
       console.log('Not in browser environment, skipping theme update')
       return
     }
-    
+
     const root = window.document.documentElement
-    
+
     // Remove both classes first
     root.classList.remove('light', 'dark')
-    
+
     // Set the appropriate class based on the theme
     const resolvedTheme = newTheme === 'system' ? getSystemTheme() : newTheme
-    
+
     // Apply to document element
     root.classList.add(resolvedTheme)
-    
+
     // Apply to body as well for maximum compatibility
     if (document.body) {
       document.body.classList.remove('light', 'dark')
@@ -59,7 +59,7 @@ const updateTheme = (newTheme: Theme) => {
       // Add a data-theme attribute for components that might need it
       document.body.setAttribute('data-theme', resolvedTheme)
     }
-    
+
     // Handle the dynamic style element for forcing dark mode
     if (resolvedTheme === 'dark') {
       let styleEl = document.getElementById('force-dark-mode')
@@ -134,17 +134,17 @@ const updateTheme = (newTheme: Theme) => {
       const styleEl = document.getElementById('force-dark-mode')
       if (styleEl) styleEl.remove()
     }
-    
+
     // Save to localStorage
     try {
       localStorage.setItem(storageKey, newTheme)
     } catch (e) {
       console.error('Failed to save theme to localStorage:', e)
     }
-    
+
     // Force a reflow to ensure all components update
-    document.body.offsetHeight;
-    
+    document.body.offsetHeight
+
     // Event to notify components that the theme has changed
     window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: resolvedTheme } }))
   } catch (e) {
@@ -156,34 +156,37 @@ const updateTheme = (newTheme: Theme) => {
 onMounted(() => {
   try {
     console.log('ThemeProvider mounted, initializing theme')
-    
+
     // Check if we're in a browser environment
     if (typeof window === 'undefined') {
       console.log('Not in browser environment, skipping theme initialization in component')
       return
     }
-    
+
     // Check localStorage first
     let savedTheme: Theme | null = null
-    
+
     try {
       savedTheme = localStorage.getItem(storageKey) as Theme | null
     } catch (e) {
       console.error('Failed to read theme from localStorage:', e)
     }
-    
-    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')) {
+
+    if (
+      savedTheme &&
+      (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')
+    ) {
       theme.value = savedTheme
       console.log('Using saved theme from localStorage:', savedTheme)
     } else {
       theme.value = defaultTheme
       console.log('Using default theme:', defaultTheme)
     }
-    
+
     // Set initial theme
     updateTheme(theme.value)
     console.log('Theme updated to:', theme.value, 'system resolved to:', getSystemTheme())
-    
+
     // Create a MutationObserver to ensure dark mode is consistently applied after DOM changes
     if (typeof MutationObserver !== 'undefined') {
       const observer = new MutationObserver((mutations) => {
@@ -191,32 +194,32 @@ onMounted(() => {
         if (theme.value === 'dark' || (theme.value === 'system' && getSystemTheme() === 'dark')) {
           // Short delay to ensure styles apply after DOM updates
           setTimeout(() => {
-            updateTheme(theme.value);
-            console.log('DOM changed, reapplying dark mode styles');
-          }, 10);
+            updateTheme(theme.value)
+            console.log('DOM changed, reapplying dark mode styles')
+          }, 10)
         }
-      });
-      
+      })
+
       // Start observing the document with the configured parameters
-      observer.observe(document.body, { 
-        childList: true,     // Watch for changes in the direct children
-        subtree: true,       // Watch the entire subtree
-        attributes: false,    // Don't watch attribute changes (to avoid infinite loops)
-        characterData: false  // Don't watch text content changes
-      });
+      observer.observe(document.body, {
+        childList: true, // Watch for changes in the direct children
+        subtree: true, // Watch the entire subtree
+        attributes: false, // Don't watch attribute changes (to avoid infinite loops)
+        characterData: false, // Don't watch text content changes
+      })
     }
-    
+
     // Listen for system theme changes
     try {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      
+
       const handleChange = () => {
         if (theme.value === 'system') {
           updateTheme('system')
           console.log('System theme changed, updating to:', getSystemTheme())
         }
       }
-      
+
       // Use the appropriate event listener method
       if (mediaQuery.addEventListener) {
         mediaQuery.addEventListener('change', handleChange)
@@ -246,7 +249,7 @@ const setTheme = (newTheme: Theme) => {
 // Provide the theme context to child components
 provide('theme', {
   theme,
-  setTheme
+  setTheme,
 })
 </script>
 

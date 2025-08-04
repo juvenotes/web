@@ -10,7 +10,7 @@ test.group('Events Index', (group) => {
     // For now, just test that the route exists and doesn't throw
     // In a real environment with auth, this would need a logged-in user
     const response = await client.get('/events')
-    
+
     // Since we don't have auth setup in the test environment,
     // we expect a redirect to login
     response.assertRedirectsTo('/login')
@@ -48,7 +48,15 @@ test.group('Events Index', (group) => {
     assert.isObject(eventData.metadata)
 
     // Validate event type enum
-    const validEventTypes = ['webinar', 'workshop', 'conference', 'exam', 'seminar', 'meeting', 'other']
+    const validEventTypes = [
+      'webinar',
+      'workshop',
+      'conference',
+      'exam',
+      'seminar',
+      'meeting',
+      'other',
+    ]
     assert.isTrue(validEventTypes.includes(eventData.eventType))
 
     // Validate status enum

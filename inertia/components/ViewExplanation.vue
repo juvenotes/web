@@ -27,7 +27,10 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <div class="markdown-content prose prose-sm dark:prose-invert dark:text-foreground max-w-none" v-html="html" />
+  <div
+    class="markdown-content prose prose-sm dark:prose-invert dark:text-foreground max-w-none"
+    v-html="html"
+  />
 </template>
 
 <style scoped>
@@ -53,7 +56,7 @@ watchEffect(async () => {
     border-radius: 0.5rem;
   }
 
-  :deep(iframe[src*="youtube.com"]) {
+  :deep(iframe[src*='youtube.com']) {
     max-width: 100%;
     width: 640px;
     height: 360px;

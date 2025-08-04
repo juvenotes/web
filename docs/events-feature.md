@@ -21,17 +21,20 @@ The events system is built around a single `events` table with the following key
 ### Models
 
 #### Event Model (`app/models/event.ts`)
+
 - Full Lucid ORM model with relationships
 - Belongs to User (creator)
 - Soft delete functionality
 - JSON metadata field support
 
 #### User Model Enhancement
+
 - Added `hasMany` relationship to Events
 
 ### DTOs
 
 #### EventDto (`app/dtos/event.ts`)
+
 - Data transfer object for API responses
 - Includes user relationship data
 - Properly serializes DateTime fields
@@ -39,6 +42,7 @@ The events system is built around a single `events` table with the following key
 ### Validators
 
 #### Event Validators (`app/validators/event.ts`)
+
 - `createEventValidator`: Validates event creation
 - `updateEventValidator`: Validates event updates
 - Supports comprehensive metadata schema
@@ -47,13 +51,17 @@ The events system is built around a single `events` table with the following key
 ### Controllers
 
 #### IndexEventsController (`app/controllers/events/index_events_controller.ts`)
+
 User-facing functionality:
+
 - `index()`: List published events with filtering
 - `show()`: Display single event details
 - `register()`: Register for an event (basic implementation)
 
 #### ManageEventsController (`app/controllers/manage/events/manage_events_controller.ts`)
+
 Admin functionality:
+
 - `index()`: List all events for management
 - `create()`: Show event creation form
 - `store()`: Create new event
@@ -65,11 +73,13 @@ Admin functionality:
 ### Routes
 
 #### Public Routes (`/events`)
+
 - `GET /events` - List events
 - `GET /events/:slug` - View event details
 - `POST /events/:slug/register` - Register for event
 
 #### Admin Routes (`/manage/events`)
+
 - `GET /manage/events` - List events for management
 - `GET /manage/events/create` - Event creation form
 - `POST /manage/events` - Create event
@@ -81,6 +91,7 @@ Admin functionality:
 ## Event Types
 
 The system supports the following event types:
+
 - `webinar`: Online presentations
 - `workshop`: Interactive learning sessions
 - `conference`: Large educational gatherings
@@ -92,6 +103,7 @@ The system supports the following event types:
 ## Event Statuses
 
 Events can have the following statuses:
+
 - `draft`: Not yet published
 - `published`: Available for registration
 - `cancelled`: Event cancelled
@@ -100,23 +112,27 @@ Events can have the following statuses:
 ## Features
 
 ### Event Management
+
 - Create and edit events with rich metadata
 - Automatic slug generation from titles
 - Soft deletion support
 - File upload support through metadata
 
 ### Registration System
+
 - Basic participant counting
 - Registration deadline enforcement
 - Capacity management
 - Extensible for future payment integration
 
 ### Search and Filtering
+
 - Search by title and description
 - Filter by event type and status
 - Pagination support
 
 ### Validation
+
 - Comprehensive form validation
 - Date validation (end date must be after start date)
 - URL validation for online links
@@ -125,6 +141,7 @@ Events can have the following statuses:
 ## API Endpoints
 
 ### Public API
+
 ```
 GET /events?search=query&eventType=webinar&status=published&page=1
 GET /events/{slug}
@@ -132,6 +149,7 @@ POST /events/{slug}/register
 ```
 
 ### Admin API
+
 ```
 GET /manage/events?search=query&status=draft&eventType=workshop&page=1
 POST /manage/events
@@ -143,12 +161,14 @@ DELETE /manage/events/{slug}
 ## Testing
 
 ### Unit Tests
+
 - Event model tests (`tests/unit/models/event.spec.ts`)
 - Basic CRUD operations
 - Relationship testing
 - Soft delete functionality
 
 ### Functional Tests
+
 - Route accessibility tests (`tests/functional/events/index.spec.ts`)
 - Data structure validation
 - Basic endpoint testing
@@ -171,6 +191,7 @@ DELETE /manage/events/{slug}
 To set up the events feature:
 
 1. Run the migration:
+
    ```bash
    node ace migration:run
    ```

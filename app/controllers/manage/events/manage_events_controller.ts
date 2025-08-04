@@ -1,6 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
+import EventQuizDto from '#dtos/event_quiz'
+import EventQuiz from '#models/event_quiz'
 import { createEventValidator, updateEventValidator } from '#validators/event'
 import string from '@adonisjs/core/helpers/string'
 
@@ -24,27 +26,7 @@ export default class ManageEventsController {
       .preload('user')
       .paginate(page, 15)
 
-    const eventDtos = events.serialize({
-      fields: {
-        pick: [
-          'id',
-          'title',
-          'slug',
-          'description',
-          'eventType',
-          'status',
-          'startDate',
-          'endDate',
-          'venue',
-          'isOnline',
-          'isFree',
-          'currentParticipants',
-          'maxParticipants',
-          'createdAt',
-          'updatedAt',
-        ],
-      },
-    })
+    const eventDtos = events.serialize().data.map((event: any) => new EventDto(event))
 
     return inertia.render('manage/events/index', {
       events: eventDtos,
@@ -105,12 +87,18 @@ export default class ManageEventsController {
    * Show a single event for management
    */
   async show({ params, inertia }: HttpContext) {
-    const event = await Event.query().where('slug', params.slug).preload('user').firstOrFail()
+    const event = await Event.query()
+      .where('slug', params.slug)
+      .preload('user')
+      .preload('quizzes')
+      .firstOrFail()
 
     const eventDto = new EventDto(event)
+    const quizDtos = event.quizzes.map((quiz) => new EventQuizDto(quiz))
 
     return inertia.render('manage/events/show', {
       event: eventDto,
+      quizzes: quizDtos,
     })
   }
 
@@ -186,5 +174,84 @@ export default class ManageEventsController {
 
     session.flash('success', 'Event deleted successfully')
     return response.redirect().toRoute('manage.events.index')
+  }
+
+  /**
+   * Show quiz creation form
+   */
+  async createQuiz({ params, inertia }: HttpContext) {
+    const event = await Event.findByOrFail('slug', params.slug)
+    const eventDto = new EventDto(event)
+
+    return inertia.render('manage/events/create-quiz', {
+      event: eventDto,
+    })
+  }
+
+  /**
+   * Store a new quiz for an event
+   */
+  async storeQuiz({ params, request, response, session }: HttpContext) {
+    const event = await Event.findByOrFail('slug', params.slug)
+    const data = request.only(['title', 'description', 'mcqs'])
+
+    await EventQuiz.create({
+      eventId: event.id,
+      title: data.title,
+      description: data.description,
+      mcqs: data.mcqs || [],
+    })
+
+    session.flash('success', 'Quiz created successfully')
+    return response.redirect().toRoute('manage.events.show', { slug: event.slug })
+  }
+
+  /**
+   * Show quiz edit form
+   */
+  async editQuiz({ params, inertia }: HttpContext) {
+    const event = await Event.findByOrFail('slug', params.slug)
+    const quiz = await EventQuiz.findOrFail(params.quizId)
+
+    const eventDto = new EventDto(event)
+    const quizDto = new EventQuizDto(quiz)
+
+    return inertia.render('manage/events/edit-quiz', {
+      event: eventDto,
+      quiz: quizDto,
+    })
+  }
+
+  /**
+   * Update a quiz
+   */
+  async updateQuiz({ params, request, response, session }: HttpContext) {
+    const event = await Event.findByOrFail('slug', params.slug)
+    const quiz = await EventQuiz.findOrFail(params.quizId)
+    const data = request.only(['title', 'description', 'mcqs'])
+
+    await quiz
+      .merge({
+        title: data.title,
+        description: data.description,
+        mcqs: data.mcqs,
+      })
+      .save()
+
+    session.flash('success', 'Quiz updated successfully')
+    return response.redirect().toRoute('manage.events.show', { slug: event.slug })
+  }
+
+  /**
+   * Delete a quiz
+   */
+  async destroyQuiz({ params, response, session }: HttpContext) {
+    const event = await Event.findByOrFail('slug', params.slug)
+    const quiz = await EventQuiz.findOrFail(params.quizId)
+
+    await quiz.delete()
+
+    session.flash('success', 'Quiz deleted successfully')
+    return response.redirect().toRoute('manage.events.show', { slug: event.slug })
   }
 }
