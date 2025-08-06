@@ -1,18 +1,16 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import Event from './event.js'
-
-export interface McqQuestion {
-  question: string
-  choices: string[]
-  correctAnswer: number
-  explanation?: string
-}
+import Question from './question.js'
+import User from './user.js'
 
 export default class EventQuiz extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
+
+  @column()
+  declare userId: number
 
   @column()
   declare eventId: number
@@ -21,13 +19,10 @@ export default class EventQuiz extends BaseModel {
   declare title: string
 
   @column()
-  declare description: string | null
+  declare slug: string
 
-  @column({
-    prepare: (value: McqQuestion[]) => JSON.stringify(value),
-    consume: (value: string) => JSON.parse(value),
-  })
-  declare mcqs: McqQuestion[]
+  @column()
+  declare description: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -35,6 +30,12 @@ export default class EventQuiz extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
+
   @belongsTo(() => Event)
   declare event: BelongsTo<typeof Event>
+
+  @hasMany(() => Question)
+  declare questions: HasMany<typeof Question>
 }

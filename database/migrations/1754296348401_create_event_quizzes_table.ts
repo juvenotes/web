@@ -6,14 +6,16 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
+      table.integer('user_id').references('id').inTable('users').notNullable()
       table.integer('event_id').references('id').inTable('events').onDelete('cascade').notNullable()
-      table.string('title', 255).notNullable()
+      table.string('title').notNullable()
+      table.string('slug').unique().notNullable()
       table.text('description').nullable()
-      table.jsonb('mcqs').defaultTo('[]') // Array of MCQ objects
       table.timestamps(true, true)
 
       // Add indexes for common queries
       table.index(['event_id'])
+      table.index(['slug'])
     })
   }
 
