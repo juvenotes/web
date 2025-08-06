@@ -3,10 +3,15 @@ import Event from '#models/event'
 import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
 import EventQuiz from '#models/event_quiz'
+import Question from '#models/question'
+import McqChoice from '#models/mcq_choice'
 import { createEventValidator, updateEventValidator } from '#validators/event'
+import { createEventQuizValidator, updateEventQuizValidator } from '#validators/event_quiz'
 import string from '@adonisjs/core/helpers/string'
+import { generateSlug } from '#utils/slug_generator'
 import { CloudinaryService } from '#services/cloudinary_service'
 import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
+import { QuestionType } from '#enums/question_types'
 import fs from 'node:fs/promises'
 import EventPolicy from '#policies/event_policy'
 import db from '@adonisjs/lucid/services/db'
@@ -171,7 +176,11 @@ export default class ManageEventsController {
     const event = await Event.query()
       .where('slug', params.slug)
       .preload('user')
-      .preload('quizzes')
+      .preload('quizzes', (query) => {
+        query.preload('questions', (q) => {
+          q.preload('choices')
+        })
+      })
       .firstOrFail()
 
     const eventDto = new EventDto(event)
@@ -437,16 +446,17 @@ export default class ManageEventsController {
       return response.forbidden()
     }
 
-    const data = request.only(['title', 'description', 'mcqs'])
+    const data = await request.validateUsing(createEventQuizValidator)
 
     try {
       await db.transaction(async (trx) => {
         const quiz = await EventQuiz.create(
           {
+            userId: auth.user!.id,
             eventId: event.id,
             title: data.title,
-            description: data.description,
-            mcqs: data.mcqs || [],
+            slug: generateSlug(),
+            description: data.description || null,
           },
           { client: trx }
         )
@@ -485,7 +495,12 @@ export default class ManageEventsController {
     logger.info({ ...context, message: 'Showing quiz edit form' })
 
     const event = await Event.findByOrFail('slug', params.slug)
-    const quiz = await EventQuiz.findOrFail(params.quizId)
+    const quiz = await EventQuiz.query()
+      .where('id', params.quizId)
+      .preload('questions', (query) => {
+        query.preload('choices')
+      })
+      .firstOrFail()
 
     if (await bouncer.with(EventPolicy).denies('update', event)) {
       logger.warn({
@@ -531,16 +546,15 @@ export default class ManageEventsController {
       return response.forbidden()
     }
 
-    const data = request.only(['title', 'description', 'mcqs'])
+    const data = await request.validateUsing(updateEventQuizValidator)
 
     try {
       await db.transaction(async (trx) => {
         quiz.useTransaction(trx)
         await quiz
           .merge({
-            title: data.title,
-            description: data.description,
-            mcqs: data.mcqs,
+            title: data.title || quiz.title,
+            description: data.description !== undefined ? data.description : quiz.description,
           })
           .save()
         logger.info({
@@ -667,32 +681,54 @@ export default class ManageEventsController {
           title,
         })
 
-        const mcqs = parsedQuestions.map((q) => ({
-          question: q.stem,
-          choices: q.choices,
-          correctAnswer: q.choices.findIndex((choice) => choice === q.answer),
-          explanation: q.explanation || '',
-        }))
-
+        // Create the quiz first
         const quiz = await EventQuiz.create(
           {
+            userId: auth.user!.id,
             eventId: event.id,
             title,
+            slug: generateSlug(),
             description: description || null,
-            mcqs,
           },
           { client: trx }
         )
+
+        // Create questions for the quiz
+        for (const [index, parsedQuestion] of parsedQuestions.entries()) {
+          logger.info(`processing question ${index + 1}/${parsedQuestions.length}`)
+
+          const [question] = await trx
+            .insertQuery()
+            .table('questions')
+            .insert({
+              user_id: auth.user!.id,
+              event_quiz_id: quiz.id,
+              slug: generateSlug(),
+              type: QuestionType.MCQ,
+              question_text: parsedQuestion.stem,
+            })
+            .returning('*')
+
+          const correctIndex = parsedQuestion.answer.charCodeAt(0) - 65
+          const choices = parsedQuestion.choices.map((choiceText, idx) => ({
+            question_id: question.id,
+            choice_text: choiceText,
+            is_correct: idx === correctIndex,
+            explanation: idx === correctIndex ? parsedQuestion.explanation : null,
+          }))
+
+          await trx.insertQuery().table('mcq_choices').insert(choices)
+        }
 
         logger.info({
           ...context,
           userId: auth.user?.id,
           eventId: event.id,
           quizId: quiz.id,
-          questionsCount: quiz.mcqs.length,
+          questionsCount: parsedQuestions.length,
           message: 'Quiz uploaded successfully',
         })
-        session.flash('success', `Successfully uploaded quiz with ${quiz.mcqs.length} questions`)
+        session.flash('success', `Successfully uploaded quiz with ${parsedQuestions.length} questions`)
         return response.redirect().toRoute('manage.events.show', { slug: event.slug })
       })
     } catch (error) {

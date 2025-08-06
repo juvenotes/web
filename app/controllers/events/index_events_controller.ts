@@ -66,7 +66,11 @@ export default class IndexEventsController {
       .where('status', 'published')
       .whereNull('deletedAt')
       .preload('user')
-      .preload('quizzes')
+      .preload('quizzes', (query) => {
+        query.preload('questions', (q) => {
+          q.preload('choices')
+        })
+      })
       .firstOrFail()
 
     const eventDto = new EventDto(event)
@@ -102,7 +106,11 @@ export default class IndexEventsController {
       .where('slug', params.slug)
       .where('status', 'published')
       .whereNull('deletedAt')
-      .preload('quizzes')
+      .preload('quizzes', (query) => {
+        query.preload('questions', (q) => {
+          q.preload('choices')
+        })
+      })
       .firstOrFail()
 
     const quiz = event.quizzes.find((q) => q.id === Number(params.quizId))
