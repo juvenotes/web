@@ -24,6 +24,7 @@ const menuItems = [
   { name: 'Spot', href: '/manage/spot', icon: Pin },
   { name: 'Question of the day', href: '/manage/today', icon: Calendar },
   { name: 'Feedback', href: '/manage/feedback', icon: FileQuestion },
+  { name: 'Events', href: '/manage/events', icon: Calendar },
 ]
 
 const adminMenuItems = [

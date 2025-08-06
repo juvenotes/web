@@ -2,14 +2,13 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
-import EventPolicy from '#policies/event_policy'
 import db from '@adonisjs/lucid/services/db'
 
 export default class IndexEventsController {
   /**
    * Display a list of events
    */
-  async index({ inertia, request, auth, logger }: HttpContext) {
+  async index({ inertia, request, auth, logger, bouncer }: HttpContext) {
     const context = {
       controller: 'IndexEventsController',
       action: 'index',
@@ -32,21 +31,20 @@ export default class IndexEventsController {
       .preload('user')
       .paginate(page, 12)
 
-    const eventDtos = events.serialize().data.map((event: any) => new EventDto(event))
-
-    // Check if user can manage events
-    const canManage = auth.user ? await auth.user.can(EventPolicy, 'manage') : false
+    // Check if user can manage events (use bouncer)
+    const canManage = await bouncer.allows('canManage')
 
     logger.info({
       ...context,
       userId: auth.user?.id,
-      count: eventDtos.length,
+      count: events.length,
       canManage,
       message: 'Events list fetched successfully',
     })
 
+    // Pass DTOs to the view, not raw data
     return inertia.render('events/index', {
-      events: eventDtos,
+      events: EventDto.fromArray(events.all()),
       filters: { search, eventType, status },
       canManage,
     })
@@ -133,7 +131,7 @@ export default class IndexEventsController {
   /**
    * Register for an event (API endpoint)
    */
-  async register({ params, response, auth, logger }: HttpContext) {
+  async register({ params, response, auth, logger, bouncer }: HttpContext) {
     const context = {
       controller: 'IndexEventsController',
       action: 'register',
@@ -141,9 +139,16 @@ export default class IndexEventsController {
     }
     logger.info({ ...context, message: 'Processing event registration' })
 
+    // Authorization: Only allow users with correct roles
+    const canRegister = await bouncer.allows('canManage')
+    if (!canRegister) {
+      return response.forbidden({ message: 'You are not authorized to register for events.' })
+    }
+
     try {
       await db.transaction(async (trx) => {
         const event = await Event.findByOrFail('slug', params.slug)
+        event.useTransaction(trx)
 
         // Check if registration is still open
         if (event.registrationDeadline && new Date() > event.registrationDeadline.toJSDate()) {

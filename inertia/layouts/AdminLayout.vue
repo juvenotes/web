@@ -36,6 +36,7 @@ const menuItems = [
   { name: 'Spot', href: '/manage/spot', icon: Pin },
   { name: 'Today', href: '/manage/today', icon: Calendar },
   { name: 'Feedback', href: '/manage/feedback', icon: FileQuestion },
+  { name: 'Events', href: '/manage/events', icon: Calendar },
   // Admin-only items
   { name: 'Users', href: '/manage/users', icon: Users, adminOnly: true },
   { name: 'Institutions', href: '/manage/institutions', icon: School, adminOnly: true },

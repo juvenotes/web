@@ -3,7 +3,7 @@ import AdminLayout from '~/layouts/AdminLayout.vue'
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import type InstitutionDto from '#dtos/institution'
-import { School, Plus, GraduationCap, Pencil, Trash2 } from 'lucide-vue-next'
+import { School, Plus, GraduationCap, Pencil, Trash } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -144,7 +144,7 @@ const onDelete = () => {
               class="text-destructive hover:bg-destructive/10"
               @click="confirmDelete(institution)"
             >
-              <Trash2 class="h-4 w-4" />
+              <Trash class="h-4 w-4" />
             </Button>
           </div>
         </CardFooter>

@@ -12,6 +12,7 @@ import {
   Pin,
   Hand,
   Library,
+  Calendar, // Add Calendar for Events
 } from 'lucide-vue-next'
 import StatsDto from '#dtos/stats'
 import SurveyBanner from '~/components/SurveyBanner.vue'
@@ -149,6 +150,7 @@ onMounted(() => {
       </div>
 
       <!-- Concepts Card -->
+      <!--
       <div
         data-tour="concepts"
         @click="$inertia.visit('/concepts')"
@@ -176,6 +178,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      -->
 
       <!-- Library Card -->
       <div
@@ -192,7 +195,7 @@ onMounted(() => {
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Library</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">Access all your saved resources</p>
+              <p class="text-sm text-gray-600 mt-1 font-medium">Access select high yield articles</p>
               <div
                 class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
               >
@@ -245,7 +248,7 @@ onMounted(() => {
               <Pin class="h-6 w-6 text-[#55A9C4]" />
             </div>
             <div class="flex-1">
-              <h3 class="text-xl font-bold text-gray-900">Spots</h3>
+              <h3 class="text-xl font-bold text-gray-900">Spot Exams</h3>
               <p class="text-sm text-gray-600 mt-1 font-medium">
                 Sharpen your identification skills
               </p>
@@ -253,6 +256,33 @@ onMounted(() => {
                 class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
               >
                 <span class="text-xs text-[#55A9C4] font-semibold">Identify Spots</span>
+                <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events Card -->
+      <div
+        data-tour="events"
+        @click="$inertia.visit('/events')"
+        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
+      >
+        <div class="relative space-y-4 z-10 animate-fade-in">
+          <div class="flex items-start gap-4">
+            <div
+              class="p-4 rounded-xl bg-gradient-to-br from-[#E3F5FA] to-[#D5F0F6] shadow-sm group-hover:shadow-md group-hover:from-[#55A9C4]/15 group-hover:to-[#55A9C4]/25 transition-all duration-300"
+            >
+              <Calendar class="h-6 w-6 text-[#55A9C4]" />
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-900">Events</h3>
+              <p class="text-sm text-gray-600 mt-1 font-medium">View and join upcoming events</p>
+              <div
+                class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+              >
+                <span class="text-xs text-[#55A9C4] font-semibold">See Events</span>
                 <ChevronRight class="h-4 w-4 text-[#55A9C4]" />
               </div>
             </div>

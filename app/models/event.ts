@@ -65,12 +65,6 @@ export default class Event extends BaseModel {
   @column()
   declare currentParticipants: number
 
-  @column({
-    prepare: (value: any) => JSON.stringify(value),
-    consume: (value: string) => JSON.parse(value),
-  })
-  declare metadata: Record<string, any>
-
   @column()
   declare imageUrl: string | null
 

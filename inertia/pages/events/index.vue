@@ -3,55 +3,23 @@ import { Link } from '@inertiajs/vue3'
 import type EventDto from '#dtos/event'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { Calendar, MapPin, Users, Settings, Clock } from 'lucide-vue-next'
-import { ref, computed } from 'vue'
 import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 
 defineOptions({ layout: DashLayout })
 
 interface Props {
-  events: {
-    data: EventDto[]
-    meta: {
-      currentPage: number
-      firstPage: number
-      lastPage: number
-      perPage: number
-      total: number
-      hasPages: boolean
-      hasMorePages: boolean
-    }
-  }
+  events: EventDto[]
   canManage: boolean
-  filters: {
-    search: string
-    eventType: string
-    status: string
-  }
 }
 
 const props = defineProps<Props>()
 
-const searchInput = ref(props.filters.search)
-const eventTypeFilter = ref(props.filters.eventType)
-
 const breadcrumbItems = [{ label: 'Events' }]
 
-const eventTypeOptions = [
-  { value: '', label: 'All Types' },
-  { value: 'webinar', label: 'Webinars' },
-  { value: 'workshop', label: 'Workshops' },
-  { value: 'conference', label: 'Conferences' },
-  { value: 'exam', label: 'Exams' },
-  { value: 'seminar', label: 'Seminars' },
-  { value: 'meeting', label: 'Meetings' },
-  { value: 'other', label: 'Other' },
-]
-
-const hasEvents = computed(() => props.events.data.length > 0)
+const hasEvents = props.events.length > 0
 
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -90,17 +58,12 @@ function getStatusColor(status: string) {
 
 <template>
   <AppHead title="Events" description="Discover and participate in educational events" />
-
   <div class="min-h-screen bg-gray-50/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <!-- Header Section -->
       <div class="mb-6 sm:mb-10 header-animation">
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
-
-        <!-- Title and Description -->
-        <div
-          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
-        >
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -110,13 +73,10 @@ function getStatusColor(status: string) {
             <div>
               <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Events</h1>
               <p class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
-                Discover and participate in educational events including webinars, workshops, 
-                conferences, and exams designed to enhance your medical knowledge and skills.
+                Discover and participate in educational events including webinars, workshops, conferences, and exams designed to enhance your medical knowledge and skills.
               </p>
             </div>
           </div>
-
-          <!-- Manage Button -->
           <div class="w-full sm:w-auto flex-shrink-0">
             <Link
               v-if="canManage"
@@ -128,51 +88,13 @@ function getStatusColor(status: string) {
             </Link>
           </div>
         </div>
-
         <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
-      </div>
-
-      <!-- Search and Filter Section -->
-      <div class="mb-6 space-y-4">
-        <div class="flex flex-col sm:flex-row gap-4">
-          <div class="flex-1">
-            <Input
-              v-model="searchInput"
-              placeholder="Search events by title or description..."
-              class="w-full"
-            />
-          </div>
-          <div class="w-full sm:w-48">
-            <select
-              v-model="eventTypeFilter"
-              class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#55A9C4] focus:border-transparent"
-            >
-              <option v-for="option in eventTypeOptions" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
-          </div>
-          <Button
-            as="a"
-            :href="`/events?search=${searchInput}&eventType=${eventTypeFilter}`"
-            class="bg-[#55A9C4] hover:bg-[#4795af]"
-          >
-            Filter
-          </Button>
-        </div>
-      </div>
-
-      <!-- Results Info -->
-      <div class="mb-6">
-        <p class="text-sm text-gray-500">
-          Showing {{ events.data.length }} of {{ events.meta.total }} events
-        </p>
       </div>
 
       <!-- Events Grid -->
       <div v-if="hasEvents" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <Card
-          v-for="event in events.data"
+          v-for="event in events"
           :key="event.id"
           class="group hover:shadow-lg transition-all duration-200 overflow-hidden"
         >
@@ -251,44 +173,15 @@ function getStatusColor(status: string) {
         </Card>
       </div>
 
-      <!-- Empty State -->
-      <div v-else class="text-center py-12">
-        <div class="h-16 w-16 mx-auto mb-4 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
-          <Calendar class="h-8 w-8 text-[#55A9C4]" />
+      <!-- No Events message -->
+      <div v-else class="text-center py-12 sm:py-16 empty-state">
+        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+          <Calendar class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
         </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-        <p class="text-gray-500">
-          {{ searchInput || eventTypeFilter ? 'Try adjusting your search criteria.' : 'No events are currently available.' }}
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No events found</h3>
+        <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
+          There are no events at the moment.
         </p>
-      </div>
-
-      <!-- Pagination -->
-      <div v-if="events.meta.hasPages" class="mt-8 flex justify-center">
-        <div class="flex items-center gap-2">
-          <Button
-            v-if="events.meta.currentPage > 1"
-            as="a"
-            :href="`/events?page=${events.meta.currentPage - 1}&search=${searchInput}&eventType=${eventTypeFilter}`"
-            variant="outline"
-            size="sm"
-          >
-            Previous
-          </Button>
-          
-          <span class="px-4 py-2 text-sm text-gray-600">
-            Page {{ events.meta.currentPage }} of {{ events.meta.lastPage }}
-          </span>
-
-          <Button
-            v-if="events.meta.hasMorePages"
-            as="a"
-            :href="`/events?page=${events.meta.currentPage + 1}&search=${searchInput}&eventType=${eventTypeFilter}`"
-            variant="outline"
-            size="sm"
-          >
-            Next
-          </Button>
-        </div>
       </div>
     </div>
   </div>

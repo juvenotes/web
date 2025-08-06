@@ -25,7 +25,7 @@ export default class extends BaseSchema {
       table.string('currency', 3).defaultTo('USD')
       table.integer('max_participants').nullable()
       table.integer('current_participants').defaultTo(0)
-      table.jsonb('metadata').defaultTo('{}')
+      table.string('image_url').nullable() // Added directly here
       table.dateTime('deleted_at').nullable()
       table.timestamps(true, true)
 

@@ -18,6 +18,7 @@ import {
   Stethoscope,
   Pin,
   Library,
+  Calendar, // Add Calendar icon for Events
 } from 'lucide-vue-next'
 import { Twitter, Instagram, Linkedin } from 'lucide-vue-next'
 import UserDto from '#dtos/user'
@@ -35,7 +36,8 @@ const isSearchOpen = ref(false)
 const sidebarLinks = [
   { name: 'Dashboard', href: '/learn', icon: Home },
   { name: 'Library', href: '/library', icon: Library },
-  { name: 'Concepts', href: '/concepts', icon: BookOpen },
+  // { name: 'Concepts', href: '/concepts', icon: BookOpen }, // Hide Concepts
+  { name: 'Events', href: '/events', icon: Calendar },
   { name: 'Papers', href: '/papers', icon: FileText },
   { name: 'OSCE', href: '/osce', icon: Stethoscope },
   { name: 'Spot', href: '/spot', icon: Pin },

@@ -1,5 +1,6 @@
 import { BaseModelDto } from '@adocasts.com/dto/base'
-import EventQuiz, { type McqQuestion } from '#models/event_quiz'
+import EventQuiz from '#models/event_quiz'
+import EventDto from '#dtos/event'
 
 export default class EventQuizDto extends BaseModelDto {
   declare id: number
@@ -9,6 +10,7 @@ export default class EventQuizDto extends BaseModelDto {
   declare mcqs: McqQuestion[]
   declare createdAt: string
   declare updatedAt: string
+  declare event: EventDto | null
 
   constructor(eventQuiz?: EventQuiz) {
     super()
@@ -21,5 +23,6 @@ export default class EventQuizDto extends BaseModelDto {
     this.mcqs = eventQuiz.mcqs
     this.createdAt = eventQuiz.createdAt.toISO()!
     this.updatedAt = eventQuiz.updatedAt.toISO()!
+    this.event = eventQuiz.event && new EventDto(eventQuiz.event)
   }
 }

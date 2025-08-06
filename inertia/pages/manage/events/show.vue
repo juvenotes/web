@@ -6,7 +6,7 @@ import AdminLayout from '~/layouts/AdminLayout.vue'
 import { 
   Calendar, 
   Edit, 
-  Trash2, 
+  Trash, 
   Plus, 
   Users, 
   MapPin, 
@@ -188,14 +188,6 @@ function onDeleteEvent(e: Event) {
                 <div v-html="event.content"></div>
               </div>
             </div>
-
-            <!-- Metadata -->
-            <div v-if="event.metadata && Object.keys(event.metadata).length > 0">
-              <h4 class="text-sm font-medium text-gray-900 mb-2">Additional Information</h4>
-              <div class="bg-gray-50 rounded-lg p-4">
-                <pre class="text-xs text-gray-700 whitespace-pre-wrap">{{ JSON.stringify(event.metadata, null, 2) }}</pre>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
@@ -260,7 +252,7 @@ function onDeleteEvent(e: Event) {
                           size="sm"
                           class="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
-                          <Trash2 class="h-4 w-4" />
+                          <Trash class="h-4 w-4" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -437,7 +429,7 @@ function onDeleteEvent(e: Event) {
                   variant="outline"
                   class="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                 >
-                  <Trash2 class="h-4 w-4 mr-2" />
+                  <Trash class="h-4 w-4 mr-2" />
                   Delete Event
                 </Button>
               </AlertDialogTrigger>

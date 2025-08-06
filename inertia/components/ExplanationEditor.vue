@@ -18,7 +18,7 @@ import {
   Table as TableIcon,
   ImageIcon, // Add this
   Youtube as YoutubeIcon, // Add this
-  Loader2, // Add this for loading icon
+  Loader, // Add this for loading icon
 } from 'lucide-vue-next'
 import { onMounted, onUnmounted, ref } from 'vue'
 import axios from 'axios' // Add this for image upload
@@ -313,7 +313,7 @@ const toolbar = [
 
       <!-- Upload Status Indicator -->
       <div v-if="isUploading" class="flex items-center gap-2 text-xs text-muted-foreground px-2">
-        <Loader2 class="h-3 w-3 animate-spin" />
+        <Loader class="h-3 w-3 animate-spin" />
         <span>Uploading image...</span>
       </div>
     </div>

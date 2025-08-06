@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Upload, Loader2, AlertTriangle } from 'lucide-vue-next'
+import { Upload, Loader, AlertTriangle } from 'lucide-vue-next'
 import { ref, watch, onMounted } from 'vue'
 import { toast } from 'vue-sonner'
 import type PastPaperDto from '#dtos/past_paper'
@@ -165,7 +165,7 @@ async function handleUpload() {
             />
           </label>
           <Button class="w-full mt-4" :disabled="!file || isLoading" @click="handleUpload">
-            <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
+            <Loader v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
             {{ isLoading ? 'Processing...' : 'Upload & Parse PDF' }}
           </Button>
         </div>
@@ -229,7 +229,7 @@ async function handleUpload() {
             />
           </label>
           <Button class="w-full mt-4" :disabled="!file || isLoading" @click="handleUpload">
-            <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
+            <Loader v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
             {{ isLoading ? 'Processing...' : 'Upload & Parse PDF' }}
           </Button>
         </div>

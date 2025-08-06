@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, Clock, Plus, Pencil, Trash2 } from 'lucide-vue-next'
+import { FileText, Clock, Plus, Pencil, Trash } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { useForm } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
@@ -118,7 +118,7 @@ const breadcrumbItems = computed(() => [
             <Pencil class="h-4 w-4 mr-2" />Edit Paper
           </Button>
           <Button variant="destructive" @click="handleDeletePaper">
-            <Trash2 class="h-4 w-4 mr-2" />Delete Paper
+            <Trash class="h-4 w-4 mr-2" />Delete Paper
           </Button>
         </div>
       </div>
@@ -155,7 +155,7 @@ const breadcrumbItems = computed(() => [
               <Pencil class="h-4 w-4" /> Edit
             </Button>
             <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
-              <Trash2 class="h-4 w-4 text-destructive" /> Remove
+              <Trash class="h-4 w-4 text-destructive" /> Remove
             </Button>
           </div>
           <div class="pl-6 sm:pl-10 space-y-3 sm:space-y-4">

@@ -1,6 +1,7 @@
 import { BaseModelDto } from '@adocasts.com/dto/base'
 import Event from '#models/event'
 import UserDto from '#dtos/user'
+import EventQuizDto from '#dtos/event_quiz'
 
 export default class EventDto extends BaseModelDto {
   declare id: number
@@ -23,11 +24,12 @@ export default class EventDto extends BaseModelDto {
   declare currency: string
   declare maxParticipants: number | null
   declare currentParticipants: number
-  declare metadata: Record<string, any>
   declare imageUrl: string | null
+  declare deletedAt: string | null
   declare createdAt: string
   declare updatedAt: string
   declare user: UserDto | null
+  declare quizzes: EventQuizDto[]
 
   constructor(event?: Event) {
     super()
@@ -43,7 +45,7 @@ export default class EventDto extends BaseModelDto {
     this.status = event.status
     this.startDate = event.startDate.toISO()!
     this.endDate = event.endDate.toISO()!
-    this.registrationDeadline = event.registrationDeadline?.toISO() || null
+    this.registrationDeadline = event.registrationDeadline?.toISO()!
     this.venue = event.venue
     this.address = event.address
     this.onlineLink = event.onlineLink
@@ -53,10 +55,11 @@ export default class EventDto extends BaseModelDto {
     this.currency = event.currency
     this.maxParticipants = event.maxParticipants
     this.currentParticipants = event.currentParticipants
-    this.metadata = event.metadata
     this.imageUrl = event.imageUrl
+    this.deletedAt = event.deletedAt?.toISO()!
     this.createdAt = event.createdAt.toISO()!
     this.updatedAt = event.updatedAt.toISO()!
     this.user = event.user && new UserDto(event.user)
+    this.quizzes = EventQuizDto.fromArray(event.quizzes)
   }
 }

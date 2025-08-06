@@ -1,20 +1,6 @@
 import vine from '@vinejs/vine'
 import { DateTime } from 'luxon'
 
-const metadataSchema = vine
-  .object({
-    tags: vine.array(vine.string()).optional(),
-    prerequisites: vine.array(vine.string()).optional(),
-    agenda: vine.array(vine.string()).optional(),
-    speakers: vine.array(vine.string()).optional(),
-    registrationFields: vine.array(vine.string()).optional(),
-    contactEmail: vine.string().email().optional(),
-    contactPhone: vine.string().optional(),
-    imageUrl: vine.string().url().optional(),
-    instructions: vine.string().optional(),
-  })
-  .allowUnknownProperties()
-
 export const createEventValidator = vine.compile(
   vine.object({
     title: vine.string().trim().minLength(2).maxLength(255),
@@ -44,7 +30,6 @@ export const createEventValidator = vine.compile(
     currency: vine.string().trim().minLength(3).maxLength(3).optional(),
     maxParticipants: vine.number().positive().optional(),
     imageUrl: vine.string().url().optional(),
-    metadata: metadataSchema.optional(),
   })
 )
 
@@ -78,6 +63,5 @@ export const updateEventValidator = vine.compile(
     currency: vine.string().trim().minLength(3).maxLength(3).optional(),
     maxParticipants: vine.number().positive().optional(),
     imageUrl: vine.string().url().optional(),
-    metadata: metadataSchema.optional(),
   })
 )
