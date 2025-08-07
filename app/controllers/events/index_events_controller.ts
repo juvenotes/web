@@ -47,19 +47,13 @@ export default class IndexEventsController {
       events: EventDto.fromArray(events.all()),
       filters: { search, eventType, status },
       canManage,
-      meta: {
-        current_page: events.currentPage,
-        last_page: events.lastPage,
-        per_page: events.perPage,
-        total: events.total,
-      },
     })
   }
 
   /**
    * Show a single event
    */
-  async show({ params, inertia, auth, logger, bouncer }: HttpContext) {
+  async show({ params, inertia, auth, logger }: HttpContext) {
     const context = {
       controller: 'IndexEventsController',
       action: 'show',
@@ -112,17 +106,18 @@ export default class IndexEventsController {
       .where('slug', params.slug)
       .where('status', 'published')
       .whereNull('deletedAt')
-      .preload('user')
-      .firstOrFail()
-
-    const quiz = await event
-      .related('quizzes')
-      .query()
-      .where('id', params.quizId)
-      .preload('questions', (q) => {
-        q.preload('choices').orderBy('id', 'asc')
+      .preload('quizzes', (query) => {
+        query.preload('questions', (q) => {
+          q.preload('choices')
+        })
       })
       .firstOrFail()
+
+    const quiz = event.quizzes.find((q) => q.id === Number(params.quizId))
+    if (!quiz) {
+      logger.warn({ ...context, message: 'Quiz not found' })
+      throw new Error('Quiz not found')
+    }
 
     const eventDto = new EventDto(event)
     const quizDto = new EventQuizDto(quiz)
@@ -132,7 +127,6 @@ export default class IndexEventsController {
       userId: auth.user?.id,
       eventId: event.id,
       quizId: quiz.id,
-      questionsCount: quiz.questions?.length || 0,
       message: 'Event quiz fetched successfully',
     })
 
