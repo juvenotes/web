@@ -93,7 +93,6 @@ function handleEventDeleted() {
   router.reload({ preserveScroll: true })
 }
 
-const hasEvents = props.events.length > 0
 </script>
 
 <template>
@@ -123,30 +122,32 @@ const hasEvents = props.events.length > 0
       </div>
     </div>
 
-    <!-- Event Cards -->
-    <div v-if="hasEvents" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card v-for="event in props.events" :key="event.id" class="relative">
-        <CardHeader>
-          <CardTitle class="flex items-center justify-between">
-            <span>{{ event.title }}</span>
-            <div class="flex gap-2">
-              <Button variant="ghost" size="icon" @click="openEditDialog(event)"><Edit class="h-4 w-4" /></Button>
-              <Button variant="ghost" size="icon" @click="openDeleteDialog(event)"><Trash class="h-4 w-4 text-destructive" /></Button>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="mb-2">
-            <Badge :class="getStatusColor(event.status)">{{ event.status }}</Badge>
-            <Badge :class="getEventTypeColor(event.type)" class="ml-2">{{ event.type }}</Badge>
+    <!-- Events Grid -->
+    <div v-if="props.events.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Link
+        v-for="event in props.events"
+        :key="event.id"
+        :href="`/manage/events/${event.slug}`"
+        class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+      >
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
+        <div class="relative space-y-3">
+          <h2 class="text-lg font-bold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300">
+            {{ event.title }}
+          </h2>
+          <div class="flex items-center gap-2 text-sm text-muted-foreground">
+            <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
+              {{ event.status }}
+            </span>
+            <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
+              {{ event.eventType }}
+            </span>
           </div>
-          <div class="truncate text-base mb-2">{{ event.description }}</div>
-          <div class="text-sm text-muted-foreground">{{ formatDate(event.date) }}</div>
-          <div v-if="event.image" class="mt-2">
-            <img :src="event.image" class="max-h-32 rounded-lg object-cover" alt="Event image" />
+          <div class="text-sm text-muted-foreground">
+            {{ formatDate(event.startDate) }} - {{ formatDate(event.endDate) }}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </Link>
     </div>
     <div v-else class="text-center text-muted-foreground py-12">No events found.</div>
 

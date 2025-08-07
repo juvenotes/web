@@ -31,6 +31,6 @@ export default class EventQuizDto extends BaseModelDto {
     this.updatedAt = eventQuiz.updatedAt.toISO()!
     this.event = eventQuiz.event && new EventDto(eventQuiz.event)
     this.user = eventQuiz.user && new UserDto(eventQuiz.user)
-    this.questions = eventQuiz.questions?.map(question => new QuestionDto(question)) || []
+    this.questions = eventQuiz.questions?.map((question) => new QuestionDto(question)) || []
   }
 }

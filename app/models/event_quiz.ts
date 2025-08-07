@@ -6,6 +6,8 @@ import Question from './question.js'
 import User from './user.js'
 
 export default class EventQuiz extends BaseModel {
+  public static table = 'event_quizzes'
+
   @column({ isPrimary: true })
   declare id: number
 

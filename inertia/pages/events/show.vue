@@ -165,7 +165,7 @@ const isRegistrationOpen = props.event.registrationDeadline
                         {{ quiz.description }}
                       </p>
                       <div class="flex items-center gap-4 text-sm text-gray-500">
-                        <span>{{ quiz.mcqs.length }} questions</span>
+                        <span>{{ quiz.questions?.length || 0 }} questions</span>
                         <span>Multiple Choice</span>
                       </div>
                     </div>

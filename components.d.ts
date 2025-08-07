@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AddCitationDialog: typeof import('./inertia/components/dialogs/AddCitationDialog.vue')['default']
+    AddEventQuizMcqDialog: typeof import('./inertia/components/dialogs/AddEventQuizMcqDialog.vue')['default']
     AddMcqDialog: typeof import('./inertia/components/dialogs/AddMcqDialog.vue')['default']
     AddMcqToConceptDialog: typeof import('./inertia/components/dialogs/AddMcqToConceptDialog.vue')['default']
     AddMcqToTodayDialog: typeof import('./inertia/components/dialogs/AddMcqToTodayDialog.vue')['default']
@@ -115,6 +116,7 @@ declare module 'vue' {
     EditConceptDialog: typeof import('./inertia/components/dialogs/EditConceptDialog.vue')['default']
     EditEventDialog: typeof import('./inertia/components/dialogs/EditEventDialog.vue')['default']
     EditEventQuizDialog: typeof import('./inertia/components/dialogs/EditEventQuizDialog.vue')['default']
+    EditEventQuizMcqDialog: typeof import('./inertia/components/dialogs/EditEventQuizMcqDialog.vue')['default']
     EditMcqDialog: typeof import('./inertia/components/dialogs/EditMcqDialog.vue')['default']
     EditMcqInConceptDialog: typeof import('./inertia/components/dialogs/EditMcqInConceptDialog.vue')['default']
     EditMcqToTodayDialog: typeof import('./inertia/components/dialogs/EditMcqToTodayDialog.vue')['default']
@@ -146,6 +148,8 @@ declare module 'vue' {
     PopoverContent: typeof import('./inertia/components/ui/popover/PopoverContent.vue')['default']
     PopoverTrigger: typeof import('./inertia/components/ui/popover/PopoverTrigger.vue')['default']
     Progress: typeof import('./inertia/components/ui/progress/Progress.vue')['default']
+    RadioGroup: typeof import('./inertia/components/ui/radio-group/RadioGroup.vue')['default']
+    RadioGroupItem: typeof import('./inertia/components/ui/radio-group/RadioGroupItem.vue')['default']
     RangeCalendar: typeof import('./inertia/components/ui/range-calendar/RangeCalendar.vue')['default']
     RangeCalendarCell: typeof import('./inertia/components/ui/range-calendar/RangeCalendarCell.vue')['default']
     RangeCalendarCellTrigger: typeof import('./inertia/components/ui/range-calendar/RangeCalendarCellTrigger.vue')['default']

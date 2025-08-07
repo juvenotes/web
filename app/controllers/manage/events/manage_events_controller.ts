@@ -2,11 +2,12 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
+import QuestionDto from '#dtos/question'
 import EventQuiz from '#models/event_quiz'
 import Question from '#models/question'
-import McqChoice from '#models/mcq_choice'
 import { createEventValidator, updateEventValidator } from '#validators/event'
 import { createEventQuizValidator, updateEventQuizValidator } from '#validators/event_quiz'
+import { createMcqQuestionValidator, updateMcqQuestionValidator } from '#validators/question'
 import string from '@adonisjs/core/helpers/string'
 import { generateSlug } from '#utils/slug_generator'
 import { CloudinaryService } from '#services/cloudinary_service'
@@ -20,7 +21,7 @@ export default class ManageEventsController {
   /**
    * Display a list of events for management
    */
-  async index({ inertia, auth, bouncer, logger }: HttpContext) {
+  async index({ inertia, auth, bouncer, logger, response }: HttpContext) {
     const context = {
       controller: 'ManageEventsController',
       action: 'index',
@@ -29,15 +30,15 @@ export default class ManageEventsController {
 
     if (await bouncer.with(EventPolicy).denies('view')) {
       logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access attempt' })
-      return inertia.render('errors/forbidden')
+      return response.forbidden()
     }
 
     // Query for all events (not paginated, not serialized)
-    const events = await Event.query().orderBy('createdAt', 'desc').preload('user')
+    const events = await Event.query().orderBy('createdAt', 'desc')
 
     // Pass events as DTOs inside the render function, matching Concept pattern
     return inertia.render('manage/events/index', {
-      events: events.map((event) => new EventDto(event)),
+      events: events ? EventDto.fromArray(events) : [],
     })
   }
 
@@ -144,7 +145,7 @@ export default class ManageEventsController {
           message: 'Event created successfully',
         })
         session.flash('success', 'Event created successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
+        return response.redirect().back()
       })
     } catch (error) {
       logger.error({
@@ -483,6 +484,52 @@ export default class ManageEventsController {
   }
 
   /**
+   * Show a specific quiz for management
+   */
+  async viewQuiz({ params, inertia, auth, bouncer, logger }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'viewQuiz',
+      eventSlug: params.slug,
+      quizId: params.quizId,
+    }
+    logger.info({ ...context, message: 'Fetching quiz for management' })
+
+    if (await bouncer.with(EventPolicy).denies('view')) {
+      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized view attempt' })
+      return inertia.render('errors/forbidden')
+    }
+
+    const event = await Event.findByOrFail('slug', params.slug)
+    const quiz = await EventQuiz.query()
+      .where('id', params.quizId)
+      .where('eventId', event.id)
+      .preload('questions', (query) => {
+        query.orderBy('id', 'asc').preload('choices')
+      })
+      .firstOrFail()
+
+    const eventDto = new EventDto(event)
+    const quizDto = new EventQuizDto(quiz)
+    const questionsDto = quiz.questions ? QuestionDto.fromArray(quiz.questions) : []
+
+    logger.info({
+      ...context,
+      userId: auth.user?.id,
+      eventId: event.id,
+      quizId: quiz.id,
+      questionsCount: questionsDto.length,
+      message: 'Quiz fetched for management',
+    })
+
+    return inertia.render('manage/events/view', {
+      event: eventDto,
+      quiz: quizDto,
+      questions: questionsDto,
+    })
+  }
+
+  /**
    * Show quiz edit form
    */
   async editQuiz({ params, inertia, auth, bouncer, logger }: HttpContext) {
@@ -728,7 +775,10 @@ export default class ManageEventsController {
           questionsCount: parsedQuestions.length,
           message: 'Quiz uploaded successfully',
         })
-        session.flash('success', `Successfully uploaded quiz with ${parsedQuestions.length} questions`)
+        session.flash(
+          'success',
+          `Successfully uploaded quiz with ${parsedQuestions.length} questions`
+        )
         return response.redirect().toRoute('manage.events.show', { slug: event.slug })
       })
     } catch (error) {
@@ -737,6 +787,281 @@ export default class ManageEventsController {
         return response.badRequest(`Parse error: ${error.message}`)
       }
       logger.error('failed to upload quiz', { ...context, error })
+      throw error
+    }
+  }
+
+  /**
+   * Add a question to an existing quiz
+   */
+  async addQuizQuestion({
+    params,
+    request,
+    response,
+    session,
+    auth,
+    bouncer,
+    logger,
+  }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'addQuizQuestion',
+      eventSlug: params.slug,
+      quizId: params.quizId,
+    }
+    logger.info({ ...context, message: 'Adding question to quiz' })
+
+    const event = await Event.findByOrFail('slug', params.slug)
+    const quiz = await EventQuiz.query()
+      .where('id', params.quizId)
+      .where('eventId', event.id)
+      .firstOrFail()
+
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access' })
+      return response.forbidden()
+    }
+
+    const data = await request.validateUsing(createMcqQuestionValidator)
+    const slug = generateSlug()
+
+    try {
+      await db.transaction(async (trx) => {
+        const [question] = await trx
+          .insertQuery()
+          .table('questions')
+          .insert({
+            user_id: auth.user!.id,
+            event_quiz_id: quiz.id,
+            slug,
+            type: QuestionType.MCQ,
+            question_text: data.questionText,
+            question_image_path: data.questionImagePath || null,
+          })
+          .returning('*')
+
+        await trx
+          .insertQuery()
+          .table('mcq_choices')
+          .insert(
+            data.choices.map((choice) => ({
+              question_id: question.id,
+              choice_text: choice.choiceText,
+              is_correct: choice.isCorrect,
+              explanation: choice.explanation,
+            }))
+          )
+      })
+
+      session.flash('success', 'Question added successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('failed to create quiz question', { ...context, error })
+      throw error
+    }
+  }
+
+  /**
+   * Upload multiple questions to an existing quiz
+   */
+  async uploadQuizQuestions({
+    params,
+    request,
+    response,
+    session,
+    auth,
+    bouncer,
+    logger,
+  }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'uploadQuizQuestions',
+      eventSlug: params.slug,
+      quizId: params.quizId,
+    }
+    logger.info({ ...context, message: 'Uploading questions to quiz' })
+
+    const event = await Event.findByOrFail('slug', params.slug)
+    const quiz = await EventQuiz.query()
+      .where('id', params.quizId)
+      .where('eventId', event.id)
+      .firstOrFail()
+
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access' })
+      return response.forbidden()
+    }
+
+    const file = request.file('file')
+    if (!file) return response.badRequest('No file uploaded')
+
+    try {
+      const content = await fs.readFile(file.tmpPath!, 'utf-8')
+      const parsedQuestions = MCQParser.parse(content)
+
+      logger.info('questions parsed', {
+        ...context,
+        count: parsedQuestions.length,
+        first: parsedQuestions[0]?.stem,
+      })
+
+      await db.transaction(async (trx) => {
+        for (const parsedQuestion of parsedQuestions) {
+          const [question] = await trx
+            .insertQuery()
+            .table('questions')
+            .insert({
+              user_id: auth.user!.id,
+              event_quiz_id: quiz.id,
+              slug: generateSlug(),
+              type: QuestionType.MCQ,
+              question_text: parsedQuestion.stem,
+            })
+            .returning('*')
+
+          const correctIndex = parsedQuestion.answer.charCodeAt(0) - 65
+          const choices = parsedQuestion.choices.map((choiceText, idx) => ({
+            question_id: question.id,
+            choice_text: choiceText,
+            is_correct: idx === correctIndex,
+            explanation: idx === correctIndex ? parsedQuestion.explanation : null,
+          }))
+
+          await trx.insertQuery().table('mcq_choices').insert(choices)
+        }
+      })
+
+      session.flash('success', `Successfully uploaded ${parsedQuestions.length} questions`)
+      return response.redirect().back()
+    } catch (error) {
+      if (error instanceof MCQParserError) {
+        logger.error('question parsing failed', { ...context, error })
+        return response.badRequest(`Parse error: ${error.message}`)
+      }
+      logger.error('failed to upload questions', { ...context, error })
+      throw error
+    }
+  }
+
+  /**
+   * Update a quiz question
+   */
+  async updateQuizQuestion({ params, request, response, session, bouncer, logger }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'updateQuizQuestion',
+      eventSlug: params.slug,
+      quizId: params.quizId,
+      questionSlug: params.questionSlug,
+    }
+    logger.info({ ...context, message: 'Updating quiz question' })
+
+    const event = await Event.findByOrFail('slug', params.slug)
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      return response.forbidden()
+    }
+
+    const question = await Question.query()
+      .where('slug', params.questionSlug)
+      .whereHas('eventQuiz', (query) => {
+        query.where('id', params.quizId).where('eventId', event.id)
+      })
+      .preload('choices')
+      .firstOrFail()
+
+    if (!question.isMcq) {
+      return response.badRequest('Question is not MCQ type')
+    }
+
+    const data = await request.validateUsing(updateMcqQuestionValidator)
+
+    try {
+      await db.transaction(async (trx) => {
+        await question
+          .merge({
+            questionText: data.questionText,
+            questionImagePath: data.questionImagePath || null,
+          })
+          .useTransaction(trx)
+          .save()
+
+        const existingChoices = new Map(question.choices.map((choice) => [choice.id, choice]))
+        const updatedChoiceIds = new Set()
+
+        for (const choiceData of data.choices) {
+          if (choiceData.id && existingChoices.has(choiceData.id)) {
+            await trx.from('mcq_choices').where('id', choiceData.id).update({
+              choice_text: choiceData.choiceText,
+              is_correct: choiceData.isCorrect,
+              explanation: choiceData.explanation,
+            })
+            updatedChoiceIds.add(choiceData.id)
+          } else {
+            const [newChoice] = await trx
+              .insertQuery()
+              .table('mcq_choices')
+              .insert({
+                question_id: question.id,
+                choice_text: choiceData.choiceText,
+                is_correct: choiceData.isCorrect,
+                explanation: choiceData.explanation,
+              })
+              .returning('id')
+            updatedChoiceIds.add(newChoice.id)
+          }
+        }
+
+        const choicesToRemove = [...existingChoices.keys()].filter(
+          (id) => !updatedChoiceIds.has(id)
+        )
+        if (choicesToRemove.length > 0) {
+          await trx.from('mcq_choices').whereIn('id', choicesToRemove).delete()
+        }
+      })
+
+      session.flash('success', 'Question updated successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('failed to update quiz question', { ...context, error })
+      throw error
+    }
+  }
+
+  /**
+   * Delete a quiz question
+   */
+  async deleteQuizQuestion({ params, response, session, bouncer, logger }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'deleteQuizQuestion',
+      eventSlug: params.slug,
+      quizId: params.quizId,
+      questionSlug: params.questionSlug,
+    }
+    logger.info({ ...context, message: 'Deleting quiz question' })
+
+    const event = await Event.findByOrFail('slug', params.slug)
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      return response.forbidden()
+    }
+
+    const question = await Question.query()
+      .where('slug', params.questionSlug)
+      .whereHas('eventQuiz', (query) => {
+        query.where('id', params.quizId).where('eventId', event.id)
+      })
+      .firstOrFail()
+
+    try {
+      await db.transaction(async (trx) => {
+        await trx.from('mcq_choices').where('question_id', question.id).delete()
+        await trx.from('questions').where('id', question.id).delete()
+      })
+
+      session.flash('success', 'Question deleted successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error('failed to delete quiz question', { ...context, error })
       throw error
     }
   }

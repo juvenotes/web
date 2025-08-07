@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
-import { Textarea } from '~/components/ui/textarea'
-import { Label } from '~/components/ui/label'
 import { useForm } from '@inertiajs/vue3'
-import { Upload } from 'lucide-vue-next'
 import type EventDto from '#dtos/event'
+import type EventQuizDto from '#dtos/event_quiz'
+import { Upload, FileText, AlertCircle } from 'lucide-vue-next'
 import { ref } from 'vue'
 
 const props = defineProps<{
   open: boolean
   event: EventDto
+  quiz: EventQuizDto
 }>()
 
 const emit = defineEmits<{
@@ -19,144 +16,199 @@ const emit = defineEmits<{
 }>()
 
 const form = useForm({
-  title: '',
-  description: '',
   file: null as File | null,
 })
 
-const error = ref<string | null>(null)
+const dragActive = ref(false)
+const fileInputRef = ref<HTMLInputElement>()
 
-function handleFileChange(e: Event) {
-  const input = e.target as HTMLInputElement
-  if (input.files?.length) {
-    form.file = input.files[0]
-    error.value = null
+function handleFileSelect(file: File) {
+  if (file && (file.type === 'text/plain' || file.name.endsWith('.txt'))) {
+    form.file = file
+  } else {
+    alert('Please select a valid .txt file')
+  }
+}
+
+function handleFileInput(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    handleFileSelect(file)
+  }
+}
+
+function handleDrop(event: DragEvent) {
+  event.preventDefault()
+  dragActive.value = false
+  
+  const file = event.dataTransfer?.files[0]
+  if (file) {
+    handleFileSelect(file)
+  }
+}
+
+function handleDragOver(event: DragEvent) {
+  event.preventDefault()
+  dragActive.value = true
+}
+
+function handleDragLeave() {
+  dragActive.value = false
+}
+
+function triggerFileInput() {
+  fileInputRef.value?.click()
+}
+
+function removeFile() {
+  form.file = null
+  if (fileInputRef.value) {
+    fileInputRef.value.value = ''
   }
 }
 
 function handleSubmit() {
-  error.value = null
+  if (!form.file) return
 
-  if (!form.title.trim()) {
-    error.value = 'Quiz title is required'
-    return
-  }
+  const formData = new FormData()
+  formData.append('file', form.file)
 
-  if (!form.file) {
-    error.value = 'Please select a file to upload'
-    return
-  }
-
-  form.post(`/manage/events/${props.event.slug}/quiz/upload`, {
+  form.post(`/manage/events/${props.event.slug}/quiz/${props.quiz.id}/upload`, {
     preserveScroll: true,
-    forceFormData: true,
     onSuccess: () => {
       emit('update:open', false)
-      form.reset()
-      error.value = null
+      form.file = null
+      if (fileInputRef.value) {
+        fileInputRef.value.value = ''
+      }
     },
-    onError: (errors) => {
-      error.value = errors.message || 'Failed to upload quiz'
-    },
+    forceFormData: true,
   })
 }
 </script>
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="max-w-md">
+    <DialogContent class="sm:max-w-[600px]">
       <DialogHeader>
-        <DialogTitle>Upload Quiz from File</DialogTitle>
+        <DialogTitle>Upload MCQ Questions</DialogTitle>
       </DialogHeader>
 
-      <form @submit.prevent="handleSubmit" class="space-y-6">
-        <!-- Quiz Details -->
-        <div class="space-y-4">
-          <div>
-            <Label for="title">Quiz Title *</Label>
-            <Input
-              id="title"
-              v-model="form.title"
-              placeholder="Enter quiz title..."
-              required
-            />
-          </div>
-
-          <div>
-            <Label for="description">Description</Label>
-            <Textarea
-              id="description"
-              v-model="form.description"
-              placeholder="Enter quiz description..."
-              rows="3"
-            />
+      <div class="space-y-6">
+        <!-- Instructions -->
+        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div class="flex items-start gap-3">
+            <AlertCircle class="h-5 w-5 text-blue-600 mt-0.5" />
+            <div class="space-y-2 text-sm">
+              <p class="font-medium text-blue-900">File Format Requirements:</p>
+              <ul class="list-disc list-inside space-y-1 text-blue-800">
+                <li>Plain text file (.txt)</li>
+                <li>Each question should start with a number (e.g., "1.", "2.")</li>
+                <li>Choices should be labeled A, B, C, D, E</li>
+                <li>Correct answer should be indicated with "*" (e.g., "*A. Correct choice")</li>
+                <li>Optional explanation can follow after "Explanation:"</li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <!-- File Upload -->
-        <div>
-          <Label for="file">Quiz File *</Label>
-          <div class="mt-2">
+        <!-- File Upload Area -->
+        <form @submit.prevent="handleSubmit" class="space-y-6">
+          <div
+            class="relative border-2 border-dashed rounded-lg p-8 text-center transition-colors"
+            :class="dragActive ? 'border-primary bg-primary/5' : 'border-gray-300'"
+            @drop="handleDrop"
+            @dragover="handleDragOver"
+            @dragleave="handleDragLeave"
+          >
             <input
-              id="file"
+              ref="fileInputRef"
               type="file"
-              accept=".txt,.md"
-              @change="handleFileChange"
-              class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#55A9C4] file:text-white hover:file:bg-[#4795af] transition-colors"
-              required
+              accept=".txt,text/plain"
+              @change="handleFileInput"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
+
+            <div v-if="!form.file" class="space-y-4">
+              <div class="flex justify-center">
+                <Upload class="h-12 w-12 text-gray-400" />
+              </div>
+              <div>
+                <p class="text-lg font-medium text-gray-900">
+                  Drop your file here, or 
+                  <button 
+                    type="button"
+                    @click="triggerFileInput"
+                    class="text-primary hover:text-primary/80 underline"
+                  >
+                    browse
+                  </button>
+                </p>
+                <p class="text-sm text-gray-500 mt-1">Supports: .txt files only</p>
+              </div>
+            </div>
+
+            <div v-else class="space-y-4">
+              <div class="flex justify-center">
+                <FileText class="h-12 w-12 text-green-600" />
+              </div>
+              <div>
+                <p class="text-lg font-medium text-gray-900">{{ form.file.name }}</p>
+                <p class="text-sm text-gray-500">{{ (form.file.size / 1024).toFixed(1) }} KB</p>
+              </div>
+              <Button 
+                type="button" 
+                @click="removeFile" 
+                variant="outline" 
+                size="sm"
+              >
+                Remove File
+              </Button>
+            </div>
           </div>
-          <p class="text-xs text-gray-500 mt-2">
-            Upload a text file with MCQ questions in the supported format
-          </p>
-        </div>
 
-        <!-- Format Guide -->
-        <div class="bg-gray-50 rounded-lg p-4">
-          <h4 class="text-sm font-medium text-gray-900 mb-2">File Format Example:</h4>
-          <pre class="text-xs text-gray-700 whitespace-pre-wrap">What is the capital of France?
-A) London
-B) Berlin
-C) Paris
-D) Madrid
+          <div v-if="form.errors.file" class="text-sm text-red-600">
+            {{ form.errors.file }}
+          </div>
 
-Answer: C
+          <!-- Form Actions -->
+          <div class="flex justify-end gap-3 pt-4 border-t">
+            <Button
+              type="button"
+              @click="$emit('update:open', false)"
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              :disabled="!form.file || form.processing"
+            >
+              {{ form.processing ? 'Uploading...' : 'Upload Questions' }}
+            </Button>
+          </div>
+        </form>
+
+        <!-- Example Format -->
+        <div class="space-y-3">
+          <h4 class="font-medium text-gray-900">Example Format:</h4>
+          <div class="bg-gray-50 border rounded-lg p-4 text-sm font-mono whitespace-pre-line">
+{`1. What is the capital of France?
+A. London
+B. Berlin
+*C. Paris
+D. Madrid
 Explanation: Paris is the capital and largest city of France.
 
-What is 2 + 2?
-A) 3
-B) 4
-C) 5
-D) 6
-
-Answer: B
-Explanation: Basic arithmetic: 2 + 2 = 4.</pre>
+2. Which planet is known as the Red Planet?
+A. Venus
+B. Jupiter
+*C. Mars
+D. Saturn`}
+          </div>
         </div>
-
-        <!-- Error Display -->
-        <div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p class="text-sm text-red-600">{{ error }}</p>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
-          <Button
-            type="button"
-            @click="$emit('update:open', false)"
-            variant="outline"
-          >
-            Cancel
-          </Button>
-          <Button 
-            type="submit" 
-            :disabled="form.processing"
-            class="bg-[#55A9C4] hover:bg-[#4795af]"
-          >
-            <Upload class="h-4 w-4 mr-2" />
-            {{ form.processing ? 'Uploading...' : 'Upload Quiz' }}
-          </Button>
-        </div>
-      </form>
+      </div>
     </DialogContent>
   </Dialog>
 </template>

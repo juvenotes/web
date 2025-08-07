@@ -1,24 +1,27 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import type EventDto from '#dtos/event'
 import type EventQuizDto from '#dtos/event_quiz'
+import type QuestionDto from '#dtos/question'
+import type McqChoiceDto from '#dtos/mcq_choice'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { 
+  Calendar, 
   ArrowLeft, 
   CheckCircle, 
-  XCircle, 
-  Circle, 
-  RotateCcw,
-  Trophy,
-  Clock,
-  FileText
+  Clock, 
+  BookOpen,
+  Play,
+  RotateCcw
 } from 'lucide-vue-next'
 import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
+import AppHead from '~/components/AppHead.vue'
+import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { Progress } from '~/components/ui/progress'
-import { Badge } from '~/components/ui/badge'
-import { ref, computed, reactive } from 'vue'
+import { Label } from '~/components/ui/label'
+import { Separator } from '~/components/ui/separator'
+import { ref, computed } from 'vue'
 
 defineOptions({ layout: DashLayout })
 
@@ -35,388 +38,309 @@ const breadcrumbItems = [
   { label: props.quiz.title }
 ]
 
-// Quiz state
-const selectedAnswers = reactive<Record<number, number>>({})
-const showAnswers = reactive<Record<number, boolean>>({})
-const quizCompleted = ref(false)
-const quizStarted = ref(false)
 const currentQuestionIndex = ref(0)
+const selectedAnswers = ref<Record<number, number>>({})
+const showResults = ref(false)
 
-// Quiz statistics
-const answeredQuestions = computed(() => Object.keys(selectedAnswers).length)
-const totalQuestions = computed(() => props.quiz.mcqs.length)
-const progressPercentage = computed(() => 
-  totalQuestions.value > 0 ? (answeredQuestions.value / totalQuestions.value) * 100 : 0
-)
+const currentQuestion = computed(() => props.quiz.questions?.[currentQuestionIndex.value] || null)
+const totalQuestions = computed(() => props.quiz.questions?.length || 0)
+const isLastQuestion = computed(() => currentQuestionIndex.value === totalQuestions.value - 1)
+const isFirstQuestion = computed(() => currentQuestionIndex.value === 0)
 
-const correctAnswers = computed(() => {
+const score = computed(() => {
+  if (!showResults.value) return 0
   let correct = 0
-  props.quiz.mcqs.forEach((mcq, index) => {
-    const questionId = index
-    if (selectedAnswers[questionId] === mcq.correctAnswer) {
-      correct++
-    }
+  props.quiz.questions?.forEach((question, index) => {
+    const selectedChoiceId = selectedAnswers.value[index]
+    const selectedChoice = question.choices?.find(c => c.id === selectedChoiceId)
+    if (selectedChoice?.isCorrect) correct++
   })
   return correct
 })
 
-const scorePercentage = computed(() => 
-  totalQuestions.value > 0 ? (correctAnswers.value / totalQuestions.value) * 100 : 0
-)
+const scorePercentage = computed(() => {
+  if (totalQuestions.value === 0) return 0
+  return Math.round((score.value / totalQuestions.value) * 100)
+})
 
-// Get letter for choice (A, B, C, D)
-function getChoiceLetter(index: number): string {
-  return String.fromCharCode(65 + index)
-}
-
-// Handle choice selection
-function handleChoiceSelect(questionIndex: number, choiceIndex: number) {
-  if (showAnswers[questionIndex]) return // Already answered
-  
-  selectedAnswers[questionIndex] = choiceIndex
-  showAnswers[questionIndex] = true
-  
-  // Auto-advance to next question after a short delay
-  setTimeout(() => {
-    if (currentQuestionIndex.value < totalQuestions.value - 1) {
-      currentQuestionIndex.value++
-    } else {
-      // Quiz completed
-      completeQuiz()
-    }
-  }, 1500)
-}
-
-// Complete quiz
-function completeQuiz() {
-  quizCompleted.value = true
-}
-
-// Reset quiz
-function resetQuiz() {
-  Object.keys(selectedAnswers).forEach(key => delete selectedAnswers[key])
-  Object.keys(showAnswers).forEach(key => delete showAnswers[key])
-  quizCompleted.value = false
-  quizStarted.value = false
-  currentQuestionIndex.value = 0
-}
-
-// Start quiz
-function startQuiz() {
-  quizStarted.value = true
-}
-
-// Navigation
-function goToQuestion(index: number) {
-  currentQuestionIndex.value = index
+function selectAnswer(questionIndex: number, choiceId: number) {
+  selectedAnswers.value[questionIndex] = choiceId
 }
 
 function nextQuestion() {
-  if (currentQuestionIndex.value < totalQuestions.value - 1) {
+  if (!isLastQuestion.value) {
     currentQuestionIndex.value++
   }
 }
 
 function previousQuestion() {
-  if (currentQuestionIndex.value > 0) {
+  if (!isFirstQuestion.value) {
     currentQuestionIndex.value--
   }
 }
 
-const currentQuestion = computed(() => props.quiz.mcqs[currentQuestionIndex.value])
-
-function getScoreColor(percentage: number): string {
-  if (percentage >= 80) return 'text-green-600'
-  if (percentage >= 60) return 'text-yellow-600'
-  return 'text-red-600'
+function submitQuiz() {
+  showResults.value = true
 }
 
-function getScoreBadgeColor(percentage: number): string {
-  if (percentage >= 80) return 'bg-green-100 text-green-800'
-  if (percentage >= 60) return 'bg-yellow-100 text-yellow-800'
-  return 'bg-red-100 text-red-800'
+function restartQuiz() {
+  currentQuestionIndex.value = 0
+  selectedAnswers.value = {}
+  showResults.value = false
+}
+
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
 }
 </script>
 
 <template>
   <AppHead 
     :title="`${quiz.title} - ${event.title}`" 
-    :description="`Take the ${quiz.title} quiz for ${event.title}`" 
+    :description="`Take the ${quiz.title} quiz for ${event.title} event`"
   />
+  
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <!-- Breadcrumb -->
+    <BreadcrumbTrail :items="breadcrumbItems" />
 
-  <div class="min-h-screen bg-gray-50/50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <!-- Header -->
-      <div class="mb-6">
-        <BreadcrumbTrail :items="breadcrumbItems" class="mb-4" />
+    <!-- Header -->
+    <div class="text-center space-y-4">
+      <div class="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+        <Calendar class="h-4 w-4" />
+        <span>{{ formatDate(event.startDate) }}</span>
+      </div>
+      
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight">{{ quiz.title }}</h1>
+        <p v-if="quiz.description" class="text-lg text-muted-foreground mt-2">
+          {{ quiz.description }}
+        </p>
       </div>
 
-      <!-- Quiz Start Screen -->
-      <Card v-if="!quizStarted && !quizCompleted" class="text-center">
-        <CardContent class="p-8">
-          <div class="mb-6">
-            <div class="h-16 w-16 mx-auto rounded-lg bg-[#55A9C4]/10 flex items-center justify-center mb-4">
-              <FileText class="h-8 w-8 text-[#55A9C4]" />
-            </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ quiz.title }}</h1>
-            <p v-if="quiz.description" class="text-gray-600 text-lg mb-6">{{ quiz.description }}</p>
-          </div>
-
-          <div class="grid md:grid-cols-3 gap-4 mb-8">
-            <div class="p-4 bg-blue-50 rounded-lg">
-              <FileText class="h-6 w-6 text-blue-600 mx-auto mb-2" />
-              <p class="text-sm font-medium text-blue-900">{{ totalQuestions }} Questions</p>
-              <p class="text-xs text-blue-700">Multiple Choice</p>
-            </div>
-            <div class="p-4 bg-green-50 rounded-lg">
-              <Clock class="h-6 w-6 text-green-600 mx-auto mb-2" />
-              <p class="text-sm font-medium text-green-900">Self-Paced</p>
-              <p class="text-xs text-green-700">No time limit</p>
-            </div>
-            <div class="p-4 bg-purple-50 rounded-lg">
-              <Trophy class="h-6 w-6 text-purple-600 mx-auto mb-2" />
-              <p class="text-sm font-medium text-purple-900">Instant Results</p>
-              <p class="text-xs text-purple-700">See scores immediately</p>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <Button @click="startQuiz" class="bg-[#55A9C4] hover:bg-[#4795af] text-white px-8 py-3 text-lg">
-              Start Quiz
-            </Button>
-            <p class="text-sm text-gray-500">
-              You can review your answers after completing the quiz
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <!-- Quiz Interface -->
-      <div v-else-if="quizStarted && !quizCompleted" class="space-y-6">
-        <!-- Progress Bar -->
-        <Card>
-          <CardContent class="p-4">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm font-medium text-gray-700">
-                Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}
-              </span>
-              <span class="text-sm text-gray-500">
-                {{ Math.round(progressPercentage) }}% Complete
-              </span>
-            </div>
-            <Progress :value="progressPercentage" class="h-2" />
-          </CardContent>
-        </Card>
-
-        <!-- Question Card -->
-        <Card v-if="currentQuestion">
-          <CardHeader>
-            <CardTitle class="text-xl">
-              Question {{ currentQuestionIndex + 1 }}
-            </CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-6">
-            <!-- Question Text -->
-            <div class="p-4 bg-gray-50 rounded-lg">
-              <p class="text-lg text-gray-900 leading-relaxed">
-                {{ currentQuestion.question }}
-              </p>
-            </div>
-
-            <!-- Choices -->
-            <div class="space-y-3">
-              <div
-                v-for="(choice, choiceIndex) in currentQuestion.choices"
-                :key="choiceIndex"
-                :class="{
-                  'border-green-500 bg-green-50': 
-                    showAnswers[currentQuestionIndex] && choiceIndex === currentQuestion.correctAnswer,
-                  'border-red-500 bg-red-50': 
-                    showAnswers[currentQuestionIndex] && 
-                    selectedAnswers[currentQuestionIndex] === choiceIndex && 
-                    choiceIndex !== currentQuestion.correctAnswer,
-                  'border-[#55A9C4] bg-[#55A9C4]/5': 
-                    selectedAnswers[currentQuestionIndex] === choiceIndex && 
-                    !showAnswers[currentQuestionIndex],
-                  'hover:border-[#55A9C4]/50 hover:bg-gray-50': 
-                    !showAnswers[currentQuestionIndex],
-                  'opacity-60': showAnswers[currentQuestionIndex] && 
-                    selectedAnswers[currentQuestionIndex] !== choiceIndex &&
-                    choiceIndex !== currentQuestion.correctAnswer,
-                }"
-                class="flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-all duration-200"
-                @click="handleChoiceSelect(currentQuestionIndex, choiceIndex)"
-              >
-                <!-- Choice Letter -->
-                <div 
-                  :class="{
-                    'bg-green-500 text-white': 
-                      showAnswers[currentQuestionIndex] && choiceIndex === currentQuestion.correctAnswer,
-                    'bg-red-500 text-white': 
-                      showAnswers[currentQuestionIndex] && 
-                      selectedAnswers[currentQuestionIndex] === choiceIndex && 
-                      choiceIndex !== currentQuestion.correctAnswer,
-                    'bg-[#55A9C4] text-white': 
-                      selectedAnswers[currentQuestionIndex] === choiceIndex && 
-                      !showAnswers[currentQuestionIndex],
-                    'bg-gray-200 text-gray-700': 
-                      !selectedAnswers[currentQuestionIndex] || 
-                      selectedAnswers[currentQuestionIndex] !== choiceIndex,
-                  }"
-                  class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
-                >
-                  {{ getChoiceLetter(choiceIndex) }}
-                </div>
-
-                <!-- Choice Text -->
-                <span 
-                  :class="{
-                    'text-green-800 font-medium': 
-                      showAnswers[currentQuestionIndex] && choiceIndex === currentQuestion.correctAnswer,
-                    'text-red-800': 
-                      showAnswers[currentQuestionIndex] && 
-                      selectedAnswers[currentQuestionIndex] === choiceIndex && 
-                      choiceIndex !== currentQuestion.correctAnswer,
-                  }"
-                  class="flex-1 text-gray-900"
-                >
-                  {{ choice }}
-                </span>
-
-                <!-- Status Icon -->
-                <div v-if="showAnswers[currentQuestionIndex]" class="flex-shrink-0">
-                  <CheckCircle 
-                    v-if="choiceIndex === currentQuestion.correctAnswer"
-                    class="h-5 w-5 text-green-500" 
-                  />
-                  <XCircle 
-                    v-else-if="selectedAnswers[currentQuestionIndex] === choiceIndex"
-                    class="h-5 w-5 text-red-500" 
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Explanation -->
-            <div 
-              v-if="showAnswers[currentQuestionIndex] && currentQuestion.explanation"
-              class="p-4 bg-blue-50 border border-blue-200 rounded-lg"
-            >
-              <h4 class="font-semibold text-blue-900 mb-2">Explanation</h4>
-              <p class="text-blue-800 text-sm leading-relaxed">
-                {{ currentQuestion.explanation }}
-              </p>
-            </div>
-
-            <!-- Navigation -->
-            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
-              <Button
-                @click="previousQuestion"
-                :disabled="currentQuestionIndex === 0"
-                variant="outline"
-                class="flex items-center gap-2"
-              >
-                <ArrowLeft class="h-4 w-4" />
-                Previous
-              </Button>
-
-              <div class="flex gap-2">
-                <Button
-                  v-for="(_, index) in quiz.mcqs"
-                  :key="index"
-                  @click="goToQuestion(index)"
-                  :variant="index === currentQuestionIndex ? 'default' : 'outline'"
-                  :class="{
-                    'bg-green-100 border-green-500 text-green-700': 
-                      showAnswers[index] && selectedAnswers[index] === quiz.mcqs[index].correctAnswer,
-                    'bg-red-100 border-red-500 text-red-700': 
-                      showAnswers[index] && selectedAnswers[index] !== quiz.mcqs[index].correctAnswer,
-                    'bg-[#55A9C4] text-white': index === currentQuestionIndex,
-                  }"
-                  size="sm"
-                  class="w-8 h-8 p-0"
-                >
-                  {{ index + 1 }}
-                </Button>
-              </div>
-
-              <Button
-                @click="nextQuestion"
-                :disabled="currentQuestionIndex === totalQuestions - 1"
-                variant="outline"
-                class="flex items-center gap-2"
-              >
-                Next
-                <ArrowLeft class="h-4 w-4 rotate-180" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      <div class="flex items-center justify-center gap-4 text-sm">
+        <Badge variant="secondary" class="flex items-center gap-1">
+          <BookOpen class="h-3 w-3" />
+          {{ totalQuestions }} Questions
+        </Badge>
+        <Badge v-if="showResults" :variant="scorePercentage >= 70 ? 'default' : 'destructive'" class="flex items-center gap-1">
+          <CheckCircle class="h-3 w-3" />
+          {{ score }}/{{ totalQuestions }} ({{ scorePercentage }}%)
+        </Badge>
       </div>
-
-      <!-- Quiz Results -->
-      <Card v-else-if="quizCompleted" class="text-center">
-        <CardContent class="p-8">
-          <div class="mb-6">
-            <div class="h-16 w-16 mx-auto rounded-lg bg-[#55A9C4]/10 flex items-center justify-center mb-4">
-              <Trophy class="h-8 w-8 text-[#55A9C4]" />
-            </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Quiz Completed!</h1>
-            <p class="text-gray-600">Here are your results for {{ quiz.title }}</p>
-          </div>
-
-          <!-- Score -->
-          <div class="mb-8">
-            <div class="text-6xl font-bold mb-2" :class="getScoreColor(scorePercentage)">
-              {{ Math.round(scorePercentage) }}%
-            </div>
-            <Badge :class="getScoreBadgeColor(scorePercentage)" class="text-lg px-4 py-1">
-              {{ correctAnswers }}/{{ totalQuestions }} Correct
-            </Badge>
-          </div>
-
-          <!-- Statistics -->
-          <div class="grid md:grid-cols-3 gap-4 mb-8">
-            <div class="p-4 bg-gray-50 rounded-lg">
-              <div class="text-2xl font-bold text-gray-900">{{ totalQuestions }}</div>
-              <p class="text-sm text-gray-600">Total Questions</p>
-            </div>
-            <div class="p-4 bg-green-50 rounded-lg">
-              <div class="text-2xl font-bold text-green-600">{{ correctAnswers }}</div>
-              <p class="text-sm text-green-700">Correct Answers</p>
-            </div>
-            <div class="p-4 bg-red-50 rounded-lg">
-              <div class="text-2xl font-bold text-red-600">{{ totalQuestions - correctAnswers }}</div>
-              <p class="text-sm text-red-700">Incorrect Answers</p>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button @click="resetQuiz" variant="outline" class="flex items-center gap-2">
-              <RotateCcw class="h-4 w-4" />
-              Retake Quiz
-            </Button>
-            <Link 
-              :href="`/events/${event.slug}`"
-              class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#55A9C4] hover:bg-[#4795af] text-white rounded-lg font-medium transition-colors"
-            >
-              Back to Event
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
     </div>
+
+    <!-- Quiz Content -->
+    <div v-if="totalQuestions > 0" class="space-y-6">
+      <!-- Progress Bar -->
+      <div v-if="!showResults" class="w-full bg-gray-200 rounded-full h-2">
+        <div 
+          class="bg-primary h-2 rounded-full transition-all duration-300"
+          :style="{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }"
+        />
+      </div>
+
+      <!-- Question Card -->
+      <Card v-if="currentQuestion && !showResults">
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <CardTitle class="text-lg">
+              Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}
+            </CardTitle>
+            <Badge variant="outline">MCQ</Badge>
+          </div>
+        </CardHeader>
+        <CardContent class="space-y-6">
+          <!-- Question Text -->
+          <div class="prose max-w-none">
+            <p class="text-lg font-medium leading-relaxed">
+              {{ currentQuestion.questionText }}
+            </p>
+            
+            <!-- Question Image if exists -->
+            <div v-if="currentQuestion.questionImagePath" class="mt-4">
+              <img 
+                :src="currentQuestion.questionImagePath" 
+                :alt="`Question ${currentQuestionIndex + 1} image`"
+                class="max-w-full h-auto rounded-lg border"
+              />
+            </div>
+          </div>
+
+          <!-- Choices -->
+          <div class="space-y-3">
+            <div 
+              v-for="(choice, choiceIndex) in currentQuestion.choices" 
+              :key="choice.id"
+              class="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+            >
+              <input
+                :id="`choice-${choice.id}`"
+                :value="choice.id"
+                :checked="selectedAnswers[currentQuestionIndex] === choice.id"
+                type="radio"
+                :name="`question-${currentQuestionIndex}`"
+                class="mt-0.5 h-4 w-4 text-primary border-gray-300 focus:ring-primary"
+                @change="selectAnswer(currentQuestionIndex, choice.id)"
+              />
+              <Label 
+                :for="`choice-${choice.id}`" 
+                class="flex-1 cursor-pointer font-medium"
+              >
+                <span class="font-semibold mr-2">{{ String.fromCharCode(65 + choiceIndex) }}.</span>
+                {{ choice.choiceText }}
+              </Label>
+            </div>
+          </div>
+
+          <!-- Navigation -->
+          <div class="flex items-center justify-between pt-4">
+            <Button
+              variant="outline"
+              @click="previousQuestion"
+              :disabled="isFirstQuestion"
+            >
+              <ArrowLeft class="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+
+            <div class="text-sm text-muted-foreground">
+              {{ currentQuestionIndex + 1 }} / {{ totalQuestions }}
+            </div>
+
+            <Button
+              v-if="!isLastQuestion"
+              @click="nextQuestion"
+              :disabled="!selectedAnswers[currentQuestionIndex]"
+            >
+              Next
+              <ArrowLeft class="h-4 w-4 ml-2 rotate-180" />
+            </Button>
+
+            <Button
+              v-else
+              @click="submitQuiz"
+              :disabled="!selectedAnswers[currentQuestionIndex]"
+            >
+              <CheckCircle class="h-4 w-4 mr-2" />
+              Submit Quiz
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Results View -->
+      <div v-if="showResults" class="space-y-6">
+        <!-- Results Summary -->
+        <Card>
+          <CardHeader class="text-center">
+            <CardTitle class="text-2xl">Quiz Results</CardTitle>
+          </CardHeader>
+          <CardContent class="text-center space-y-4">
+            <div class="text-6xl font-bold" :class="scorePercentage >= 70 ? 'text-green-600' : 'text-red-600'">
+              {{ scorePercentage }}%
+            </div>
+            <p class="text-lg text-muted-foreground">
+              You got {{ score }} out of {{ totalQuestions }} questions correct
+            </p>
+            
+            <div class="flex items-center justify-center gap-4 mt-6">
+              <Button @click="restartQuiz" variant="outline">
+                <RotateCcw class="h-4 w-4 mr-2" />
+                Retake Quiz
+              </Button>
+              <Button asChild>
+                <Link :href="`/events/${event.slug}`">
+                  <ArrowLeft class="h-4 w-4 mr-2" />
+                  Back to Event
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- Detailed Results -->
+        <div class="space-y-4">
+          <h3 class="text-xl font-semibold">Review Your Answers</h3>
+          
+          <div v-for="(question, questionIndex) in quiz.questions" :key="question.id" class="space-y-2">
+            <Card>
+              <CardHeader class="pb-3">
+                <CardTitle class="text-base flex items-center gap-2">
+                  Question {{ questionIndex + 1 }}
+                  <Badge 
+                    :variant="selectedAnswers[questionIndex] && question.choices?.find(c => c.id === selectedAnswers[questionIndex])?.isCorrect ? 'default' : 'destructive'"
+                    class="ml-2"
+                  >
+                    {{ selectedAnswers[questionIndex] && question.choices?.find(c => c.id === selectedAnswers[questionIndex])?.isCorrect ? 'Correct' : 'Incorrect' }}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent class="space-y-3">
+                <p class="font-medium">{{ question.questionText }}</p>
+                
+                <div class="space-y-2">
+                  <div 
+                    v-for="(choice, choiceIndex) in question.choices" 
+                    :key="choice.id"
+                    class="p-2 rounded border"
+                    :class="{
+                      'bg-green-50 border-green-200': choice.isCorrect,
+                      'bg-red-50 border-red-200': selectedAnswers[questionIndex] === choice.id && !choice.isCorrect,
+                      'bg-gray-50': selectedAnswers[questionIndex] !== choice.id && !choice.isCorrect
+                    }"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold">{{ String.fromCharCode(65 + choiceIndex) }}.</span>
+                      <span>{{ choice.choiceText }}</span>
+                      <div class="ml-auto flex items-center gap-1">
+                        <CheckCircle 
+                          v-if="choice.isCorrect" 
+                          class="h-4 w-4 text-green-600" 
+                        />
+                        <span 
+                          v-if="selectedAnswers[questionIndex] === choice.id" 
+                          class="text-xs font-medium px-2 py-1 rounded"
+                          :class="choice.isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                        >
+                          Your Answer
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <!-- Show explanation for correct answer -->
+                    <div v-if="choice.isCorrect && choice.explanation" class="mt-2 text-sm text-gray-600 pl-6">
+                      <strong>Explanation:</strong> {{ choice.explanation }}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <Card v-else>
+      <CardContent class="text-center py-12">
+        <BookOpen class="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <h3 class="text-lg font-semibold mb-2">No Questions Available</h3>
+        <p class="text-muted-foreground mb-4">
+          This quiz doesn't have any questions yet.
+        </p>
+        <Button asChild>
+          <Link :href="`/events/${event.slug}`">
+            <ArrowLeft class="h-4 w-4 mr-2" />
+            Back to Event
+          </Link>
+        </Button>
+      </CardContent>
+    </Card>
   </div>
 </template>
-
-<style scoped>
-.quiz-choice {
-  transition: all 0.2s ease-in-out;
-}
-
-.quiz-choice:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-</style>

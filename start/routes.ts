@@ -567,8 +567,8 @@ router
       .as('manage.events.quiz.create')
     router.post('/:slug/quiz', [ManageEventsController, 'storeQuiz']).as('manage.events.quiz.store')
     router
-      .post('/:slug/quiz/upload', [ManageEventsController, 'uploadQuiz'])
-      .as('manage.events.quiz.upload')
+      .get('/:slug/quiz/:quizId', [ManageEventsController, 'viewQuiz'])
+      .as('manage.events.quiz.view')
     router
       .get('/:slug/quiz/:quizId/edit', [ManageEventsController, 'editQuiz'])
       .as('manage.events.quiz.edit')
@@ -578,6 +578,26 @@ router
     router
       .delete('/:slug/quiz/:quizId', [ManageEventsController, 'destroyQuiz'])
       .as('manage.events.quiz.destroy')
+
+    // Quiz question management routes
+    router
+      .post('/:slug/quiz/:quizId/questions', [ManageEventsController, 'addQuizQuestion'])
+      .as('manage.events.quiz.questions.store')
+    router
+      .post('/:slug/quiz/:quizId/upload', [ManageEventsController, 'uploadQuizQuestions'])
+      .as('manage.events.quiz.questions.upload')
+    router
+      .put('/:slug/quiz/:quizId/questions/:questionSlug', [
+        ManageEventsController,
+        'updateQuizQuestion',
+      ])
+      .as('manage.events.quiz.questions.update')
+    router
+      .delete('/:slug/quiz/:quizId/questions/:questionSlug', [
+        ManageEventsController,
+        'deleteQuizQuestion',
+      ])
+      .as('manage.events.quiz.questions.destroy')
   })
   .prefix('/manage/events')
   .use(middleware.auth())
