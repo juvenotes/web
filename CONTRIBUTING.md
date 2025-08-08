@@ -3,18 +3,20 @@
 Thank you for considering contributing! Whether it’s code, docs, or feedback, your help is invaluable.
 
 ## Development Setup
-1. **Fork** the repo and clone your fork.  
+
+1. **Fork** the repo and clone your fork.
    ```bash
    git clone https://github.com/juvenotes/web.git
    ```
 2. Ensure dependencies are installed:
    ```bash
    yarn install
+   ```
 3. Create a branch for your feature/fix:
 
-    ``` bash
-    git checkout -b feat/your-feature
-    ```
+   ```bash
+   git checkout -b feat/your-feature
+   ```
 
 ## Workflow
 

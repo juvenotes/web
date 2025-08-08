@@ -19,6 +19,7 @@ import SaqPart from './saq_part.js'
 import PastPaper from './past_paper.js'
 import Station from './station.js'
 import Today from './today.js'
+import EventQuiz from './event_quiz.js'
 import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import SpotStation from './spot_station.js'
 
@@ -97,11 +98,17 @@ export default class Question extends BaseModel {
   @column()
   declare todayId: number | null
 
+  @column()
+  declare eventQuizId: number | null
+
   @belongsTo(() => PastPaper)
   declare pastPaper: BelongsTo<typeof PastPaper>
 
   @belongsTo(() => Today)
   declare today: BelongsTo<typeof Today>
+
+  @belongsTo(() => EventQuiz)
+  declare eventQuiz: BelongsTo<typeof EventQuiz>
 
   @computed()
   get isMcq() {

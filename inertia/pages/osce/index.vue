@@ -44,14 +44,16 @@ const hasConcepts = computed(() => props.concepts.length > 0) // Added for consi
 
 <template>
   <AppHead title="OSCE Papers" description="Access OSCE examination papers" />
-  
+
   <div class="min-h-screen bg-gray-50/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <!-- Header Section - Matched Past Papers style -->
       <div class="mb-6 sm:mb-10 header-animation">
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
 
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -83,7 +85,10 @@ const hasConcepts = computed(() => props.concepts.length > 0) // Added for consi
       </div>
 
       <!-- OSCE Grid - Same data rendering, matched card style -->
-      <div v-if="hasConcepts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+      <div
+        v-if="hasConcepts"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
+      >
         <div
           v-for="(concept, index) in concepts"
           :key="concept.id"
@@ -101,11 +106,15 @@ const hasConcepts = computed(() => props.concepts.length > 0) // Added for consi
                 </div>
               </div>
               <div>
-                <h3 class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2">
+                <h3
+                  class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2"
+                >
                   {{ concept.title }}
                 </h3>
                 <div class="mt-1 mb-1">
-                  <span class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium">
+                  <span
+                    class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium"
+                  >
                     {{ getOscePaperCount(concept) }}
                     {{ getOscePaperCount(concept) === 1 ? 'paper' : 'papers' }}
                   </span>
@@ -119,7 +128,9 @@ const hasConcepts = computed(() => props.concepts.length > 0) // Added for consi
 
       <!-- Empty State - Same conditional logic, matched style -->
       <div v-else class="text-center py-12 sm:py-16 empty-state">
-        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+        <div
+          class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5"
+        >
           <Stethoscope class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
         </div>
         <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No OSCEs found</h3>
@@ -177,10 +188,20 @@ const hasConcepts = computed(() => props.concepts.length > 0) // Added for consi
 
 /* Base typography - Matched to Past Papers */
 html {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 @supports (font-variation-settings: normal) {
-  html { font-family: 'Inter var', system-ui, -apple-system, sans-serif; }
+  html {
+    font-family:
+      'Inter var',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
 }
 
 /* Responsive adjustments - Matched to Past Papers */
@@ -188,7 +209,7 @@ html {
   .group {
     min-height: 56px;
   }
-  
+
   .max-w-7xl {
     padding-left: 1rem;
     padding-right: 1rem;

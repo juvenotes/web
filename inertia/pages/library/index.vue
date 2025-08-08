@@ -3,6 +3,10 @@ import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import BreadcrumbTrail from '../../components/BreadcrumbTrail.vue'
 import DashLayout from '~/layouts/DashLayout.vue'
+import AppHead from '~/components/AppHead.vue'
+import { Settings } from 'lucide-vue-next'
+
+defineOptions({ layout: DashLayout })
 
 interface SubjectData {
   count: number
@@ -11,11 +15,11 @@ interface SubjectData {
 interface Props {
   subjects: string[]
   subjectMap: Record<string, SubjectData>
+  canManage?: boolean
 }
 
 const props = defineProps<Props>()
 
-// Preserving all original icons exactly as they were
 const subjectIcons: Record<string, string> = {
   'Allergy & Immunology': `<svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>`,
   'Cardiovascular System': `<svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>`,
@@ -47,98 +51,114 @@ function getIconForSubject(subjectName: string): string {
 }
 
 const hasSubjects = computed(() => props.subjects && props.subjects.length > 0)
-
-const breadcrumbs = [
-  { label: 'Dashboard', href: '/learn' },
-  { label: 'Library' }
-]
+const breadcrumbItems = [{ label: 'Library' }]
 </script>
 
 <template>
+  <AppHead title="Medical Library" description="Browse articles by medical subject" />
   <div class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto p-4 md:p-8">
-      <!-- Breadcrumb Trail -->
-      <BreadcrumbTrail :items="breadcrumbs" class="mb-6" />
-
-      <!-- Header Section -->
-      <div class="text-center mb-8 md:mb-12">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          Medical Library
-        </h1>
-        <p class="text-gray-600">Browse articles by medical subject</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div class="mb-6 sm:mb-10 header-animation">
+        <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+          <div class="flex items-start gap-3 sm:gap-4 flex-1">
+            <div class="flex-shrink-0 mt-0.5">
+              <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
+                <svg class="h-6 w-6 text-[#55A9C4]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+              </div>
+            </div>
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Medical Library</h1>
+              <p class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
+                Browse articles by subject, organized for easy access and study.
+              </p>
+            </div>
+          </div>
+          <div class="w-full sm:w-auto flex-shrink-0">
+            <Link
+              v-if="props.canManage"
+              href="/manage/library"
+              class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              <Settings class="h-4 w-4" />
+              <span>Manage</span>
+            </Link>
+          </div>
+        </div>
+        <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
       </div>
-
-      <!-- Subject Grid - Preserving original card appearance exactly -->
       <div v-if="hasSubjects" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
         <Link
-          v-for="subject in subjects"
+          v-for="(subject, index) in props.subjects"
           :key="subject"
           :href="`/library/${encodeURIComponent(subject)}`"
-          class="group p-6 bg-white rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition-all duration-300 h-full flex flex-col items-center text-center"
+          class="concept-card group p-6 bg-white rounded-xl border border-gray-200 hover:border-[#55A9C4]/40 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col items-center text-center"
+          :style="`--animation-order: ${index};`"
         >
-          <div
-            class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-[#55A9C4]/20 text-[#55A9C4] transition-colors duration-300 group-hover:bg-[#55A9C4] group-hover:text-white mb-4"
-            v-html="getIconForSubject(subject)"
-          ></div>
-
+          <div class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-[#55A9C4]/20 text-[#55A9C4] transition-colors duration-300 group-hover:bg-[#55A9C4] group-hover:text-white mb-4" v-html="getIconForSubject(subject)"></div>
           <h2 class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-[#55A9C4]">
             {{ subject }}
           </h2>
-
-          <p class="mt-2 text-sm font-medium text-gray-500">
-            {{ subjectMap[subject].count }} articles
-          </p>
+          <div class="mt-1 mb-1">
+            <span class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium">
+              {{ subjectMap[subject].count }}
+              {{ subjectMap[subject].count === 1 ? 'article' : 'articles' }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-500">View articles</p>
         </Link>
       </div>
-
-      <!-- Empty State -->
-      <div v-else class="text-center text-gray-500 mt-8">
-        <div class="bg-white rounded-lg shadow-md p-10 max-w-lg mx-auto">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="mx-auto h-16 w-16 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-            />
-          </svg>
-          <h3 class="mt-4 text-xl font-semibold text-gray-700">Library is Empty</h3>
-          <p class="mt-2 text-base">No subjects have been added yet. Please check back later!</p>
+      <div v-else class="text-center py-12 sm:py-16 empty-state">
+        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+          <svg class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
         </div>
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No subjects found</h3>
+        <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
+          We couldn't find any subjects. Check back later or contact support.
+        </p>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Preserving all original animations and transitions */
-.subject-card {
-  animation: fadeInUp 0.5s ease forwards;
-  animation-delay: calc(var(--index) * 80ms);
+.header-animation {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+.concept-card {
+  animation: fadeInUp 0.4s ease-out forwards;
+  animation-delay: calc(var(--animation-order) * 0.05s);
   opacity: 0;
-  transform: translateY(20px);
+  will-change: transform, opacity;
 }
-
+.empty-state {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+@supports (font-variation-settings: normal) {
+  html {
+    font-family: 'Inter var', system-ui, -apple-system, sans-serif;
   }
 }
-
-/* Preserving original hover effects */
-.group:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+@media (max-width: 640px) {
+  .group { min-height: 56px; }
+  .max-w-7xl { padding-left: 1rem; padding-right: 1rem; }
+}
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>

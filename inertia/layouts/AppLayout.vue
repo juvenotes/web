@@ -101,98 +101,98 @@ const logoPath = '/images/logo.webp'
               <span class="text-sm text-muted-foreground"> Welcome, {{ user?.fullName }} </span>
               <Button variant="ghost" @click="() => $inertia.post('/logout')"> Logout </Button>
             </template>
-          <template v-else>
-            <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/register">Register</Link>
-            </Button>
-          </template>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-4 py-8">
-      <slot />
-    </main>
-
-    <!-- Footer -->
-    <footer class="w-screen border-t bg-background/95">
-      <div class="container mx-auto px-4 sm:px-6 py-2">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-          <!-- Company Info -->
-          <div class="flex items-center gap-4">
-            <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
-            <p class="text-sm text-muted-foreground">© 2025 Juvenotes. All rights reserved.</p>
+            <template v-else>
+              <Button variant="ghost" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/register">Register</Link>
+              </Button>
+            </template>
           </div>
+        </div>
+      </nav>
 
-          <!-- Links and Social -->
-          <div class="flex items-center gap-8">
-            <!-- Legal Links -->
-            <div class="flex items-center gap-6">
-              <Link
-                href="/terms"
-                class="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Terms
-              </Link>
-              <Link
-                href="/privacy"
-                class="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Privacy
-              </Link>
-              <!-- Button to open cookie preferences -->
-              <a
-                href="#"
-                class="text-sm text-muted-foreground hover:text-primary transition-colors"
-                id="open_preferences_center"
-                >Update cookies preferences</a
-              >
+      <!-- Main Content -->
+      <main class="flex-grow container mx-auto px-4 py-8">
+        <slot />
+      </main>
+
+      <!-- Footer -->
+      <footer class="w-screen border-t bg-background/95">
+        <div class="container mx-auto px-4 sm:px-6 py-2">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <!-- Company Info -->
+            <div class="flex items-center gap-4">
+              <img :src="logoPath" alt="Logo" class="h-10 w-auto" />
+              <p class="text-sm text-muted-foreground">© 2025 Juvenotes. All rights reserved.</p>
             </div>
 
-            <!-- Social Links -->
-            <div class="flex items-center gap-3">
-              <span class="text-sm font-medium text-muted-foreground">Contact us:</span>
-              <div class="flex gap-2">
-                <a
-                  href="https://x.com/juvenotes"
-                  class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
-                  aria-label="Twitter"
+            <!-- Links and Social -->
+            <div class="flex items-center gap-8">
+              <!-- Legal Links -->
+              <div class="flex items-center gap-6">
+                <Link
+                  href="/terms"
+                  class="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  <Twitter
-                    class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
-                  />
-                </a>
-                <a
-                  href="https://www.instagram.com/juvenotes/"
-                  class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
-                  aria-label="Instagram"
+                  Terms
+                </Link>
+                <Link
+                  href="/privacy"
+                  class="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  <Instagram
-                    class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
-                  />
-                </a>
+                  Privacy
+                </Link>
+                <!-- Button to open cookie preferences -->
                 <a
-                  href="https://www.linkedin.com/company/juvenotes"
-                  class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
-                  aria-label="LinkedIn"
+                  href="#"
+                  class="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  id="open_preferences_center"
+                  >Update cookies preferences</a
                 >
-                  <Linkedin
-                    class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
-                  />
-                </a>
+              </div>
+
+              <!-- Social Links -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-muted-foreground">Contact us:</span>
+                <div class="flex gap-2">
+                  <a
+                    href="https://x.com/juvenotes"
+                    class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
+                    aria-label="Twitter"
+                  >
+                    <Twitter
+                      class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
+                    />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/juvenotes/"
+                    class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
+                    aria-label="Instagram"
+                  >
+                    <Instagram
+                      class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
+                    />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/company/juvenotes"
+                    class="p-2 rounded-full bg-[#55A9C4]/10 hover:bg-[#55A9C4]/20 transition-colors group"
+                    aria-label="LinkedIn"
+                  >
+                    <Linkedin
+                      class="h-4 w-4 text-[#55A9C4] group-hover:scale-110 transition-transform"
+                    />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </footer>
+      </footer>
 
-    <ToastManager :messages="messages" />
-  </div>
+      <ToastManager :messages="messages" />
+    </div>
   </ThemeProvider>
 </template>
 <style>

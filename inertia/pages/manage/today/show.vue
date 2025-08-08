@@ -8,7 +8,7 @@ import {
   Plus,
   ArrowLeft,
   Pencil,
-  Trash2,
+  Trash,
   CheckCircle,
   Circle,
   ChevronDown,
@@ -216,7 +216,7 @@ const breadcrumbItems = computed(() => [
 
               <!-- Delete option -->
               <DropdownMenuItem @click="handleDelete" class="text-destructive">
-                <Trash2 class="h-4 w-4 mr-2" />
+                <Trash class="h-4 w-4 mr-2" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -305,7 +305,7 @@ const breadcrumbItems = computed(() => [
                 class="text-red-600 hover:bg-red-50"
                 @click="handleDeleteQuestion(question.id)"
               >
-                <Trash2 class="h-3.5 w-3.5 mr-2" />Remove
+                <Trash class="h-3.5 w-3.5 mr-2" />Remove
               </Button>
             </div>
           </div>

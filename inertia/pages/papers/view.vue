@@ -224,7 +224,7 @@ const getLastEditDate = computed(() => {
     :question="feedbackDialog.question"
     @close="closeFeedbackDialog"
   />
-  
+
   <!-- Updated background to match first file -->
   <div class="min-h-screen bg-gray-50/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -233,7 +233,9 @@ const getLastEditDate = computed(() => {
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
 
         <!-- Title and Description -->
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -314,9 +316,11 @@ const getLastEditDate = computed(() => {
               :class="{
                 'bg-amber-500': paperProgress.completionPercentage < 25,
                 'bg-orange-500':
-                  paperProgress.completionPercentage >= 25 && paperProgress.completionPercentage < 50,
+                  paperProgress.completionPercentage >= 25 &&
+                  paperProgress.completionPercentage < 50,
                 'bg-blue-500':
-                  paperProgress.completionPercentage >= 50 && paperProgress.completionPercentage < 75,
+                  paperProgress.completionPercentage >= 50 &&
+                  paperProgress.completionPercentage < 75,
                 'bg-green-500': paperProgress.completionPercentage >= 75,
               }"
             ></div>
@@ -370,20 +374,23 @@ const getLastEditDate = computed(() => {
               <div
                 v-for="choice in question.choices"
                 :key="choice.id"
-                :class="{
-                  'border-green-500 bg-green-50':
-                    selectedAnswers[question.id] === choice.id && choice.isCorrect,
-                  'border-red-500 bg-red-50':
-                    selectedAnswers[question.id] === choice.id && !choice.isCorrect,
-                  'hover:bg-gray-50 hover:border-[#55A9C4]/30': !showAnswer[question.id],
-                  'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
-                }"
-                class="flex items-center gap-3 p-3 rounded-lg border transition-all duration-300 cursor-pointer"
-                @click="handleChoiceSelect(question.id, choice.id)"
+                :class="[
+                  {
+                    'border-green-500 bg-green-50':
+                      selectedAnswers[question.id] === choice.id && choice.isCorrect,
+                    'border-red-500 bg-red-50':
+                      selectedAnswers[question.id] === choice.id && !choice.isCorrect,
+                    'hover:bg-gray-50 hover:border-[#55A9C4]/30': !showAnswer[question.id],
+                    'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
+                    'pointer-events-none opacity-70': showAnswer[question.id],
+                  },
+                  'flex items-center gap-3 p-3 rounded-lg border transition-all duration-300',
+                  showAnswer[question.id] ? 'cursor-default' : 'cursor-pointer',
+                ]"
+                :aria-disabled="showAnswer[question.id] ? 'true' : 'false'"
+                @click="!showAnswer[question.id] && handleChoiceSelect(question.id, choice.id)"
               >
-                <div
-                  class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full"
-                >
+                <div class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full">
                   <CheckCircle
                     v-if="showAnswer[question.id] && choice.isCorrect"
                     class="h-4 w-4 text-green-500"
@@ -423,9 +430,7 @@ const getLastEditDate = computed(() => {
                   <h3 class="text-base font-bold text-foreground">Solution Explanation</h3>
                 </div>
 
-                <div
-                  class="relative overflow-hidden rounded-lg shadow-sm border border-border"
-                >
+                <div class="relative overflow-hidden rounded-lg shadow-sm border border-border">
                   <div
                     class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-green-400 to-[#55A9C4]"
                   ></div>
@@ -468,9 +473,7 @@ const getLastEditDate = computed(() => {
 
             <!-- SAQ section -->
             <div v-if="question.isSaq" class="mt-4">
-              <div
-                class="bg-white rounded-lg overflow-hidden shadow-sm border border-[#55A9C4]/20"
-              >
+              <div class="bg-white rounded-lg overflow-hidden shadow-sm border border-[#55A9C4]/20">
                 <div
                   class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#55A9C4]/15 to-[#55A9C4]/5 border-b border-[#55A9C4]/10"
                 >
@@ -486,11 +489,7 @@ const getLastEditDate = computed(() => {
                 </div>
 
                 <div class="divide-y divide-[#55A9C4]/10">
-                  <div
-                    v-for="(part, partIndex) in question.parts"
-                    :key="part.id"
-                    class="p-4"
-                  >
+                  <div v-for="(part, partIndex) in question.parts" :key="part.id" class="p-4">
                     <div class="flex items-center justify-between mb-2">
                       <div class="flex items-baseline gap-2">
                         <span
@@ -539,7 +538,9 @@ const getLastEditDate = computed(() => {
                               <CheckCircle class="h-3 w-3" />
                             </div>
                             <div>
-                              <p class="text-xs text-muted-foreground font-medium">Expected Answer</p>
+                              <p class="text-xs text-muted-foreground font-medium">
+                                Expected Answer
+                              </p>
                               <p class="text-xs text-[#55A9C4] dark:text-[#7AC7E3] font-medium">
                                 {{ part.marks }} mark{{ part.marks > 1 ? 's' : '' }} available
                               </p>
@@ -648,10 +649,20 @@ const getLastEditDate = computed(() => {
 
 /* Base typography */
 html {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 @supports (font-variation-settings: normal) {
-  html { font-family: 'Inter var', system-ui, -apple-system, sans-serif; }
+  html {
+    font-family:
+      'Inter var',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
 }
 
 /* Improved touch targets */
@@ -659,7 +670,7 @@ html {
   .group {
     min-height: 56px;
   }
-  
+
   .max-w-7xl {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -839,7 +850,9 @@ html {
 }
 
 /* Smooth transitions for interactive elements */
-a, button, .transition-all {
+a,
+button,
+.transition-all {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

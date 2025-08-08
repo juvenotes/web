@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import type CourseDto from '#dtos/course'
 import type EducationLevelDto from '#dtos/education_level'
-import { GraduationCap, Plus, School, Pencil, Trash2 } from 'lucide-vue-next'
+import { GraduationCap, Plus, School, Pencil, Trash } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -180,7 +180,7 @@ const onDelete = () => {
                 class="text-destructive hover:bg-destructive/10"
                 @click="confirmDelete(course)"
               >
-                <Trash2 class="h-4 w-4" />
+                <Trash class="h-4 w-4" />
               </Button>
             </div>
           </CardFooter>

@@ -10,9 +10,9 @@ html.dark div[data-page] {
   color-scheme: dark !important;
 }
 
-html.dark [class*="bg-white"],
-html.dark [class*="bg-gray-"],
-html.dark [class*="bg-slate-"],
+html.dark [class*='bg-white'],
+html.dark [class*='bg-gray-'],
+html.dark [class*='bg-slate-'],
 html.dark .bg-white,
 html.dark .bg-gray-50,
 html.dark .bg-gray-100,
@@ -30,9 +30,9 @@ html.dark div.bg-gray-100[style] {
 }
 
 /* Global overrides for dark mode - Universal approach to eliminate all gray backgrounds */
-.dark [class*="bg-white"],
-.dark [class*="bg-gray-"],
-.dark [class*="bg-slate-"],
+.dark [class*='bg-white'],
+.dark [class*='bg-gray-'],
+.dark [class*='bg-slate-'],
 .dark .bg-white,
 .dark .bg-gray-50,
 .dark .bg-gray-100,
@@ -53,9 +53,9 @@ html.dark div.bg-gray-100[style] {
 .dark * > .bg-white,
 .dark * > .bg-gray-50,
 .dark * > .bg-gray-100,
-.dark * > [class*="bg-gray-"],
-.dark * > [class*="bg-white"],
-.dark * > [class*="bg-slate-"] {
+.dark * > [class*='bg-gray-'],
+.dark * > [class*='bg-white'],
+.dark * > [class*='bg-slate-'] {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
 }
@@ -91,11 +91,11 @@ html.dark div.bg-gray-100[style] {
 }
 
 /* Make all dashboard cards consistent with the provided example */
-.dark [data-tour="papers"],
-.dark [data-tour="concepts"],
-.dark [data-tour="library"],
-.dark [data-tour="osce"],
-.dark [data-tour="spot"] {
+.dark [data-tour='papers'],
+.dark [data-tour='concepts'],
+.dark [data-tour='library'],
+.dark [data-tour='osce'],
+.dark [data-tour='spot'] {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
   height: auto !important;
@@ -121,12 +121,12 @@ html.dark div.bg-gray-100[style] {
 
 /* Dashboard info panels with blue/primary background */
 .dark .bg-\[\#55A9C4\]\/10,
-.dark [class*="bg-\[\#55A9C4\]\/10"] {
+.dark [class*='bg-\[\#55A9C4\]\/10'] {
   background-color: hsla(var(--primary), 0.1) !important;
 }
 
 .dark .bg-\[\#55A9C4\]\/20,
-.dark [class*="bg-\[\#55A9C4\]\/20"] {
+.dark [class*='bg-\[\#55A9C4\]\/20'] {
   background-color: hsla(var(--primary), 0.2) !important;
 }
 
@@ -135,7 +135,7 @@ html.dark div.bg-gray-100[style] {
 }
 
 /* Page content backgrounds */
-.dark .bg-white\/90, 
+.dark .bg-white\/90,
 .dark .bg-gray-50\/50,
 .dark .bg-gray-100\/50,
 .dark .bg-slate-50\/50 {
@@ -172,7 +172,7 @@ html.dark div.bg-gray-100[style] {
 
 /* Target concept page cards and links */
 .dark .min-h-screen.bg-gray-50\/50 .bg-white,
-.dark .min-h-screen.bg-gray-50\/50 [class*="bg-white"],
+.dark .min-h-screen.bg-gray-50\/50 [class*='bg-white'],
 .dark .min-h-screen.bg-gray-50\/50 .group.block.p-4.bg-white,
 .dark .min-h-screen.bg-gray-50\/50 .group.block.p-5.bg-white,
 .dark .min-h-screen.bg-gray-50\/50 .p-4.sm\:p-5.bg-white,
@@ -183,7 +183,10 @@ html.dark div.bg-gray-100[style] {
 
 /* Target specific concept card structure */
 .dark .concept-card .group.block.p-4.sm\:p-5.bg-white.rounded-xl.border.border-gray-200,
-.dark .min-h-screen.bg-gray-50\/50 .concept-card .group.block.p-4.sm\:p-5.bg-white.rounded-xl.border.border-gray-200 {
+.dark
+  .min-h-screen.bg-gray-50\/50
+  .concept-card
+  .group.block.p-4.sm\:p-5.bg-white.rounded-xl.border.border-gray-200 {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
   color: hsl(var(--card-foreground)) !important;
@@ -196,12 +199,23 @@ html.dark div.bg-gray-100[style] {
 }
 
 .dark .concept-card .group h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\],
-.dark .min-h-screen.bg-gray-50\/50 .concept-card .group h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\] {
+.dark
+  .min-h-screen.bg-gray-50\/50
+  .concept-card
+  .group
+  h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\] {
   color: hsl(var(--foreground)) !important;
 }
 
-.dark .concept-card .group:hover h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\],
-.dark .min-h-screen.bg-gray-50\/50 .concept-card .group:hover h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\] {
+.dark
+  .concept-card
+  .group:hover
+  h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\],
+.dark
+  .min-h-screen.bg-gray-50\/50
+  .concept-card
+  .group:hover
+  h3.text-base.font-semibold.text-gray-900.group-hover\:text-\[\#55A9C4\] {
   color: hsl(var(--primary)) !important;
 }
 
@@ -225,17 +239,17 @@ html.dark div.bg-gray-100[style] {
 /* Button styles and interactive elements */
 .dark .bg-blue-50,
 .dark .bg-blue-100,
-.dark [class*="bg-blue-50"],
-.dark [class*="bg-blue-100"] {
-  background-color: hsl(var(--primary-foreground)/0.1) !important;
+.dark [class*='bg-blue-50'],
+.dark [class*='bg-blue-100'] {
+  background-color: hsl(var(--primary-foreground) / 0.1) !important;
 }
 
 .dark .text-blue-500,
 .dark .text-blue-600,
 .dark .text-blue-700,
-.dark [class*="text-blue-500"],
-.dark [class*="text-blue-600"],
-.dark [class*="text-blue-700"] {
+.dark [class*='text-blue-500'],
+.dark [class*='text-blue-600'],
+.dark [class*='text-blue-700'] {
   color: hsl(var(--primary)) !important;
 }
 
@@ -243,9 +257,9 @@ html.dark div.bg-gray-100[style] {
 .dark .hover\:bg-gray-50:hover,
 .dark .hover\:bg-slate-50:hover,
 .dark .hover\:bg-white:hover,
-.dark [class*="hover:bg-gray-50"]:hover,
-.dark [class*="hover:bg-slate-50"]:hover,
-.dark [class*="hover:bg-white"]:hover {
+.dark [class*='hover:bg-gray-50']:hover,
+.dark [class*='hover:bg-slate-50']:hover,
+.dark [class*='hover:bg-white']:hover {
   background-color: hsl(var(--muted)) !important;
 }
 
@@ -253,15 +267,15 @@ html.dark div.bg-gray-100[style] {
 .dark .active\:bg-gray-50:active,
 .dark .active\:bg-slate-50:active,
 .dark .active\:bg-white:active,
-.dark [class*="active:bg-gray-50"]:active,
-.dark [class*="active:bg-slate-50"]:active,
-.dark [class*="active:bg-white"]:active,
+.dark [class*='active:bg-gray-50']:active,
+.dark [class*='active:bg-slate-50']:active,
+.dark [class*='active:bg-white']:active,
 .dark .focus\:bg-gray-50:focus,
 .dark .focus\:bg-slate-50:focus,
 .dark .focus\:bg-white:focus,
-.dark [class*="focus:bg-gray-50"]:focus,
-.dark [class*="focus:bg-slate-50"]:focus,
-.dark [class*="focus:bg-white"]:focus {
+.dark [class*='focus:bg-gray-50']:focus,
+.dark [class*='focus:bg-slate-50']:focus,
+.dark [class*='focus:bg-white']:focus {
   background-color: hsl(var(--secondary)) !important;
 }
 
@@ -286,26 +300,26 @@ html.dark div.bg-gray-100[style] {
 }
 
 /* Fix any size inconsistencies between cards */
-[data-tour="papers"], 
-[data-tour="concepts"], 
-[data-tour="library"], 
-[data-tour="osce"], 
-[data-tour="spot"] {
+[data-tour='papers'],
+[data-tour='concepts'],
+[data-tour='library'],
+[data-tour='osce'],
+[data-tour='spot'] {
   height: auto !important;
   display: block !important; /* Match exactly the original card structure */
 }
 
 /* Fix dashboard card sizing to match original card design exactly */
-[data-tour="papers"], 
-[data-tour="concepts"], 
-[data-tour="library"], 
-[data-tour="osce"], 
-[data-tour="spot"],
-.dark [data-tour="papers"], 
-.dark [data-tour="concepts"], 
-.dark [data-tour="library"], 
-.dark [data-tour="osce"], 
-.dark [data-tour="spot"] {
+[data-tour='papers'],
+[data-tour='concepts'],
+[data-tour='library'],
+[data-tour='osce'],
+[data-tour='spot'],
+.dark [data-tour='papers'],
+.dark [data-tour='concepts'],
+.dark [data-tour='library'],
+.dark [data-tour='osce'],
+.dark [data-tour='spot'] {
   /* Use exact styling from the original card design */
   height: auto !important;
   min-height: unset !important;
@@ -331,14 +345,14 @@ html.dark div.bg-gray-100[style] {
 }
 
 /* Form elements in dark mode */
-.dark input[type="text"],
-.dark input[type="email"],
-.dark input[type="password"],
-.dark input[type="number"],
-.dark input[type="search"],
-.dark input[type="tel"],
-.dark input[type="url"],
-.dark input[type="date"],
+.dark input[type='text'],
+.dark input[type='email'],
+.dark input[type='password'],
+.dark input[type='number'],
+.dark input[type='search'],
+.dark input[type='tel'],
+.dark input[type='url'],
+.dark input[type='date'],
 .dark textarea,
 .dark select {
   background-color: hsl(var(--input)) !important;
@@ -369,7 +383,7 @@ html.dark div.bg-gray-100[style] {
 
 .dark td {
   background-color: hsl(var(--card)) !important;
-  color: hsl(var,--foreground) !important;
+  color: hsl(var, --foreground) !important;
 }
 
 .dark tr:nth-child(even) td {
@@ -385,9 +399,9 @@ html.dark div.bg-gray-100[style] {
 
 .dark .modal-content,
 .dark .dialog-content,
-.dark [role="dialog"],
-.dark [class*="modal-"],
-.dark [class*="popup-"] {
+.dark [role='dialog'],
+.dark [class*='modal-'],
+.dark [class*='popup-'] {
   background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
   color: hsl(var(--foreground)) !important;
@@ -395,30 +409,30 @@ html.dark div.bg-gray-100[style] {
 
 .dark .modal-header,
 .dark .dialog-header,
-.dark [class*="modal-header"],
-.dark [class*="dialog-header"] {
+.dark [class*='modal-header'],
+.dark [class*='dialog-header'] {
   border-color: hsl(var(--border)) !important;
 }
 
 .dark .modal-footer,
 .dark .dialog-footer,
-.dark [class*="modal-footer"],
-.dark [class*="dialog-footer"] {
+.dark [class*='modal-footer'],
+.dark [class*='dialog-footer'] {
   border-color: hsl(var(--border)) !important;
 }
 
 /* Fix dropdown menus */
 .dark .dropdown-menu,
-.dark [role="menu"],
-.dark [class*="dropdown-menu"] {
+.dark [role='menu'],
+.dark [class*='dropdown-menu'] {
   background-color: hsl(var(--popover)) !important;
   border-color: hsl(var(--border)) !important;
   color: hsl(var(--popover-foreground)) !important;
 }
 
 .dark .dropdown-item:hover,
-.dark [role="menuitem"]:hover,
-.dark [class*="dropdown-item"]:hover {
+.dark [role='menuitem']:hover,
+.dark [class*='dropdown-item']:hover {
   background-color: hsl(var(--accent)) !important;
 }
 
@@ -426,9 +440,9 @@ html.dark div.bg-gray-100[style] {
 .dark pre,
 .dark code,
 .dark .code,
-.dark [class*="pre-"],
-.dark [class*="code-"],
-.dark [class*="codeblock"] {
+.dark [class*='pre-'],
+.dark [class*='code-'],
+.dark [class*='codeblock'] {
   background-color: hsl(222, 47%, 8%) !important;
   border-color: hsl(var(--border)) !important;
   color: hsl(210, 40%, 98%) !important;
@@ -490,28 +504,28 @@ html.dark div.bg-gray-100[style] {
 .dark .text-green-500,
 .dark .text-green-600,
 .dark .text-green-700,
-.dark [class*="text-green-"] {
+.dark [class*='text-green-'] {
   color: hsl(142, 72%, 50%) !important;
 }
 
 .dark .text-red-500,
 .dark .text-red-600,
 .dark .text-red-700,
-.dark [class*="text-red-"] {
+.dark [class*='text-red-'] {
   color: hsl(0, 84%, 60%) !important;
 }
 
 .dark .text-yellow-500,
 .dark .text-yellow-600,
 .dark .text-yellow-700,
-.dark [class*="text-yellow-"] {
+.dark [class*='text-yellow-'] {
   color: hsl(35, 92%, 65%) !important;
 }
 
 /* Cards with images or media - ensure proper contrast */
 .dark .group .relative.h-48.overflow-hidden,
-.dark [class*="card-image"],
-.dark [class*="card-media"] {
+.dark [class*='card-image'],
+.dark [class*='card-media'] {
   border-bottom: 1px solid hsl(var(--border)) !important;
 }
 
@@ -521,18 +535,20 @@ html.dark div.bg-gray-100[style] {
 .dark .shadow-md,
 .dark .shadow-lg,
 .dark .shadow-xl,
-.dark [class*="shadow-"] {
+.dark [class*='shadow-'] {
   --tw-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4) !important;
-  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color) !important;
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+  --tw-shadow-colored:
+    0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color) !important;
+  box-shadow:
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
 }
 
 /* Fix any remaining header issues */
-.dark h1, 
+.dark h1,
 .dark h2,
-.dark h3, 
-.dark h4, 
-.dark h5, 
+.dark h3,
+.dark h4,
+.dark h5,
 .dark h6 {
   color: hsl(var(--foreground)) !important;
 }
@@ -558,12 +574,12 @@ html.dark div.bg-gray-100[style] {
 /* Fix layout backgrounds to use consistent blue in dark mode */
 .dark .min-h-screen.flex.flex-col.bg-gray-50,
 .dark .bg-gray-50,
-.dark [class*="bg-gray-50"] {
+.dark [class*='bg-gray-50'] {
   background-color: hsl(222 47% 11%) !important;
 }
 
 .dark .bg-white,
-.dark [class*="bg-white"] {
+.dark [class*='bg-white'] {
   background-color: hsl(222 47% 11%) !important;
 }
 
@@ -661,8 +677,12 @@ html.dark div.bg-gray-100[style] {
 }
 
 /* Ensure all paper/concept badges have correct colors */
-.dark .min-h-screen.bg-gray-50\/50 .inline-flex.px-2.py-1.rounded-md.bg-\[\#55A9C4\]\/10.text-\[\#55A9C4\],
-.dark .min-h-screen.bg-gray-50 .inline-flex.px-2.py-1.rounded-md.bg-\[\#55A9C4\]\/10.text-\[\#55A9C4\] {
+.dark
+  .min-h-screen.bg-gray-50\/50
+  .inline-flex.px-2.py-1.rounded-md.bg-\[\#55A9C4\]\/10.text-\[\#55A9C4\],
+.dark
+  .min-h-screen.bg-gray-50
+  .inline-flex.px-2.py-1.rounded-md.bg-\[\#55A9C4\]\/10.text-\[\#55A9C4\] {
   background-color: hsla(var(--primary), 0.1) !important;
   color: hsl(var(--primary)) !important;
 }
@@ -677,7 +697,7 @@ html.dark div.bg-gray-100[style] {
 }
 
 /* Ensure ALL content pages have proper backgrounds without any gray showing through */
-html.dark, 
+html.dark,
 body.dark,
 .dark #app,
 .dark #app > div,
@@ -717,8 +737,8 @@ body.dark,
 /* Admin/Manage layout overrides */
 .dark .min-h-screen.bg-gradient-to-br.from-blue-50.via-white.to-slate-100,
 .dark .min-h-screen.bg-gradient-to-br,
-.dark [data-page^="manage"] .min-h-screen,
-.dark [data-page^="manage"] div.min-h-screen {
+.dark [data-page^='manage'] .min-h-screen,
+.dark [data-page^='manage'] div.min-h-screen {
   background: hsl(var(--background)) !important;
   background-image: none !important;
 }
@@ -739,7 +759,8 @@ body.dark,
 }
 
 /* Admin page headers and navigation */
-.dark .sticky.top-0.z-40.border-b.bg-white\/80.backdrop-blur.supports-\[backdrop-filter\]\:bg-white\/60.shadow-sm {
+.dark
+  .sticky.top-0.z-40.border-b.bg-white\/80.backdrop-blur.supports-\[backdrop-filter\]\:bg-white\/60.shadow-sm {
   background-color: hsla(var(--background), 0.8) !important;
   border-color: hsl(var(--border)) !important;
 }
@@ -754,13 +775,13 @@ body.dark,
 }
 
 /* Ensure any admin pages with white backgrounds get the right color */
-.dark [data-page^="manage"] .bg-white {
+.dark [data-page^='manage'] .bg-white {
   background-color: hsl(var(--card)) !important;
 }
 
 /* Ensure all manage container divs have right background */
 .dark .relative.p-6.sm\:p-8.bg-white\/50.rounded-2xl.border.shadow-sm,
-.dark [class*="bg-white/50"],
+.dark [class*='bg-white/50'],
 .dark .bg-white\/50,
 .dark div.bg-white\/50 {
   background-color: hsl(var(--card)) !important;
@@ -787,7 +808,7 @@ body.dark,
 .dark .group.block.rounded-2xl.bg-white.shadow-lg:hover,
 .dark .group.block.rounded-2xl.bg-white.shadow-lg.hover\:shadow-xl:hover,
 .dark .group.block.rounded-2xl.hover\:shadow-xl:hover {
-  border-color: hsl(var(--primary)/50) !important;
+  border-color: hsl(var(--primary) / 50) !important;
 }
 
 /* Fix admin page headers */
@@ -802,14 +823,20 @@ body.dark,
 
 /* Fix dialog content in manage section */
 .dark .w-\[95vw\].max-w-\[800px\].sm\:w-\[90vw\],
-.dark [class*="max-w-[800px]"] {
+.dark [class*='max-w-[800px]'] {
   background-color: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;
 }
 
 /* Ensure any background gradients in headers are eliminated */
-.dark .absolute.top-0.left-0.right-0.h-0\.5.bg-gradient-to-r.from-primary.via-primary\/50.to-transparent {
-  background-image: linear-gradient(to right, hsl(var(--primary)), hsla(var(--primary), 0.5), transparent) !important;
+.dark
+  .absolute.top-0.left-0.right-0.h-0\.5.bg-gradient-to-r.from-primary.via-primary\/50.to-transparent {
+  background-image: linear-gradient(
+    to right,
+    hsl(var(--primary)),
+    hsla(var(--primary), 0.5),
+    transparent
+  ) !important;
 }
 
 /* Ensure text in headers is readable */
@@ -819,8 +846,10 @@ body.dark,
 }
 
 /* Fix gradient text in manage pages */
-.dark .text-lg.font-bold.bg-gradient-to-r.from-primary\/90.to-primary\/70.bg-clip-text.text-transparent,
-.dark h2.text-lg.font-bold.bg-gradient-to-r.from-primary\/90.to-primary\/70.bg-clip-text.text-transparent {
+.dark
+  .text-lg.font-bold.bg-gradient-to-r.from-primary\/90.to-primary\/70.bg-clip-text.text-transparent,
+.dark
+  h2.text-lg.font-bold.bg-gradient-to-r.from-primary\/90.to-primary\/70.bg-clip-text.text-transparent {
   color: hsl(var(--primary)) !important;
   background-image: none !important;
   -webkit-text-fill-color: initial !important;
@@ -876,7 +905,7 @@ body.dark,
 .dark .prose-sm,
 .dark .prose-base,
 .dark .prose-lg,
-.dark [class*="prose"] {
+.dark [class*='prose'] {
   /* Ensure main text has high contrast */
   --tw-prose-body: hsl(var(--foreground));
   --tw-prose-headings: hsl(var(--foreground));
@@ -918,22 +947,22 @@ body.dark,
 
 /* Enhanced text contrast for paper/OSCE/spot question text */
 .dark .text-gray-900,
-.dark [class*="text-gray-900"],
+.dark [class*='text-gray-900'],
 .dark .text-gray-800,
-.dark [class*="text-gray-800"] {
+.dark [class*='text-gray-800'] {
   color: hsl(var(--foreground)) !important;
 }
 
 .dark .text-gray-700,
-.dark [class*="text-gray-700"],
+.dark [class*='text-gray-700'],
 .dark .text-gray-600,
-.dark [class*="text-gray-600"] {
+.dark [class*='text-gray-600'] {
   color: hsl(var(--foreground)) !important;
 }
 
 /* Improved contrast for muted text that should still be readable */
 .dark .text-gray-500,
-.dark [class*="text-gray-500"] {
+.dark [class*='text-gray-500'] {
   color: hsl(var(--muted-foreground)) !important;
 }
 
@@ -973,10 +1002,10 @@ body.dark,
 }
 
 /* Special focus for concept headings which might be dark in some views */
-.dark [class*="text-gray-900"],
-.dark [class*="text-slate-900"],
-.dark [class*="text-zinc-900"],
-.dark [class*="text-neutral-900"] {
+.dark [class*='text-gray-900'],
+.dark [class*='text-slate-900'],
+.dark [class*='text-zinc-900'],
+.dark [class*='text-neutral-900'] {
   color: hsl(var(--foreground)) !important;
 }
 

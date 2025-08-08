@@ -2,7 +2,7 @@
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import type InstitutionDto from '#dtos/institution'
-import { ArrowLeft, GraduationCap, School, Plus, Edit, Trash2, Loader2Icon } from 'lucide-vue-next'
+import { ArrowLeft, GraduationCap, School, Plus, Edit, Trash, LoaderIcon } from 'lucide-vue-next'
 import { useForm } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
 
@@ -206,7 +206,7 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
                     {{ coursesForm.courses.length }} courses selected
                   </p>
                   <Button type="submit" :disabled="coursesForm.processing" class="gap-2">
-                    <Loader2Icon v-if="coursesForm.processing" class="h-4 w-4 animate-spin" />
+                    <LoaderIcon v-if="coursesForm.processing" class="h-4 w-4 animate-spin" />
                     {{ coursesForm.processing ? 'Saving...' : 'Save Changes' }}
                   </Button>
                 </div>
@@ -217,7 +217,7 @@ const getCoursesForLevel = computed(() => (levelId: number) => {
 
         <!-- Delete Button -->
         <Button variant="destructive" class="gap-2" @click="isDeleteOpen = true">
-          <Trash2 class="h-4 w-4" />
+          <Trash class="h-4 w-4" />
           Delete
         </Button>
       </div>

@@ -5,7 +5,14 @@ import type QuestionDto from '#dtos/question'
 import type UserPaperProgressDto from '#dtos/user_paper_progress'
 import type UserStudySessionDto from '#dtos/user_study_session'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { FileText, Settings, ArrowRight, CheckCircle, MessageSquare, ChevronDown } from 'lucide-vue-next'
+import {
+  FileText,
+  Settings,
+  ArrowRight,
+  CheckCircle,
+  MessageSquare,
+  ChevronDown,
+} from 'lucide-vue-next'
 import { computed, ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -153,7 +160,9 @@ const continueFromLastQuestion = () => {
       <div class="mb-6 sm:mb-10 header-animation">
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
 
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -161,8 +170,12 @@ const continueFromLastQuestion = () => {
               </div>
             </div>
             <div>
-              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{{ paper.title }}</h1>
-              <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl leading-relaxed">
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                {{ paper.title }}
+              </h1>
+              <p
+                class="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl leading-relaxed"
+              >
                 SPOT stations for {{ paper.title }} in {{ concept.title }}
               </p>
             </div>
@@ -196,32 +209,42 @@ const continueFromLastQuestion = () => {
 
       <!-- Paper metadata badges moved below header -->
       <div class="mb-6 flex flex-wrap items-center gap-2">
-        <span class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium">
+        <span
+          class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium"
+        >
           SPOT
         </span>
-        <span class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium">
+        <span
+          class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium"
+        >
           {{ paper.year }}
         </span>
-        <span class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium">
+        <span
+          class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium"
+        >
           {{ paperProgress.attemptCount }}
           {{ paperProgress.attemptCount === 1 ? 'attempt' : 'attempts' }}
         </span>
       </div>
 
-      <div v-if="paper.metadata?.lastEditedBy || paper.createdAt" class="text-xs text-gray-500 px-2 italic mb-6">
+      <div
+        v-if="paper.metadata?.lastEditedBy || paper.createdAt"
+        class="text-xs text-gray-500 px-2 italic mb-6"
+      >
         Last edited on {{ lastEditDate }}
       </div>
 
       <DisclaimerBanner />
 
       <!-- Progress Tracking Section -->
-      <div v-if="paperProgress.completionPercentage > 0" class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 mb-6">
+      <div
+        v-if="paperProgress.completionPercentage > 0"
+        class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 mb-6"
+      >
         <div class="p-4 bg-white/80 rounded-lg border border-[#55A9C4]/10">
           <div class="flex justify-between items-center mb-2">
             <span class="font-medium text-sm">Your progress</span>
-            <span class="text-sm font-semibold">
-              {{ paperProgress.completionPercentage }}%
-            </span>
+            <span class="text-sm font-semibold"> {{ paperProgress.completionPercentage }}% </span>
           </div>
 
           <div class="h-2.5 bg-gray-200 rounded-full overflow-hidden">
@@ -231,9 +254,11 @@ const continueFromLastQuestion = () => {
               :class="{
                 'bg-amber-500': paperProgress.completionPercentage < 25,
                 'bg-orange-500':
-                  paperProgress.completionPercentage >= 25 && paperProgress.completionPercentage < 50,
+                  paperProgress.completionPercentage >= 25 &&
+                  paperProgress.completionPercentage < 50,
                 'bg-blue-500':
-                  paperProgress.completionPercentage >= 50 && paperProgress.completionPercentage < 75,
+                  paperProgress.completionPercentage >= 50 &&
+                  paperProgress.completionPercentage < 75,
                 'bg-green-500': paperProgress.completionPercentage >= 75,
               }"
             ></div>
@@ -266,8 +291,12 @@ const continueFromLastQuestion = () => {
           >
             <div class="p-4 sm:p-5 space-y-4">
               <!-- Question Header -->
-              <div class="bg-[#F5FBFD] dark:bg-[#1e293b] border border-gray-100 dark:border-gray-700 p-4 rounded-lg">
-                <p class="font-medium text-base text-gray-900 dark:text-gray-100">{{ question.questionText }}</p>
+              <div
+                class="bg-[#F5FBFD] dark:bg-[#1e293b] border border-gray-100 dark:border-gray-700 p-4 rounded-lg"
+              >
+                <p class="font-medium text-base text-gray-900 dark:text-gray-100">
+                  {{ question.questionText }}
+                </p>
               </div>
 
               <!-- Question Image -->
@@ -289,7 +318,9 @@ const continueFromLastQuestion = () => {
                   <!-- Station Header -->
                   <div class="flex items-center justify-between mb-3">
                     <div class="flex items-baseline gap-2">
-                      <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm">
+                      <span
+                        class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-[#55A9C4]/15 text-[#55A9C4] text-xs font-semibold shadow-sm"
+                      >
                         {{ stationIndex + 1 }}
                       </span>
                       <span class="text-sm font-medium text-gray-900">
@@ -299,7 +330,9 @@ const continueFromLastQuestion = () => {
                   </div>
 
                   <!-- Station Instructions -->
-                  <div class="text-sm text-gray-700 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none mb-4 leading-relaxed">
+                  <div
+                    class="text-sm text-gray-700 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none mb-4 leading-relaxed"
+                  >
                     <div v-html="station.partText"></div>
                   </div>
 
@@ -309,30 +342,38 @@ const continueFromLastQuestion = () => {
                     @click="handleSpotStationView(question.id, station.id)"
                     class="group w-full flex items-center justify-center gap-2 mt-3 text-[#55A9C4] font-semibold text-sm rounded-lg p-2.5 bg-gradient-to-r from-[#55A9C4]/10 to-[#55A9C4]/5 hover:from-[#55A9C4]/20 hover:to-[#55A9C4]/10 dark:from-[#55A9C4]/20 dark:to-[#55A9C4]/10 dark:hover:from-[#55A9C4]/30 dark:hover:to-[#55A9C4]/20 border border-[#55A9C4]/20 dark:border-[#55A9C4]/30 transition-all duration-300 shadow-sm hover:shadow"
                   >
-                    <ChevronDown class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300" />
+                    <ChevronDown
+                      class="h-4 w-4 group-hover:translate-y-1 transition-transform duration-300"
+                    />
                     <span>Show Expected Response</span>
                   </button>
 
                   <!-- Expected Response Section -->
                   <div v-if="showAnswers[station.id]" class="mt-4 animate-fadeIn">
                     <div class="relative overflow-hidden rounded-lg border border-gray-100 w-full">
-                      <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"></div>
+                      <div
+                        class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#55A9C4] to-blue-500"
+                      ></div>
 
-                      <div class="p-4 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100">
+                      <div
+                        class="p-4 bg-gradient-to-r from-[#55A9C4]/5 to-blue-50 border-b border-gray-100"
+                      >
                         <div class="flex items-center gap-2">
-                          <div class="flex items-center justify-center w-6 h-6 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]">
+                          <div
+                            class="flex items-center justify-center w-6 h-6 rounded-full bg-[#55A9C4]/20 text-[#55A9C4]"
+                          >
                             <CheckCircle class="h-4 w-4" />
                           </div>
                           <div>
-                            <p class="text-sm text-gray-500 font-medium">
-                              Expected Response
-                            </p>
+                            <p class="text-sm text-gray-500 font-medium">Expected Response</p>
                           </div>
                         </div>
                       </div>
 
                       <div class="p-4 bg-card">
-                        <div class="text-sm text-gray-700 dark:text-gray-300 font-medium break-words leading-relaxed explanation-content w-full">
+                        <div
+                          class="text-sm text-gray-700 dark:text-gray-300 font-medium break-words leading-relaxed explanation-content w-full"
+                        >
                           <ViewExplanation :content="station.expectedAnswer" />
                         </div>
                       </div>
@@ -344,7 +385,9 @@ const continueFromLastQuestion = () => {
                       @click="openFeedbackDialog(question)"
                     >
                       <div class="p-1 rounded-full bg-gray-100 shadow-sm">
-                        <MessageSquare class="h-4 w-4 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 text-gray-600" />
+                        <MessageSquare
+                          class="h-4 w-4 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 text-gray-600"
+                        />
                       </div>
                       <span class="font-medium">Provide Feedback</span>
                     </Button>
@@ -360,7 +403,9 @@ const continueFromLastQuestion = () => {
           v-else
           class="text-center py-12 sm:py-16 empty-state bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
         >
-          <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+          <div
+            class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5"
+          >
             <FileText class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
           </div>
           <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No stations found</h3>
@@ -466,10 +511,20 @@ const continueFromLastQuestion = () => {
 
 /* Base typography - Matched to other pages */
 html {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 @supports (font-variation-settings: normal) {
-  html { font-family: 'Inter var', system-ui, -apple-system, sans-serif; }
+  html {
+    font-family:
+      'Inter var',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
 }
 
 .explanation-content {
@@ -498,7 +553,7 @@ html {
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
-    
+
     &::-webkit-scrollbar {
       height: 4px;
       width: 4px;
@@ -509,7 +564,8 @@ html {
     :deep(table) {
       font-size: 0.7rem;
     }
-    :deep(th), :deep(td) {
+    :deep(th),
+    :deep(td) {
       padding: 0.2rem 0.3rem;
     }
   }
@@ -525,7 +581,7 @@ html {
   @media (min-width: 640px) {
     max-height: 300px;
     padding-right: 4px;
-    
+
     :deep(table) {
       font-size: 0.875rem;
     }
@@ -552,7 +608,13 @@ html {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

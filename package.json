@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "GNU GENERAL PUBLIC LICENSE",
   "scripts": {
     "start": "NODE_DEBUG=adonisjs:shield node bin/server.js",
     "build": "node ace build",
@@ -141,7 +141,7 @@
     "@vee-validate/zod": "^4.15.0",
     "@vinejs/vine": "^2.1.0",
     "@vue/server-renderer": "^3.5.13",
-    "@vueuse/core": "^12.8.2",
+    "@vueuse/core": "^13.6.0",
     "axios": "^1.8.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "2.7.0",
@@ -154,7 +154,7 @@
     "ip2location-nodejs": "^9.6.3",
     "lodash": "^4.17.21",
     "lucide": "^0.514.0",
-    "lucide-vue-next": "^0.469.0",
+    "lucide-vue-next": "^0.536.0",
     "luxon": "^3.5.0",
     "meilisearch": "^0.48.2",
     "newrelic": "^12.13.0",
@@ -169,7 +169,7 @@
     "rehype-highlight": "^7.0.1",
     "rehype-raw": "^7.0.0",
     "rehype-stringify": "^10.0.1",
-    "reka-ui": "^2.2.1",
+    "reka-ui": "^2.4.1",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.0",
     "remark-rehype": "^11.1.1",
@@ -193,5 +193,6 @@
       "./app/middleware/*.ts"
     ]
   },
-  "prettier": "@adonisjs/prettier-config"
+  "prettier": "@adonisjs/prettier-config",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

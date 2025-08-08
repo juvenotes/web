@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Trash2, Plus } from 'lucide-vue-next'
+import { Trash, Plus } from 'lucide-vue-next'
 import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type ConceptDto from '#dtos/concept'
@@ -133,7 +133,7 @@ const handleSubmit = () => {
                   size="sm"
                   @click="removeChoice(index)"
                 >
-                  <Trash2 class="h-4 w-4" />
+                  <Trash class="h-4 w-4" />
                 </Button>
               </div>
 

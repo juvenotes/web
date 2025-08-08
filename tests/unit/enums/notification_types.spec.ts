@@ -2,7 +2,7 @@ import { test } from '@japa/runner'
 import {
   NotificationType,
   NotificationTypeIcons,
-  NotificationTypeLabels
+  NotificationTypeLabels,
 } from '#enums/notification_types'
 
 test.group('Enums - Notification Types', () => {
@@ -28,25 +28,38 @@ test.group('Enums - Notification Types', () => {
     assert.equal(NotificationTypeLabels[NotificationType.GENERIC], 'Notification')
     assert.equal(NotificationTypeLabels[NotificationType.FEEDBACK_RESPONSE], 'Feedback Response')
     assert.equal(NotificationTypeLabels[NotificationType.QUESTION_UPDATE], 'Question Updated')
-    assert.equal(NotificationTypeLabels[NotificationType.TODAYS_QUESTION_AVAILABLE], 'Daily Question')
+    assert.equal(
+      NotificationTypeLabels[NotificationType.TODAYS_QUESTION_AVAILABLE],
+      'Daily Question'
+    )
     assert.equal(NotificationTypeLabels[NotificationType.PAPER_SHARED], 'Paper Shared')
     assert.equal(NotificationTypeLabels[NotificationType.PROGRESS_MILESTONE], 'Progress Milestone')
   })
 
   test('should have icon mapping for every notification type', ({ assert }) => {
-    const notificationTypes = Object.values(NotificationType).filter(value => typeof value === 'number')
-    
+    const notificationTypes = Object.values(NotificationType).filter(
+      (value) => typeof value === 'number'
+    )
+
     for (const type of notificationTypes) {
-      assert.isDefined(NotificationTypeIcons[type as NotificationType], `Icon missing for notification type ${type}`)
+      assert.isDefined(
+        NotificationTypeIcons[type as NotificationType],
+        `Icon missing for notification type ${type}`
+      )
       assert.isString(NotificationTypeIcons[type as NotificationType])
     }
   })
 
   test('should have label mapping for every notification type', ({ assert }) => {
-    const notificationTypes = Object.values(NotificationType).filter(value => typeof value === 'number')
-    
+    const notificationTypes = Object.values(NotificationType).filter(
+      (value) => typeof value === 'number'
+    )
+
     for (const type of notificationTypes) {
-      assert.isDefined(NotificationTypeLabels[type as NotificationType], `Label missing for notification type ${type}`)
+      assert.isDefined(
+        NotificationTypeLabels[type as NotificationType],
+        `Label missing for notification type ${type}`
+      )
       assert.isString(NotificationTypeLabels[type as NotificationType])
       assert.isAbove(NotificationTypeLabels[type as NotificationType].length, 0)
     }
@@ -54,7 +67,7 @@ test.group('Enums - Notification Types', () => {
 
   test('should have consistent icon naming convention', ({ assert }) => {
     const iconValues = Object.values(NotificationTypeIcons)
-    
+
     for (const icon of iconValues) {
       // Icons should be PascalCase (Lucide icon naming convention)
       assert.match(icon, /^[A-Z][a-zA-Z]*$/, `Icon "${icon}" should be PascalCase`)
@@ -63,7 +76,7 @@ test.group('Enums - Notification Types', () => {
 
   test('should have meaningful labels', ({ assert }) => {
     const labelValues = Object.values(NotificationTypeLabels)
-    
+
     for (const label of labelValues) {
       // Labels should not be empty and should start with capital letter
       assert.isAbove(label.length, 0)
@@ -72,10 +85,12 @@ test.group('Enums - Notification Types', () => {
   })
 
   test('should have same number of types, icons, and labels', ({ assert }) => {
-    const typeCount = Object.values(NotificationType).filter(value => typeof value === 'number').length
+    const typeCount = Object.values(NotificationType).filter(
+      (value) => typeof value === 'number'
+    ).length
     const iconCount = Object.keys(NotificationTypeIcons).length
     const labelCount = Object.keys(NotificationTypeLabels).length
-    
+
     assert.equal(typeCount, iconCount, 'Number of types should match number of icons')
     assert.equal(typeCount, labelCount, 'Number of types should match number of labels')
     assert.equal(iconCount, labelCount, 'Number of icons should match number of labels')
@@ -86,7 +101,7 @@ test.group('Enums - Notification Types', () => {
     const feedbackType = NotificationType.FEEDBACK_RESPONSE
     const icon = NotificationTypeIcons[feedbackType]
     const label = NotificationTypeLabels[feedbackType]
-    
+
     assert.equal(feedbackType, 2)
     assert.equal(icon, 'MessageCircle')
     assert.equal(label, 'Feedback Response')

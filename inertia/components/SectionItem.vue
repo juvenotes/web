@@ -6,7 +6,7 @@ import {
   MoreVertical,
   Plus,
   Edit,
-  Trash2,
+  Trash,
   ArrowUp,
   ArrowDown,
 } from 'lucide-vue-next'
@@ -82,7 +82,7 @@ const isOpen = ref(false)
               @click="emit('delete', section)"
               class="text-destructive focus:text-destructive"
             >
-              <Trash2 class="w-4 h-4 mr-2" /> Delete
+              <Trash class="w-4 h-4 mr-2" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

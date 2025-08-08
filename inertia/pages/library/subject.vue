@@ -28,13 +28,18 @@ const hasArticles = computed(() => props.articles.length > 0)
           href="/library"
           class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#55A9C4] transition-colors duration-200 mb-4 sm:mb-5 group"
         >
-          <svg 
-            class="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-0.5" 
-            fill="none" 
-            stroke="currentColor" 
+          <svg
+            class="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-0.5"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Back to all subjects
         </Link>
@@ -49,7 +54,10 @@ const hasArticles = computed(() => props.articles.length > 0)
       </div>
 
       <!-- Article List - Responsive grid -->
-      <div v-if="hasArticles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+      <div
+        v-if="hasArticles"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
+      >
         <div
           v-for="(article, index) in articles"
           :key="article.pk_id"
@@ -80,7 +88,9 @@ const hasArticles = computed(() => props.articles.length > 0)
                 </div>
               </div>
               <div>
-                <h3 class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2">
+                <h3
+                  class="text-base font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2"
+                >
                   {{ article.article_name }}
                 </h3>
                 <p class="mt-1 text-sm text-gray-500">Read article</p>
@@ -92,7 +102,9 @@ const hasArticles = computed(() => props.articles.length > 0)
 
       <!-- No Articles message -->
       <div v-else class="text-center py-12 sm:py-16 empty-state">
-        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+        <div
+          class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5"
+        >
           <svg
             class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400"
             fill="none"
@@ -108,7 +120,10 @@ const hasArticles = computed(() => props.articles.length > 0)
           </svg>
         </div>
         <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No articles found</h3>
-        <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">We couldn't find any articles for this subject. Check back later or explore other subjects.</p>
+        <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
+          We couldn't find any articles for this subject. Check back later or explore other
+          subjects.
+        </p>
         <Link
           href="/library"
           class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#55A9C4] hover:bg-[#4795af] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#55A9C4] transition-colors duration-200"
@@ -161,7 +176,7 @@ const hasArticles = computed(() => props.articles.length > 0)
   a.group {
     min-height: 56px;
   }
-  
+
   .container-default {
     padding-left: 1rem;
     padding-right: 1rem;
