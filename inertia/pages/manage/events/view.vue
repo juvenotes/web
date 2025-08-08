@@ -132,7 +132,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
           >
             <Eye class="h-4 w-4" />
-            View Quiz (User)
+            View
           </Link>
           <Button 
             @click="handleDeleteQuiz"

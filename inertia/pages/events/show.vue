@@ -29,8 +29,6 @@ function formatDate(dateString: string) {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
   })
 }
 
@@ -74,37 +72,27 @@ function getEventTypeColor(type: string) {
 
   <div class="min-h-screen bg-gray-50/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-      <!-- Breadcrumb -->
-      <div class="mb-6">
-        <BreadcrumbTrail :items="breadcrumbItems" class="mb-4" />
-      </div>
       <!-- Event Header -->
-      <div class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border">
-        <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
-        <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
-          <div class="flex items-start gap-4 mt-4">
-            <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
-              <Calendar class="h-6 w-6 text-primary" />
-            </div>
-            <div class="space-y-2">
-              <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-foreground">{{ props.event.title }}</h1>
-                <Badge :class="getStatusColor(props.event.status)" class="text-xs">
-                  {{ props.event.status }}
-                </Badge>
-                <Badge :class="getEventTypeColor(props.event.eventType)" class="text-xs">
-                  {{ props.event.eventType }}
-                </Badge>
+      <div class="mb-6 sm:mb-10 header-animation">
+        <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+          <div class="flex items-start gap-3 sm:gap-4 flex-1">
+            <div class="flex-shrink-0 mt-0.5">
+              <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
+                <Calendar class="h-6 w-6 text-[#55A9C4]" />
               </div>
-              <p v-if="props.event.description" class="text-base text-muted-foreground/90 max-w-2xl">
+            </div>
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ props.event.title }}</h1>
+              <p v-if="props.event.description" class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
                 {{ props.event.description }}
               </p>
               <div class="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
                 <span>
-                  <strong>Start:</strong> {{ formatDate(props.event.startDate) }}
+                  <strong>Starts:</strong> {{ formatDate(props.event.startDate) }}
                 </span>
                 <span>
-                  <strong>End:</strong> {{ formatDate(props.event.endDate) }}
+                  <strong>Ends:</strong> {{ formatDate(props.event.endDate) }}
                 </span>
               </div>
             </div>
@@ -120,6 +108,7 @@ function getEventTypeColor(type: string) {
             </Link>
           </div>
         </div>
+        <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
       </div>
 
       <!-- Quizzes List -->

@@ -63,7 +63,11 @@ function getStatusColor(status: string) {
       <!-- Header Section -->
       <div class="mb-6 sm:mb-10 header-animation">
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+
+        <!-- Title and Description -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -77,18 +81,20 @@ function getStatusColor(status: string) {
               </p>
             </div>
           </div>
+
           <!-- Manage Button -->
-          <div class="w-full sm:w-auto flex-shrink-0 flex flex-col gap-2">
+          <div class="w-full sm:w-auto flex-shrink-0">
             <Link
               v-if="props.canManage"
               href="/manage/events"
               class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
             >
               <Settings class="h-4 w-4" />
-              <span>Manage Events</span>
+              <span>Manage</span>
             </Link>
           </div>
         </div>
+
         <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
       </div>
 

@@ -10,7 +10,8 @@ import {
   Clock, 
   BookOpen,
   Play,
-  RotateCcw
+  RotateCcw,
+  Settings
 } from 'lucide-vue-next'
 import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
 import AppHead from '~/components/AppHead.vue'
@@ -121,10 +122,10 @@ function formatDate(dateString: string) {
           </div>
           <div>
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ props.quiz.title }}</h1>
-            <p class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
-              Quiz for <span class="font-semibold">{{ props.event.title }}</span>
-              <span v-if="props.quiz.description">- {{ props.quiz.description }}</span>
-            </p>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+              <Calendar class="h-4 w-4" />
+              <span>Starts on {{ formatDate(props.event.startDate) }}</span>
+            </div>
           </div>
         </div>
         <!-- Manage Button -->
@@ -135,28 +136,11 @@ function formatDate(dateString: string) {
             class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
           >
             <Settings class="h-4 w-4" />
-            <span>Manage Quiz</span>
+            <span>Manage</span>
           </Link>
         </div>
       </div>
-      <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
-    </div>
-
-    <!-- Header -->
-    <div class="text-center space-y-4">
-      <div class="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <Calendar class="h-4 w-4" />
-        <span>{{ formatDate(props.event.startDate) }}</span>
-      </div>
-      
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight">{{ props.quiz.title }}</h1>
-        <p v-if="props.quiz.description" class="text-lg text-muted-foreground mt-2">
-          {{ props.quiz.description }}
-        </p>
-      </div>
-
-      <div class="flex items-center justify-center gap-4 text-sm">
+      <div class="flex items-center justify-center gap-4 text-sm mb-4">
         <Badge variant="secondary" class="flex items-center gap-1">
           <BookOpen class="h-3 w-3" />
           {{ totalQuestions }} Questions
@@ -166,6 +150,7 @@ function formatDate(dateString: string) {
           {{ score }}/{{ totalQuestions }} ({{ scorePercentage }}%)
         </Badge>
       </div>
+      <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
     </div>
 
     <!-- Questions List (read-only, public) -->
