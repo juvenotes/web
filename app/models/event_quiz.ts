@@ -4,6 +4,7 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import Event from './event.js'
 import Question from './question.js'
 import User from './user.js'
+import UserQuizStat from './user_quiz_stat.js'
 
 export default class EventQuiz extends BaseModel {
   public static table = 'event_quizzes'
@@ -40,4 +41,9 @@ export default class EventQuiz extends BaseModel {
 
   @hasMany(() => Question)
   declare questions: HasMany<typeof Question>
+
+  @hasMany(() => UserQuizStat, {
+    foreignKey: 'quizId',
+  })
+  declare userStats: HasMany<typeof UserQuizStat>
 }

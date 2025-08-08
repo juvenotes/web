@@ -12,6 +12,8 @@ import {
   Trash,
   ChevronDown,
   ArrowLeft,
+  Eye,
+  Trophy,
 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
@@ -116,9 +118,6 @@ const selectedQuestion = ref<QuestionDto | null>(null)
 
           <div class="space-y-2">
             <h1 class="text-2xl font-bold text-foreground">{{ quiz.title }}</h1>
-            <p v-if="quiz.description" class="text-base text-muted-foreground/90 max-w-2xl">
-              {{ quiz.description }}
-            </p>
             <div class="flex items-center gap-4 text-sm text-muted-foreground">
               <div class="flex items-center gap-1">
                 <Clock class="h-4 w-4" />
@@ -130,6 +129,20 @@ const selectedQuestion = ref<QuestionDto | null>(null)
         </div>
 
         <div class="flex gap-3">
+          <Link 
+            :href="`/events/${event.slug}/quiz/${quiz.id}`" 
+            class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+          >
+            <Eye class="h-4 w-4" />
+            View
+          </Link>
+          <Link 
+            :href="`/manage/events/${event.slug}/quiz/${quiz.id}/leaderboard`"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            <Trophy class="h-4 w-4" />
+            Leaderboard
+          </Link>
           <Button 
             @click="handleDeleteQuiz"
             variant="outline"
