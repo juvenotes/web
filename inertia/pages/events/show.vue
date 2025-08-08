@@ -101,7 +101,7 @@ function getEventTypeColor(type: string) {
           <div class="w-full sm:w-auto flex-shrink-0 flex flex-col gap-2">
             <Link
               v-if="props.canManage"
-              href="/manage/events/show"
+              :href="`/manage/events/${props.event.slug}`"
               class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
             >
               <span>Manage Event</span>

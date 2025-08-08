@@ -149,6 +149,7 @@ declare module 'vue' {
     PopoverContent: typeof import('./inertia/components/ui/popover/PopoverContent.vue')['default']
     PopoverTrigger: typeof import('./inertia/components/ui/popover/PopoverTrigger.vue')['default']
     Progress: typeof import('./inertia/components/ui/progress/Progress.vue')['default']
+    Quiz_leaderboard: typeof import('./inertia/components/quiz_leaderboard.vue')['default']
     RadioGroup: typeof import('./inertia/components/ui/radio-group/RadioGroup.vue')['default']
     RadioGroupItem: typeof import('./inertia/components/ui/radio-group/RadioGroupItem.vue')['default']
     RangeCalendar: typeof import('./inertia/components/ui/range-calendar/RangeCalendar.vue')['default']

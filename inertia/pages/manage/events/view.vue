@@ -12,6 +12,8 @@ import {
   Trash,
   ChevronDown,
   ArrowLeft,
+  Eye,
+  Trophy,
 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
@@ -133,6 +135,13 @@ const selectedQuestion = ref<QuestionDto | null>(null)
           >
             <Eye class="h-4 w-4" />
             View
+          </Link>
+          <Link 
+            :href="`/manage/events/${event.slug}/quiz/${quiz.id}/leaderboard`"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            <Trophy class="h-4 w-4" />
+            Leaderboard
           </Link>
           <Button 
             @click="handleDeleteQuiz"
