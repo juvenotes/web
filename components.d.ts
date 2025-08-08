@@ -75,6 +75,7 @@ declare module 'vue' {
     ConceptLink: typeof import('./inertia/components/dialogs/ConceptLink.vue')['default']
     ConceptSearchDialog: typeof import('./inertia/components/dialogs/ConceptSearchDialog.vue')['default']
     CookieConsent: typeof import('./inertia/components/CookieConsent.vue')['default']
+    CopyQuestionToQuizDialog: typeof import('./inertia/components/dialogs/CopyQuestionToQuizDialog.vue')['default']
     CreateEventDialog: typeof import('./inertia/components/dialogs/CreateEventDialog.vue')['default']
     CreateEventQuizDialog: typeof import('./inertia/components/dialogs/CreateEventQuizDialog.vue')['default']
     CreateOscePaperDialog: typeof import('./inertia/components/dialogs/CreateOscePaperDialog.vue')['default']

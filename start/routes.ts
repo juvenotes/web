@@ -272,6 +272,7 @@ router
       ManagePapersController,
       'updateSaq',
     ])
+    router.post('/questions/copy-to-quiz', [ManagePapersController, 'copyQuestionToQuiz'])
     router.put('/:conceptSlug/:paperSlug', [ManagePapersController, 'update'])
     router.delete('/:conceptSlug/:paperSlug/questions/:questionSlug', [
       ManagePapersController,
