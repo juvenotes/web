@@ -30,7 +30,6 @@ export default class IndexEventsController {
       .orderBy('startDate', 'asc')
       .preload('user')
 
-    // Check if user can manage events (use bouncer)
     const canManage = await bouncer.allows('canManage')
 
     logger.info({
@@ -41,7 +40,6 @@ export default class IndexEventsController {
       message: 'Events list fetched successfully',
     })
 
-    // Pass events as DTOs directly, matching Manage pattern
     return inertia.render('events/index', {
       events: events ? EventDto.fromArray(events) : [],
       canManage,
@@ -51,7 +49,7 @@ export default class IndexEventsController {
   /**
    * Show a single event
    */
-  async show({ params, inertia, auth, logger }: HttpContext) {
+  async show({ params, inertia, auth, logger, bouncer }: HttpContext) {
     const context = {
       controller: 'IndexEventsController',
       action: 'show',
@@ -73,6 +71,8 @@ export default class IndexEventsController {
     const eventDto = new EventDto(event)
     const quizDtos = event.quizzes.map((quiz) => new EventQuizDto(quiz))
 
+    const canManage = await bouncer.allows('canManage')
+
     logger.info({
       ...context,
       userId: auth.user?.id,
@@ -84,13 +84,14 @@ export default class IndexEventsController {
     return inertia.render('events/show', {
       event: eventDto,
       quizzes: quizDtos,
+      canManage,
     })
   }
 
   /**
    * Show quiz page for an event
    */
-  async quiz({ params, inertia, auth, logger }: HttpContext) {
+  async quiz({ params, inertia, auth, logger, bouncer }: HttpContext) {
     const context = {
       controller: 'IndexEventsController',
       action: 'quiz',
@@ -112,6 +113,8 @@ export default class IndexEventsController {
     const quizDto = new EventQuizDto(quiz)
     const questionsDto = quiz.questions ? QuestionDto.fromArray(quiz.questions) : []
 
+    const canManage = await bouncer.allows('canManage')
+
     logger.info({
       ...context,
       userId: auth.user?.id,
@@ -125,6 +128,7 @@ export default class IndexEventsController {
       event: eventDto,
       quiz: quizDto,
       questions: questionsDto,
+      canManage,
     })
   }
 }

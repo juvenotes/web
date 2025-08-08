@@ -5,6 +5,7 @@ import EventQuizDto from '#dtos/event_quiz'
 import QuestionDto from '#dtos/question'
 import EventQuiz from '#models/event_quiz'
 import Question from '#models/question'
+import UserQuizStatDto from '#dtos/user_quiz_stat'
 import { createEventValidator, updateEventValidator } from '#validators/event'
 import { createEventQuizValidator, updateEventQuizValidator } from '#validators/event_quiz'
 import { createMcqQuestionValidator, updateMcqQuestionValidator } from '#validators/question'
@@ -12,6 +13,7 @@ import string from '@adonisjs/core/helpers/string'
 import { generateSlug } from '#utils/slug_generator'
 import { CloudinaryService } from '#services/cloudinary_service'
 import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
+import { QuizLeaderboardService } from '#services/quiz_leaderboard_service'
 import { QuestionType } from '#enums/question_types'
 import fs from 'node:fs/promises'
 import EventPolicy from '#policies/event_policy'
@@ -1063,6 +1065,148 @@ export default class ManageEventsController {
     } catch (error) {
       logger.error('failed to delete quiz question', { ...context, error })
       throw error
+    }
+  }
+
+  /**
+   * Show leaderboard for a specific quiz
+   */
+  async showQuizLeaderboard({
+    params,
+    inertia,
+    auth,
+    bouncer,
+    logger,
+    response,
+    request,
+  }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'showQuizLeaderboard',
+      slug: params.slug,
+      quizId: params.quizId,
+    }
+    logger.info({ ...context, message: 'Fetching quiz leaderboard' })
+
+    if (await bouncer.with(EventPolicy).denies('view')) {
+      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access attempt' })
+      return response.forbidden()
+    }
+
+    const isApiRequest = request.header('accept')?.includes('application/json')
+
+    try {
+      // Get event and quiz
+      const event = await Event.query().where('slug', params.slug).preload('user').firstOrFail()
+
+      const quiz = await EventQuiz.query()
+        .where('id', params.quizId)
+        .where('eventId', event.id)
+        .preload('questions')
+        .firstOrFail()
+
+      // Use service to get leaderboard data
+      const leaderboardData = await QuizLeaderboardService.getQuizLeaderboard(quiz.id)
+
+      const leaderboardResponse = {
+        event: {
+          id: event.id,
+          title: event.title,
+          slug: event.slug,
+        },
+        quiz: {
+          id: quiz.id,
+          title: quiz.title,
+          slug: quiz.slug,
+        },
+        ...leaderboardData,
+      }
+
+      logger.info({
+        ...context,
+        userId: auth.user?.id,
+        eventId: event.id,
+        quizId: quiz.id,
+        participantsCount: leaderboardData.totalParticipants,
+        message: 'Quiz leaderboard fetched successfully',
+      })
+
+      // Return JSON for API requests (TanStack Query)
+      if (isApiRequest) {
+        return response.json(leaderboardResponse)
+      }
+
+      // Return Inertia page for direct navigation
+      return inertia.render('manage/events/quiz_leaderboard', {
+        event: new EventDto(event),
+        quiz: new EventQuizDto(quiz),
+        leaderboardData: leaderboardResponse,
+      })
+    } catch (error) {
+      logger.error('failed to fetch quiz leaderboard', { ...context, error })
+
+      if (isApiRequest) {
+        return response.status(500).json({ error: 'Failed to fetch leaderboard' })
+      }
+
+      throw error
+    }
+  }
+
+  /**
+   * Update user quiz statistics
+   */
+  async updateQuizStats({ params, request, response, auth, logger }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'updateQuizStats',
+      slug: params.slug,
+      quizId: params.quizId,
+    }
+    logger.info({ ...context, message: 'Updating quiz stats' })
+
+    const user = auth.getUserOrFail()
+
+    const { questionsAttempted, questionsCorrect, completionPercentage, score, additionalData } =
+      request.only([
+        'questionsAttempted',
+        'questionsCorrect',
+        'completionPercentage',
+        'score',
+        'additionalData',
+      ])
+
+    try {
+      // Verify event and quiz exist
+      const event = await Event.query().where('slug', params.slug).firstOrFail()
+      const quiz = await EventQuiz.query()
+        .where('id', params.quizId)
+        .where('eventId', event.id)
+        .firstOrFail()
+
+      // Use service to update user quiz stats
+      const userQuizStat = await QuizLeaderboardService.updateUserQuizStats(user.id, quiz.id, {
+        questionsAttempted: questionsAttempted || 0,
+        questionsCorrect: questionsCorrect || 0,
+        completionPercentage: completionPercentage || 0,
+        score: score || 0,
+        additionalData: additionalData || {},
+      })
+
+      logger.info({
+        ...context,
+        userId: user.id,
+        quizId: quiz.id,
+        message: 'Quiz stats updated successfully',
+      })
+
+      return response.json({
+        success: true,
+        userQuizStat: new UserQuizStatDto(userQuizStat),
+      })
+    } catch (error) {
+      logger.error('failed to update quiz stats', { ...context, error })
+      return response.status(500).json({ error: 'Failed to update quiz stats' })
     }
   }
 }

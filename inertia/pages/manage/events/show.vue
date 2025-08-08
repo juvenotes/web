@@ -15,7 +15,7 @@ import {
   Globe,
   BookOpen,
   Upload,
-  ExternalLink,
+  Eye,
   ArrowLeft
 } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
@@ -149,16 +149,16 @@ function onDeleteEvent(e: Event) {
             :href="`/events/${event.slug}`" 
             class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
           >
-            <ExternalLink class="h-4 w-4" />
-            View Public
+            <Eye class="h-4 w-4" />
+            View
           </Link>
-          <Link 
-            :href="`/manage/events/${event.slug}/edit`"
+          <Button 
+            @click="editQuizOpen = true"
             class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium"
           >
             <Edit class="h-4 w-4" />
             Edit Event
-          </Link>
+          </Button>
         </div>
       </div>
     </div>
@@ -185,34 +185,6 @@ function onDeleteEvent(e: Event) {
               <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
                 {{ quiz.title }}
               </h3>
-              <div class="flex items-center gap-2">
-                <Button
-                  @click.prevent="openEditQuiz(quiz)"
-                  variant="ghost"
-                  size="sm"
-                  class="opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Edit class="h-4 w-4" />
-                </Button>
-                <form 
-                  :action="`/manage/events/${event.slug}/quiz/${quiz.id}`" 
-                  method="POST"
-                  class="inline"
-                  @submit="onDeleteQuiz"
-                  @click.prevent
-                >
-                  <input type="hidden" name="_method" value="DELETE">
-                  <Button
-                    type="submit"
-                    variant="ghost"
-                    size="sm"
-                    class="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/90"
-                    @click.prevent="onDeleteQuiz"
-                  >
-                    <Trash class="h-4 w-4" />
-                  </Button>
-                </form>
-              </div>
             </div>
             
             <div class="flex items-center gap-3 text-sm">

@@ -272,6 +272,7 @@ router
       ManagePapersController,
       'updateSaq',
     ])
+    router.post('/questions/copy-to-quiz', [ManagePapersController, 'copyQuestionToQuiz'])
     router.put('/:conceptSlug/:paperSlug', [ManagePapersController, 'update'])
     router.delete('/:conceptSlug/:paperSlug/questions/:questionSlug', [
       ManagePapersController,
@@ -413,6 +414,17 @@ router.patch('/api/manage/osce-stations/:id', [ManageFeedbackController, 'update
 router.patch('/api/manage/spot-stations/:id', [ManageFeedbackController, 'updateSpotStation'])
 // Question Stem
 router.patch('/api/manage/questions/:id', [ManageFeedbackController, 'updateQuestionStem'])
+
+// Quiz Leaderboard API routes
+router
+  .get('/api/events/:slug/quiz/:quizId/leaderboard', [
+    ManageEventsController,
+    'showQuizLeaderboard',
+  ])
+  .use(middleware.auth())
+router
+  .put('/api/events/:slug/quiz/:quizId/stats', [ManageEventsController, 'updateQuizStats'])
+  .use(middleware.auth())
 
 // Today routes
 router
@@ -597,6 +609,11 @@ router
         'deleteQuizQuestion',
       ])
       .as('manage.events.quiz.questions.destroy')
+
+    // Quiz leaderboard routes
+    router
+      .get('/:slug/quiz/:quizId/leaderboard', [ManageEventsController, 'showQuizLeaderboard'])
+      .as('manage.events.quiz.leaderboard')
   })
   .prefix('/manage/events')
   .use(middleware.auth())

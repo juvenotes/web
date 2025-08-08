@@ -118,6 +118,13 @@ function handleEventDeleted() {
             <Plus class="h-4 w-4" />
             Create Event
           </Button>
+                    <Link 
+            href="/events" 
+            class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+          >
+            <Eye class="h-4 w-4" />
+            View 
+          </Link>
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ import db from '@adonisjs/lucid/services/db'
 import Question from '#models/question'
 import { QuestionType } from '#enums/question_types'
 import { promises as fs } from 'node:fs'
+import EventQuiz from '#models/event_quiz'
 import {
   createMcqQuestionValidator,
   createSaqQuestionValidator,
@@ -159,13 +160,101 @@ export default class ManagePastPapersController {
       questionFeedbackMap[item.questionId].push(new QuestionFeedbackDto(item))
     })
 
+    // Get available event quizzes for copying
+    const availableQuizzes = await EventQuiz.query()
+      .select(['id', 'title'])
+      .where('user_id', auth.user!.id)
+      .orderBy('title', 'asc')
+
     return inertia.render('manage/papers/view', {
       paper: new PastPaperDto(paper),
       concept: new ConceptDto(paper.concept),
       questions: paper.questions ? QuestionDto.fromArray(paper.questions) : [],
       feedbackCountMap,
       questionFeedbackMap,
+      availableQuizzes: availableQuizzes.map((quiz) => ({
+        id: quiz.id,
+        title: quiz.title,
+      })),
     })
+  }
+
+  /**
+   * Copy a question from a paper to an event quiz
+   */
+  async copyQuestionToQuiz({ request, response, auth, session, logger }: HttpContext) {
+    const context = {
+      controller: 'ManagePastPapersController',
+      action: 'copyQuestionToQuiz',
+      userId: auth.user?.id,
+    }
+
+    try {
+      const { questionId, targetQuizId } = request.only(['questionId', 'targetQuizId'])
+
+      logger.info({
+        ...context,
+        questionId,
+        targetQuizId,
+        message: 'attempting to copy question to quiz',
+      })
+
+      // Find the original question with choices
+      const originalQuestion = await Question.query()
+        .where('id', questionId)
+        .preload('choices')
+        .firstOrFail()
+
+      // Verify target quiz exists and belongs to user
+      await EventQuiz.query()
+        .where('id', targetQuizId)
+        .where('user_id', auth.user!.id)
+        .firstOrFail()
+
+      await db.transaction(async (trx) => {
+        // Create the new question
+        const [newQuestion] = await trx
+          .insertQuery()
+          .table('questions')
+          .insert({
+            user_id: auth.user!.id,
+            event_quiz_id: targetQuizId,
+            slug: generateSlug(),
+            type: originalQuestion.type,
+            question_text: originalQuestion.questionText,
+            question_image_path: originalQuestion.questionImagePath,
+            difficulty_level: originalQuestion.difficultyLevel,
+          })
+          .returning('*')
+
+        // Copy MCQ choices if available
+        if (originalQuestion.choices && originalQuestion.choices.length > 0) {
+          const choicesData = originalQuestion.choices.map((choice) => ({
+            question_id: newQuestion.id,
+            choice_text: choice.choiceText,
+            is_correct: choice.isCorrect,
+            explanation: choice.explanation,
+          }))
+
+          await trx.insertQuery().table('mcq_choices').insert(choicesData)
+        }
+      })
+
+      logger.info({
+        ...context,
+        questionId,
+        targetQuizId,
+        choicesCount: originalQuestion.choices.length,
+        message: 'question copied successfully',
+      })
+
+      session.flash('success', 'Question copied to quiz successfully')
+      return response.redirect().back()
+    } catch (error) {
+      logger.error({ ...context, error, message: 'failed to copy question to quiz' })
+      session.flash('error', 'Failed to copy question')
+      return response.redirect().back()
+    }
   }
 
   /**

@@ -63,7 +63,11 @@ function getStatusColor(status: string) {
       <!-- Header Section -->
       <div class="mb-6 sm:mb-10 header-animation">
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+
+        <!-- Title and Description -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -73,11 +77,25 @@ function getStatusColor(status: string) {
             <div>
               <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Events</h1>
               <p class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
-                Discover and participate in educational events including webinars, workshops, conferences, and exams designed to enhance your medical knowledge and skills.
+                Discover and participate in educational events including webinars, workshops,
+                conferences, and exams designed to enhance your medical knowledge and skills.
               </p>
             </div>
           </div>
+
+          <!-- Manage Button -->
+          <div class="w-full sm:w-auto flex-shrink-0">
+            <Link
+              v-if="props.canManage"
+              href="/manage/events"
+              class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              <Settings class="h-4 w-4" />
+              <span>Manage</span>
+            </Link>
+          </div>
         </div>
+
         <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
       </div>
 
@@ -89,9 +107,13 @@ function getStatusColor(status: string) {
           :href="`/events/${event.slug}`"
           class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
-          <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none"
+          />
           <div class="relative space-y-3">
-            <h2 class="text-lg font-bold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300">
+            <h2
+              class="text-lg font-bold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300"
+            >
               {{ event.title }}
             </h2>
             <div class="flex items-center gap-2 text-sm text-muted-foreground">

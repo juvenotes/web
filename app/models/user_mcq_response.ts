@@ -32,7 +32,7 @@ export default class UserMcqResponse extends BaseModel {
   declare originalChoiceText: string | null
 
   @column()
-  declare source: 'paper' | 'today'
+  declare source: 'paper' | 'today' | 'event_quiz'
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -12,6 +12,7 @@ import {
   Trash,
   ChevronDown,
   MessageSquare,
+  Copy,
 } from 'lucide-vue-next'
 import { computed, ref, onMounted } from 'vue'
 import { toast } from 'vue-sonner'
@@ -28,6 +29,7 @@ interface Props {
   questions: QuestionDto[]
   feedbackCountMap: Record<number, number>
   questionFeedbackMap: Record<number, QuestionFeedbackDto[]>
+  availableQuizzes: Array<{ id: number; title: string }>
 }
 
 const props = defineProps<Props>()
@@ -103,6 +105,11 @@ function handleEditQuestion(question: QuestionDto) {
   }
 }
 
+function handleCopyQuestion(question: QuestionDto) {
+  questionToCopy.value = question
+  showCopyDialog.value = true
+}
+
 onMounted(() => {
   // Debug image paths
   console.log(
@@ -151,6 +158,8 @@ const showEditMcqDialog = ref(false)
 const showEditSaqDialog = ref(false)
 const showEditPaperDialog = ref(false)
 const selectedQuestion = ref<QuestionDto | null>(null)
+const showCopyDialog = ref(false)
+const questionToCopy = ref<QuestionDto | null>(null)
 // const expandedQuestions = ref<Record<number, boolean>>({})
 
 // function toggleQuestion(id: number) {
@@ -273,6 +282,16 @@ const selectedQuestion = ref<QuestionDto | null>(null)
               </Button>
               <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
                 <Trash class="h-4 w-4 text-destructive" /> Remove
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                @click="handleCopyQuestion(question)"
+                :disabled="!availableQuizzes.length || !question.isMcq"
+                :title="!question.isMcq ? 'Only MCQ questions can be copied to quizzes' : availableQuizzes.length ? 'Copy MCQ to quiz' : 'No quizzes available'"
+                v-if="question.isMcq"
+              >
+                <Copy class="h-4 w-4" /> Copy to Quiz
               </Button>
               <Badge v-if="feedbackCountMap?.[question.id]" variant="outline" class="bg-amber-50">
                 <MessageSquare class="h-3.5 w-3.5 mr-1.5 text-amber-500" />
@@ -439,4 +458,9 @@ const selectedQuestion = ref<QuestionDto | null>(null)
   <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
   <UploadPdfQuestionsDialog v-model:open="showUploadPdfDialog" :paper="paper" :concept="concept" />
   <UploadPdfSaqsDialog v-model:open="showUploadPdfSaqDialog" :paper="paper" :concept="concept" />
+  <CopyQuestionToQuizDialog
+    v-model:open="showCopyDialog"
+    :question="questionToCopy"
+    :available-quizzes="availableQuizzes"
+  />
 </template>
