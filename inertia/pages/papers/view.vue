@@ -374,16 +374,21 @@ const getLastEditDate = computed(() => {
               <div
                 v-for="choice in question.choices"
                 :key="choice.id"
-                :class="{
-                  'border-green-500 bg-green-50':
-                    selectedAnswers[question.id] === choice.id && choice.isCorrect,
-                  'border-red-500 bg-red-50':
-                    selectedAnswers[question.id] === choice.id && !choice.isCorrect,
-                  'hover:bg-gray-50 hover:border-[#55A9C4]/30': !showAnswer[question.id],
-                  'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
-                }"
-                class="flex items-center gap-3 p-3 rounded-lg border transition-all duration-300 cursor-pointer"
-                @click="handleChoiceSelect(question.id, choice.id)"
+                :class="[
+                  {
+                    'border-green-500 bg-green-50':
+                      selectedAnswers[question.id] === choice.id && choice.isCorrect,
+                    'border-red-500 bg-red-50':
+                      selectedAnswers[question.id] === choice.id && !choice.isCorrect,
+                    'hover:bg-gray-50 hover:border-[#55A9C4]/30': !showAnswer[question.id],
+                    'border-transparent': !selectedAnswers[question.id] && !showAnswer[question.id],
+                    'pointer-events-none opacity-70': showAnswer[question.id],
+                  },
+                  'flex items-center gap-3 p-3 rounded-lg border transition-all duration-300',
+                  showAnswer[question.id] ? 'cursor-default' : 'cursor-pointer',
+                ]"
+                :aria-disabled="showAnswer[question.id] ? 'true' : 'false'"
+                @click="!showAnswer[question.id] && handleChoiceSelect(question.id, choice.id)"
               >
                 <div class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full">
                   <CheckCircle

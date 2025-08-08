@@ -2,7 +2,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
-import db from '@adonisjs/lucid/services/db'
+import EventQuiz from '#models/event_quiz'
+import QuestionDto from '#dtos/question'
 
 export default class IndexEventsController {
   /**
@@ -15,7 +16,6 @@ export default class IndexEventsController {
     }
     logger.info({ ...context, message: 'Fetching events list' })
 
-    const page = request.input('page', 1)
     const search = request.input('search', '')
     const eventType = request.input('eventType', '')
     const status = request.input('status', 'published')
@@ -29,7 +29,6 @@ export default class IndexEventsController {
       .whereNull('deletedAt')
       .orderBy('startDate', 'asc')
       .preload('user')
-      .paginate(page, 12)
 
     // Check if user can manage events (use bouncer)
     const canManage = await bouncer.allows('canManage')
@@ -42,10 +41,9 @@ export default class IndexEventsController {
       message: 'Events list fetched successfully',
     })
 
-    // Pass DTOs to the view, not raw data
+    // Pass events as DTOs directly, matching Manage pattern
     return inertia.render('events/index', {
-      events: EventDto.fromArray(events.all()),
-      filters: { search, eventType, status },
+      events: events ? EventDto.fromArray(events) : [],
       canManage,
     })
   }
@@ -64,7 +62,6 @@ export default class IndexEventsController {
     const event = await Event.query()
       .where('slug', params.slug)
       .where('status', 'published')
-      .whereNull('deletedAt')
       .preload('user')
       .preload('quizzes', (query) => {
         query.preload('questions', (q) => {
@@ -102,100 +99,32 @@ export default class IndexEventsController {
     }
     logger.info({ ...context, message: 'Fetching event quiz' })
 
-    const event = await Event.query()
-      .where('slug', params.slug)
-      .where('status', 'published')
-      .whereNull('deletedAt')
-      .preload('quizzes', (query) => {
-        query.preload('questions', (q) => {
-          q.preload('choices')
-        })
+    const event = await Event.findByOrFail('slug', params.slug)
+    const quiz = await EventQuiz.query()
+      .where('id', params.quizId)
+      .where('eventId', event.id)
+      .preload('questions', (query) => {
+        query.orderBy('id', 'asc').preload('choices')
       })
       .firstOrFail()
 
-    const quiz = event.quizzes.find((q) => q.id === Number(params.quizId))
-    if (!quiz) {
-      logger.warn({ ...context, message: 'Quiz not found' })
-      throw new Error('Quiz not found')
-    }
-
     const eventDto = new EventDto(event)
     const quizDto = new EventQuizDto(quiz)
+    const questionsDto = quiz.questions ? QuestionDto.fromArray(quiz.questions) : []
 
     logger.info({
       ...context,
       userId: auth.user?.id,
       eventId: event.id,
       quizId: quiz.id,
+      questionsCount: questionsDto.length,
       message: 'Event quiz fetched successfully',
     })
 
     return inertia.render('events/quiz', {
       event: eventDto,
       quiz: quizDto,
+      questions: questionsDto,
     })
-  }
-
-  /**
-   * Register for an event (API endpoint)
-   */
-  async register({ params, response, auth, logger, bouncer }: HttpContext) {
-    const context = {
-      controller: 'IndexEventsController',
-      action: 'register',
-      eventSlug: params.slug,
-    }
-    logger.info({ ...context, message: 'Processing event registration' })
-
-    // Authorization: Only allow users with correct roles
-    const canRegister = await bouncer.allows('canManage')
-    if (!canRegister) {
-      return response.forbidden({ message: 'You are not authorized to register for events.' })
-    }
-
-    try {
-      await db.transaction(async (trx) => {
-        const event = await Event.findByOrFail('slug', params.slug)
-        event.useTransaction(trx)
-
-        // Check if registration is still open
-        if (event.registrationDeadline && new Date() > event.registrationDeadline.toJSDate()) {
-          logger.warn({ ...context, eventId: event.id, message: 'Registration deadline passed' })
-          return response.badRequest({ message: 'Registration deadline has passed' })
-        }
-
-        // Check if event is full
-        if (event.maxParticipants && event.currentParticipants >= event.maxParticipants) {
-          logger.warn({ ...context, eventId: event.id, message: 'Event is full' })
-          return response.badRequest({ message: 'Event is full' })
-        }
-
-        // TODO: Implement actual registration logic
-        // This could involve creating a user_event_registrations table
-        // For now, just increment the participant count
-
-        await event
-          .merge({
-            currentParticipants: event.currentParticipants + 1,
-          })
-          .save()
-
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          newParticipantCount: event.currentParticipants,
-          message: 'Event registration successful',
-        })
-
-        return response.ok({
-          message: 'Successfully registered for event',
-          event: new EventDto(event),
-        })
-      })
-    } catch (error) {
-      logger.error({ ...context, error, message: 'Event registration failed' })
-      throw error
-    }
   }
 }

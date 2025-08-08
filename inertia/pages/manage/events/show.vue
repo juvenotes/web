@@ -172,7 +172,6 @@ function onDeleteEvent(e: Event) {
     </div>
 
     <!-- Quizzes List -->
-    <!-- Quizzes List -->
     <div v-if="quizzes.length" class="space-y-4">
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link
@@ -231,7 +230,9 @@ function onDeleteEvent(e: Event) {
           </div>
         </Link>
       </div>
-    </div>    <!-- Empty State -->
+    </div>    
+    
+    <!-- Empty State -->
     <div v-else class="text-center p-8 bg-white rounded-2xl border border-slate-100">
       <div class="flex flex-col items-center gap-4">
         <div class="p-4 rounded-full bg-muted/20">

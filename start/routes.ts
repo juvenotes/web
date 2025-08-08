@@ -545,7 +545,6 @@ router
     router.get('/', [IndexEventsController, 'index']).as('events.index')
     router.get('/:slug', [IndexEventsController, 'show']).as('events.show')
     router.get('/:slug/quiz/:quizId', [IndexEventsController, 'quiz']).as('events.quiz')
-    router.post('/:slug/register', [IndexEventsController, 'register']).as('events.register')
   })
   .prefix('/events')
   .use(middleware.auth())

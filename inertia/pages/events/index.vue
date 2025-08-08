@@ -77,112 +77,38 @@ function getStatusColor(status: string) {
               </p>
             </div>
           </div>
-          <div class="w-full sm:w-auto flex-shrink-0">
-            <Link
-              v-if="canManage"
-              href="/manage/events"
-              class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] transition-colors text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
-            >
-              <Settings class="h-4 w-4" />
-              <span>Manage</span>
-            </Link>
-          </div>
         </div>
         <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
       </div>
 
       <!-- Events Grid -->
-      <div v-if="hasEvents" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Card
-          v-for="event in events"
+      <div v-if="props.events.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Link
+          v-for="event in props.events"
           :key="event.id"
-          class="group hover:shadow-lg transition-all duration-200 overflow-hidden"
+          :href="`/events/${event.slug}`"
+          class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
-          <div v-if="event.imageUrl" class="relative h-48 overflow-hidden">
-            <img
-              :src="event.imageUrl"
-              :alt="event.title"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-            />
-            <div class="absolute top-3 left-3 flex gap-2">
-              <Badge :class="getEventTypeColor(event.eventType)" class="text-xs font-medium">
-                {{ event.eventType }}
-              </Badge>
-              <Badge :class="getStatusColor(event.status)" class="text-xs font-medium">
+          <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
+          <div class="relative space-y-3">
+            <h2 class="text-lg font-bold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300">
+              {{ event.title }}
+            </h2>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+              <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
                 {{ event.status }}
-              </Badge>
+              </span>
+              <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
+                {{ event.eventType }}
+              </span>
+            </div>
+            <div class="text-sm text-muted-foreground">
+              {{ formatDate(event.startDate) }} - {{ formatDate(event.endDate) }}
             </div>
           </div>
-
-          <CardHeader class="pb-3">
-            <div v-if="!event.imageUrl" class="flex gap-2 mb-3">
-              <Badge :class="getEventTypeColor(event.eventType)" class="text-xs font-medium">
-                {{ event.eventType }}
-              </Badge>
-              <Badge :class="getStatusColor(event.status)" class="text-xs font-medium">
-                {{ event.status }}
-              </Badge>
-            </div>
-
-            <CardTitle class="text-lg font-semibold text-gray-900 group-hover:text-[#55A9C4] transition-colors">
-              <Link :href="`/events/${event.slug}`" class="block">
-                {{ event.title }}
-              </Link>
-            </CardTitle>
-
-            <p v-if="event.description" class="text-sm text-gray-600 line-clamp-2 mt-2">
-              {{ event.description }}
-            </p>
-          </CardHeader>
-
-          <CardContent class="pt-0">
-            <div class="space-y-2 text-sm text-gray-600">
-              <div class="flex items-center gap-2">
-                <Clock class="h-4 w-4 text-gray-400" />
-                <span>{{ formatDate(event.startDate) }}</span>
-              </div>
-
-              <div v-if="event.venue || event.isOnline" class="flex items-center gap-2">
-                <MapPin class="h-4 w-4 text-gray-400" />
-                <span v-if="event.isOnline">Online Event</span>
-                <span v-else>{{ event.venue }}</span>
-              </div>
-
-              <div v-if="event.maxParticipants" class="flex items-center gap-2">
-                <Users class="h-4 w-4 text-gray-400" />
-                <span>{{ event.currentParticipants }}/{{ event.maxParticipants }} participants</span>
-              </div>
-
-              <div v-if="!event.isFree" class="text-[#55A9C4] font-medium">
-                {{ event.currency }} {{ event.price }}
-              </div>
-            </div>
-
-            <div class="mt-4 pt-4 border-t border-gray-100">
-              <Link
-                :href="`/events/${event.slug}`"
-                class="inline-flex items-center text-sm font-medium text-[#55A9C4] hover:text-[#4795af] transition-colors"
-              >
-                View Details
-                <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        </Link>
       </div>
-
-      <!-- No Events message -->
-      <div v-else class="text-center py-12 sm:py-16 empty-state">
-        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
-          <Calendar class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
-        </div>
-        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No events found</h3>
-        <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
-          There are no events at the moment.
-        </p>
-      </div>
+      <div v-else class="text-center text-muted-foreground py-12">No events found.</div>
     </div>
   </div>
 </template>
