@@ -12,6 +12,7 @@ import Concept from './concept.js'
 import Question from './question.js'
 import PastPaper from './past_paper.js'
 import UserStreak from './user_streak.js'
+import Event from './event.js'
 
 import { CountryCode } from '#enums/countries'
 import EmailVerification from './email_verification.js'
@@ -106,6 +107,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasMany(() => SessionLog)
   declare sessions: HasMany<typeof SessionLog>
+
+  @hasMany(() => Event)
+  declare events: HasMany<typeof Event>
 
   @hasOne(() => UserStreak, {
     foreignKey: 'userId',

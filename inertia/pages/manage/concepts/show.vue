@@ -5,7 +5,7 @@ import type QuestionDto from '#dtos/question'
 import { computed, ref, watchEffect } from 'vue'
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { toast } from 'vue-sonner'
-import { Plus, Pencil, Trash2, BookOpen } from 'lucide-vue-next'
+import { Plus, Pencil, Trash, BookOpen } from 'lucide-vue-next'
 
 defineOptions({ layout: AdminLayout })
 
@@ -146,7 +146,7 @@ const handleDelete = () => {
             Edit
           </Button>
           <Button variant="destructive" @click="handleDelete" class="w-full sm:w-auto">
-            <Trash2 class="h-4 w-4 mr-2" />
+            <Trash class="h-4 w-4 mr-2" />
             Delete
           </Button>
         </div>
@@ -233,7 +233,7 @@ const handleDelete = () => {
                   <Pencil class="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
-                  <Trash2 class="h-4 w-4 text-destructive" />
+                  <Trash class="h-4 w-4 text-destructive" />
                 </Button>
               </div>
             </div>

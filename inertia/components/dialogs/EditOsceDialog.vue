@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Trash2, Plus, Loader2 } from 'lucide-vue-next'
+import { Trash, Plus, Loader } from 'lucide-vue-next'
 import { useForm } from '@inertiajs/vue3'
 import { QuestionType } from '#enums/question_types'
 import type PastPaperDto from '#dtos/past_paper'
@@ -198,7 +198,7 @@ const handleSubmit = () => {
                   class="absolute top-2 right-2"
                   @click="removeImage('question')"
                 >
-                  <Trash2 class="h-4 w-4" />
+                  <Trash class="h-4 w-4" />
                 </Button>
               </div>
 
@@ -207,7 +207,7 @@ const handleSubmit = () => {
                 v-if="isUploadingQuestionImage"
                 class="flex items-center gap-2 text-sm text-muted-foreground"
               >
-                <Loader2 class="h-4 w-4 animate-spin" />
+                <Loader class="h-4 w-4 animate-spin" />
                 <span>Uploading image...</span>
               </div>
             </div>
@@ -243,7 +243,7 @@ const handleSubmit = () => {
                   size="sm"
                   @click="removePart(index)"
                 >
-                  <Trash2 class="h-4 w-4 text-destructive" />
+                  <Trash class="h-4 w-4 text-destructive" />
                 </Button>
               </div>
 
@@ -292,7 +292,7 @@ const handleSubmit = () => {
                     class="absolute top-2 right-2"
                     @click="removeImage('part', index)"
                   >
-                    <Trash2 class="h-4 w-4" />
+                    <Trash class="h-4 w-4" />
                   </Button>
                 </div>
 
@@ -301,7 +301,7 @@ const handleSubmit = () => {
                   v-if="uploadingPartImage === index"
                   class="flex items-center gap-2 text-sm text-muted-foreground"
                 >
-                  <Loader2 class="h-4 w-4 animate-spin" />
+                  <Loader class="h-4 w-4 animate-spin" />
                   <span>Uploading image...</span>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Upload, Loader2, AlertTriangle } from 'lucide-vue-next'
+import { Upload, Loader, AlertTriangle } from 'lucide-vue-next'
 import { ref, watch, onMounted } from 'vue'
 import axios from 'axios'
 import { toast } from 'vue-sonner'
@@ -265,7 +265,7 @@ async function saveAllQuestions() {
             />
           </label>
           <Button class="w-full mt-4" :disabled="!file || isLoading" @click="handleUpload">
-            <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
+            <Loader v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
             {{ isLoading ? 'Processing...' : 'Upload & Parse PDF' }}
           </Button>
         </div>
@@ -277,7 +277,7 @@ async function saveAllQuestions() {
               :disabled="isSavingAll || questions.every((_, idx) => saved[idx])"
               @click="saveAllQuestions"
             >
-              <Loader2 v-if="isSavingAll" class="w-4 h-4 mr-2 animate-spin" />
+              <Loader v-if="isSavingAll" class="w-4 h-4 mr-2 animate-spin" />
               {{ isSavingAll ? 'Saving All...' : 'Save All' }}
             </Button>
           </div>
@@ -323,7 +323,7 @@ async function saveAllQuestions() {
                   :disabled="saving[idx] || isSavingAll"
                   @click="saveQuestion(q, idx)"
                 >
-                  <Loader2 v-if="saving[idx]" class="w-4 h-4 mr-2 animate-spin" />
+                  <Loader v-if="saving[idx]" class="w-4 h-4 mr-2 animate-spin" />
                   Save
                 </Button>
                 <Badge v-if="saved[idx]" variant="outline" class="bg-green-50 text-green-700"
@@ -387,7 +387,7 @@ async function saveAllQuestions() {
             />
           </label>
           <Button class="w-full mt-4" :disabled="!file || isLoading" @click="handleUpload">
-            <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
+            <Loader v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
             {{ isLoading ? 'Processing...' : 'Upload & Parse PDF' }}
           </Button>
         </div>
@@ -399,7 +399,7 @@ async function saveAllQuestions() {
               :disabled="isSavingAll || questions.every((_, idx) => saved[idx])"
               @click="saveAllQuestions"
             >
-              <Loader2 v-if="isSavingAll" class="w-4 h-4 mr-2 animate-spin" />
+              <Loader v-if="isSavingAll" class="w-4 h-4 mr-2 animate-spin" />
               {{ isSavingAll ? 'Saving All...' : 'Save All' }}
             </Button>
           </div>
@@ -445,7 +445,7 @@ async function saveAllQuestions() {
                   :disabled="saving[idx] || isSavingAll"
                   @click="saveQuestion(q, idx)"
                 >
-                  <Loader2 v-if="saving[idx]" class="w-4 h-4 mr-2 animate-spin" />
+                  <Loader v-if="saving[idx]" class="w-4 h-4 mr-2 animate-spin" />
                   Save
                 </Button>
                 <Badge v-if="saved[idx]" variant="outline" class="bg-green-50 text-green-700"

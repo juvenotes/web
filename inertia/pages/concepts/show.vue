@@ -92,7 +92,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
 
 <template>
   <AppHead :title="`${concept.title}`" :description="`Learn about ${concept.title} in Juvenotes`" />
-  
+
   <div class="min-h-screen bg-gray-50/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
       <!-- Header Section -->
@@ -100,7 +100,9 @@ const getCorrectAnswer = (question: QuestionDto) => {
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
 
         <!-- Title and Description -->
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -140,7 +142,9 @@ const getCorrectAnswer = (question: QuestionDto) => {
       <div v-if="children?.length" class="space-y-5 sm:space-y-6">
         <div class="flex items-center gap-2">
           <Network class="h-5 w-5 flex-shrink-0 text-[#55A9C4]" />
-          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-foreground">Related Concepts</h2>
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-foreground">
+            Related Concepts
+          </h2>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
@@ -161,7 +165,9 @@ const getCorrectAnswer = (question: QuestionDto) => {
                   </div>
                 </div>
                 <div>
-                  <h3 class="text-base font-semibold text-gray-900 dark:text-foreground group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2">
+                  <h3
+                    class="text-base font-semibold text-gray-900 dark:text-foreground group-hover:text-[#55A9C4] transition-colors duration-200 line-clamp-2"
+                  >
                     {{ child.title }}
                   </h3>
                   <p class="mt-1 text-sm text-gray-500">Explore concept</p>
@@ -184,7 +190,9 @@ const getCorrectAnswer = (question: QuestionDto) => {
       <div v-if="questions?.length" class="space-y-6">
         <div class="flex items-center gap-2">
           <HelpCircle class="h-5 w-5 text-[#55A9C4]" />
-          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-foreground">Practice Questions</h2>
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-foreground">
+            Practice Questions
+          </h2>
         </div>
 
         <div class="space-y-4 sm:space-y-5">
@@ -194,8 +202,12 @@ const getCorrectAnswer = (question: QuestionDto) => {
             class="question-card"
             :style="`--animation-order: ${index};`"
           >
-            <div class="p-4 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
-              <p class="font-medium text-gray-900 dark:text-foreground mb-4">{{ question.questionText }}</p>
+            <div
+              class="p-4 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
+            >
+              <p class="font-medium text-gray-900 dark:text-foreground mb-4">
+                {{ question.questionText }}
+              </p>
 
               <!-- MCQ Choices -->
               <div v-if="question.choices?.length" class="space-y-2">
@@ -238,10 +250,12 @@ const getCorrectAnswer = (question: QuestionDto) => {
                 class="mt-4 p-4 rounded-lg bg-[#55A9C4]/5 text-gray-700 border border-[#55A9C4]/10"
               >
                 <p class="font-medium text-gray-900 dark:text-foreground">
-                  <span class="text-[#55A9C4]">Correct Answer:</span> {{ getCorrectAnswer(question)?.choiceText }}
+                  <span class="text-[#55A9C4]">Correct Answer:</span>
+                  {{ getCorrectAnswer(question)?.choiceText }}
                 </p>
                 <p class="mt-2">
-                  <span class="text-[#55A9C4]">Explanation:</span> {{ getCorrectAnswer(question)?.explanation }}
+                  <span class="text-[#55A9C4]">Explanation:</span>
+                  {{ getCorrectAnswer(question)?.explanation }}
                 </p>
               </div>
             </div>
@@ -296,7 +310,7 @@ const getCorrectAnswer = (question: QuestionDto) => {
   .group {
     min-height: 56px;
   }
-  
+
   .max-w-7xl {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -353,7 +367,9 @@ const getCorrectAnswer = (question: QuestionDto) => {
 }
 
 /* Smooth transitions */
-a, button, .transition-all {
+a,
+button,
+.transition-all {
   transition-property: color, background-color, border-color, transform, opacity, box-shadow;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 200ms;

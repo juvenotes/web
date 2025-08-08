@@ -9,7 +9,7 @@ import {
   Plus,
   Upload,
   Pencil,
-  Trash2,
+  Trash,
   ChevronDown,
   MessageSquare,
 } from 'lucide-vue-next'
@@ -232,7 +232,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                 <Pencil class="mr-2 h-4 w-4" /> Edit Paper
               </DropdownMenuItem>
               <DropdownMenuItem @click="handleDeletePaper" class="text-destructive">
-                <Trash2 class="mr-2 h-4 w-4" /> Delete Paper
+                <Trash class="mr-2 h-4 w-4" /> Delete Paper
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -272,7 +272,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
                 <Pencil class="h-4 w-4" /> Edit
               </Button>
               <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
-                <Trash2 class="h-4 w-4 text-destructive" /> Remove
+                <Trash class="h-4 w-4 text-destructive" /> Remove
               </Button>
               <Badge v-if="feedbackCountMap?.[question.id]" variant="outline" class="bg-amber-50">
                 <MessageSquare class="h-3.5 w-3.5 mr-1.5 text-amber-500" />
@@ -438,5 +438,5 @@ const selectedQuestion = ref<QuestionDto | null>(null)
   />
   <EditPaperDialog v-model:open="showEditPaperDialog" :paper="paper" :concept="concept" />
   <UploadPdfQuestionsDialog v-model:open="showUploadPdfDialog" :paper="paper" :concept="concept" />
-<UploadPdfSaqsDialog v-model:open="showUploadPdfSaqDialog" :paper="paper" :concept="concept" />
+  <UploadPdfSaqsDialog v-model:open="showUploadPdfSaqDialog" :paper="paper" :concept="concept" />
 </template>

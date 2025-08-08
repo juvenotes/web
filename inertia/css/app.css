@@ -78,13 +78,13 @@
     --destructive-foreground: 210 40% 98%;
 
     --ring: 212.7 26.8% 83.9%;
-    
+
     --success: 142 72% 29%;
     --success-foreground: 210 40% 98%;
-    
+
     --warning: 35 92% 65%;
     --warning-foreground: 210 40% 98%;
-    
+
     --info: 196 80% 70%;
     --info-foreground: 222 47% 11%;
 
@@ -114,31 +114,31 @@
 /* Dark mode overrides for hardcoded backgrounds */
 @layer utilities {
   .dark .bg-white,
-  .dark [class*="bg-white"],
-  .dark div[style*="background-color: white"],
-  .dark div[style*="background-color: #fff"],
-  .dark div[style*="background-color: #ffffff"] {
+  .dark [class*='bg-white'],
+  .dark div[style*='background-color: white'],
+  .dark div[style*='background-color: #fff'],
+  .dark div[style*='background-color: #ffffff'] {
     background-color: hsl(var(--card)) !important;
   }
 
   .dark .border,
-  .dark [class*="border"] {
+  .dark [class*='border'] {
     border-color: hsl(var(--border)) !important;
   }
 
-  .dark div[style*="background-color: rgba(255, 255, 255"],
-  .dark div[style*="background-color: rgba(249, 250, 251"] {
+  .dark div[style*='background-color: rgba(255, 255, 255'],
+  .dark div[style*='background-color: rgba(249, 250, 251'] {
     background-color: hsl(var(--background)) !important;
   }
-  
+
   /* Override hardcoded text colors in dark mode */
-  .dark [class*="text-gray-"],
-  .dark [class*="text-slate-"] {
+  .dark [class*='text-gray-'],
+  .dark [class*='text-slate-'] {
     color: hsl(var(--foreground)) !important;
   }
-  
+
   /* Handle shadows better in dark mode */
-  .dark [class*="shadow"] {
+  .dark [class*='shadow'] {
     --tw-shadow-color: rgba(0, 0, 0, 0.25) !important;
   }
 }
@@ -146,11 +146,11 @@
 /* Ensure dashboard cards match the example exactly */
 @layer utilities {
   /* Reset any overly specific styles that might be affecting the cards */
-  [data-tour="papers"],
-  [data-tour="concepts"],
-  [data-tour="library"],
-  [data-tour="osce"],
-  [data-tour="spot"] {
+  [data-tour='papers'],
+  [data-tour='concepts'],
+  [data-tour='library'],
+  [data-tour='osce'],
+  [data-tour='spot'] {
     /* Remove min-height and flex constraints that may be forcing card size */
     min-height: unset;
     height: auto;
@@ -167,7 +167,7 @@
   [data-tour] .flex-1 {
     display: block;
   }
-  
+
   /* Exactly match the example card */
   .dashboard-card-fixed-size {
     /* Make sure the padding stays exactly as in the example */

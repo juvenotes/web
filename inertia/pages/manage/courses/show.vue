@@ -2,7 +2,7 @@
 import AdminLayout from '~/layouts/AdminLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import { useForm } from '@inertiajs/vue3'
-import { ArrowLeft, School, Edit, Trash2 } from 'lucide-vue-next'
+import { ArrowLeft, School, Edit, Trash } from 'lucide-vue-next'
 import { ref } from 'vue'
 import type CourseDto from '#dtos/course'
 import type EducationLevelDto from '#dtos/education_level'
@@ -112,7 +112,7 @@ const onDelete = () => {
 
         <!-- Delete Button -->
         <Button variant="destructive" class="gap-2" @click="isDeleteOpen = true">
-          <Trash2 class="h-4 w-4" />
+          <Trash class="h-4 w-4" />
           Delete
         </Button>
       </div>

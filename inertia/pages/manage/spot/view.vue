@@ -3,7 +3,7 @@ import type ConceptDto from '#dtos/concept'
 import type PastPaperDto from '#dtos/past_paper'
 import type QuestionDto from '#dtos/question'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { FileText, Plus, Clock, Trash2, Pencil } from 'lucide-vue-next'
+import { FileText, Plus, Clock, Trash, Pencil } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { useForm } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
@@ -115,7 +115,7 @@ async function handleDeleteQuestion(question: QuestionDto) {
             <Pencil class="h-4 w-4" /> Edit Paper
           </Button>
           <Button @click="handleDeletePaper" variant="destructive" class="flex items-center gap-2">
-            <Trash2 class="h-4 w-4" /> Delete
+            <Trash class="h-4 w-4" /> Delete
           </Button>
           <Button @click="showAddQuestionDialog = true" class="flex items-center gap-2">
             <Plus class="h-4 w-4" /> Add SPOT Question
@@ -165,7 +165,7 @@ async function handleDeleteQuestion(question: QuestionDto) {
                 <Pencil class="h-4 w-4" /> Edit
               </Button>
               <Button size="sm" variant="destructive" @click="handleDeleteQuestion(question)">
-                <Trash2 class="h-4 w-4" /> Delete
+                <Trash class="h-4 w-4" /> Delete
               </Button>
             </div>
           </div>
