@@ -4,9 +4,12 @@ import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
 import EventQuiz from '#models/event_quiz'
 import QuestionDto from '#dtos/question'
-import UserMcqResponse from '#models/user_mcq_response'
+import UserProgressService from '#services/user_progress_service'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class IndexEventsController {
+  constructor(private userProgressService: UserProgressService) {}
   /**
    * Display a list of events
    */
@@ -117,18 +120,18 @@ export default class IndexEventsController {
 
     const canManage = await bouncer.allows('canManage')
 
-    // Fetch attempted question IDs for this user and quiz
+    // Fetch attempted question IDs and user responses for this user and quiz
     let attemptedQuestionIds: number[] = []
+    let userResponses: Record<number, { choiceId: number; isCorrect: boolean }> = {}
     if (auth.user) {
-      const responses = await UserMcqResponse.query()
-        .where('userId', auth.user.id)
-        .where('source', 'event_quiz')
-        .whereIn(
-          'questionId',
-          quiz.questions.map((q) => q.id)
-        )
-        .distinct('questionId')
-      attemptedQuestionIds = responses.map((r) => r.questionId)
+      attemptedQuestionIds = await this.userProgressService.getEventQuizAttemptedQuestions(
+        auth.user.id,
+        quiz.id
+      )
+      userResponses = await this.userProgressService.getEventQuizUserResponses(
+        auth.user.id,
+        quiz.id
+      )
     }
 
     logger.info({
@@ -147,6 +150,40 @@ export default class IndexEventsController {
       questions: questionsDto,
       canManage,
       attemptedQuestionIds,
+      userResponses,
     })
+  }
+
+  /**
+   * Submit a quiz answer (for tracking attempted questions)
+   */
+  async submitQuizAnswer({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const { quizId, questionId, choiceId, isCorrect } = request.only([
+      'quizId',
+      'questionId',
+      'choiceId',
+      'isCorrect',
+    ])
+
+    try {
+      await this.userProgressService.recordEventQuizAttempt(
+        auth.user.id,
+        quizId,
+        questionId,
+        choiceId,
+        isCorrect
+      )
+
+      return response.ok({ success: true })
+    } catch (error: any) {
+      if (error.message?.includes('already answered')) {
+        return response.badRequest({ error: 'You have already answered this question' })
+      }
+      throw error
+    }
   }
 }

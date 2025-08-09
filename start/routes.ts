@@ -425,6 +425,9 @@ router
 router
   .put('/api/events/:slug/quiz/:quizId/stats', [ManageEventsController, 'updateQuizStats'])
   .use(middleware.auth())
+router
+  .post('/api/events/:slug/quiz/:quizId/answer', [IndexEventsController, 'submitQuizAnswer'])
+  .use(middleware.auth())
 
 // Today routes
 router

@@ -23,6 +23,7 @@ import { Separator } from '~/components/ui/separator'
 import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { toast } from '~/components/ui/toast'
+import axios from 'axios'
 
 defineOptions({ layout: DashLayout })
 
@@ -31,6 +32,7 @@ interface Props {
   quiz: EventQuizDto
   canManage?: boolean // Add canManage prop (optional for backward compatibility)
   attemptedQuestionIds?: number[]
+  userResponses?: Record<number, { choiceId: number; isCorrect: boolean }>
 }
 
 const props = defineProps<Props>()
@@ -45,6 +47,20 @@ const currentQuestionIndex = ref(0)
 const selectedAnswers = ref<Record<number, number>>({})
 const showResults = ref(false)
 const showAnswer = ref<Record<number, boolean>>({})
+
+// Initialize showAnswer and selectedAnswers for already attempted questions
+if (props.attemptedQuestionIds && props.quiz.questions && props.userResponses) {
+  props.quiz.questions.forEach((question, index) => {
+    if (props.attemptedQuestionIds!.includes(question.id)) {
+      showAnswer.value[index] = true
+      // Set the user's previous choice if available
+      const userResponse = props.userResponses![question.id]
+      if (userResponse) {
+        selectedAnswers.value[index] = userResponse.choiceId
+      }
+    }
+  })
+}
 
 const currentQuestion = computed(() => props.quiz.questions?.[currentQuestionIndex.value] || null)
 const totalQuestions = computed(() => props.quiz.questions?.length || 0)
@@ -69,8 +85,75 @@ const scorePercentage = computed(() => {
 
 function selectAnswer(questionIndex: number, choiceId: number) {
   if (!showAnswer.value[questionIndex]) {
-    selectedAnswers.value[questionIndex] = choiceId
-    showAnswer.value[questionIndex] = true
+    const question = props.quiz.questions![questionIndex]
+    
+    // Submit answer to backend
+    submitAnswerToBackend(question.id, choiceId, questionIndex)
+  }
+}
+
+async function submitAnswerToBackend(questionId: number, choiceId: number, questionIndex: number) {
+  try {
+    const question = props.quiz.questions![questionIndex]
+    const selectedChoice = question.choices?.find(c => c.id === choiceId)
+    const isCorrect = selectedChoice?.isCorrect || false
+
+    const response = await axios.post(`/api/events/${props.event.slug}/quiz/${props.quiz.id}/answer`, {
+      quizId: props.quiz.id,
+      questionId,
+      choiceId,
+      isCorrect
+    })
+
+    if (response.data.success) {
+      // Update local state only after successful API call
+      selectedAnswers.value[questionIndex] = choiceId
+      showAnswer.value[questionIndex] = true
+      
+      // Add this question to attempted questions
+      if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
+        props.attemptedQuestionIds.push(questionId)
+      }
+      
+      // Show success/failure feedback using the isCorrect we calculated
+      if (isCorrect) {
+        const correctChoice = question.choices?.find(c => c.isCorrect)
+        toast({
+          title: 'Correct!',
+          description: correctChoice?.explanation || 'Well done!',
+          variant: 'default',
+        })
+      } else {
+        const correctChoice = question.choices?.find(c => c.isCorrect)
+        toast({
+          title: 'Incorrect',
+          description: correctChoice?.explanation || 'Try reviewing the material.',
+          variant: 'destructive',
+        })
+      }
+    }
+  } catch (error: any) {
+    // Handle API errors
+    if (error.response?.status === 400 && error.response?.data?.error?.includes('already answered')) {
+      // Mark as attempted in local state
+      showAnswer.value[questionIndex] = true
+      if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
+        props.attemptedQuestionIds.push(questionId)
+      }
+      
+      toast({
+        title: 'Already Answered',
+        description: 'You have already answered this question.',
+        variant: 'destructive',
+      })
+    } else {
+      console.error('Failed to submit answer:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to submit your answer. Please try again.',
+        variant: 'destructive',
+      })
+    }
   }
 }
 
@@ -160,7 +243,7 @@ function isAttempted(questionId: number) {
       <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
     </div>
 
-    <!-- Questions List (read-only, public) -->
+    <!-- Questions List -->
     <div v-if="props.quiz.questions && props.quiz.questions.length" class="space-y-4 mt-8">
       <div
         v-for="(question, index) in props.quiz.questions"
@@ -170,6 +253,12 @@ function isAttempted(questionId: number) {
         <div class="flex items-center gap-3 mb-4">
           <span class="text-sm font-medium text-gray-500">Q{{ index + 1 }}</span>
           <Badge v-if="question.isMcq" class="bg-blue-100 text-blue-800">MCQ</Badge>
+          <Badge 
+            v-if="showAnswer[index]" 
+            class="bg-green-100 text-green-800"
+          >
+            Answered
+          </Badge>
         </div>
         <div class="space-y-4">
           <div class="prose prose-sm max-w-none">
@@ -189,11 +278,11 @@ function isAttempted(questionId: number) {
               class="flex items-start gap-3 p-3 rounded-lg border transition-all duration-200"
               :class="[
                 showAnswer[index] && choice.isCorrect ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200',
-                (showAnswer[index] || isAttempted(question.id)) ? 'pointer-events-none opacity-70 cursor-default' : 'cursor-pointer',
+                showAnswer[index] ? 'pointer-events-none opacity-70 cursor-default' : 'cursor-pointer',
                 selectedAnswers[index] === choice.id && !choice.isCorrect && showAnswer[index] ? 'border-red-400 bg-red-50' : '',
               ]"
-              @click="!(showAnswer[index] || isAttempted(question.id)) && selectAnswer(index, choice.id)"
-              :aria-disabled="showAnswer[index] || isAttempted(question.id) ? 'true' : 'false'"
+              @click="!showAnswer[index] && selectAnswer(index, choice.id)"
+              :aria-disabled="showAnswer[index] ? 'true' : 'false'"
             >
               <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium"
                 :class="showAnswer[index] && choice.isCorrect ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'"
