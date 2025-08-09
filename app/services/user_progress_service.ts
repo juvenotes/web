@@ -102,6 +102,117 @@ export default class UserProgressService {
   }
 
   /**
+   * Record event quiz MCQ attempt
+   * @param userId The user ID
+   * @param quizId The event quiz ID
+   * @param questionId The question ID
+   * @param choiceId The choice ID
+   * @param isCorrect Whether the answer is correct
+   */
+  async recordEventQuizAttempt(
+    userId: number,
+    quizId: number,
+    questionId: number,
+    choiceId: number,
+    isCorrect: boolean
+  ) {
+    // Get the choice to store its text for historical record
+    const choice = await McqChoice.findOrFail(choiceId)
+
+    // Check if user has already responded to this question
+    const existingResponse = await UserMcqResponse.query()
+      .where('userId', userId)
+      .where('questionId', questionId)
+      .where('source', 'event_quiz')
+      .first()
+
+    if (existingResponse) {
+      throw new Error('You have already answered this question')
+    }
+
+    // Record in user_mcq_responses table with event_quiz source
+    await UserMcqResponse.create({
+      userId,
+      questionId,
+      choiceId,
+      selectedOption: '',
+      isCorrect,
+      status: ResponseStatus.ACTIVE,
+      originalChoiceText: choice.choiceText,
+      source: 'event_quiz',
+    })
+
+    // Update streak if first activity today
+    const shouldUpdate = await this.shouldUpdateStreak(userId)
+    if (shouldUpdate) {
+      await StreakService.updateStreak(userId, DateTime.now())
+    }
+
+    // Update or create user quiz stats using the leaderboard service
+    const stats = await this.calculateEventQuizStats(userId, quizId)
+
+    return {
+      isCorrect,
+      explanation: choice.explanation,
+      stats,
+    }
+  }
+
+  /**
+   * Calculate event quiz statistics for a user
+   */
+  private async calculateEventQuizStats(userId: number, quizId: number) {
+    // Import here to avoid circular dependency
+    const { QuizLeaderboardService } = await import('#services/quiz_leaderboard_service')
+
+    const stats = await QuizLeaderboardService.calculateQuizStatsFromResponses(userId, quizId)
+
+    // Update the user_quiz_stats table
+    await QuizLeaderboardService.updateUserQuizStats(userId, quizId, stats)
+
+    return stats
+  }
+
+  /**
+   * Get attempted question IDs for an event quiz
+   */
+  async getEventQuizAttemptedQuestions(userId: number, quizId: number): Promise<number[]> {
+    const responses = await UserMcqResponse.query()
+      .where('userId', userId)
+      .where('source', 'event_quiz')
+      .whereHas('question', (questionQuery) => {
+        questionQuery.where('eventQuizId', quizId)
+      })
+      .select('questionId')
+      .distinct('questionId')
+
+    return responses.map((r) => r.questionId)
+  }
+
+  /**
+   * Get user's responses for an event quiz with selected choices
+   */
+  async getEventQuizUserResponses(userId: number, quizId: number) {
+    const responses = await UserMcqResponse.query()
+      .where('userId', userId)
+      .where('source', 'event_quiz')
+      .whereHas('question', (questionQuery) => {
+        questionQuery.where('eventQuizId', quizId)
+      })
+      .select('questionId', 'choiceId', 'isCorrect')
+
+    const responseMap: Record<number, { choiceId: number; isCorrect: boolean }> = {}
+    responses.forEach((response) => {
+      responseMap[response.questionId] = {
+        choiceId: response.choiceId,
+        isCorrect: response.isCorrect,
+      }
+    })
+
+    return responseMap
+  }
+
+  /**
    * Record a Today question attempt
    */
   private async recordTodayQuestionAttempt(

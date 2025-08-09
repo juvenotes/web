@@ -71,6 +71,24 @@ function handleEditQuestion(question: QuestionDto) {
   }
 }
 
+function publishQuiz() {
+  if (!confirm('Are you sure you want to publish this quiz?')) return
+  const form = useForm({})
+  form.put(
+    `/manage/events/${props.event.slug}/quiz/${props.quiz.id}/publish`,
+    {},
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.success('Quiz published successfully')
+      },
+      onError: () => {
+        toast.error('Failed to publish quiz')
+      },
+    }
+  )
+}
+
 const breadcrumbItems = computed(() => [
   { label: 'Events', href: '/manage/events' },
   { label: props.event.title, href: `/manage/events/${props.event.slug}` },
@@ -94,7 +112,10 @@ const selectedQuestion = ref<QuestionDto | null>(null)
 </script>
 
 <template>
-  <AppHead :title="`${quiz.title} - ${event.title}`" />
+  <AppHead 
+    :title="`${quiz.title} - ${event.title}`" 
+    :description="`Manage questions and settings for ${quiz.title} quiz in ${event.title} event`"
+  />
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
@@ -150,6 +171,13 @@ const selectedQuestion = ref<QuestionDto | null>(null)
           >
             <Trash class="h-4 w-4 mr-2" />
             Delete Quiz
+          </Button>
+          <Button
+            v-if="quiz.status === 'draft'"
+            @click="publishQuiz"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+          >
+            Publish
           </Button>
         </div>
       </div>

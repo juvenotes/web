@@ -11,6 +11,7 @@ export default class EventQuizDto extends BaseModelDto {
   declare title: string
   declare slug: string
   declare description: string | null
+  declare status: 'draft' | 'published'
   declare createdAt: string
   declare updatedAt: string
   declare event: EventDto | null
@@ -27,6 +28,7 @@ export default class EventQuizDto extends BaseModelDto {
     this.title = eventQuiz.title
     this.slug = eventQuiz.slug
     this.description = eventQuiz.description
+    this.status = eventQuiz.status
     this.createdAt = eventQuiz.createdAt.toISO()!
     this.updatedAt = eventQuiz.updatedAt.toISO()!
     this.event = eventQuiz.event && new EventDto(eventQuiz.event)

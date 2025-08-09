@@ -78,20 +78,20 @@ function getEventTypeColor(type: string) {
         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
-              <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
-                <Calendar class="h-6 w-6 text-[#55A9C4]" />
+              <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
+                <Calendar class="h-4 w-4 sm:h-6 sm:w-6 text-[#55A9C4]" />
               </div>
             </div>
             <div>
-              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ props.event.title }}</h1>
-              <p v-if="props.event.description" class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed">
+              <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">{{ props.event.title }}</h1>
+              <p v-if="props.event.description" class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed mb-2 sm:mb-0">
                 {{ props.event.description }}
               </p>
-              <div class="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
-                <span>
+              <div class="flex flex-col sm:flex-wrap sm:flex-row gap-2 sm:gap-4 text-sm text-muted-foreground mt-2">
+                <span class="text-xs sm:text-sm">
                   <strong>Starts:</strong> {{ formatDate(props.event.startDate) }}
                 </span>
-                <span>
+                <span class="text-xs sm:text-sm">
                   <strong>Ends:</strong> {{ formatDate(props.event.endDate) }}
                 </span>
               </div>
@@ -102,37 +102,37 @@ function getEventTypeColor(type: string) {
             <Link
               v-if="props.canManage"
               :href="`/manage/events/${props.event.slug}`"
-              class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
+              class="w-full sm:w-auto flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-[#55A9C4] hover:bg-[#4795af] text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
             >
               <span>Manage Event</span>
             </Link>
           </div>
         </div>
-        <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
+        <div class="w-8 sm:w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
       </div>
 
       <!-- Quizzes List -->
       <div v-if="props.quizzes.length" class="space-y-4">
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             v-for="quiz in props.quizzes"
             :key="quiz.id"
             :href="`/events/${props.event.slug}/quiz/${quiz.id}`"
-            class="group relative overflow-hidden rounded-2xl bg-white p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+            class="group relative overflow-hidden rounded-2xl bg-white p-4 sm:p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
           >
             <div class="relative space-y-3">
-              <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+              <h3 class="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors">
                 {{ quiz.title }}
               </h3>
-              <div class="flex items-center gap-3 text-sm mb-2">
-                <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
+              <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm mb-2">
+                <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium text-xs sm:text-sm w-fit">
                   {{ quiz.questions?.length ?? 0 }} questions
                 </span>
-                <span class="text-muted-foreground">
+                <span class="text-muted-foreground text-xs sm:text-sm">
                   {{ formatDateShort(quiz.createdAt) }}
                 </span>
               </div>
-              <p v-if="quiz.description" class="text-sm text-muted-foreground line-clamp-2">
+              <p v-if="quiz.description" class="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                 {{ quiz.description }}
               </p>
             </div>
@@ -140,14 +140,14 @@ function getEventTypeColor(type: string) {
         </div>
       </div>
       <!-- Empty State -->
-      <div v-else class="text-center p-8 bg-white rounded-2xl border border-slate-100">
-        <div class="flex flex-col items-center gap-4">
-          <div class="p-4 rounded-full bg-muted/20">
-            <BookOpen class="h-8 w-8 text-muted-foreground" />
+      <div v-else class="text-center p-6 sm:p-8 bg-white rounded-2xl border border-slate-100">
+        <div class="flex flex-col items-center gap-3 sm:gap-4">
+          <div class="p-3 sm:p-4 rounded-full bg-muted/20">
+            <BookOpen class="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
           </div>
-          <div class="space-y-2">
-            <h3 class="text-lg font-semibold text-foreground">No quizzes available</h3>
-            <p class="text-muted-foreground">This event does not have any quizzes yet.</p>
+          <div class="space-y-1 sm:space-y-2">
+            <h3 class="text-base sm:text-lg font-semibold text-foreground">No quizzes available</h3>
+            <p class="text-sm sm:text-base text-muted-foreground">This event does not have any quizzes yet.</p>
           </div>
         </div>
       </div>

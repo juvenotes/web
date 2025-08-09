@@ -27,6 +27,9 @@ export default class EventQuiz extends BaseModel {
   @column()
   declare description: string | null
 
+  @column()
+  declare status: 'draft' | 'published'
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
