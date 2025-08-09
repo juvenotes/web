@@ -614,6 +614,9 @@ router
     router
       .get('/:slug/quiz/:quizId/leaderboard', [ManageEventsController, 'showQuizLeaderboard'])
       .as('manage.events.quiz.leaderboard')
+    router
+      .put('/:slug/quiz/:quizId/publish', [ManageEventsController, 'publishQuiz'])
+      .as('manage.events.quiz.publish')
   })
   .prefix('/manage/events')
   .use(middleware.auth())

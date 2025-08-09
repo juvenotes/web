@@ -21,6 +21,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Label } from '~/components/ui/label'
 import { Separator } from '~/components/ui/separator'
 import { ref, computed } from 'vue'
+import { router } from '@inertiajs/vue3'
+import { toast } from '~/components/ui/toast'
 
 defineOptions({ layout: DashLayout })
 
@@ -28,6 +30,7 @@ interface Props {
   event: EventDto
   quiz: EventQuizDto
   canManage?: boolean // Add canManage prop (optional for backward compatibility)
+  attemptedQuestionIds?: number[]
 }
 
 const props = defineProps<Props>()
@@ -100,6 +103,10 @@ function formatDate(dateString: string) {
     month: 'long',
     day: 'numeric',
   })
+}
+
+function isAttempted(questionId: number) {
+  return props.attemptedQuestionIds?.includes(questionId)
 }
 </script>
 
@@ -182,11 +189,11 @@ function formatDate(dateString: string) {
               class="flex items-start gap-3 p-3 rounded-lg border transition-all duration-200"
               :class="[
                 showAnswer[index] && choice.isCorrect ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200',
-                showAnswer[index] ? 'pointer-events-none opacity-70 cursor-default' : 'cursor-pointer',
+                (showAnswer[index] || isAttempted(question.id)) ? 'pointer-events-none opacity-70 cursor-default' : 'cursor-pointer',
                 selectedAnswers[index] === choice.id && !choice.isCorrect && showAnswer[index] ? 'border-red-400 bg-red-50' : '',
               ]"
-              @click="!showAnswer[index] && selectAnswer(index, choice.id)"
-              :aria-disabled="showAnswer[index] ? 'true' : 'false'"
+              @click="!(showAnswer[index] || isAttempted(question.id)) && selectAnswer(index, choice.id)"
+              :aria-disabled="showAnswer[index] || isAttempted(question.id) ? 'true' : 'false'"
             >
               <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium"
                 :class="showAnswer[index] && choice.isCorrect ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'"

@@ -4,6 +4,7 @@ import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
 import EventQuiz from '#models/event_quiz'
 import QuestionDto from '#dtos/question'
+import UserMcqResponse from '#models/user_mcq_response'
 
 export default class IndexEventsController {
   /**
@@ -62,7 +63,7 @@ export default class IndexEventsController {
       .where('status', 'published')
       .preload('user')
       .preload('quizzes', (query) => {
-        query.preload('questions', (q) => {
+        query.where('status', 'published').preload('questions', (q) => {
           q.preload('choices')
         })
       })
@@ -104,6 +105,7 @@ export default class IndexEventsController {
     const quiz = await EventQuiz.query()
       .where('id', params.quizId)
       .where('eventId', event.id)
+      .where('status', 'published')
       .preload('questions', (query) => {
         query.orderBy('id', 'asc').preload('choices')
       })
@@ -115,12 +117,27 @@ export default class IndexEventsController {
 
     const canManage = await bouncer.allows('canManage')
 
+    // Fetch attempted question IDs for this user and quiz
+    let attemptedQuestionIds: number[] = []
+    if (auth.user) {
+      const responses = await UserMcqResponse.query()
+        .where('userId', auth.user.id)
+        .where('source', 'event_quiz')
+        .whereIn(
+          'questionId',
+          quiz.questions.map((q) => q.id)
+        )
+        .distinct('questionId')
+      attemptedQuestionIds = responses.map((r) => r.questionId)
+    }
+
     logger.info({
       ...context,
       userId: auth.user?.id,
       eventId: event.id,
       quizId: quiz.id,
       questionsCount: questionsDto.length,
+      attemptedQuestionIds,
       message: 'Event quiz fetched successfully',
     })
 
@@ -129,6 +146,7 @@ export default class IndexEventsController {
       quiz: quizDto,
       questions: questionsDto,
       canManage,
+      attemptedQuestionIds,
     })
   }
 }

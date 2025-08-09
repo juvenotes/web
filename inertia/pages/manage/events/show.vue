@@ -23,10 +23,12 @@ import { Badge } from '~/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Separator } from '~/components/ui/separator'
 import { ref } from 'vue'
+import { router } from '@inertiajs/vue3'
 
 // Import dialogs
 import CreateQuizDialog from '~/components/dialogs/CreateEventQuizDialog.vue'
 import EditQuizDialog from '~/components/dialogs/EditEventQuizDialog.vue'
+import EditEventDialog from '~/components/dialogs/EditEventDialog.vue'
 
 defineOptions({ layout: AdminLayout })
 
@@ -40,6 +42,7 @@ const props = defineProps<Props>()
 // Dialog states
 const createQuizOpen = ref(false)
 const editQuizOpen = ref(false)
+const editEventOpen = ref(false)
 const selectedQuiz = ref<EventQuizDto | null>(null)
 
 function formatDate(dateString: string) {
@@ -153,7 +156,7 @@ function onDeleteEvent(e: Event) {
             View
           </Link>
           <Button 
-            @click="editQuizOpen = true"
+            @click="editEventOpen = true"
             class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium"
           >
             <Edit class="h-4 w-4" />
@@ -235,6 +238,11 @@ function onDeleteEvent(e: Event) {
     v-model:open="editQuizOpen"
     :event="event"
     :quiz="selectedQuiz"
+  />
+
+  <EditEventDialog
+    v-model:open="editEventOpen"
+    :event="event"
   />
 </template>
 
