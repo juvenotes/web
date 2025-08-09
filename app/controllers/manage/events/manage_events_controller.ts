@@ -163,7 +163,7 @@ export default class ManageEventsController {
   /**
    * Show a single event for management
    */
-  async show({ params, inertia, auth, bouncer, logger }: HttpContext) {
+  async show({ params, inertia, auth, bouncer, logger, response }: HttpContext) {
     const context = {
       controller: 'ManageEventsController',
       action: 'show',
@@ -173,7 +173,7 @@ export default class ManageEventsController {
 
     if (await bouncer.with(EventPolicy).denies('view')) {
       logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized view attempt' })
-      return inertia.render('errors/forbidden')
+      return response.forbidden()
     }
 
     const event = await Event.query()
@@ -206,7 +206,7 @@ export default class ManageEventsController {
   /**
    * Show edit form for an event
    */
-  async edit({ params, inertia, auth, bouncer, logger }: HttpContext) {
+  async edit({ params, inertia, auth, bouncer, logger, response }: HttpContext) {
     const context = {
       controller: 'ManageEventsController',
       action: 'edit',
@@ -223,7 +223,7 @@ export default class ManageEventsController {
         eventId: event.id,
         message: 'Unauthorized edit attempt',
       })
-      return inertia.render('errors/forbidden')
+      return response.forbidden()
     }
 
     const eventDto = new EventDto(event)
@@ -460,6 +460,7 @@ export default class ManageEventsController {
             title: data.title,
             slug: generateSlug(),
             description: data.description || null,
+            status: data.status || 'draft',
           },
           { client: trx }
         )
@@ -604,6 +605,7 @@ export default class ManageEventsController {
           .merge({
             title: data.title || quiz.title,
             description: data.description !== undefined ? data.description : quiz.description,
+            status: data.status || quiz.status,
           })
           .save()
         logger.info({
@@ -738,6 +740,7 @@ export default class ManageEventsController {
             title,
             slug: generateSlug(),
             description: description || null,
+            status: 'draft', // Default to draft for uploaded quizzes
           },
           { client: trx }
         )
@@ -1208,5 +1211,45 @@ export default class ManageEventsController {
       logger.error('failed to update quiz stats', { ...context, error })
       return response.status(500).json({ error: 'Failed to update quiz stats' })
     }
+  }
+
+  /**
+   * Publish a quiz (set status to published)
+   */
+  async publishQuiz({ params, response, auth, bouncer, logger, session }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'publishQuiz',
+      eventSlug: params.slug,
+      quizId: params.quizId,
+      userId: auth.user?.id,
+    }
+    logger.info({ ...context, message: 'Publishing quiz' })
+
+    const event = await Event.findByOrFail('slug', params.slug)
+
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      logger.warn({
+        ...context,
+        userId: auth.user?.id,
+        eventId: event.id,
+        message: 'Unauthorized update attempt',
+      })
+      return response.forbidden()
+    }
+
+    const quiz = await EventQuiz.query()
+      .where('id', params.quizId)
+      .whereHas('event', (eventQuery) => {
+        eventQuery.where('slug', params.slug)
+      })
+      .firstOrFail()
+
+    quiz.status = 'published'
+    await quiz.save()
+
+    logger.info({ ...context, message: 'Quiz published successfully' })
+    session.flash('success', 'Quiz published successfully')
+    return response.redirect().back()
   }
 }

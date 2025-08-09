@@ -19,20 +19,22 @@ const emit = defineEmits<{
 
 const form = useForm({
   title: '',
-  event_type: 'webinar',
-  start_date: '',
-  end_date: '',
+  eventType: 'webinar',
+  startDate: '',
+  endDate: '',
   imageUrl: '',
+  status: 'draft',
 })
 
 const isUploadingImage = ref(false)
 
 const initializeForm = () => {
   form.title = props.event?.title || ''
-  form.event_type = props.event?.event_type || 'webinar'
-  form.start_date = props.event?.start_date || ''
-  form.end_date = props.event?.end_date || ''
+  form.eventType = props.event?.eventType || 'webinar'
+  form.startDate = props.event?.startDate || ''
+  form.endDate = props.event?.endDate || ''
   form.imageUrl = props.event?.imageUrl || ''
+  form.status = props.event?.status || 'draft'
   form.clearErrors()
 }
 
@@ -93,18 +95,18 @@ const endDateValue = ref()
 watch([startDateValue], ([date]) => {
   if (date) {
     const d = date.toDate()
-    form.start_date = d.toISOString().slice(0, 16)
+    form.startDate = d.toISOString().slice(0, 16)
   } else {
-    form.start_date = ''
+    form.startDate = ''
   }
 })
 
 watch([endDateValue], ([date]) => {
   if (date) {
     const d = date.toDate()
-    form.end_date = d.toISOString().slice(0, 16)
+    form.endDate = d.toISOString().slice(0, 16)
   } else {
-    form.end_date = ''
+    form.endDate = ''
   }
 })
 </script>
@@ -120,28 +122,50 @@ watch([endDateValue], ([date]) => {
           <div class="space-y-2 sm:space-y-3">
             <Label>Title</Label>
             <Input v-model="form.title" :class="{ 'border-destructive': form.errors.title }" />
+            <span v-if="form.errors.title" class="text-sm text-destructive">{{ form.errors.title }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
             <Label>Type</Label>
-            <Select v-model="form.event_type">
-              <option value="webinar">Webinar</option>
-              <option value="workshop">Workshop</option>
-              <option value="conference">Conference</option>
-              <option value="exam">Exam</option>
-              <option value="seminar">Seminar</option>
-              <option value="meeting">Meeting</option>
-              <option value="other">Other</option>
+            <Select v-model="form.eventType">
+              <SelectTrigger :class="{ 'border-destructive': form.errors.eventType }">
+                <SelectValue placeholder="Select event type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="webinar">Webinar</SelectItem>
+                <SelectItem value="workshop">Workshop</SelectItem>
+                <SelectItem value="conference">Conference</SelectItem>
+                <SelectItem value="exam">Exam</SelectItem>
+                <SelectItem value="seminar">Seminar</SelectItem>
+                <SelectItem value="meeting">Meeting</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
             </Select>
+            <span v-if="form.errors.eventType" class="text-sm text-destructive">{{ form.errors.eventType }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
-            <Label>Start Date & Time</Label>
-            <Input type="datetime-local" v-model="form.start_date" :class="{ 'border-destructive': form.errors.start_date }" />
-            <span v-if="form.errors.start_date" class="text-sm text-destructive">{{ form.errors.start_date }}</span>
+            <Label>Status</Label>
+            <Select v-model="form.status">
+              <SelectTrigger :class="{ 'border-destructive': form.errors.status }">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+            <span v-if="form.errors.status" class="text-sm text-destructive">{{ form.errors.status }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
-            <Label>End Date & Time</Label>
-            <Input type="datetime-local" v-model="form.end_date" :class="{ 'border-destructive': form.errors.end_date }" />
-            <span v-if="form.errors.end_date" class="text-sm text-destructive">{{ form.errors.end_date }}</span>
+            <Label>Start Date</Label>
+            <Input type="date" v-model="form.startDate" :class="{ 'border-destructive': form.errors.startDate }" />
+            <span v-if="form.errors.startDate" class="text-sm text-destructive">{{ form.errors.startDate }}</span>
+          </div>
+          <div class="space-y-2 sm:space-y-3">
+            <Label>End Date</Label>
+            <Input type="date" v-model="form.endDate" :class="{ 'border-destructive': form.errors.endDate }" />
+            <span v-if="form.errors.endDate" class="text-sm text-destructive">{{ form.errors.endDate }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
             <Label>Event Image (Optional)</Label>
@@ -153,9 +177,12 @@ watch([endDateValue], ([date]) => {
               </Button>
             </div>
             <div v-if="isUploadingImage" class="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader class="h-4 w-4 animate-spin" />
+              <span class="inline-block h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
               <span>Uploading image...</span>
             </div>
+          </div>
+          <div v-if="form.error" class="text-sm text-destructive">
+            {{ form.error }}
           </div>
           <Button type="submit" :disabled="form.processing" class="w-full h-10 sm:h-11">
             {{ form.processing ? 'Saving...' : 'Save Changes' }}
