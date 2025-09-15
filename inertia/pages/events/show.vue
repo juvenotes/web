@@ -18,10 +18,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const breadcrumbItems = [
-  { label: 'Events', href: '/events' },
-  { label: props.event.title }
-]
+const breadcrumbItems = [{ label: 'Events', href: '/events' }, { label: props.event.title }]
 
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -65,9 +62,9 @@ function getEventTypeColor(type: string) {
 </script>
 
 <template>
-  <AppHead 
-    :title="props.event.title" 
-    :description="props.event.description || `Join ${props.event.title} - ${props.event.eventType}`" 
+  <AppHead
+    :title="props.event.title"
+    :description="props.event.description || `Join ${props.event.title} - ${props.event.eventType}`"
   />
 
   <div class="min-h-screen bg-gray-50/50">
@@ -75,19 +72,30 @@ function getEventTypeColor(type: string) {
       <!-- Event Header -->
       <div class="mb-6 sm:mb-10 header-animation">
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
-              <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
+              <div
+                class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center"
+              >
                 <Calendar class="h-4 w-4 sm:h-6 sm:w-6 text-[#55A9C4]" />
               </div>
             </div>
             <div>
-              <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">{{ props.event.title }}</h1>
-              <p v-if="props.event.description" class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed mb-2 sm:mb-0">
+              <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                {{ props.event.title }}
+              </h1>
+              <p
+                v-if="props.event.description"
+                class="text-sm sm:text-base text-gray-600 max-w-3xl leading-relaxed mb-2 sm:mb-0"
+              >
                 {{ props.event.description }}
               </p>
-              <div class="flex flex-col sm:flex-wrap sm:flex-row gap-2 sm:gap-4 text-sm text-muted-foreground mt-2">
+              <div
+                class="flex flex-col sm:flex-wrap sm:flex-row gap-2 sm:gap-4 text-sm text-muted-foreground mt-2"
+              >
                 <span class="text-xs sm:text-sm">
                   <strong>Starts:</strong> {{ formatDate(props.event.startDate) }}
                 </span>
@@ -108,7 +116,9 @@ function getEventTypeColor(type: string) {
             </Link>
           </div>
         </div>
-        <div class="w-8 sm:w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
+        <div
+          class="w-8 sm:w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"
+        ></div>
       </div>
 
       <!-- Quizzes List -->
@@ -121,18 +131,25 @@ function getEventTypeColor(type: string) {
             class="group relative overflow-hidden rounded-2xl bg-white p-4 sm:p-6 border border-slate-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
           >
             <div class="relative space-y-3">
-              <h3 class="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+              <h3
+                class="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors"
+              >
                 {{ quiz.title }}
               </h3>
               <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm mb-2">
-                <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium text-xs sm:text-sm w-fit">
+                <span
+                  class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium text-xs sm:text-sm w-fit"
+                >
                   {{ quiz.questions?.length ?? 0 }} questions
                 </span>
                 <span class="text-muted-foreground text-xs sm:text-sm">
                   {{ formatDateShort(quiz.createdAt) }}
                 </span>
               </div>
-              <p v-if="quiz.description" class="text-xs sm:text-sm text-muted-foreground line-clamp-2">
+              <p
+                v-if="quiz.description"
+                class="text-xs sm:text-sm text-muted-foreground line-clamp-2"
+              >
                 {{ quiz.description }}
               </p>
             </div>
@@ -147,7 +164,9 @@ function getEventTypeColor(type: string) {
           </div>
           <div class="space-y-1 sm:space-y-2">
             <h3 class="text-base sm:text-lg font-semibold text-foreground">No quizzes available</h3>
-            <p class="text-sm sm:text-base text-muted-foreground">This event does not have any quizzes yet.</p>
+            <p class="text-sm sm:text-base text-muted-foreground">
+              This event does not have any quizzes yet.
+            </p>
           </div>
         </div>
       </div>

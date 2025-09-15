@@ -3,20 +3,20 @@ import { Link } from '@inertiajs/vue3'
 import type EventDto from '#dtos/event'
 import type EventQuizDto from '#dtos/event_quiz'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import { 
-  Calendar, 
-  Edit, 
-  Trash, 
-  Plus, 
-  Users, 
-  MapPin, 
-  Clock, 
+import {
+  Calendar,
+  Edit,
+  Trash,
+  Plus,
+  Users,
+  MapPin,
+  Clock,
   DollarSign,
   Globe,
   BookOpen,
   Upload,
   Eye,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
@@ -108,25 +108,26 @@ function onDeleteEvent(e: Event) {
 </script>
 
 <template>
-  <AppHead 
-    :title="`${event.title} - Manage Events`" 
+  <AppHead
+    :title="`${event.title} - Manage Events`"
     :description="`Manage quizzes and settings for ${event.title} event`"
   />
-  
+
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
-    <div class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
-      
+    <div
+      class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border"
+    >
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
+
       <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
         <div class="flex items-start gap-4 mt-4">
-          <Link 
-            href="/manage/events"
-            class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
+          <Link href="/manage/events" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <ArrowLeft class="h-5 w-5 text-gray-600" />
           </Link>
-          
+
           <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
             <Calendar class="h-6 w-6 text-primary" />
           </div>
@@ -148,14 +149,14 @@ function onDeleteEvent(e: Event) {
         </div>
 
         <div class="flex gap-3">
-          <Link 
-            :href="`/events/${event.slug}`" 
+          <Link
+            :href="`/events/${event.slug}`"
             class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
           >
             <Eye class="h-4 w-4" />
             View
           </Link>
-          <Button 
+          <Button
             @click="editEventOpen = true"
             class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium"
           >
@@ -185,11 +186,13 @@ function onDeleteEvent(e: Event) {
         >
           <div class="relative space-y-3">
             <div class="flex items-start justify-between">
-              <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+              <h3
+                class="text-lg font-bold text-foreground group-hover:text-primary transition-colors"
+              >
                 {{ quiz.title }}
               </h3>
             </div>
-            
+
             <div class="flex items-center gap-3 text-sm">
               <span class="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
                 {{ quiz.questions?.length ?? 0 }} questions
@@ -198,15 +201,15 @@ function onDeleteEvent(e: Event) {
                 {{ formatDateShort(quiz.createdAt) }}
               </span>
             </div>
-            
+
             <p v-if="quiz.description" class="text-sm text-muted-foreground line-clamp-2">
               {{ quiz.description }}
             </p>
           </div>
         </Link>
       </div>
-    </div>    
-    
+    </div>
+
     <!-- Empty State -->
     <div v-else class="text-center p-8 bg-white rounded-2xl border border-slate-100">
       <div class="flex flex-col items-center gap-4">
@@ -228,10 +231,7 @@ function onDeleteEvent(e: Event) {
   </div>
 
   <!-- Dialogs -->
-  <CreateQuizDialog
-    v-model:open="createQuizOpen"
-    :event="event"
-  />
+  <CreateQuizDialog v-model:open="createQuizOpen" :event="event" />
 
   <EditQuizDialog
     v-if="selectedQuiz"
@@ -240,10 +240,7 @@ function onDeleteEvent(e: Event) {
     :quiz="selectedQuiz"
   />
 
-  <EditEventDialog
-    v-model:open="editEventOpen"
-    :event="event"
-  />
+  <EditEventDialog v-model:open="editEventOpen" :event="event" />
 </template>
 
 <style scoped>
@@ -251,7 +248,12 @@ function onDeleteEvent(e: Event) {
   @apply text-gray-700;
 }
 
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
   @apply text-gray-900;
 }
 

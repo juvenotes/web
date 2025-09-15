@@ -31,9 +31,9 @@ const currentUser = page.props.auth?.user
           <h1 class="text-3xl font-bold text-gray-900">{{ quiz.title }}</h1>
           <p class="text-gray-600 mt-1">Live leaderboard for {{ event.title }}</p>
         </div>
-        
+
         <div class="flex items-center gap-4">
-          <Link 
+          <Link
             :href="`/manage/events/${event.slug}/quiz/${quiz.id}`"
             class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
@@ -49,28 +49,28 @@ const currentUser = page.props.auth?.user
       <div class="lg:col-span-1">
         <div class="bg-white rounded-xl border shadow-sm p-6">
           <h3 class="text-lg font-semibold mb-4">Quiz Details</h3>
-          
+
           <div class="space-y-3">
             <div>
               <dt class="text-sm font-medium text-gray-500">Event</dt>
               <dd class="text-sm text-gray-900">{{ event.title }}</dd>
             </div>
-            
+
             <div>
               <dt class="text-sm font-medium text-gray-500">Quiz Title</dt>
               <dd class="text-sm text-gray-900">{{ quiz.title }}</dd>
             </div>
-            
+
             <div v-if="quiz.description">
               <dt class="text-sm font-medium text-gray-500">Description</dt>
               <dd class="text-sm text-gray-900">{{ quiz.description }}</dd>
             </div>
-            
+
             <div>
               <dt class="text-sm font-medium text-gray-500">Total Questions</dt>
               <dd class="text-sm text-gray-900">{{ quiz.questions?.length || 0 }}</dd>
             </div>
-            
+
             <div>
               <dt class="text-sm font-medium text-gray-500">Created</dt>
               <dd class="text-sm text-gray-900">
@@ -83,9 +83,9 @@ const currentUser = page.props.auth?.user
 
       <!-- Leaderboard -->
       <div class="lg:col-span-3">
-        <QuizLeaderboard 
+        <QuizLeaderboard
           :event-slug="event.slug"
-          :quiz-id="quiz.id" 
+          :quiz-id="quiz.id"
           :current-user-id="currentUser?.id"
           :initial-data="leaderboardData"
         />
