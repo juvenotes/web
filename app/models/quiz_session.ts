@@ -4,7 +4,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from './user.js'
 import EventQuiz from './event_quiz.js'
 
-export default class UserQuizStat extends BaseModel {
+export default class QuizSession extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -14,26 +14,29 @@ export default class UserQuizStat extends BaseModel {
   @column()
   declare quizId: number
 
-  @column()
-  declare questionsAttempted: number
+  @column.dateTime()
+  declare startedAt: DateTime | null
+
+  @column.dateTime()
+  declare endedAt: DateTime | null
+
+  @column.dateTime()
+  declare expiresAt: DateTime | null
 
   @column()
-  declare questionsCorrect: number
+  declare tabSwitches: number
 
   @column()
-  declare completionPercentage: number
+  declare focusLosses: number
 
   @column()
-  declare score: number
+  declare activityLog: Record<string, any> | null
 
   @column()
-  declare additionalData: Record<string, any>
+  declare autoSubmitted: boolean
 
   @column()
-  declare studentId: string | null
-
-  @column()
-  declare school: string | null
+  declare status: 'active' | 'completed' | 'abandoned' | 'submitted'
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
