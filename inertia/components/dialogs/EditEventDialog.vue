@@ -4,7 +4,13 @@ import { ref, watch, onMounted } from 'vue'
 import { Trash, Loader } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<{
@@ -38,9 +44,12 @@ const initializeForm = () => {
   form.clearErrors()
 }
 
-watch(() => props.open, (isOpen) => {
-  if (isOpen) initializeForm()
-})
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) initializeForm()
+  }
+)
 
 onMounted(() => {
   initializeForm()
@@ -114,7 +123,9 @@ watch([endDateValue], ([date]) => {
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-      <DialogHeader class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto">
+      <DialogHeader
+        class="bg-background/95 backdrop-blur-sm z-20 p-4 sm:pb-4 border-b max-w-screen-lg mx-auto"
+      >
         <DialogTitle class="text-lg sm:text-xl">Edit Event</DialogTitle>
       </DialogHeader>
       <div class="p-3 sm:p-6">
@@ -122,7 +133,9 @@ watch([endDateValue], ([date]) => {
           <div class="space-y-2 sm:space-y-3">
             <Label>Title</Label>
             <Input v-model="form.title" :class="{ 'border-destructive': form.errors.title }" />
-            <span v-if="form.errors.title" class="text-sm text-destructive">{{ form.errors.title }}</span>
+            <span v-if="form.errors.title" class="text-sm text-destructive">{{
+              form.errors.title
+            }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
             <Label>Type</Label>
@@ -140,7 +153,9 @@ watch([endDateValue], ([date]) => {
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
-            <span v-if="form.errors.eventType" class="text-sm text-destructive">{{ form.errors.eventType }}</span>
+            <span v-if="form.errors.eventType" class="text-sm text-destructive">{{
+              form.errors.eventType
+            }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
             <Label>Status</Label>
@@ -155,29 +170,68 @@ watch([endDateValue], ([date]) => {
                 <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
-            <span v-if="form.errors.status" class="text-sm text-destructive">{{ form.errors.status }}</span>
+            <span v-if="form.errors.status" class="text-sm text-destructive">{{
+              form.errors.status
+            }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
             <Label>Start Date</Label>
-            <Input type="date" v-model="form.startDate" :class="{ 'border-destructive': form.errors.startDate }" />
-            <span v-if="form.errors.startDate" class="text-sm text-destructive">{{ form.errors.startDate }}</span>
+            <Input
+              type="date"
+              v-model="form.startDate"
+              :class="{ 'border-destructive': form.errors.startDate }"
+            />
+            <span v-if="form.errors.startDate" class="text-sm text-destructive">{{
+              form.errors.startDate
+            }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
             <Label>End Date</Label>
-            <Input type="date" v-model="form.endDate" :class="{ 'border-destructive': form.errors.endDate }" />
-            <span v-if="form.errors.endDate" class="text-sm text-destructive">{{ form.errors.endDate }}</span>
+            <Input
+              type="date"
+              v-model="form.endDate"
+              :class="{ 'border-destructive': form.errors.endDate }"
+            />
+            <span v-if="form.errors.endDate" class="text-sm text-destructive">{{
+              form.errors.endDate
+            }}</span>
           </div>
           <div class="space-y-2 sm:space-y-3">
             <Label>Event Image (Optional)</Label>
-            <Input type="file" accept="image/*" :disabled="isUploadingImage" @input="(e: any) => { const file = e.target.files?.[0]; if (file) handleImageUpload(file) }" />
+            <Input
+              type="file"
+              accept="image/*"
+              :disabled="isUploadingImage"
+              @input="
+                (e: any) => {
+                  const file = e.target.files?.[0]
+                  if (file) handleImageUpload(file)
+                }
+              "
+            />
             <div v-if="form.imageUrl" class="relative w-full">
-              <img :src="form.imageUrl" class="max-h-40 rounded-lg object-cover" alt="Event image preview" />
-              <Button type="button" variant="destructive" size="icon" class="absolute top-2 right-2" @click="removeImage">
+              <img
+                :src="form.imageUrl"
+                class="max-h-40 rounded-lg object-cover"
+                alt="Event image preview"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                class="absolute top-2 right-2"
+                @click="removeImage"
+              >
                 <Trash class="h-4 w-4" />
               </Button>
             </div>
-            <div v-if="isUploadingImage" class="flex items-center gap-2 text-sm text-muted-foreground">
-              <span class="inline-block h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+            <div
+              v-if="isUploadingImage"
+              class="flex items-center gap-2 text-sm text-muted-foreground"
+            >
+              <span
+                class="inline-block h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"
+              ></span>
               <span>Uploading image...</span>
             </div>
           </div>

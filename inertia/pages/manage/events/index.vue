@@ -92,15 +92,18 @@ function handleEventDeleted() {
   // Refresh the event list, preserving scroll position
   router.reload({ preserveScroll: true })
 }
-
 </script>
 
 <template>
   <AppHead title="Manage Events" description="Manage educational events and quizzes" />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
-    <div class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
+    <div
+      class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border"
+    >
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
       <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
         <div class="flex items-start gap-4 mt-4">
           <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
@@ -109,21 +112,25 @@ function handleEventDeleted() {
           <div class="space-y-2">
             <h1 class="text-2xl font-bold text-foreground">Events Management</h1>
             <p class="text-base text-muted-foreground/90 max-w-2xl">
-              Create and manage educational events, workshops, webinars, and their associated quizzes
+              Create and manage educational events, workshops, webinars, and their associated
+              quizzes
             </p>
           </div>
         </div>
         <div class="flex gap-3">
-          <Button @click="openCreateDialog" class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium">
+          <Button
+            @click="openCreateDialog"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium"
+          >
             <Plus class="h-4 w-4" />
             Create Event
           </Button>
-                    <Link 
-            href="/events" 
+          <Link
+            href="/events"
             class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
           >
             <Eye class="h-4 w-4" />
-            View 
+            View
           </Link>
         </div>
       </div>
@@ -137,9 +144,13 @@ function handleEventDeleted() {
         :href="`/manage/events/${event.slug}`"
         class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
       >
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none"
+        />
         <div class="relative space-y-3">
-          <h2 class="text-lg font-bold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300">
+          <h2
+            class="text-lg font-bold bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary transition-all duration-300"
+          >
             {{ event.title }}
           </h2>
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
@@ -159,9 +170,23 @@ function handleEventDeleted() {
     <div v-else class="text-center text-muted-foreground py-12">No events found.</div>
 
     <!-- Dialogs -->
-    <CreateEventDialog :open="showCreateDialog" @update:open="showCreateDialog = $event" @created="handleEventCreated" />
-    <EditEventDialog :open="showEditDialog" :event="selectedEvent" @update:open="showEditDialog = $event" @updated="handleEventUpdated" />
-    <DeleteEventDialog :open="showDeleteDialog" :event="selectedEvent" @update:open="showDeleteDialog = $event" @deleted="handleEventDeleted" />
+    <CreateEventDialog
+      :open="showCreateDialog"
+      @update:open="showCreateDialog = $event"
+      @created="handleEventCreated"
+    />
+    <EditEventDialog
+      :open="showEditDialog"
+      :event="selectedEvent"
+      @update:open="showEditDialog = $event"
+      @updated="handleEventUpdated"
+    />
+    <DeleteEventDialog
+      :open="showDeleteDialog"
+      :event="selectedEvent"
+      @update:open="showDeleteDialog = $event"
+      @deleted="handleEventDeleted"
+    />
   </div>
 </template>
 

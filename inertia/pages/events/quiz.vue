@@ -3,15 +3,15 @@ import { Link } from '@inertiajs/vue3'
 import type EventDto from '#dtos/event'
 import type EventQuizDto from '#dtos/event_quiz'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { 
-  Calendar, 
-  ArrowLeft, 
-  CheckCircle, 
-  Clock, 
+import {
+  Calendar,
+  ArrowLeft,
+  CheckCircle,
+  Clock,
   BookOpen,
   Play,
   RotateCcw,
-  Settings
+  Settings,
 } from 'lucide-vue-next'
 import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
 import AppHead from '~/components/AppHead.vue'
@@ -40,7 +40,7 @@ const props = defineProps<Props>()
 const breadcrumbItems = [
   { label: 'Events', href: '/events' },
   { label: props.event.title, href: `/events/${props.event.slug}` },
-  { label: props.quiz.title }
+  { label: props.quiz.title },
 ]
 
 const currentQuestionIndex = ref(0)
@@ -72,7 +72,7 @@ const score = computed(() => {
   let correct = 0
   props.quiz.questions?.forEach((question, index) => {
     const selectedChoiceId = selectedAnswers.value[index]
-    const selectedChoice = question.choices?.find(c => c.id === selectedChoiceId)
+    const selectedChoice = question.choices?.find((c) => c.id === selectedChoiceId)
     if (selectedChoice?.isCorrect) correct++
   })
   return correct
@@ -86,7 +86,7 @@ const scorePercentage = computed(() => {
 function selectAnswer(questionIndex: number, choiceId: number) {
   if (!showAnswer.value[questionIndex]) {
     const question = props.quiz.questions![questionIndex]
-    
+
     // Submit answer to backend
     submitAnswerToBackend(question.id, choiceId, questionIndex)
   }
@@ -95,36 +95,39 @@ function selectAnswer(questionIndex: number, choiceId: number) {
 async function submitAnswerToBackend(questionId: number, choiceId: number, questionIndex: number) {
   try {
     const question = props.quiz.questions![questionIndex]
-    const selectedChoice = question.choices?.find(c => c.id === choiceId)
+    const selectedChoice = question.choices?.find((c) => c.id === choiceId)
     const isCorrect = selectedChoice?.isCorrect || false
 
-    const response = await axios.post(`/api/events/${props.event.slug}/quiz/${props.quiz.id}/answer`, {
-      quizId: props.quiz.id,
-      questionId,
-      choiceId,
-      isCorrect
-    })
+    const response = await axios.post(
+      `/api/events/${props.event.slug}/quiz/${props.quiz.id}/answer`,
+      {
+        quizId: props.quiz.id,
+        questionId,
+        choiceId,
+        isCorrect,
+      }
+    )
 
     if (response.data.success) {
       // Update local state only after successful API call
       selectedAnswers.value[questionIndex] = choiceId
       showAnswer.value[questionIndex] = true
-      
+
       // Add this question to attempted questions
       if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
         props.attemptedQuestionIds.push(questionId)
       }
-      
+
       // Show success/failure feedback using the isCorrect we calculated
       if (isCorrect) {
-        const correctChoice = question.choices?.find(c => c.isCorrect)
+        const correctChoice = question.choices?.find((c) => c.isCorrect)
         toast({
           title: 'Correct!',
           description: correctChoice?.explanation || 'Well done!',
           variant: 'default',
         })
       } else {
-        const correctChoice = question.choices?.find(c => c.isCorrect)
+        const correctChoice = question.choices?.find((c) => c.isCorrect)
         toast({
           title: 'Incorrect',
           description: correctChoice?.explanation || 'Try reviewing the material.',
@@ -134,13 +137,16 @@ async function submitAnswerToBackend(questionId: number, choiceId: number, quest
     }
   } catch (error: any) {
     // Handle API errors
-    if (error.response?.status === 400 && error.response?.data?.error?.includes('already answered')) {
+    if (
+      error.response?.status === 400 &&
+      error.response?.data?.error?.includes('already answered')
+    ) {
       // Mark as attempted in local state
       showAnswer.value[questionIndex] = true
       if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
         props.attemptedQuestionIds.push(questionId)
       }
-      
+
       toast({
         title: 'Already Answered',
         description: 'You have already answered this question.',
@@ -194,16 +200,18 @@ function isAttempted(questionId: number) {
 </script>
 
 <template>
-  <AppHead 
-    :title="`${props.quiz.title} - ${props.event.title}`" 
+  <AppHead
+    :title="`${props.quiz.title} - ${props.event.title}`"
     :description="`Take the ${props.quiz.title} quiz for ${props.event.title} event`"
   />
-  
+
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
     <!-- Header Section -->
     <div class="mb-6 sm:mb-10 header-animation">
       <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
-      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+      <div
+        class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+      >
         <div class="flex items-start gap-3 sm:gap-4 flex-1">
           <div class="flex-shrink-0 mt-0.5">
             <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
@@ -211,7 +219,9 @@ function isAttempted(questionId: number) {
             </div>
           </div>
           <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ props.quiz.title }}</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              {{ props.quiz.title }}
+            </h1>
             <div class="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Calendar class="h-4 w-4" />
               <span>Starts on {{ formatDate(props.event.startDate) }}</span>
@@ -235,7 +245,11 @@ function isAttempted(questionId: number) {
           <BookOpen class="h-3 w-3" />
           {{ totalQuestions }} Questions
         </Badge>
-        <Badge v-if="showResults" :variant="scorePercentage >= 70 ? 'default' : 'destructive'" class="flex items-center gap-1">
+        <Badge
+          v-if="showResults"
+          :variant="scorePercentage >= 70 ? 'default' : 'destructive'"
+          class="flex items-center gap-1"
+        >
           <CheckCircle class="h-3 w-3" />
           {{ score }}/{{ totalQuestions }} ({{ scorePercentage }}%)
         </Badge>
@@ -253,12 +267,7 @@ function isAttempted(questionId: number) {
         <div class="flex items-center gap-3 mb-4">
           <span class="text-sm font-medium text-gray-500">Q{{ index + 1 }}</span>
           <Badge v-if="question.isMcq" class="bg-blue-100 text-blue-800">MCQ</Badge>
-          <Badge 
-            v-if="showAnswer[index]" 
-            class="bg-green-100 text-green-800"
-          >
-            Answered
-          </Badge>
+          <Badge v-if="showAnswer[index]" class="bg-green-100 text-green-800"> Answered </Badge>
         </div>
         <div class="space-y-4">
           <div class="prose prose-sm max-w-none">
@@ -277,21 +286,35 @@ function isAttempted(questionId: number) {
               :key="choice.id"
               class="flex items-start gap-3 p-3 rounded-lg border transition-all duration-200"
               :class="[
-                showAnswer[index] && choice.isCorrect ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200',
-                showAnswer[index] ? 'pointer-events-none opacity-70 cursor-default' : 'cursor-pointer',
-                selectedAnswers[index] === choice.id && !choice.isCorrect && showAnswer[index] ? 'border-red-400 bg-red-50' : '',
+                showAnswer[index] && choice.isCorrect
+                  ? 'bg-green-50 border-green-200'
+                  : 'bg-gray-50 border-gray-200',
+                showAnswer[index]
+                  ? 'pointer-events-none opacity-70 cursor-default'
+                  : 'cursor-pointer',
+                selectedAnswers[index] === choice.id && !choice.isCorrect && showAnswer[index]
+                  ? 'border-red-400 bg-red-50'
+                  : '',
               ]"
               @click="!showAnswer[index] && selectAnswer(index, choice.id)"
               :aria-disabled="showAnswer[index] ? 'true' : 'false'"
             >
-              <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium"
-                :class="showAnswer[index] && choice.isCorrect ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'"
+              <span
+                class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium"
+                :class="
+                  showAnswer[index] && choice.isCorrect
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-400 text-white'
+                "
               >
                 {{ String.fromCharCode(65 + choiceIndex) }}
               </span>
               <div class="flex-1">
                 <div v-html="choice.choiceText"></div>
-                <div v-if="showAnswer[index] && choice.isCorrect && choice.explanation" class="mt-2 text-sm text-green-700">
+                <div
+                  v-if="showAnswer[index] && choice.isCorrect && choice.explanation"
+                  class="mt-2 text-sm text-green-700"
+                >
                   <strong>Explanation:</strong> {{ choice.explanation }}
                 </div>
               </div>
