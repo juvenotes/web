@@ -27,7 +27,7 @@
 
 4. **Routes:**
    - Management route: `/manage/events/:slug/quiz/:quizId/leaderboard`
-   - API routes: 
+   - API routes:
      - `GET /api/quizzes/:quizId/leaderboard` - Get live leaderboard
      - `POST /api/quizzes/:quizId/stats` - Update user stats
 
@@ -43,11 +43,11 @@
 To fully activate the system, you'll need to:
 
 1. **Integrate with Quiz Taking Flow:** Update your quiz submission logic to:
-   - Store responses with `source: 'event_quiz'` 
+   - Store responses with `source: 'event_quiz'`
    - Update/create `UserQuizStat` records after each submission
    - Call the `updateStats` API endpoint
 
-2. **Test the System:** 
+2. **Test the System:**
    - Take a quiz and verify responses are stored
    - Check that leaderboard updates in real-time
    - Verify ranking calculations are correct

@@ -28,11 +28,11 @@ const isUploadingQuestionImage = ref(false)
 const form = useForm({
   questionText: '',
   questionImagePath: '',
-  choices: [] as Array<{ 
+  choices: [] as Array<{
     id?: number
     choiceText: string
     isCorrect: boolean
-    explanation: string 
+    explanation: string
   }>,
 })
 
@@ -41,12 +41,13 @@ const initializeForm = () => {
   if (props.question) {
     form.questionText = props.question.questionText
     form.questionImagePath = props.question.questionImagePath || ''
-    form.choices = props.question.choices?.map(choice => ({
-      id: choice.id,
-      choiceText: choice.choiceText,
-      isCorrect: choice.isCorrect,
-      explanation: choice.explanation || ''
-    })) || []
+    form.choices =
+      props.question.choices?.map((choice) => ({
+        id: choice.id,
+        choiceText: choice.choiceText,
+        isCorrect: choice.isCorrect,
+        explanation: choice.explanation || '',
+      })) || []
   }
   form.clearErrors()
 }
@@ -120,12 +121,15 @@ const setCorrectChoice = (index: number) => {
 }
 
 const handleSubmit = () => {
-  form.put(`/manage/events/${props.event.slug}/quiz/${props.quiz.id}/questions/${props.question.slug}`, {
-    preserveScroll: true,
-    onSuccess: () => {
-      emit('update:open', false)
-    },
-  })
+  form.put(
+    `/manage/events/${props.event.slug}/quiz/${props.quiz.id}/questions/${props.question.slug}`,
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        emit('update:open', false)
+      },
+    }
+  )
 }
 
 const handleImageInputChange = (event: ImageInputEvent) => {
@@ -227,7 +231,7 @@ const getChoiceLetter = (index: number) => String.fromCharCode(65 + index)
                   rows="2"
                   :error="form.errors[`choices.${index}.choiceText`]"
                 />
-                
+
                 <div v-if="choice.isCorrect">
                   <Label class="text-xs text-green-700">Explanation (Optional)</Label>
                   <Textarea
@@ -251,7 +255,7 @@ const getChoiceLetter = (index: number) => String.fromCharCode(65 + index)
               </Button>
             </div>
           </div>
-          
+
           <p class="text-xs text-muted-foreground">
             Select the radio button to mark the correct answer. You can add up to 5 choices.
           </p>
@@ -259,17 +263,10 @@ const getChoiceLetter = (index: number) => String.fromCharCode(65 + index)
 
         <!-- Form Actions -->
         <div class="flex justify-end gap-3 pt-4 border-t">
-          <Button
-            type="button"
-            @click="$emit('update:open', false)"
-            variant="outline"
-          >
+          <Button type="button" @click="$emit('update:open', false)" variant="outline">
             Cancel
           </Button>
-          <Button 
-            type="submit" 
-            :disabled="form.processing"
-          >
+          <Button type="submit" :disabled="form.processing">
             {{ form.processing ? 'Updating...' : 'Update Question' }}
           </Button>
         </div>

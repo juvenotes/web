@@ -53,8 +53,8 @@ function handleSubmit() {
 
         <div class="space-y-2">
           <Label>Description</Label>
-          <Textarea 
-            v-model="form.description" 
+          <Textarea
+            v-model="form.description"
             :error="form.errors.description"
             placeholder="Enter a brief description of this quiz..."
             rows="3"
@@ -65,18 +65,10 @@ function handleSubmit() {
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
-          <Button
-            type="button"
-            @click="$emit('update:open', false)"
-            variant="outline"
-          >
+          <Button type="button" @click="$emit('update:open', false)" variant="outline">
             Cancel
           </Button>
-          <Button 
-            type="submit" 
-            :disabled="form.processing"
-            class="bg-primary hover:bg-primary/90"
-          >
+          <Button type="submit" :disabled="form.processing" class="bg-primary hover:bg-primary/90">
             {{ form.processing ? 'Creating...' : 'Create Quiz' }}
           </Button>
         </div>

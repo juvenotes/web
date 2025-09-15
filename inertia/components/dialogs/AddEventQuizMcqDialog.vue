@@ -214,7 +214,7 @@ const getChoiceLetter = (index: number) => String.fromCharCode(65 + index)
                   rows="2"
                   :error="form.errors[`choices.${index}.choiceText`]"
                 />
-                
+
                 <div v-if="choice.isCorrect">
                   <Label class="text-xs text-green-700">Explanation (Optional)</Label>
                   <Textarea
@@ -238,7 +238,7 @@ const getChoiceLetter = (index: number) => String.fromCharCode(65 + index)
               </Button>
             </div>
           </div>
-          
+
           <p class="text-xs text-muted-foreground">
             Select the radio button to mark the correct answer. You can add up to 5 choices.
           </p>
@@ -246,17 +246,10 @@ const getChoiceLetter = (index: number) => String.fromCharCode(65 + index)
 
         <!-- Form Actions -->
         <div class="flex justify-end gap-3 pt-4 border-t">
-          <Button
-            type="button"
-            @click="$emit('update:open', false)"
-            variant="outline"
-          >
+          <Button type="button" @click="$emit('update:open', false)" variant="outline">
             Cancel
           </Button>
-          <Button 
-            type="submit" 
-            :disabled="form.processing"
-          >
+          <Button type="submit" :disabled="form.processing">
             {{ form.processing ? 'Adding...' : 'Add Question' }}
           </Button>
         </div>
