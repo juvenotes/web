@@ -415,7 +415,7 @@ router.patch('/api/manage/spot-stations/:id', [ManageFeedbackController, 'update
 // Question Stem
 router.patch('/api/manage/questions/:id', [ManageFeedbackController, 'updateQuestionStem'])
 
-// Quiz Leaderboard API routes
+// Quiz API routes
 router
   .get('/api/events/:slug/quiz/:quizId/leaderboard', [
     ManageEventsController,
@@ -427,6 +427,20 @@ router
   .use(middleware.auth())
 router
   .post('/api/events/:slug/quiz/:quizId/answer', [IndexEventsController, 'submitQuizAnswer'])
+  .use(middleware.auth())
+
+// Quiz Session API routes
+router
+  .post('/api/events/:slug/quiz/:quizId/session/start', [IndexEventsController, 'startQuizSession'])
+  .use(middleware.auth())
+router
+  .post('/api/events/:slug/quiz/:quizId/session/activity', [IndexEventsController, 'recordSuspiciousActivity'])
+  .use(middleware.auth())
+router
+  .post('/api/events/:slug/quiz/:quizId/session/submit', [IndexEventsController, 'submitQuizSession'])
+  .use(middleware.auth())
+router
+  .get('/api/events/:slug/quiz/:quizId/session/time', [IndexEventsController, 'getSessionTimeRemaining'])
   .use(middleware.auth())
 
 // Today routes

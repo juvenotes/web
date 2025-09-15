@@ -5,11 +5,15 @@ import EventQuizDto from '#dtos/event_quiz'
 import EventQuiz from '#models/event_quiz'
 import QuestionDto from '#dtos/question'
 import UserProgressService from '#services/user_progress_service'
+import { QuizSessionService } from '#services/quiz_session_service'
 import { inject } from '@adonisjs/core'
 
 @inject()
 export default class IndexEventsController {
-  constructor(private userProgressService: UserProgressService) {}
+  constructor(
+    private userProgressService: UserProgressService,
+    private quizSessionService: QuizSessionService
+  ) {}
   /**
    * Display a list of events
    */
@@ -123,6 +127,9 @@ export default class IndexEventsController {
     // Fetch attempted question IDs and user responses for this user and quiz
     let attemptedQuestionIds: number[] = []
     let userResponses: Record<number, { choiceId: number; isCorrect: boolean }> = {}
+    let quizSession = null
+    let timeRemaining = null
+    
     if (auth.user) {
       attemptedQuestionIds = await this.userProgressService.getEventQuizAttemptedQuestions(
         auth.user.id,
@@ -132,6 +139,12 @@ export default class IndexEventsController {
         auth.user.id,
         quiz.id
       )
+      
+      // Get quiz session info for timer
+      quizSession = await this.quizSessionService.getActiveSession(auth.user.id, quiz.id)
+      if (quizSession) {
+        timeRemaining = await this.quizSessionService.getSessionTimeRemaining(auth.user.id, quiz.id)
+      }
     }
 
     logger.info({
@@ -141,6 +154,7 @@ export default class IndexEventsController {
       quizId: quiz.id,
       questionsCount: questionsDto.length,
       attemptedQuestionIds,
+      hasActiveSession: !!quizSession,
       message: 'Event quiz fetched successfully',
     })
 
@@ -151,6 +165,11 @@ export default class IndexEventsController {
       canManage,
       attemptedQuestionIds,
       userResponses,
+      quizSession: quizSession ? {
+        id: quizSession.id,
+        startedAt: quizSession.startedAt?.toISO(),
+        timeRemaining
+      } : null
     })
   }
 
@@ -184,6 +203,146 @@ export default class IndexEventsController {
         return response.badRequest({ error: 'You have already answered this question' })
       }
       throw error
+    }
+  }
+
+  /**
+   * Start a quiz session with student authentication
+   */
+  async startQuizSession({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const { quizId, fullName, studentId, school } = request.only([
+      'quizId',
+      'fullName',
+      'studentId',
+      'school'
+    ])
+
+    try {
+      const session = await this.quizSessionService.startSession(
+        auth.user.id,
+        quizId,
+        studentId,
+        school
+      )
+
+      const timeRemaining = await this.quizSessionService.getSessionTimeRemaining(
+        auth.user.id,
+        quizId
+      )
+
+      return response.ok({
+        success: true,
+        session: {
+          id: session.id,
+          startedAt: session.startedAt?.toISO(),
+          timeRemaining
+        }
+      })
+    } catch (error) {
+      console.error('Failed to start quiz session:', error)
+      return response.internalServerError({ error: 'Failed to start quiz session' })
+    }
+  }
+
+  /**
+   * Record suspicious activity during quiz
+   */
+  async recordSuspiciousActivity({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const { quizId, activityType, data } = request.only([
+      'quizId',
+      'activityType',
+      'data'
+    ])
+
+    try {
+      const session = await this.quizSessionService.recordActivity(
+        auth.user.id,
+        quizId,
+        activityType,
+        data
+      )
+
+      // Check if auto-submit should be triggered
+      const shouldAutoSubmit = await this.quizSessionService.checkAutoSubmit(
+        auth.user.id,
+        quizId
+      )
+
+      return response.ok({
+        success: true,
+        autoSubmitTriggered: shouldAutoSubmit,
+        session: session ? {
+          tabSwitches: session.tabSwitches,
+          focusLosses: session.focusLosses
+        } : null
+      })
+    } catch (error) {
+      console.error('Failed to record suspicious activity:', error)
+      return response.internalServerError({ error: 'Failed to record activity' })
+    }
+  }
+
+  /**
+   * Submit quiz session
+   */
+  async submitQuizSession({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const { quizId, autoSubmitted = false } = request.only(['quizId', 'autoSubmitted'])
+
+    try {
+      const session = await this.quizSessionService.submitSession(
+        auth.user.id,
+        quizId,
+        autoSubmitted
+      )
+
+      return response.ok({
+        success: true,
+        session: session ? {
+          id: session.id,
+          endedAt: session.endedAt?.toISO(),
+          autoSubmitted: session.autoSubmitted
+        } : null
+      })
+    } catch (error) {
+      console.error('Failed to submit quiz session:', error)
+      return response.internalServerError({ error: 'Failed to submit quiz session' })
+    }
+  }
+
+  /**
+   * Get current session time remaining
+   */
+  async getSessionTimeRemaining({ request, auth, response }: HttpContext) {
+    if (!auth.user) {
+      return response.unauthorized()
+    }
+
+    const { quizId } = request.only(['quizId'])
+
+    try {
+      const timeRemaining = await this.quizSessionService.getSessionTimeRemaining(
+        auth.user.id,
+        quizId
+      )
+
+      return response.ok({
+        timeRemaining
+      })
+    } catch (error) {
+      console.error('Failed to get session time:', error)
+      return response.internalServerError({ error: 'Failed to get session time' })
     }
   }
 }
