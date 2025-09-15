@@ -214,9 +214,8 @@ export default class IndexEventsController {
       return response.unauthorized()
     }
 
-    const { quizId, fullName, studentId, school } = request.only([
-      'quizId',
-      'fullName',
+    const { quizId, studentId, school } = request.only([
+      'quizId', 
       'studentId',
       'school'
     ])

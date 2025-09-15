@@ -130,7 +130,7 @@ const getMedal = (rank: number) => {
       <p class="text-gray-500 text-sm">Be the first to take this quiz!</p>
     </div>
 
-    <!-- Shadcn Table: Name and Score only -->
+    <!-- Leaderboard Table: Name, Student ID, School, and Score -->
     <div v-else class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -140,6 +140,18 @@ const getMedal = (rank: number) => {
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Name
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Student ID
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              School
             </th>
             <th
               scope="col"
@@ -156,6 +168,12 @@ const getMedal = (rank: number) => {
                 getMedal(entry.rank)
               }}</span>
               <span class="text-sm font-medium text-gray-900">{{ entry.user_name }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-sm text-gray-700">{{ entry.student_id || 'N/A' }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-sm text-gray-700">{{ entry.school || 'N/A' }}</span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="text-sm font-medium text-gray-900">{{ Math.round(entry.score) }}%</span>

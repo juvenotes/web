@@ -17,7 +17,7 @@ export default class CheckExpiredQuizSessions extends BaseCommand {
       
       this.logger.info(`Auto-submitted ${expiredCount} expired quiz session(s)`)
     } catch (error) {
-      this.logger.error('Failed to check expired quiz sessions:', error)
+      this.logger.error(`Failed to check expired quiz sessions: ${(error as Error).message}`)
       this.exitCode = 1
     }
   }
