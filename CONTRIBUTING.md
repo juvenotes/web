@@ -10,7 +10,7 @@ Thank you for considering contributing! Whether it’s code, docs, or feedback, 
    ```
 2. Ensure dependencies are installed:
    ```bash
-   yarn install
+   pnpm install
    ```
 3. Create a branch for your feature/fix:
 
