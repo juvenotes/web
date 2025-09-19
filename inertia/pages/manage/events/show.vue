@@ -1,29 +1,12 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import type EventDto from '#dtos/event'
 import type EventQuizDto from '#dtos/event_quiz'
 import AdminLayout from '~/layouts/AdminLayout.vue'
-import {
-  Calendar,
-  Edit,
-  Trash,
-  Plus,
-  Users,
-  MapPin,
-  Clock,
-  DollarSign,
-  Globe,
-  BookOpen,
-  Upload,
-  Eye,
-  ArrowLeft,
-} from 'lucide-vue-next'
+import { Calendar, Edit, Plus, BookOpen, Eye, ArrowLeft } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { Separator } from '~/components/ui/separator'
 import { ref } from 'vue'
-import { router } from '@inertiajs/vue3'
 
 // Import dialogs
 import CreateQuizDialog from '~/components/dialogs/CreateEventQuizDialog.vue'
@@ -44,17 +27,6 @@ const createQuizOpen = ref(false)
 const editQuizOpen = ref(false)
 const editEventOpen = ref(false)
 const selectedQuiz = ref<EventQuizDto | null>(null)
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 function formatDateShort(dateString: string) {
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -87,23 +59,19 @@ function getEventTypeColor(type: string) {
   return colors[type as keyof typeof colors] || colors.other
 }
 
-function openEditQuiz(quiz: EventQuizDto) {
-  selectedQuiz.value = quiz
-  editQuizOpen.value = true
-}
+function publishEvent() {
+  if (!confirm('Are you sure you want to publish this event?')) return
 
-const isEventCompleted = new Date(props.event.endDate) < new Date()
-
-function onDeleteQuiz(e: Event) {
-  if (!confirm('Are you sure you want to delete this quiz?')) {
-    e.preventDefault()
-  }
-}
-
-function onDeleteEvent(e: Event) {
-  if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
-    e.preventDefault()
-  }
+  const form = useForm({})
+  form.put(`/manage/events/${props.event.slug}/publish`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      // Success handled by server flash message
+    },
+    onError: () => {
+      // Error handled by server flash message
+    },
+  })
 }
 </script>
 
@@ -146,6 +114,15 @@ function onDeleteEvent(e: Event) {
               {{ event.description }}
             </p>
           </div>
+
+          <!-- Publish Button for Draft Events -->
+          <Button
+            v-if="event.status === 'draft'"
+            @click="publishEvent"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+          >
+            Publish Event
+          </Button>
         </div>
 
         <div class="flex gap-3">
@@ -244,8 +221,9 @@ function onDeleteEvent(e: Event) {
 </template>
 
 <style scoped>
+/* Remove Tailwind @apply to fix build errors */
 .prose {
-  @apply text-gray-700;
+  color: #374151; /* gray-700 */
 }
 
 .prose h1,
@@ -254,10 +232,15 @@ function onDeleteEvent(e: Event) {
 .prose h4,
 .prose h5,
 .prose h6 {
-  @apply text-gray-900;
+  color: #111827; /* gray-900 */
 }
 
 .prose a {
-  @apply text-primary hover:text-primary/80;
+  color: hsl(var(--primary));
+  transition: color 0.2s ease;
+}
+
+.prose a:hover {
+  color: hsl(var(--primary) / 0.8);
 }
 </style>

@@ -15,6 +15,7 @@ export const createEventValidator = vine.compile(
       'meeting',
       'other',
     ]),
+    status: vine.enum(['draft', 'published', 'cancelled', 'completed']).optional(),
     startDate: vine.date().transform((value) => DateTime.fromJSDate(value)),
     endDate: vine.date().transform((value) => DateTime.fromJSDate(value)),
     registrationDeadline: vine

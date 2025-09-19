@@ -581,19 +581,35 @@ router
 //* EVENTS -> MANAGE
 router
   .group(() => {
-    router.get('/', [ManageEventsController, 'index']).as('manage.events.index')
-    router.get('/create', [ManageEventsController, 'create']).as('manage.events.create')
-    router.post('/', [ManageEventsController, 'store']).as('manage.events.store')
-    router.get('/:slug', [ManageEventsController, 'show']).as('manage.events.show')
-    router.get('/:slug/edit', [ManageEventsController, 'edit']).as('manage.events.edit')
-    router.put('/:slug', [ManageEventsController, 'update']).as('manage.events.update')
-    router.delete('/:slug', [ManageEventsController, 'destroy']).as('manage.events.destroy')
+    router
+      .get('/', [ManageEventsController, 'index'])
+      .as('manage.events.index')
+    router
+      .get('/create', [ManageEventsController, 'create'])
+      .as('manage.events.create')
+    router
+      .post('/', [ManageEventsController, 'store'])
+      .as('manage.events.store')
+    router
+      .get('/:slug', [ManageEventsController, 'show'])
+      .as('manage.events.show')
+    router
+      .get('/:slug/edit', [ManageEventsController, 'edit'])
+      .as('manage.events.edit')
+    router
+      .put('/:slug', [ManageEventsController, 'update'])
+      .as('manage.events.update')
+    router
+      .delete('/:slug', [ManageEventsController, 'destroy'])
+      .as('manage.events.destroy')
 
     // Quiz management routes
     router
       .get('/:slug/quiz/create', [ManageEventsController, 'createQuiz'])
       .as('manage.events.quiz.create')
-    router.post('/:slug/quiz', [ManageEventsController, 'storeQuiz']).as('manage.events.quiz.store')
+    router
+      .post('/:slug/quiz', [ManageEventsController, 'storeQuiz'])
+      .as('manage.events.quiz.store')
     router
       .get('/:slug/quiz/:quizId', [ManageEventsController, 'viewQuiz'])
       .as('manage.events.quiz.view')
@@ -615,16 +631,10 @@ router
       .post('/:slug/quiz/:quizId/upload', [ManageEventsController, 'uploadQuizQuestions'])
       .as('manage.events.quiz.questions.upload')
     router
-      .put('/:slug/quiz/:quizId/questions/:questionSlug', [
-        ManageEventsController,
-        'updateQuizQuestion',
-      ])
+      .put('/:slug/quiz/:quizId/questions/:questionSlug', [ManageEventsController, 'updateQuizQuestion'])
       .as('manage.events.quiz.questions.update')
     router
-      .delete('/:slug/quiz/:quizId/questions/:questionSlug', [
-        ManageEventsController,
-        'deleteQuizQuestion',
-      ])
+      .delete('/:slug/quiz/:quizId/questions/:questionSlug', [ManageEventsController, 'deleteQuizQuestion'])
       .as('manage.events.quiz.questions.destroy')
 
     // Quiz leaderboard routes
@@ -634,6 +644,11 @@ router
     router
       .put('/:slug/quiz/:quizId/publish', [ManageEventsController, 'publishQuiz'])
       .as('manage.events.quiz.publish')
+
+  // Event publish route
+  router
+    .put('/:slug/publish', [ManageEventsController, 'publishEvent'])
+    .as('manage.events.publish')
   })
   .prefix('/manage/events')
   .use(middleware.auth())
