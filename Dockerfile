@@ -3,14 +3,14 @@ FROM node:22.16.0-alpine3.22 AS base
 # All deps stage
 FROM base AS deps
 WORKDIR /app
-ADD package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+ADD package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 # Production only deps stage
 FROM base AS production-deps
 WORKDIR /app
-ADD package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production
+ADD package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod
 
 # Build stage
 FROM base AS build

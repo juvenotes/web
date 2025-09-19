@@ -112,27 +112,31 @@ const selectedQuestion = ref<QuestionDto | null>(null)
 </script>
 
 <template>
-  <AppHead 
-    :title="`${quiz.title} - ${event.title}`" 
+  <AppHead
+    :title="`${quiz.title} - ${event.title}`"
     :description="`Manage questions and settings for ${quiz.title} quiz in ${event.title} event`"
   />
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
     <!-- Header -->
-    <div class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border">
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
-      
+    <div
+      class="relative p-6 sm:p-8 bg-white/50 dark:bg-card rounded-2xl border shadow-sm dark:border-border"
+    >
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent"
+      />
+
       <BreadcrumbTrail :items="breadcrumbItems" />
 
       <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
         <div class="flex items-start gap-4">
-          <Link 
+          <Link
             :href="`/manage/events/${event.slug}`"
             class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <ArrowLeft class="h-5 w-5 text-gray-600" />
           </Link>
-          
+
           <div class="p-3 rounded-xl bg-primary/5 border border-primary/10">
             <Calendar class="h-6 w-6 text-primary" />
           </div>
@@ -150,21 +154,21 @@ const selectedQuestion = ref<QuestionDto | null>(null)
         </div>
 
         <div class="flex gap-3">
-          <Link 
-            :href="`/events/${event.slug}/quiz/${quiz.id}`" 
+          <Link
+            :href="`/events/${event.slug}/quiz/${quiz.id}`"
             class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
           >
             <Eye class="h-4 w-4" />
             View
           </Link>
-          <Link 
+          <Link
             :href="`/manage/events/${event.slug}/quiz/${quiz.id}/leaderboard`"
             class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
           >
             <Trophy class="h-4 w-4" />
             Leaderboard
           </Link>
-          <Button 
+          <Button
             @click="handleDeleteQuiz"
             variant="outline"
             class="text-destructive hover:bg-destructive/10"
@@ -208,11 +212,7 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             <Badge v-if="question.isMcq" class="bg-blue-100 text-blue-800">MCQ</Badge>
           </div>
           <div class="flex items-center gap-2">
-            <Button
-              @click="handleEditQuestion(question)"
-              variant="ghost"
-              size="sm"
-            >
+            <Button @click="handleEditQuestion(question)" variant="ghost" size="sm">
               <Pencil class="h-4 w-4" />
             </Button>
             <Button
@@ -249,14 +249,18 @@ const selectedQuestion = ref<QuestionDto | null>(null)
               class="flex items-start gap-3 p-3 rounded-lg"
               :class="choice.isCorrect ? 'bg-green-50 border border-green-200' : 'bg-gray-50'"
             >
-              <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium"
+              <span
+                class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium"
                 :class="choice.isCorrect ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'"
               >
                 {{ String.fromCharCode(65 + choiceIndex) }}
               </span>
               <div class="flex-1">
                 <div v-html="choice.choiceText"></div>
-                <div v-if="choice.isCorrect && choice.explanation" class="mt-2 text-sm text-green-700">
+                <div
+                  v-if="choice.isCorrect && choice.explanation"
+                  class="mt-2 text-sm text-green-700"
+                >
                   <strong>Explanation:</strong> {{ choice.explanation }}
                 </div>
               </div>
@@ -281,7 +285,11 @@ const selectedQuestion = ref<QuestionDto | null>(null)
             <Plus class="h-4 w-4" />
             Add MCQ
           </Button>
-          <Button @click="showUploadDialog = true" variant="outline" class="flex items-center gap-2">
+          <Button
+            @click="showUploadDialog = true"
+            variant="outline"
+            class="flex items-center gap-2"
+          >
             <Upload class="h-4 w-4" />
             Upload MCQs
           </Button>
@@ -291,17 +299,9 @@ const selectedQuestion = ref<QuestionDto | null>(null)
   </div>
 
   <!-- Dialogs -->
-  <AddEventQuizMcqDialog
-    v-model:open="showAddMcqDialog"
-    :event="event"
-    :quiz="quiz"
-  />
+  <AddEventQuizMcqDialog v-model:open="showAddMcqDialog" :event="event" :quiz="quiz" />
 
-  <UploadEventQuizDialog
-    v-model:open="showUploadDialog"
-    :event="event"
-    :quiz="quiz"
-  />
+  <UploadEventQuizDialog v-model:open="showUploadDialog" :event="event" :quiz="quiz" />
 
   <EditEventQuizMcqDialog
     v-if="selectedQuestion"

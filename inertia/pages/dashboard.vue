@@ -195,7 +195,9 @@ onMounted(() => {
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Library</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">Access select high yield articles</p>
+              <p class="text-sm text-gray-600 mt-1 font-medium">
+                Access select high yield articles
+              </p>
               <div
                 class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
               >

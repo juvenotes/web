@@ -5,23 +5,20 @@ import type EventQuizDto from '#dtos/event_quiz'
 import DashLayout from '~/layouts/DashLayout.vue'
 import { 
   Calendar, 
-  ArrowLeft, 
   CheckCircle, 
   Clock, 
   BookOpen,
   Play,
-  RotateCcw,
   Settings
 } from 'lucide-vue-next'
 import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
 import AppHead from '~/components/AppHead.vue'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { Label } from '~/components/ui/label'
-import { Separator } from '~/components/ui/separator'
-import { ref, computed } from 'vue'
-import { router } from '@inertiajs/vue3'
+import QuizAuthenticationDialog from '~/components/quiz/QuizAuthenticationDialog.vue'
+import QuizTimer from '~/components/quiz/QuizTimer.vue'
+import LockdownDetector from '~/components/quiz/LockdownDetector.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { toast } from '~/components/ui/toast'
 import axios from 'axios'
 
@@ -30,9 +27,14 @@ defineOptions({ layout: DashLayout })
 interface Props {
   event: EventDto
   quiz: EventQuizDto
-  canManage?: boolean // Add canManage prop (optional for backward compatibility)
+  canManage?: boolean
   attemptedQuestionIds?: number[]
   userResponses?: Record<number, { choiceId: number; isCorrect: boolean }>
+  quizSession?: {
+    id: number
+    startedAt: string | null
+    timeRemaining: number | null
+  } | null
 }
 
 const props = defineProps<Props>()
@@ -43,17 +45,22 @@ const breadcrumbItems = [
   { label: props.quiz.title }
 ]
 
-const currentQuestionIndex = ref(0)
 const selectedAnswers = ref<Record<number, number>>({})
 const showResults = ref(false)
 const showAnswer = ref<Record<number, boolean>>({})
+const showAuthDialog = ref(false)
+// For standard mode, quiz is always started. For timed lockdown mode, check session
+const quizStarted = ref(
+  props.quiz.quizMode === 'standard' || !props.quiz.quizMode ? true : !!props.quizSession
+)
+const timeRemaining = ref(props.quizSession?.timeRemaining || 0)
+const sessionId = ref(props.quizSession?.id || null)
 
 // Initialize showAnswer and selectedAnswers for already attempted questions
 if (props.attemptedQuestionIds && props.quiz.questions && props.userResponses) {
   props.quiz.questions.forEach((question, index) => {
     if (props.attemptedQuestionIds!.includes(question.id)) {
       showAnswer.value[index] = true
-      // Set the user's previous choice if available
       const userResponse = props.userResponses![question.id]
       if (userResponse) {
         selectedAnswers.value[index] = userResponse.choiceId
@@ -62,10 +69,7 @@ if (props.attemptedQuestionIds && props.quiz.questions && props.userResponses) {
   })
 }
 
-const currentQuestion = computed(() => props.quiz.questions?.[currentQuestionIndex.value] || null)
 const totalQuestions = computed(() => props.quiz.questions?.length || 0)
-const isLastQuestion = computed(() => currentQuestionIndex.value === totalQuestions.value - 1)
-const isFirstQuestion = computed(() => currentQuestionIndex.value === 0)
 
 const score = computed(() => {
   if (!showResults.value) return 0
@@ -83,11 +87,62 @@ const scorePercentage = computed(() => {
   return Math.round((score.value / totalQuestions.value) * 100)
 })
 
+const hasTimer = computed(() => props.quiz.hasTimer && props.quiz.durationMinutes)
+const isTimedLockdownMode = computed(() => props.quiz.quizMode === 'timed_lockdown')
+const isStandardMode = computed(() => props.quiz.quizMode === 'standard' || !props.quiz.quizMode)
+const showStartButton = computed(() => isTimedLockdownMode.value && !quizStarted.value && hasTimer.value)
+
+function handleStartQuiz() {
+  if (isTimedLockdownMode.value && hasTimer.value) {
+    showAuthDialog.value = true
+  } else {
+    quizStarted.value = true
+  }
+}
+
+async function handleAuthComplete(data: { fullName: string; studentId: string; school: string }) {
+  try {
+    const response = await axios.post(`/api/events/${props.event.slug}/quiz/${props.quiz.id}/session/start`, {
+      quizId: props.quiz.id,
+      fullName: data.fullName,
+      studentId: data.studentId,
+      school: data.school
+    })
+
+    if (response.data.success) {
+      sessionId.value = response.data.session.id
+      timeRemaining.value = response.data.session.timeRemaining
+      quizStarted.value = true
+      showAuthDialog.value = false
+      
+      toast({
+        title: 'Quiz Started',
+        description: 'Good luck with your quiz!',
+        variant: 'default',
+      })
+    }
+  } catch (error: any) {
+    console.error('Failed to start quiz session:', error)
+    toast({
+      title: 'Error',
+      description: 'Failed to start quiz session. Please try again.',
+      variant: 'destructive',
+    })
+  }
+}
+
 function selectAnswer(questionIndex: number, choiceId: number) {
-  if (!showAnswer.value[questionIndex]) {
-    const question = props.quiz.questions![questionIndex]
-    
-    // Submit answer to backend
+  const question = props.quiz.questions![questionIndex]
+  
+  // For standard mode, don't allow changing answers once submitted
+  if (isStandardMode.value && showAnswer.value[questionIndex]) {
+    return
+  }
+  
+  // For timed lockdown mode, allow changing answers within time limit
+  if (isTimedLockdownMode.value && !showAnswer.value[questionIndex]) {
+    submitAnswerToBackend(question.id, choiceId, questionIndex)
+  } else if (isStandardMode.value) {
     submitAnswerToBackend(question.id, choiceId, questionIndex)
   }
 }
@@ -106,45 +161,55 @@ async function submitAnswerToBackend(questionId: number, choiceId: number, quest
     })
 
     if (response.data.success) {
-      // Update local state only after successful API call
       selectedAnswers.value[questionIndex] = choiceId
-      showAnswer.value[questionIndex] = true
       
-      // Add this question to attempted questions
       if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
         props.attemptedQuestionIds.push(questionId)
       }
       
-      // Show success/failure feedback using the isCorrect we calculated
-      if (isCorrect) {
-        const correctChoice = question.choices?.find(c => c.isCorrect)
+      // Handle different behaviors based on quiz mode
+      if (isStandardMode.value) {
+        // Standard mode: show correct answer immediately and lock the question
+        showAnswer.value[questionIndex] = true
+        
+        if (isCorrect) {
+          const correctChoice = question.choices?.find(c => c.isCorrect)
+          toast({
+            title: 'Correct!',
+            description: correctChoice?.explanation || 'Well done!',
+            variant: 'default',
+          })
+        } else {
+          const correctChoice = question.choices?.find(c => c.isCorrect)
+          toast({
+            title: 'Incorrect',
+            description: correctChoice?.explanation || 'Try reviewing the material.',
+            variant: 'destructive',
+          })
+        }
+      } else if (isTimedLockdownMode.value) {
+        // Timed lockdown mode: just record the answer, don't show feedback immediately
+        // Only show success confirmation without revealing correct answer
         toast({
-          title: 'Correct!',
-          description: correctChoice?.explanation || 'Well done!',
+          title: 'Answer Recorded',
+          description: 'Your answer has been recorded. You can change it before submitting.',
           variant: 'default',
-        })
-      } else {
-        const correctChoice = question.choices?.find(c => c.isCorrect)
-        toast({
-          title: 'Incorrect',
-          description: correctChoice?.explanation || 'Try reviewing the material.',
-          variant: 'destructive',
         })
       }
     }
   } catch (error: any) {
-    // Handle API errors
     if (error.response?.status === 400 && error.response?.data?.error?.includes('already answered')) {
-      // Mark as attempted in local state
-      showAnswer.value[questionIndex] = true
+      if (isStandardMode.value) {
+        showAnswer.value[questionIndex] = true
+      }
       if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
         props.attemptedQuestionIds.push(questionId)
       }
       
       toast({
         title: 'Already Answered',
-        description: 'You have already answered this question.',
-        variant: 'destructive',
+        description: isStandardMode.value ? 'You have already answered this question.' : 'Answer updated.',
+        variant: isStandardMode.value ? 'destructive' : 'default',
       })
     } else {
       console.error('Failed to submit answer:', error)
@@ -157,26 +222,83 @@ async function submitAnswerToBackend(questionId: number, choiceId: number, quest
   }
 }
 
-function nextQuestion() {
-  if (!isLastQuestion.value) {
-    currentQuestionIndex.value++
+async function submitQuiz() {
+  // Only submit to session endpoint for timed lockdown mode
+  if (isTimedLockdownMode.value && sessionId.value) {
+    try {
+      await axios.post(`/api/events/${props.event.slug}/quiz/${props.quiz.id}/session/submit`, {
+        quizId: props.quiz.id,
+        autoSubmitted: false
+      })
+      
+      toast({
+        title: 'Quiz Submitted',
+        description: 'Your quiz has been submitted successfully.',
+        variant: 'default',
+      })
+    } catch (error) {
+      console.error('Failed to submit quiz session:', error)
+    }
   }
-}
-
-function previousQuestion() {
-  if (!isFirstQuestion.value) {
-    currentQuestionIndex.value--
-  }
-}
-
-function submitQuiz() {
+  
+  // For both modes, show results
   showResults.value = true
+  
+  // For standard mode, also reveal all correct answers
+  if (isStandardMode.value) {
+    props.quiz.questions?.forEach((_, index) => {
+      showAnswer.value[index] = true
+    })
+  }
 }
 
-function restartQuiz() {
-  currentQuestionIndex.value = 0
-  selectedAnswers.value = {}
-  showResults.value = false
+async function handleSuspiciousActivity(activity: { type: string; count: number }) {
+  if (!sessionId.value) return
+  
+  try {
+    const response = await axios.post(`/api/events/${props.event.slug}/quiz/${props.quiz.id}/session/activity`, {
+      quizId: props.quiz.id,
+      activityType: activity.type,
+      data: { timestamp: new Date().toISOString() }
+    })
+
+    if (response.data.autoSubmitTriggered) {
+      await submitQuiz()
+    }
+  } catch (error) {
+    console.error('Failed to record suspicious activity:', error)
+  }
+}
+
+async function handleAutoSubmit() {
+  await submitQuiz()
+}
+
+function handleTimeUp() {
+  toast({
+    title: 'Time\'s Up!',
+    description: 'Your quiz has been automatically submitted.',
+    variant: 'destructive',
+  })
+  submitQuiz()
+}
+
+function handleTimeWarning(timeLeft: number) {
+  const minutes = Math.floor(timeLeft / 60)
+  const seconds = timeLeft % 60
+  
+  let message = ''
+  if (minutes > 0) {
+    message = `${minutes} minute${minutes > 1 ? 's' : ''} remaining`
+  } else {
+    message = `${seconds} second${seconds > 1 ? 's' : ''} remaining`
+  }
+  
+  toast({
+    title: 'Time Warning',
+    description: message,
+    variant: 'destructive',
+  })
 }
 
 function formatDate(dateString: string) {
@@ -188,9 +310,32 @@ function formatDate(dateString: string) {
   })
 }
 
-function isAttempted(questionId: number) {
-  return props.attemptedQuestionIds?.includes(questionId)
-}
+// Sync timer with server every 30 seconds
+let syncInterval: NodeJS.Timeout | null = null
+
+onMounted(() => {
+  if (quizStarted.value && hasTimer.value && isTimedLockdownMode.value) {
+    syncInterval = setInterval(async () => {
+      try {
+        const response = await axios.get(`/api/events/${props.event.slug}/quiz/${props.quiz.id}/session/time`, {
+          params: { quizId: props.quiz.id }
+        })
+        
+        if (response.data.timeRemaining !== null) {
+          timeRemaining.value = response.data.timeRemaining
+        }
+      } catch (error) {
+        console.error('Failed to sync time with server:', error)
+      }
+    }, 30000) // Every 30 seconds
+  }
+})
+
+onUnmounted(() => {
+  if (syncInterval) {
+    clearInterval(syncInterval)
+  }
+})
 </script>
 
 <template>
@@ -200,6 +345,36 @@ function isAttempted(questionId: number) {
   />
   
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <!-- Quiz Timer (when active and in timed lockdown mode) -->
+    <div v-if="quizStarted && hasTimer && isTimedLockdownMode" class="fixed top-4 right-4 z-40">
+      <QuizTimer
+        :initial-time-remaining="timeRemaining"
+        :is-active="true"
+        @time-up="handleTimeUp"
+        @warning="handleTimeWarning"
+      />
+    </div>
+
+    <!-- Lockdown Detector (only for timed lockdown mode) -->
+    <LockdownDetector
+      :is-enabled="quizStarted && isTimedLockdownMode && props.quiz.lockdownMode"
+      :auto-submit-threshold="5"
+      @suspicious-activity="handleSuspiciousActivity"
+      @auto-submit-triggered="handleAutoSubmit"
+    />
+
+    <!-- Authentication Dialog (only for timed lockdown mode) -->
+    <QuizAuthenticationDialog
+      v-if="isTimedLockdownMode"
+      :is-open="showAuthDialog"
+      :event-title="props.event.title"
+      :quiz-title="props.quiz.title"
+      :duration-minutes="props.quiz.durationMinutes"
+      :lockdown-mode="props.quiz.lockdownMode"
+      @start-quiz="handleAuthComplete"
+      @close="showAuthDialog = false"
+    />
+    
     <!-- Header Section -->
     <div class="mb-6 sm:mb-10 header-animation">
       <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
@@ -230,10 +405,26 @@ function isAttempted(questionId: number) {
           </Link>
         </div>
       </div>
-      <div class="flex items-center justify-center gap-4 text-sm mb-4">
+      <div class="flex items-center justify-center gap-4 text-sm mb-4 flex-wrap">
         <Badge variant="secondary" class="flex items-center gap-1">
           <BookOpen class="h-3 w-3" />
           {{ totalQuestions }} Questions
+        </Badge>
+        <Badge 
+          :variant="isTimedLockdownMode ? 'destructive' : 'default'" 
+          class="flex items-center gap-1"
+        >
+          <span v-if="isTimedLockdownMode" class="w-2 h-2 bg-red-500 rounded-full"></span>
+          <span v-else class="w-2 h-2 bg-green-500 rounded-full"></span>
+          {{ isTimedLockdownMode ? 'Timed Quiz' : 'Standard Quiz' }}
+        </Badge>
+        <Badge v-if="hasTimer && isTimedLockdownMode" variant="outline" class="flex items-center gap-1">
+          <Clock class="h-3 w-3" />
+          {{ props.quiz.durationMinutes }} minutes
+        </Badge>
+        <Badge v-if="isTimedLockdownMode && props.quiz.lockdownMode" variant="outline" class="flex items-center gap-1">
+          <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+          Lockdown Mode
         </Badge>
         <Badge v-if="showResults" :variant="scorePercentage >= 70 ? 'default' : 'destructive'" class="flex items-center gap-1">
           <CheckCircle class="h-3 w-3" />
@@ -243,12 +434,35 @@ function isAttempted(questionId: number) {
       <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
     </div>
 
+    <!-- Start Quiz Button (for timed quizzes) -->
+    <div v-if="showStartButton" class="text-center p-8 bg-white rounded-2xl border border-slate-100">
+      <div class="flex flex-col items-center gap-4">
+        <div class="p-4 rounded-full bg-[#55A9C4]/10">
+          <Play class="h-8 w-8 text-[#55A9C4]" />
+        </div>
+        <div class="space-y-2">
+          <h3 class="text-lg font-semibold text-foreground">Ready to Start?</h3>
+          <p class="text-muted-foreground max-w-md">
+            This quiz has a time limit of {{ props.quiz.durationMinutes }} minutes.
+            {{ props.quiz.lockdownMode ? ' Lockdown mode is enabled.' : '' }}
+          </p>
+        </div>
+        <Button 
+          @click="handleStartQuiz"
+          class="bg-[#55A9C4] hover:bg-[#4795af] text-white"
+        >
+          <Play class="h-4 w-4 mr-2" />
+          Start Quiz
+        </Button>
+      </div>
+    </div>
+
     <!-- Questions List -->
-    <div v-if="props.quiz.questions && props.quiz.questions.length" class="space-y-4 mt-8">
+    <div v-else-if="props.quiz.questions && props.quiz.questions.length && (quizStarted || isStandardMode)" class="space-y-4 mt-8">
       <div
         v-for="(question, index) in props.quiz.questions"
         :key="question.id"
-        class="bg-white rounded-lg border border-gray-200 p-6"
+        class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6"
       >
         <div class="flex items-center gap-3 mb-4">
           <span class="text-sm font-medium text-gray-500">Q{{ index + 1 }}</span>
@@ -268,7 +482,7 @@ function isAttempted(questionId: number) {
             <img
               :src="question.questionImagePath"
               alt="Question image"
-              class="max-w-md rounded-lg border"
+              class="max-w-full sm:max-w-md rounded-lg border"
             />
           </div>
           <div v-if="question.isMcq && question.choices?.length" class="space-y-2">
@@ -277,21 +491,34 @@ function isAttempted(questionId: number) {
               :key="choice.id"
               class="flex items-start gap-3 p-3 rounded-lg border transition-all duration-200"
               :class="[
-                showAnswer[index] && choice.isCorrect ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200',
-                showAnswer[index] ? 'pointer-events-none opacity-70 cursor-default' : 'cursor-pointer',
-                selectedAnswers[index] === choice.id && !choice.isCorrect && showAnswer[index] ? 'border-red-400 bg-red-50' : '',
+                // For standard mode: show correct answers immediately
+                isStandardMode && showAnswer[index] && choice.isCorrect ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200',
+                // For timed lockdown mode: highlight selected answer but don't show correctness
+                isTimedLockdownMode && selectedAnswers[index] === choice.id ? 'bg-blue-50 border-blue-200' : '',
+                // Disable interaction for standard mode after answering
+                isStandardMode && showAnswer[index] ? 'pointer-events-none opacity-70 cursor-default' : 'cursor-pointer hover:bg-gray-100',
+                // For standard mode: show incorrect answers in red
+                isStandardMode && showAnswer[index] && selectedAnswers[index] === choice.id && !choice.isCorrect ? 'border-red-400 bg-red-50' : '',
               ]"
-              @click="!showAnswer[index] && selectAnswer(index, choice.id)"
-              :aria-disabled="showAnswer[index] ? 'true' : 'false'"
+              @click="selectAnswer(index, choice.id)"
+              :aria-disabled="isStandardMode && showAnswer[index] ? 'true' : 'false'"
             >
-              <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium"
-                :class="showAnswer[index] && choice.isCorrect ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'"
+              <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
+                :class="[
+                  // Standard mode: show green for correct, red for selected incorrect
+                  isStandardMode && showAnswer[index] && choice.isCorrect ? 'bg-green-600 text-white' : 
+                  isStandardMode && showAnswer[index] && selectedAnswers[index] === choice.id && !choice.isCorrect ? 'bg-red-600 text-white' :
+                  // Timed lockdown mode: show blue for selected
+                  isTimedLockdownMode && selectedAnswers[index] === choice.id ? 'bg-blue-600 text-white' :
+                  'bg-gray-400 text-white'
+                ]"
               >
                 {{ String.fromCharCode(65 + choiceIndex) }}
               </span>
-              <div class="flex-1">
-                <div v-html="choice.choiceText"></div>
-                <div v-if="showAnswer[index] && choice.isCorrect && choice.explanation" class="mt-2 text-sm text-green-700">
+              <div class="flex-1 min-w-0">
+                <div v-html="choice.choiceText" class="text-sm"></div>
+                <!-- Only show explanations in standard mode -->
+                <div v-if="isStandardMode && showAnswer[index] && choice.isCorrect && choice.explanation" class="mt-2 text-xs text-green-700">
                   <strong>Explanation:</strong> {{ choice.explanation }}
                 </div>
               </div>
@@ -299,7 +526,18 @@ function isAttempted(questionId: number) {
           </div>
         </div>
       </div>
+
+      <!-- Submit Quiz Button -->
+      <div v-if="!showResults && ((isTimedLockdownMode && quizStarted) || isStandardMode)" class="text-center pt-4">
+        <Button 
+          @click="submitQuiz"
+          class="bg-[#55A9C4] hover:bg-[#4795af] text-white"
+        >
+          {{ isTimedLockdownMode ? 'Submit Quiz' : 'View Results' }}
+        </Button>
+      </div>
     </div>
+    
     <!-- Empty State -->
     <div v-else class="text-center p-8 bg-white rounded-2xl border border-slate-100 mt-8">
       <div class="flex flex-col items-center gap-4">

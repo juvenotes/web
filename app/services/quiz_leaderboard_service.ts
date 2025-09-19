@@ -7,6 +7,8 @@ interface LeaderboardEntry {
   rank: number
   user_id: number
   user_name: string
+  student_id: string | null
+  school: string | null
   score: number
   questions_attempted: number
   questions_correct: number
@@ -71,6 +73,8 @@ export class QuizLeaderboardService {
         rank: index + 1,
         user_id: stat.userId,
         user_name: stat.user?.fullName || 'Unknown User',
+        student_id: stat.studentId,
+        school: stat.school,
         score: stat.score,
         questions_attempted: stat.questionsAttempted,
         questions_correct: stat.questionsCorrect,

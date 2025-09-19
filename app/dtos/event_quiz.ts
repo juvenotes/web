@@ -12,6 +12,11 @@ export default class EventQuizDto extends BaseModelDto {
   declare slug: string
   declare description: string | null
   declare status: 'draft' | 'published'
+  declare durationMinutes: number | null
+  declare hasTimer: boolean
+  declare autoSubmit: boolean
+  declare lockdownMode: boolean
+  declare quizMode: 'standard' | 'timed_lockdown'
   declare createdAt: string
   declare updatedAt: string
   declare event: EventDto | null
@@ -29,6 +34,11 @@ export default class EventQuizDto extends BaseModelDto {
     this.slug = eventQuiz.slug
     this.description = eventQuiz.description
     this.status = eventQuiz.status
+    this.durationMinutes = eventQuiz.durationMinutes
+    this.hasTimer = eventQuiz.hasTimer
+    this.autoSubmit = eventQuiz.autoSubmit
+    this.lockdownMode = eventQuiz.lockdownMode
+    this.quizMode = eventQuiz.quizMode
     this.createdAt = eventQuiz.createdAt.toISO()!
     this.updatedAt = eventQuiz.updatedAt.toISO()!
     this.event = eventQuiz.event && new EventDto(eventQuiz.event)

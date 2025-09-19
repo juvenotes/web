@@ -45,7 +45,7 @@ docker-compose up -d
 - Clone the repo and install dependencies:
 
 ```bash
-yarn install
+pnpm install
 ```
 
 - Configure .env (use .env.example as a template).

@@ -30,6 +30,21 @@ export default class EventQuiz extends BaseModel {
   @column()
   declare status: 'draft' | 'published'
 
+  @column()
+  declare durationMinutes: number | null
+
+  @column()
+  declare hasTimer: boolean
+
+  @column()
+  declare autoSubmit: boolean
+
+  @column()
+  declare lockdownMode: boolean
+
+  @column()
+  declare quizMode: 'standard' | 'timed_lockdown'
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

@@ -2,7 +2,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
 import { Label } from '~/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useForm } from '@inertiajs/vue3'
 import { ref, watch } from 'vue'
 import type QuestionDto from '#dtos/question'
@@ -30,21 +36,24 @@ const form = useForm({
 })
 
 // Reset form when dialog opens/closes
-watch(() => props.open, (isOpen) => {
-  if (isOpen && props.question) {
-    form.questionId = props.question.id
-    selectedQuizId.value = ''
-  } else {
-    form.reset()
-    selectedQuizId.value = ''
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen && props.question) {
+      form.questionId = props.question.id
+      selectedQuizId.value = ''
+    } else {
+      form.reset()
+      selectedQuizId.value = ''
+    }
   }
-})
+)
 
 function handleSubmit() {
   if (!selectedQuizId.value) return
 
   form.targetQuizId = parseInt(selectedQuizId.value)
-  
+
   form.post('/manage/papers/questions/copy-to-quiz', {
     preserveScroll: true,
     onSuccess: () => {
@@ -81,9 +90,7 @@ function handleCancel() {
             <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
               MCQ
             </span>
-            <span class="text-xs text-gray-500">
-              {{ question.choices?.length || 0 }} choices
-            </span>
+            <span class="text-xs text-gray-500"> {{ question.choices?.length || 0 }} choices </span>
           </div>
         </div>
 
@@ -105,11 +112,15 @@ function handleCancel() {
               </SelectContent>
             </Select>
             <p class="text-sm text-muted-foreground">
-              The MCQ question with all its choices and explanations will be copied to the selected quiz.
+              The MCQ question with all its choices and explanations will be copied to the selected
+              quiz.
             </p>
           </div>
 
-          <div v-if="availableQuizzes.length === 0" class="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <div
+            v-if="availableQuizzes.length === 0"
+            class="p-4 bg-amber-50 border border-amber-200 rounded-lg"
+          >
             <p class="text-sm text-amber-800">
               No event quizzes found. Create an event quiz first to copy MCQ questions to it.
             </p>
@@ -124,8 +135,8 @@ function handleCancel() {
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               :disabled="form.processing || !selectedQuizId || availableQuizzes.length === 0"
               class="bg-primary hover:bg-primary/90"
             >

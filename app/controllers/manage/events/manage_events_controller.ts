@@ -21,27 +21,35 @@ import db from '@adonisjs/lucid/services/db'
 
 export default class ManageEventsController {
   /**
-   * Display a list of events for management
+   * Publish an event (set status to published)
    */
-  async index({ inertia, auth, bouncer, logger, response }: HttpContext) {
+  async publishEvent({ params, response, auth, bouncer, logger, session }: HttpContext) {
     const context = {
       controller: 'ManageEventsController',
-      action: 'index',
+      action: 'publishEvent',
+      eventSlug: params.slug,
+      userId: auth.user?.id,
     }
-    logger.info({ ...context, message: 'Fetching events for management' })
+    logger.info({ ...context, message: 'Publishing event' })
 
-    if (await bouncer.with(EventPolicy).denies('view')) {
-      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access attempt' })
+    const event = await Event.findByOrFail('slug', params.slug)
+
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      logger.warn({
+        ...context,
+        userId: auth.user?.id,
+        eventId: event.id,
+        message: 'Unauthorized update attempt',
+      })
       return response.forbidden()
     }
 
-    // Query for all events (not paginated, not serialized)
-    const events = await Event.query().orderBy('createdAt', 'desc')
+    event.status = 'published'
+    await event.save()
 
-    // Pass events as DTOs inside the render function, matching Concept pattern
-    return inertia.render('manage/events/index', {
-      events: events ? EventDto.fromArray(events) : [],
-    })
+    logger.info({ ...context, message: 'Event published successfully' })
+    session.flash('success', 'Event published successfully')
+    return response.redirect().back()
   }
 
   /**
@@ -135,6 +143,7 @@ export default class ManageEventsController {
             currency: data.currency || 'KES',
             maxParticipants: data.maxParticipants,
             imageUrl,
+            status: data.status || 'draft',
           },
           { client: trx }
         )

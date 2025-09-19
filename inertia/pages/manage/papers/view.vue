@@ -283,12 +283,18 @@ const questionToCopy = ref<QuestionDto | null>(null)
               <Button variant="ghost" size="sm" @click="handleDeleteQuestion(question)">
                 <Trash class="h-4 w-4 text-destructive" /> Remove
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 @click="handleCopyQuestion(question)"
                 :disabled="!availableQuizzes.length || !question.isMcq"
-                :title="!question.isMcq ? 'Only MCQ questions can be copied to quizzes' : availableQuizzes.length ? 'Copy MCQ to quiz' : 'No quizzes available'"
+                :title="
+                  !question.isMcq
+                    ? 'Only MCQ questions can be copied to quizzes'
+                    : availableQuizzes.length
+                      ? 'Copy MCQ to quiz'
+                      : 'No quizzes available'
+                "
                 v-if="question.isMcq"
               >
                 <Copy class="h-4 w-4" /> Copy to Quiz

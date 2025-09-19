@@ -12,6 +12,8 @@ export default class UserQuizStatDto extends BaseModelDto {
   declare completionPercentage: number
   declare score: number
   declare additionalData: Record<string, any>
+  declare studentId: string | null
+  declare school: string | null
   declare createdAt: string
   declare updatedAt: string
   declare user: UserDto | null
@@ -29,6 +31,8 @@ export default class UserQuizStatDto extends BaseModelDto {
     this.completionPercentage = userQuizStat.completionPercentage
     this.score = userQuizStat.score
     this.additionalData = userQuizStat.additionalData
+    this.studentId = userQuizStat.studentId
+    this.school = userQuizStat.school
     this.createdAt = userQuizStat.createdAt.toISO()!
     this.updatedAt = userQuizStat.updatedAt.toISO()!
     this.user = userQuizStat.user && new UserDto(userQuizStat.user)
