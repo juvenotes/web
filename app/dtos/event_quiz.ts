@@ -16,6 +16,7 @@ export default class EventQuizDto extends BaseModelDto {
   declare hasTimer: boolean
   declare autoSubmit: boolean
   declare lockdownMode: boolean
+  declare quizMode: 'standard' | 'timed_lockdown'
   declare createdAt: string
   declare updatedAt: string
   declare event: EventDto | null
@@ -37,6 +38,7 @@ export default class EventQuizDto extends BaseModelDto {
     this.hasTimer = eventQuiz.hasTimer
     this.autoSubmit = eventQuiz.autoSubmit
     this.lockdownMode = eventQuiz.lockdownMode
+    this.quizMode = eventQuiz.quizMode
     this.createdAt = eventQuiz.createdAt.toISO()!
     this.updatedAt = eventQuiz.updatedAt.toISO()!
     this.event = eventQuiz.event && new EventDto(eventQuiz.event)

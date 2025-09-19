@@ -42,6 +42,9 @@ export default class EventQuiz extends BaseModel {
   @column()
   declare lockdownMode: boolean
 
+  @column()
+  declare quizMode: 'standard' | 'timed_lockdown'
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
