@@ -1,9 +1,11 @@
 # Quiz Modes Implementation Guide
 
 ## Overview
+
 The Juvenotes event quiz system now supports two distinct quiz modes:
 
 ### 1. Standard Mode (default)
+
 - **Behavior**: Traditional quiz with immediate feedback
 - **Features**:
   - Shows correct/incorrect answers immediately after selection
@@ -13,6 +15,7 @@ The Juvenotes event quiz system now supports two distinct quiz modes:
 - **Use Case**: Regular practice quizzes and learning assessments
 
 ### 2. Timed Lockdown Mode
+
 - **Behavior**: Exam-style timed quiz with security features
 - **Features**:
   - Pre-quiz authentication (Full Name, Student ID, School)
@@ -26,11 +29,13 @@ The Juvenotes event quiz system now supports two distinct quiz modes:
 ## Database Schema
 
 ### Migration
+
 ```sql
 ALTER TABLE event_quizzes ADD COLUMN quiz_mode ENUM('standard', 'timed_lockdown') DEFAULT 'standard';
 ```
 
 ### Model Fields
+
 - `quiz_mode`: 'standard' | 'timed_lockdown' (defaults to 'standard')
 - `duration_minutes`: Timer duration (only used in timed_lockdown mode)
 - `has_timer`: Boolean flag for timer functionality
@@ -40,29 +45,32 @@ ALTER TABLE event_quizzes ADD COLUMN quiz_mode ENUM('standard', 'timed_lockdown'
 ## Configuration
 
 ### Setting Up Standard Mode Quiz
+
 ```typescript
 const quiz = {
   quiz_mode: 'standard',
   has_timer: false,
   lockdown_mode: false,
-  auto_submit: false
+  auto_submit: false,
 }
 ```
 
 ### Setting Up Timed Lockdown Mode Quiz
+
 ```typescript
 const quiz = {
   quiz_mode: 'timed_lockdown',
   duration_minutes: 120,
   has_timer: true,
   lockdown_mode: true,
-  auto_submit: true
+  auto_submit: true,
 }
 ```
 
 ## User Experience
 
 ### Standard Mode Flow
+
 1. Student navigates to quiz
 2. Questions are immediately available
 3. Click answer → immediate feedback (correct/incorrect + explanation)
@@ -70,6 +78,7 @@ const quiz = {
 5. Click "View Results" to see final score
 
 ### Timed Lockdown Mode Flow
+
 1. Student navigates to quiz
 2. Authentication dialog appears (Name, Student ID, School)
 3. Timer starts immediately after authentication
@@ -81,6 +90,7 @@ const quiz = {
 ## API Changes
 
 No new endpoints required. Existing endpoints handle both modes:
+
 - Standard mode: Uses existing answer submission
 - Timed lockdown mode: Uses session-based submission with timer tracking
 

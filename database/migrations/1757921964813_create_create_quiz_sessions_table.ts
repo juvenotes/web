@@ -16,13 +16,13 @@ export default class extends BaseSchema {
       table.json('activity_log').nullable()
       table.boolean('auto_submitted').defaultTo(false)
       table.string('status').defaultTo('active') // active, completed, abandoned, submitted
-      
+
       table.timestamp('created_at')
       table.timestamp('updated_at')
-      
+
       // Ensure unique user-quiz session
       table.unique(['user_id', 'quiz_id'])
-      
+
       // Index for performance
       table.index(['quiz_id', 'status'])
     })

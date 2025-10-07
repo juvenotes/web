@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
@@ -23,23 +24,55 @@ export default class ManageEventsController {
   /**
    * Show list of events for management
    */
-  async index({ inertia, auth, bouncer, logger }: HttpContext) {
+  async index({ inertia, auth, bouncer, logger, request }: HttpContext) {
     const context = {
       controller: 'ManageEventsController',
       action: 'index',
+      userId: auth.user?.id,
     }
     logger.info({ ...context, message: 'Listing events for management' })
 
-    if (await bouncer.with(EventPolicy).denies('view')) {
-      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access' })
-      return inertia.render('errors/forbidden')
+    await bouncer.with(EventPolicy).authorize('view')
+
+    const page = request.input('page', 1)
+    const limit = 20
+    const search = request.input('search', '')
+
+    // Build query
+    const query = Event.query().whereNull('deletedAt').orderBy('startDate', 'desc').preload('user')
+
+    if (search) {
+      query.where((builder: ModelQueryBuilderContract<typeof Event>) => {
+        builder.whereILike('title', `%${search}%`).orWhereILike('description', `%${search}%`)
+      })
     }
 
-    const events = await Event.query().preload('user').orderBy('startDate', 'desc')
-    const eventDtos = events.map((e) => new EventDto(e))
+    const events = await query.paginate(page, limit)
+
+    // Get total count for all non-deleted events
+    const totalCount = await Event.query().whereNull('deletedAt').count('* as total').first()
+    const totalEvents = Number(totalCount?.$extras.total || 0)
+
+    logger.info({
+      ...context,
+      eventCount: events.total,
+      currentPage: events.currentPage,
+      totalPages: events.lastPage,
+      message: 'Retrieved events list for management',
+    })
 
     return inertia.render('manage/events/index', {
-      events: eventDtos,
+      events: EventDto.fromArray(events.all()),
+      totalEvents,
+      meta: {
+        current_page: events.currentPage,
+        last_page: events.lastPage,
+        first_page: events.firstPage,
+        per_page: events.perPage,
+      },
+      filters: {
+        search,
+      },
     })
   }
   /**

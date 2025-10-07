@@ -21,9 +21,9 @@ export class QuizSessionService {
 
     // Load quiz to get duration
     const quiz = await EventQuiz.findOrFail(quizId)
-    
+
     const startedAt = DateTime.now()
-    const expiresAt = quiz.durationMinutes 
+    const expiresAt = quiz.durationMinutes
       ? startedAt.plus({ minutes: quiz.durationMinutes })
       : null
 
@@ -37,14 +37,14 @@ export class QuizSessionService {
       tabSwitches: 0,
       focusLosses: 0,
       autoSubmitted: false,
-      activityLog: { started: startedAt.toISO() }
+      activityLog: { started: startedAt.toISO() },
     })
 
     // Create or update user quiz stats with student info
     await UserQuizStat.updateOrCreate(
       { userId, quizId },
-      { 
-        userId, 
+      {
+        userId,
         quizId,
         studentId: studentId || null,
         school: school || null,
@@ -52,7 +52,7 @@ export class QuizSessionService {
         questionsCorrect: 0,
         completionPercentage: 0,
         score: 0,
-        additionalData: {}
+        additionalData: {},
       }
     )
 
@@ -68,12 +68,12 @@ export class QuizSessionService {
 
     const currentLog = session.activityLog || {}
     const activities = currentLog.activities || []
-    
+
     // Add new activity
     activities.push({
       type: activityType,
       timestamp: DateTime.now().toISO(),
-      data
+      data,
     })
 
     // Update counters
@@ -86,7 +86,7 @@ export class QuizSessionService {
     // Update activity log
     session.activityLog = {
       ...currentLog,
-      activities
+      activities,
     }
 
     await session.save()
@@ -129,7 +129,7 @@ export class QuizSessionService {
     session.activityLog = {
       ...currentLog,
       submitted: DateTime.now().toISO(),
-      autoSubmitted
+      autoSubmitted,
     }
 
     await session.save()
@@ -172,7 +172,7 @@ export class QuizSessionService {
 
     const now = DateTime.now()
     const timeRemaining = session.expiresAt.diff(now, 'seconds').seconds
-    
+
     return Math.max(0, timeRemaining)
   }
 }

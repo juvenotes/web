@@ -16,7 +16,7 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
   initialTimeRemaining: 0,
   isActive: true,
-  variant: 'default'
+  variant: 'default',
 })
 
 const emit = defineEmits<Emits>()
@@ -32,7 +32,7 @@ const formattedTime = computed(() => {
   const h = hours.value.toString().padStart(2, '0')
   const m = minutes.value.toString().padStart(2, '0')
   const s = seconds.value.toString().padStart(2, '0')
-  
+
   if (hours.value > 0) {
     return `${h}:${m}:${s}`
   }
@@ -47,8 +47,9 @@ const timerVariant = computed(() => {
 })
 
 const timerClass = computed(() => {
-  const baseClass = 'inline-flex items-center gap-2 px-3 py-2 rounded-lg font-mono text-sm font-semibold'
-  
+  const baseClass =
+    'inline-flex items-center gap-2 px-3 py-2 rounded-lg font-mono text-sm font-semibold'
+
   switch (timerVariant.value) {
     case 'danger':
       return `${baseClass} bg-red-100 text-red-800 border border-red-200 animate-pulse`
@@ -61,20 +62,23 @@ const timerClass = computed(() => {
 
 function startTimer() {
   if (!props.isActive) return
-  
+
   intervalId = setInterval(() => {
     if (timeRemaining.value > 0) {
       timeRemaining.value--
-      
+
       // Emit warnings at specific intervals
-      if (timeRemaining.value === 1800) { // 30 minutes
+      if (timeRemaining.value === 1800) {
+        // 30 minutes
         emit('warning', timeRemaining.value)
-      } else if (timeRemaining.value === 300) { // 5 minutes
+      } else if (timeRemaining.value === 300) {
+        // 5 minutes
         emit('warning', timeRemaining.value)
-      } else if (timeRemaining.value === 60) { // 1 minute
+      } else if (timeRemaining.value === 60) {
+        // 1 minute
         emit('warning', timeRemaining.value)
       }
-      
+
       // Time's up
       if (timeRemaining.value === 0) {
         emit('time-up')
@@ -92,17 +96,23 @@ function stopTimer() {
 }
 
 // Watch for prop changes
-watch(() => props.isActive, (newValue) => {
-  if (newValue) {
-    startTimer()
-  } else {
-    stopTimer()
+watch(
+  () => props.isActive,
+  (newValue) => {
+    if (newValue) {
+      startTimer()
+    } else {
+      stopTimer()
+    }
   }
-})
+)
 
-watch(() => props.initialTimeRemaining, (newValue) => {
-  timeRemaining.value = newValue
-})
+watch(
+  () => props.initialTimeRemaining,
+  (newValue) => {
+    timeRemaining.value = newValue
+  }
+)
 
 onMounted(() => {
   if (props.isActive) {
@@ -122,7 +132,7 @@ function updateTimeRemaining(seconds: number) {
 defineExpose({
   updateTimeRemaining,
   stopTimer,
-  startTimer
+  startTimer,
 })
 </script>
 
@@ -130,9 +140,6 @@ defineExpose({
   <div :class="timerClass">
     <Clock class="h-4 w-4" />
     <span class="tabular-nums">{{ formattedTime }}</span>
-    <AlertTriangle 
-      v-if="timerVariant === 'danger'" 
-      class="h-4 w-4 text-red-600" 
-    />
+    <AlertTriangle v-if="timerVariant === 'danger'" class="h-4 w-4 text-red-600" />
   </div>
 </template>

@@ -5,7 +5,12 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.enum('quiz_mode', ['standard', 'timed_lockdown']).defaultTo('standard').comment('Quiz mode: standard (immediate feedback) or timed_lockdown (timed with authentication)')
+      table
+        .enum('quiz_mode', ['standard', 'timed_lockdown'])
+        .defaultTo('standard')
+        .comment(
+          'Quiz mode: standard (immediate feedback) or timed_lockdown (timed with authentication)'
+        )
     })
   }
 

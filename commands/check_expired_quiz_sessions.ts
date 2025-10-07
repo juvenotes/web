@@ -10,11 +10,11 @@ export default class CheckExpiredQuizSessions extends BaseCommand {
 
   async run() {
     this.logger.info('Checking for expired quiz sessions...')
-    
+
     try {
       const quizSessionService = new QuizSessionService()
       const expiredCount = await quizSessionService.checkExpiredSessions()
-      
+
       this.logger.info(`Auto-submitted ${expiredCount} expired quiz session(s)`)
     } catch (error) {
       this.logger.error(`Failed to check expired quiz sessions: ${(error as Error).message}`)

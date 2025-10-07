@@ -3,13 +3,13 @@ import { ref, computed } from 'vue'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '~/components/ui/dialog'
 import { AlertCircle, User, School, IdCard, Clock } from 'lucide-vue-next'
 
@@ -41,18 +41,19 @@ const isValid = computed(() => {
 const durationText = computed(() => {
   if (!props.durationMinutes) return 'No time limit'
   if (props.durationMinutes === 120) return '2 hours'
-  if (props.durationMinutes >= 60) return `${Math.floor(props.durationMinutes / 60)} hours ${props.durationMinutes % 60} minutes`
+  if (props.durationMinutes >= 60)
+    return `${Math.floor(props.durationMinutes / 60)} hours ${props.durationMinutes % 60} minutes`
   return `${props.durationMinutes} minutes`
 })
 
 function handleSubmit() {
   if (!isValid.value) return
-  
+
   isSubmitting.value = true
   emit('start-quiz', {
     fullName: fullName.value.trim(),
     studentId: studentId.value.trim(),
-    school: school.value.trim()
+    school: school.value.trim(),
   })
 }
 
@@ -70,17 +71,18 @@ function handleClose() {
           Quiz Authentication
         </DialogTitle>
         <DialogDescription>
-          Please provide your information before starting the {{ quizTitle }} quiz for {{ eventTitle }}.
+          Please provide your information before starting the {{ quizTitle }} quiz for
+          {{ eventTitle }}.
         </DialogDescription>
       </DialogHeader>
-      
+
       <!-- Quiz Info -->
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <div class="flex items-center gap-2 mb-2">
           <Clock class="h-4 w-4 text-blue-600" />
           <span class="text-sm font-medium text-blue-800">Duration: {{ durationText }}</span>
         </div>
-        
+
         <div v-if="lockdownMode" class="flex items-start gap-2">
           <AlertCircle class="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
           <div class="text-sm text-amber-800">
@@ -101,7 +103,7 @@ function handleClose() {
             <User class="h-4 w-4" />
             Full Name <span class="text-red-500">*</span>
           </Label>
-          <Input 
+          <Input
             id="fullName"
             v-model="fullName"
             placeholder="Enter your full name as registered"
@@ -114,7 +116,7 @@ function handleClose() {
             <IdCard class="h-4 w-4" />
             Student ID <span class="text-red-500">*</span>
           </Label>
-          <Input 
+          <Input
             id="studentId"
             v-model="studentId"
             placeholder="Enter your student ID number"
@@ -127,7 +129,7 @@ function handleClose() {
             <School class="h-4 w-4" />
             School/Institution <span class="text-red-500">*</span>
           </Label>
-          <Input 
+          <Input
             id="school"
             v-model="school"
             placeholder="Enter your school or institution name"
@@ -137,14 +139,8 @@ function handleClose() {
       </div>
 
       <DialogFooter>
-        <Button 
-          variant="outline" 
-          @click="handleClose"
-          :disabled="isSubmitting"
-        >
-          Cancel
-        </Button>
-        <Button 
+        <Button variant="outline" @click="handleClose" :disabled="isSubmitting"> Cancel </Button>
+        <Button
           @click="handleSubmit"
           :disabled="!isValid || isSubmitting"
           class="bg-[#55A9C4] hover:bg-[#4795af] text-white"

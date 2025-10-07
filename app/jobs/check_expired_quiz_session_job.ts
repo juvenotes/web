@@ -9,7 +9,7 @@ export default class CheckExpiredQuizSessionJob extends BaseJob {
     try {
       const quizSessionService = new QuizSessionService()
       const expiredCount = await quizSessionService.checkExpiredSessions()
-      
+
       if (expiredCount > 0) {
         console.log(`Auto-submitted ${expiredCount} expired quiz session(s)`)
       }

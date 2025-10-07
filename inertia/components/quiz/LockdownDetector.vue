@@ -14,7 +14,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  autoSubmitThreshold: 5
+  autoSubmitThreshold: 5,
 })
 
 const emit = defineEmits<Emits>()
@@ -26,16 +26,16 @@ const warningVisible = ref(false)
 
 function handleVisibilityChange() {
   if (!props.isEnabled) return
-  
+
   const isVisible = !document.hidden
-  
+
   if (!isVisible && isPageVisible.value) {
     // Page became hidden (tab switch)
     tabSwitchCount.value++
     recordActivity('tab_switch')
     showWarning('Tab switching detected! Please stay on this page during the quiz.')
   }
-  
+
   isPageVisible.value = isVisible
 }
 
@@ -47,7 +47,7 @@ function handleWindowFocus() {
 
 function handleWindowBlur() {
   if (!props.isEnabled) return
-  
+
   focusLossCount.value++
   recordActivity('focus_loss')
   showWarning('Window focus lost! Please keep this window focused during the quiz.')
@@ -55,33 +55,34 @@ function handleWindowBlur() {
 
 function recordActivity(type: string) {
   const totalCount = tabSwitchCount.value + focusLossCount.value
-  
+
   emit('suspicious-activity', {
     type,
-    count: totalCount
+    count: totalCount,
   })
-  
+
   // Check if we should trigger auto-submit
   if (totalCount >= props.autoSubmitThreshold) {
     toast({
       title: 'Quiz Auto-Submitted',
-      description: 'Too many suspicious activities detected. Your quiz has been automatically submitted.',
+      description:
+        'Too many suspicious activities detected. Your quiz has been automatically submitted.',
       variant: 'destructive',
     })
-    
+
     emit('auto-submit-triggered')
   }
 }
 
 function showWarning(message: string) {
   warningVisible.value = true
-  
+
   toast({
     title: 'Warning: Suspicious Activity',
     description: message,
     variant: 'destructive',
   })
-  
+
   // Auto-hide warning after 5 seconds
   setTimeout(() => {
     hideWarning()
@@ -110,7 +111,7 @@ onUnmounted(() => {
 defineExpose({
   tabSwitchCount: tabSwitchCount.value,
   focusLossCount: focusLossCount.value,
-  totalSuspiciousActivities: tabSwitchCount.value + focusLossCount.value
+  totalSuspiciousActivities: tabSwitchCount.value + focusLossCount.value,
 })
 </script>
 
@@ -123,14 +124,14 @@ defineExpose({
         <EyeOff v-else class="h-4 w-4 text-red-600" />
         <span class="font-medium">Lockdown Active</span>
       </div>
-      
+
       <div class="text-xs text-gray-600 mt-1">
         Violations: {{ tabSwitchCount + focusLossCount }}/{{ autoSubmitThreshold }}
       </div>
     </div>
 
     <!-- Warning Overlay -->
-    <div 
+    <div
       v-if="warningVisible"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
@@ -142,16 +143,16 @@ defineExpose({
             <p class="text-sm text-gray-600">Suspicious activity detected</p>
           </div>
         </div>
-        
+
         <div class="space-y-2 text-sm">
           <p><strong>Tab Switches:</strong> {{ tabSwitchCount }}</p>
           <p><strong>Focus Losses:</strong> {{ focusLossCount }}</p>
           <p class="text-red-600">
-            <strong>{{ autoSubmitThreshold - (tabSwitchCount + focusLossCount) }}</strong> 
+            <strong>{{ autoSubmitThreshold - (tabSwitchCount + focusLossCount) }}</strong>
             more violations will result in auto-submission.
           </p>
         </div>
-        
+
         <div class="mt-4 text-xs text-gray-500">
           Please keep this window focused and avoid switching tabs during the quiz.
         </div>

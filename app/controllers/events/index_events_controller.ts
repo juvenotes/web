@@ -129,7 +129,7 @@ export default class IndexEventsController {
     let userResponses: Record<number, { choiceId: number; isCorrect: boolean }> = {}
     let quizSession = null
     let timeRemaining = null
-    
+
     if (auth.user) {
       attemptedQuestionIds = await this.userProgressService.getEventQuizAttemptedQuestions(
         auth.user.id,
@@ -139,7 +139,7 @@ export default class IndexEventsController {
         auth.user.id,
         quiz.id
       )
-      
+
       // Get quiz session info for timer
       quizSession = await this.quizSessionService.getActiveSession(auth.user.id, quiz.id)
       if (quizSession) {
@@ -165,11 +165,13 @@ export default class IndexEventsController {
       canManage,
       attemptedQuestionIds,
       userResponses,
-      quizSession: quizSession ? {
-        id: quizSession.id,
-        startedAt: quizSession.startedAt?.toISO(),
-        timeRemaining
-      } : null
+      quizSession: quizSession
+        ? {
+            id: quizSession.id,
+            startedAt: quizSession.startedAt?.toISO(),
+            timeRemaining,
+          }
+        : null,
     })
   }
 
@@ -214,11 +216,7 @@ export default class IndexEventsController {
       return response.unauthorized()
     }
 
-    const { quizId, studentId, school } = request.only([
-      'quizId', 
-      'studentId',
-      'school'
-    ])
+    const { quizId, studentId, school } = request.only(['quizId', 'studentId', 'school'])
 
     try {
       const session = await this.quizSessionService.startSession(
@@ -238,8 +236,8 @@ export default class IndexEventsController {
         session: {
           id: session.id,
           startedAt: session.startedAt?.toISO(),
-          timeRemaining
-        }
+          timeRemaining,
+        },
       })
     } catch (error) {
       console.error('Failed to start quiz session:', error)
@@ -255,11 +253,7 @@ export default class IndexEventsController {
       return response.unauthorized()
     }
 
-    const { quizId, activityType, data } = request.only([
-      'quizId',
-      'activityType',
-      'data'
-    ])
+    const { quizId, activityType, data } = request.only(['quizId', 'activityType', 'data'])
 
     try {
       const session = await this.quizSessionService.recordActivity(
@@ -270,18 +264,17 @@ export default class IndexEventsController {
       )
 
       // Check if auto-submit should be triggered
-      const shouldAutoSubmit = await this.quizSessionService.checkAutoSubmit(
-        auth.user.id,
-        quizId
-      )
+      const shouldAutoSubmit = await this.quizSessionService.checkAutoSubmit(auth.user.id, quizId)
 
       return response.ok({
         success: true,
         autoSubmitTriggered: shouldAutoSubmit,
-        session: session ? {
-          tabSwitches: session.tabSwitches,
-          focusLosses: session.focusLosses
-        } : null
+        session: session
+          ? {
+              tabSwitches: session.tabSwitches,
+              focusLosses: session.focusLosses,
+            }
+          : null,
       })
     } catch (error) {
       console.error('Failed to record suspicious activity:', error)
@@ -308,11 +301,13 @@ export default class IndexEventsController {
 
       return response.ok({
         success: true,
-        session: session ? {
-          id: session.id,
-          endedAt: session.endedAt?.toISO(),
-          autoSubmitted: session.autoSubmitted
-        } : null
+        session: session
+          ? {
+              id: session.id,
+              endedAt: session.endedAt?.toISO(),
+              autoSubmitted: session.autoSubmitted,
+            }
+          : null,
       })
     } catch (error) {
       console.error('Failed to submit quiz session:', error)
@@ -337,7 +332,7 @@ export default class IndexEventsController {
       )
 
       return response.ok({
-        timeRemaining
+        timeRemaining,
       })
     } catch (error) {
       console.error('Failed to get session time:', error)
