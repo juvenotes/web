@@ -21,6 +21,28 @@ import db from '@adonisjs/lucid/services/db'
 
 export default class ManageEventsController {
   /**
+   * Show list of events for management
+   */
+  async index({ inertia, auth, bouncer, logger }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'index',
+    }
+    logger.info({ ...context, message: 'Listing events for management' })
+
+    if (await bouncer.with(EventPolicy).denies('view')) {
+      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access' })
+      return inertia.render('errors/forbidden')
+    }
+
+    const events = await Event.query().preload('user').orderBy('startDate', 'desc')
+    const eventDtos = events.map((e) => new EventDto(e))
+
+    return inertia.render('manage/events/index', {
+      events: eventDtos,
+    })
+  }
+  /**
    * Publish an event (set status to published)
    */
   async publishEvent({ params, response, auth, bouncer, logger, session }: HttpContext) {
