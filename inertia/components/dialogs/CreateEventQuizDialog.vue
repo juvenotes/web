@@ -6,6 +6,14 @@ import { Textarea } from '~/components/ui/textarea'
 import { Label } from '~/components/ui/label'
 import { useForm } from '@inertiajs/vue3'
 import type EventDto from '#dtos/event'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
+import { Checkbox } from '~/components/ui/checkbox'
 
 const props = defineProps<{
   open: boolean
@@ -19,10 +27,24 @@ const emit = defineEmits<{
 const form = useForm({
   title: '',
   description: '',
+  quizMode: 'standard',
+  durationMinutes: 120,
+  lockdownMode: false,
 })
 
 function handleSubmit() {
+  const isTimed = form.quizMode === 'timed_lockdown'
+
+  const data = {
+    ...form.data(),
+    hasTimer: isTimed,
+    autoSubmit: isTimed,
+    durationMinutes: isTimed ? form.durationMinutes : null,
+    lockdownMode: isTimed ? form.lockdownMode : false,
+  }
+
   form.post(`/manage/events/${props.event.slug}/quiz`, {
+    ...data,
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
@@ -61,6 +83,43 @@ function handleSubmit() {
           />
           <p class="text-sm text-muted-foreground">
             Provide a brief description of what this quiz covers (optional)
+          </p>
+        </div>
+
+        <div class="space-y-2">
+          <Label>Quiz Mode</Label>
+          <Select v-model="form.quizMode">
+            <SelectTrigger>
+              <SelectValue placeholder="Select quiz mode..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="standard"> Standard (Immediate Feedback) </SelectItem>
+              <SelectItem value="timed_lockdown"> Timed Lockdown (Exam) </SelectItem>
+            </SelectContent>
+          </Select>
+          <p class="text-sm text-muted-foreground">
+            Choose between a standard quiz or a timed, exam-style quiz.
+          </p>
+        </div>
+
+        <!-- Timed Lockdown Settings -->
+        <div v-if="form.quizMode === 'timed_lockdown'" class="space-y-4 pt-4 border-t">
+          <h4 class="font-medium text-foreground">Timed Quiz Settings</h4>
+          <div class="space-y-2">
+            <Label>Duration (minutes)</Label>
+            <Input
+              v-model="form.durationMinutes"
+              type="number"
+              :error="form.errors.durationMinutes"
+            />
+            <p class="text-sm text-muted-foreground">Set the quiz duration in minutes.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <Checkbox id="lockdown-mode" v-model="form.lockdownMode" />
+            <Label for="lockdown-mode">Enable Lockdown Mode</Label>
+          </div>
+          <p class="text-sm text-muted-foreground">
+            Detects tab switching and alerts students.
           </p>
         </div>
 
