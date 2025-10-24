@@ -7,6 +7,7 @@ import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
+import { formatDate } from '~/lib/dates'
 
 defineOptions({ layout: DashLayout })
 
@@ -20,17 +21,6 @@ const props = defineProps<Props>()
 const breadcrumbItems = [{ label: 'Events' }]
 
 const hasEvents = props.events.length > 0
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 function getEventTypeColor(type: string) {
   const colors = {
@@ -84,7 +74,7 @@ function getStatusColor(status: string) {
           </div>
 
           <!-- Manage Button -->
-          <div class="w-full sm:w-auto flex-shrink-0">
+          <div class="flex sm:flex-none justify-end">
             <Link
               v-if="props.canManage"
               href="/manage/events"

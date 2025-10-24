@@ -12,6 +12,7 @@ import { ref } from 'vue'
 import CreateQuizDialog from '~/components/dialogs/CreateEventQuizDialog.vue'
 import EditQuizDialog from '~/components/dialogs/EditEventQuizDialog.vue'
 import EditEventDialog from '~/components/dialogs/EditEventDialog.vue'
+import { formatDate } from '~/lib/dates'
 
 defineOptions({ layout: AdminLayout })
 
@@ -27,14 +28,6 @@ const createQuizOpen = ref(false)
 const editQuizOpen = ref(false)
 const editEventOpen = ref(false)
 const selectedQuiz = ref<EventQuizDto | null>(null)
-
-function formatDateShort(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
 
 function getStatusColor(status: string) {
   const colors = {
@@ -91,7 +84,7 @@ function publishEvent() {
       />
 
       <div class="mt-4 flex flex-col sm:flex-row gap-4 sm:items-start justify-between">
-        <div class="flex items-start gap-4 mt-4">
+        <div class="flex flex-wrap items-start gap-4 mt-4">
           <Link href="/manage/events" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <ArrowLeft class="h-5 w-5 text-gray-600" />
           </Link>
@@ -101,7 +94,7 @@ function publishEvent() {
           </div>
 
           <div class="space-y-2">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 flex-wrap">
               <h1 class="text-2xl font-bold text-foreground">{{ event.title }}</h1>
               <Badge :class="getStatusColor(event.status)" class="text-xs">
                 {{ event.status }}
@@ -125,7 +118,7 @@ function publishEvent() {
           </Button>
         </div>
 
-        <div class="flex gap-3">
+        <div class="flex gap-3 flex-wrap sm:flex-nowrap">
           <Link
             :href="`/events/${event.slug}`"
             class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
@@ -175,7 +168,7 @@ function publishEvent() {
                 {{ quiz.questions?.length ?? 0 }} questions
               </span>
               <span class="text-muted-foreground">
-                {{ formatDateShort(quiz.createdAt) }}
+                {{ formatDate(quiz.createdAt) }}
               </span>
             </div>
 
