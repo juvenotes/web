@@ -139,17 +139,23 @@ const getMedal = (rank: number) => {
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Name
+              Rank
             </th>
             <th
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
+              Name
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell"
+            >
               Student ID
             </th>
             <th
               scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell"
             >
               School
             </th>
@@ -163,16 +169,19 @@ const getMedal = (rank: number) => {
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="entry in leaderboard" :key="entry.user_id">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-sm font-medium text-gray-900">{{ entry.rank }}</span>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap flex items-center">
               <span v-if="getMedal(entry.rank)" class="text-lg mr-2">{{
                 getMedal(entry.rank)
               }}</span>
               <span class="text-sm font-medium text-gray-900">{{ entry.user_name }}</span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
               <span class="text-sm text-gray-700">{{ entry.student_id || 'N/A' }}</span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
               <span class="text-sm text-gray-700">{{ entry.school || 'N/A' }}</span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">

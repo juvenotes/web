@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import Event from '#models/event'
@@ -50,8 +51,8 @@ export default class ManageEventsController {
     const events = await query.paginate(page, limit)
 
     // Get total count for all non-deleted events
-    const totalCount = await Event.query().whereNull('deletedAt').count('* as total').first()
-    const totalEvents = Number(totalCount?.$extras.total || 0)
+    const totalCount = await db.from('events').whereNull('deleted_at').count('* as total')
+    const totalEvents = Number(totalCount[0].total || 0)
 
     logger.info({
       ...context,
@@ -525,6 +526,11 @@ export default class ManageEventsController {
             slug: generateSlug(),
             description: data.description || null,
             status: data.status || 'draft',
+            durationMinutes: data.durationMinutes,
+            hasTimer: data.hasTimer,
+            autoSubmit: data.autoSubmit,
+            lockdownMode: data.lockdownMode,
+            quizMode: data.quizMode,
           },
           { client: trx }
         )
@@ -670,6 +676,14 @@ export default class ManageEventsController {
             title: data.title || quiz.title,
             description: data.description !== undefined ? data.description : quiz.description,
             status: data.status || quiz.status,
+            durationMinutes: data.durationMinutes,
+            hasTimer: data.hasTimer,
+            autoSubmit: data.autoSubmit,
+            lockdownMode: data.lockdownMode,
+            quizMode: data.quizMode,
+            timeLimit: data.timeLimit,
+            startTime: data.startTime ? DateTime.fromJSDate(data.startTime) : null,
+            endTime: data.endTime ? DateTime.fromJSDate(data.endTime) : null,
           })
           .save()
         logger.info({
@@ -1234,14 +1248,23 @@ export default class ManageEventsController {
 
     const user = auth.getUserOrFail()
 
-    const { questionsAttempted, questionsCorrect, completionPercentage, score, additionalData } =
-      request.only([
-        'questionsAttempted',
-        'questionsCorrect',
-        'completionPercentage',
-        'score',
-        'additionalData',
-      ])
+    const {
+      questionsAttempted,
+      questionsCorrect,
+      completionPercentage,
+      score,
+      additionalData,
+      fullName,
+      school,
+    } = request.only([
+      'questionsAttempted',
+      'questionsCorrect',
+      'completionPercentage',
+      'score',
+      'additionalData',
+      'fullName',
+      'school',
+    ])
 
     try {
       // Verify event and quiz exist
@@ -1258,6 +1281,8 @@ export default class ManageEventsController {
         completionPercentage: completionPercentage || 0,
         score: score || 0,
         additionalData: additionalData || {},
+        fullName: fullName,
+        school: school,
       })
 
       logger.info({

@@ -9,6 +9,9 @@
     "build": "node ace build",
     "dev": "node ace serve --hmr",
     "test": "node --import ts-node-maintained/register/esm --enable-source-maps bin/test.ts",
+    "test:fast": "node --import ts-node-maintained/register/esm --enable-source-maps bin/test.ts --suites=functional,unit",
+    "test:functional": "node --import ts-node-maintained/register/esm --enable-source-maps bin/test.ts --suites=functional",
+    "test:unit": "node --import ts-node-maintained/register/esm --enable-source-maps bin/test.ts --suites=unit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
@@ -167,7 +170,7 @@
     "pino": "^9.7.0",
     "pino-loki": "^2.5.0",
     "posthog-js": "^1.239.1",
-    "radix-vue": "^1.9.12",
+    "radix-vue": "^1.9.17",
     "reflect-metadata": "^0.2.2",
     "rehype-highlight": "^7.0.1",
     "rehype-raw": "^7.0.0",

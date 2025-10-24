@@ -1,12 +1,12 @@
 import { test } from '@japa/runner'
 import { UserFactory } from '#database/factories/user_factory'
-import Event from '#models/event'
 import { DateTime } from 'luxon'
+import db from '@adonisjs/lucid/services/db'
 
 test.group('Manage events (functional)', (group) => {
   group.each.setup(async () => {
     // Clean events table before each test (best-effort)
-    await Event.query().delete()
+    await db.rawQuery('TRUNCATE TABLE events RESTART IDENTITY CASCADE')
   })
 
   test('guest cannot access manage events (redirect to login)', async ({ client }) => {
@@ -19,27 +19,27 @@ test.group('Manage events (functional)', (group) => {
 
     // create 35 events to ensure pagination
     for (let i = 0; i < 35; i++) {
-      await Event.create({
-        userId: user.id,
+      await db.table('events').insert({
+        user_id: user.id,
         title: `Event ${i}`,
         slug: `event-${i}-${Date.now()}-${i}`,
         description: `Desc ${i}`,
         content: null,
-        eventType: 'live',
+        event_type: 'live',
         status: 'draft',
-        startDate: DateTime.now(),
-        endDate: DateTime.now(),
-        registrationDeadline: null,
+        start_date: DateTime.now().toSQL(),
+        end_date: DateTime.now().toSQL(),
+        registration_deadline: null,
         venue: null,
         address: null,
-        onlineLink: null,
-        isOnline: false,
-        isFree: true,
+        online_link: null,
+        is_online: false,
+        is_free: true,
         price: null,
         currency: 'KES',
-        maxParticipants: null,
-        imageUrl: null,
-        currentParticipants: 0,
+        max_participants: null,
+        image_url: null,
+        current_participants: 0,
       })
     }
 
@@ -54,27 +54,27 @@ test.group('Manage events (functional)', (group) => {
     const user = await UserFactory.create()
 
     // ensure there are fewer events than the requested page
-    await Event.create({
-      userId: user.id,
+    await db.table('events').insert({
+      user_id: user.id,
       title: `Solo Event`,
       slug: `solo-event-${Date.now()}`,
       description: `Solo`,
       content: null,
-      eventType: 'live',
+      event_type: 'live',
       status: 'draft',
-      startDate: DateTime.now(),
-      endDate: DateTime.now(),
-      registrationDeadline: null,
+      start_date: DateTime.now().toSQL(),
+      end_date: DateTime.now().toSQL(),
+      registration_deadline: null,
       venue: null,
       address: null,
-      onlineLink: null,
-      isOnline: false,
-      isFree: true,
+      online_link: null,
+      is_online: false,
+      is_free: true,
       price: null,
       currency: 'KES',
-      maxParticipants: null,
-      imageUrl: null,
-      currentParticipants: 0,
+      max_participants: null,
+      image_url: null,
+      current_participants: 0,
     })
 
     const response = await client.get('/manage/events?page=100').loginAs(user)

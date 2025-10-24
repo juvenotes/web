@@ -35,6 +35,9 @@ export default class UserQuizStat extends BaseModel {
   @column()
   declare school: string | null
 
+  @column()
+  declare fullName: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

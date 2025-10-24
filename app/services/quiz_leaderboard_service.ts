@@ -104,6 +104,8 @@ export class QuizLeaderboardService {
       completionPercentage: number
       score: number
       additionalData?: any
+      fullName?: string
+      school?: string
     }
   ): Promise<UserQuizStat> {
     const userQuizStat = await UserQuizStat.updateOrCreate(
@@ -114,6 +116,8 @@ export class QuizLeaderboardService {
         completionPercentage: data.completionPercentage,
         score: data.score,
         additionalData: data.additionalData || {},
+        fullName: data.fullName,
+        school: data.school,
       }
     )
 
