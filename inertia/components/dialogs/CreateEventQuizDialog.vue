@@ -27,20 +27,16 @@ const emit = defineEmits<{
 const form = useForm({
   title: '',
   description: '',
-  quizMode: 'standard',
   durationMinutes: 120,
   lockdownMode: false,
 })
 
 function handleSubmit() {
-  const isTimed = form.quizMode === 'timed_lockdown'
-
   const data = {
     ...form.data(),
-    hasTimer: isTimed,
-    autoSubmit: isTimed,
-    durationMinutes: isTimed ? form.durationMinutes : null,
-    lockdownMode: isTimed ? form.lockdownMode : false,
+    quizMode: 'timed_lockdown',
+    hasTimer: true,
+    autoSubmit: true,
   }
 
   form.post(`/manage/events/${props.event.slug}/quiz`, {
@@ -86,24 +82,9 @@ function handleSubmit() {
           </p>
         </div>
 
-        <div class="space-y-2">
-          <Label>Quiz Mode</Label>
-          <Select v-model="form.quizMode">
-            <SelectTrigger>
-              <SelectValue placeholder="Select quiz mode..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="standard"> Standard (Immediate Feedback) </SelectItem>
-              <SelectItem value="timed_lockdown"> Timed Lockdown (Exam) </SelectItem>
-            </SelectContent>
-          </Select>
-          <p class="text-sm text-muted-foreground">
-            Choose between a standard quiz or a timed, exam-style quiz.
-          </p>
-        </div>
 
         <!-- Timed Lockdown Settings -->
-        <div v-if="form.quizMode === 'timed_lockdown'" class="space-y-4 pt-4 border-t">
+        <div class="space-y-4 pt-4 border-t">
           <h4 class="font-medium text-foreground">Timed Quiz Settings</h4>
           <div class="space-y-2">
             <Label>Duration (minutes)</Label>

@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
+import { ref, computed, onMounted, watch } from 'vue'
+import axios from 'axios'
+import { Button } from '@/components/ui/button'
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxList,
+  ComboboxEmpty,
+  ComboboxItem,
+} from '~/inertia/components/ui/combobox'
+import { Input } from '@/components/ui/input'
 import { Label } from '~/components/ui/label'
 import {
   Dialog,
@@ -33,9 +41,41 @@ const fullName = ref('')
 const studentId = ref('')
 const school = ref('')
 const isSubmitting = ref(false)
+const institutions = ref<any[]>([])
+const filteredInstitutions = ref<any[]>([])
+const searchTerm = ref('')
 
 const isValid = computed(() => {
   return fullName.value.trim() && studentId.value.trim() && school.value.trim()
+})
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('/manage/institutions')
+    institutions.value = response.data.institutions.filter((inst: any) =>
+      inst.name.toLowerCase().includes('university')
+    )
+    filteredInstitutions.value = institutions.value
+  } catch (error) {
+    console.error('Failed to fetch institutions:', error)
+  }
+})
+
+watch(searchTerm, (newVal) => {
+  if (newVal) {
+    filteredInstitutions.value = institutions.value.filter((inst) =>
+      inst.name.toLowerCase().includes(newVal.toLowerCase())
+    )
+  } else {
+    filteredInstitutions.value = institutions.value
+  }
+})
+
+watch(fullName, (newVal) => {
+  fullName.value = newVal
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
 })
 
 const durationText = computed(() => {
@@ -129,12 +169,25 @@ function handleClose() {
             <School class="h-4 w-4" />
             School/Institution <span class="text-red-500">*</span>
           </Label>
-          <Input
-            id="school"
-            v-model="school"
-            placeholder="Enter your school or institution name"
-            :disabled="isSubmitting"
-          />
+          <Combobox v-model="school">
+            <ComboboxInput
+              id="school"
+              v-model="searchTerm"
+              placeholder="Select your school or type to search"
+              :disabled="isSubmitting"
+            />
+            <ComboboxList>
+              <ComboboxEmpty>No school found.</ComboboxEmpty>
+              <ComboboxItem
+                v-for="inst in filteredInstitutions"
+                :key="inst.id"
+                :value="inst.name"
+                @click="school = inst.name"
+              >
+                {{ inst.name }}
+              </ComboboxItem>
+            </ComboboxList>
+          </Combobox>
         </div>
       </div>
 

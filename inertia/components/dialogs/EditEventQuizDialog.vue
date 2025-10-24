@@ -34,6 +34,9 @@ const form = useForm({
   quizMode: 'standard',
   durationMinutes: 120,
   lockdownMode: false,
+  timeLimit: false,
+  startTime: '',
+  endTime: '',
   mcqs: [] as Array<{
     question: string
     choices: string[]
@@ -54,6 +57,9 @@ watch(
       form.quizMode = quiz.quizMode || 'standard'
       form.durationMinutes = quiz.durationMinutes || 120
       form.lockdownMode = quiz.lockdownMode || false
+      form.timeLimit = quiz.timeLimit || false
+      form.startTime = quiz.startTime || ''
+      form.endTime = quiz.endTime || ''
       form.mcqs = quiz.mcqs.map((mcq) => ({
         question: mcq.question,
         choices: [...mcq.choices],
@@ -137,6 +143,8 @@ function handleSubmit() {
     autoSubmit: isTimed,
     durationMinutes: isTimed ? form.durationMinutes : null,
     lockdownMode: isTimed ? form.lockdownMode : false,
+    startTime: form.timeLimit ? form.startTime : null,
+    endTime: form.timeLimit ? form.endTime : null,
   }
 
   form.put(`/manage/events/${props.event.slug}/quiz/${props.quiz.id}`, {
@@ -223,6 +231,21 @@ function getChoiceLetter(index: number): string {
             <p class="text-sm text-muted-foreground">
               Detects tab switching and alerts students.
             </p>
+
+            <div class="flex items-center gap-2">
+              <Checkbox id="time-limit-edit" v-model="form.timeLimit" />
+              <Label for="time-limit-edit">Enable Time Limit</Label>
+            </div>
+            <p class="text-sm text-muted-foreground">
+              Set a window of time during which the quiz can be attempted.
+            </p>
+
+            <div v-if="form.timeLimit" class="space-y-2">
+              <Label>Start Time</Label>
+              <Input v-model="form.startTime" type="datetime-local" />
+              <Label>End Time</Label>
+              <Input v-model="form.endTime" type="datetime-local" />
+            </div>
           </div>
         </div>
 

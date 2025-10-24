@@ -427,14 +427,6 @@ onUnmounted(() => {
           {{ totalQuestions }} Questions
         </Badge>
         <Badge
-          :variant="isTimedLockdownMode ? 'destructive' : 'default'"
-          class="flex items-center gap-1"
-        >
-          <span v-if="isTimedLockdownMode" class="w-2 h-2 bg-red-500 rounded-full"></span>
-          <span v-else class="w-2 h-2 bg-green-500 rounded-full"></span>
-          {{ isTimedLockdownMode ? 'Timed Quiz' : 'Standard Quiz' }}
-        </Badge>
-        <Badge
           v-if="hasTimer && isTimedLockdownMode"
           variant="outline"
           class="flex items-center gap-1"
