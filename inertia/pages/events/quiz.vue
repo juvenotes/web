@@ -400,7 +400,7 @@ onUnmounted(() => {
             </div>
           </div>
           <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            <h1 class="text-xl sm:text-3xl font-bold text-gray-900 mb-2">
               {{ props.quiz.title }}
             </h1>
             <div class="flex items-center gap-2 text-sm text-muted-foreground mb-2">
@@ -495,7 +495,7 @@ onUnmounted(() => {
       <div
         v-for="(question, index) in props.quiz.questions"
         :key="question.id"
-        class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6"
+        class="bg-white rounded-lg border border-gray-200 p-3 sm:p-6"
       >
         <div class="flex items-center gap-3 mb-4">
           <span class="text-sm font-medium text-gray-500">Q{{ index + 1 }}</span>
@@ -517,7 +517,7 @@ onUnmounted(() => {
             <div
               v-for="(choice, choiceIndex) in question.choices"
               :key="choice.id"
-              class="flex items-start gap-3 p-3 rounded-lg border transition-all duration-200"
+              class="flex items-start gap-3 p-2 sm:p-3 rounded-lg border transition-all duration-200"
               :class="[
                 // For standard mode: show correct answers immediately
                 isStandardMode && showAnswer[index] && choice.isCorrect
@@ -543,7 +543,7 @@ onUnmounted(() => {
               :aria-disabled="isStandardMode && showAnswer[index] ? 'true' : 'false'"
             >
               <span
-                class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
+                class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-medium"
                 :class="[
                   // Standard mode: show green for correct, red for selected incorrect
                   isStandardMode && showAnswer[index] && choice.isCorrect

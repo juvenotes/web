@@ -9,6 +9,14 @@ import { Plus, Minus, Save } from 'lucide-vue-next'
 import type EventDto from '#dtos/event'
 import type EventQuizDto from '#dtos/event_quiz'
 import { ref, watch } from 'vue'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
+import { Checkbox } from '~/components/ui/checkbox'
 
 const props = defineProps<{
   open: boolean
@@ -23,6 +31,9 @@ const emit = defineEmits<{
 const form = useForm({
   title: '',
   description: '',
+  quizMode: 'standard',
+  durationMinutes: 120,
+  lockdownMode: false,
   mcqs: [] as Array<{
     question: string
     choices: string[]
@@ -40,6 +51,9 @@ watch(
     if (quiz) {
       form.title = quiz.title
       form.description = quiz.description || ''
+      form.quizMode = quiz.quizMode || 'standard'
+      form.durationMinutes = quiz.durationMinutes || 120
+      form.lockdownMode = quiz.lockdownMode || false
       form.mcqs = quiz.mcqs.map((mcq) => ({
         question: mcq.question,
         choices: [...mcq.choices],
@@ -116,7 +130,17 @@ function handleSubmit() {
 
   if (hasErrors) return
 
+  const isTimed = form.quizMode === 'timed_lockdown'
+  const data = {
+    ...form.data(),
+    hasTimer: isTimed,
+    autoSubmit: isTimed,
+    durationMinutes: isTimed ? form.durationMinutes : null,
+    lockdownMode: isTimed ? form.lockdownMode : false,
+  }
+
   form.put(`/manage/events/${props.event.slug}/quiz/${props.quiz.id}`, {
+    ...data,
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
@@ -162,6 +186,43 @@ function getChoiceLetter(index: number): string {
               placeholder="Enter quiz description..."
               rows="3"
             />
+          </div>
+
+          <div class="space-y-2">
+            <Label>Quiz Mode</Label>
+            <Select v-model="form.quizMode">
+              <SelectTrigger>
+                <SelectValue placeholder="Select quiz mode..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="standard"> Standard (Immediate Feedback) </SelectItem>
+                <SelectItem value="timed_lockdown"> Timed Lockdown (Exam) </SelectItem>
+              </SelectContent>
+            </Select>
+            <p class="text-sm text-muted-foreground">
+              Choose between a standard quiz or a timed, exam-style quiz.
+            </p>
+          </div>
+
+          <!-- Timed Lockdown Settings -->
+          <div v-if="form.quizMode === 'timed_lockdown'" class="space-y-4 pt-4 border-t">
+            <h4 class="font-medium text-foreground">Timed Quiz Settings</h4>
+            <div class="space-y-2">
+              <Label>Duration (minutes)</Label>
+              <Input
+                v-model="form.durationMinutes"
+                type="number"
+                :error="form.errors.durationMinutes"
+              />
+              <p class="text-sm text-muted-foreground">Set the quiz duration in minutes.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <Checkbox id="lockdown-mode-edit" v-model="form.lockdownMode" />
+              <Label for="lockdown-mode-edit">Enable Lockdown Mode</Label>
+            </div>
+            <p class="text-sm text-muted-foreground">
+              Detects tab switching and alerts students.
+            </p>
           </div>
         </div>
 
