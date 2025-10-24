@@ -290,7 +290,7 @@ function getChoiceLetter(index: number): string {
                 <div
                   v-for="(choice, choiceIndex) in mcq.choices"
                   :key="choiceIndex"
-                  class="flex items-center gap-3"
+                  class="flex flex-wrap items-center gap-3"
                 >
                   <div class="flex-shrink-0 flex items-center gap-2">
                     <input
@@ -354,7 +354,7 @@ function getChoiceLetter(index: number): string {
         </div>
 
         <!-- Form Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <div class="flex flex-wrap justify-start sm:justify-end gap-3 pt-4 border-t border-gray-200">
           <Button type="button" @click="$emit('update:open', false)" variant="outline">
             Cancel
           </Button>

@@ -19,6 +19,7 @@ import CreateEventDialog from '~/components/dialogs/CreateEventDialog.vue'
 import EditEventDialog from '~/components/dialogs/EditEventDialog.vue'
 import DeleteEventDialog from '~/components/dialogs/DeleteEventDialog.vue'
 import { router } from '@inertiajs/vue3'
+import { formatDate } from '~/lib/dates'
 
 defineOptions({ layout: AdminLayout })
 
@@ -27,16 +28,6 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 function getStatusColor(status: string) {
   const colors = {
@@ -117,7 +108,7 @@ function handleEventDeleted() {
             </p>
           </div>
         </div>
-        <div class="flex gap-3">
+        <div class="flex flex-wrap gap-3">
           <Button
             @click="openCreateDialog"
             class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium"
