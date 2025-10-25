@@ -442,6 +442,9 @@ onUnmounted(() => {
           <span class="w-2 h-2 bg-red-500 rounded-full"></span>
           Lockdown Mode
         </Badge>
+        <p class="text-xs text-muted-foreground">
+          <strong>Note:</strong> While this quiz monitors tab switching, it does not lock your browser.
+        </p>
         <Badge
           v-if="showResults"
           :variant="scorePercentage >= 70 ? 'default' : 'destructive'"

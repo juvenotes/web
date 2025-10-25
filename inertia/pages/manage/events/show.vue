@@ -161,6 +161,18 @@ function publishEvent() {
               >
                 {{ quiz.title }}
               </h3>
+              <Button
+                @click.prevent="
+                  () => {
+                    selectedQuiz = quiz
+                    editQuizOpen = true
+                  }
+                "
+                size="sm"
+                variant="outline"
+              >
+                <Edit class="h-4 w-4" />
+              </Button>
             </div>
 
             <div class="flex items-center gap-3 text-sm">

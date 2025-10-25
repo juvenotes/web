@@ -10,6 +10,9 @@ export const createEventQuizValidator = vine.compile(
     autoSubmit: vine.boolean().optional(),
     lockdownMode: vine.boolean().optional(),
     quizMode: vine.enum(['standard', 'timed_lockdown']).optional(),
+    timeLimit: vine.boolean().optional(),
+    startTime: vine.date().optional(),
+    endTime: vine.date().optional(),
   })
 )
 

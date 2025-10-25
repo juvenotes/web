@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import Event from '#models/event'
@@ -9,7 +8,6 @@ import EventQuiz from '#models/event_quiz'
 import Question from '#models/question'
 import UserQuizStatDto from '#dtos/user_quiz_stat'
 import { createEventValidator, updateEventValidator } from '#validators/event'
-import { createEventQuizValidator, updateEventQuizValidator } from '#validators/event_quiz'
 import { createMcqQuestionValidator, updateMcqQuestionValidator } from '#validators/question'
 import string from '@adonisjs/core/helpers/string'
 import { generateSlug } from '#utils/slug_generator'
@@ -492,71 +490,6 @@ export default class ManageEventsController {
   }
 
   /**
-   * Store a new quiz for an event
-   */
-  async storeQuiz({ params, request, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'storeQuiz',
-      eventSlug: params.slug,
-    }
-    logger.info({ ...context, message: 'Creating event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz create attempt',
-      })
-      return response.forbidden()
-    }
-
-    const data = await request.validateUsing(createEventQuizValidator)
-
-    try {
-      await db.transaction(async (trx) => {
-        const quiz = await EventQuiz.create(
-          {
-            userId: auth.user!.id,
-            eventId: event.id,
-            title: data.title,
-            slug: generateSlug(),
-            description: data.description || null,
-            status: data.status || 'draft',
-            durationMinutes: data.durationMinutes,
-            hasTimer: data.hasTimer,
-            autoSubmit: data.autoSubmit,
-            lockdownMode: data.lockdownMode,
-            quizMode: data.quizMode,
-          },
-          { client: trx }
-        )
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz created successfully',
-        })
-        session.flash('success', 'Quiz created successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        error,
-        message: 'Quiz creation failed',
-      })
-      throw error
-    }
-  }
-
-  /**
    * Show a specific quiz for management
    */
   async viewQuiz({ params, inertia, auth, bouncer, logger }: HttpContext) {
@@ -641,125 +574,6 @@ export default class ManageEventsController {
     })
   }
 
-  /**
-   * Update a quiz
-   */
-  async updateQuiz({ params, request, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'updateQuiz',
-      eventSlug: params.slug,
-      quizId: params.quizId,
-    }
-    logger.info({ ...context, message: 'Updating event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-    const quiz = await EventQuiz.findOrFail(params.quizId)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz update attempt',
-      })
-      return response.forbidden()
-    }
-
-    const data = await request.validateUsing(updateEventQuizValidator)
-
-    try {
-      await db.transaction(async (trx) => {
-        quiz.useTransaction(trx)
-        await quiz
-          .merge({
-            title: data.title || quiz.title,
-            description: data.description !== undefined ? data.description : quiz.description,
-            status: data.status || quiz.status,
-            durationMinutes: data.durationMinutes,
-            hasTimer: data.hasTimer,
-            autoSubmit: data.autoSubmit,
-            lockdownMode: data.lockdownMode,
-            quizMode: data.quizMode,
-            timeLimit: data.timeLimit,
-            startTime: data.startTime ? DateTime.fromJSDate(data.startTime) : null,
-            endTime: data.endTime ? DateTime.fromJSDate(data.endTime) : null,
-          })
-          .save()
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz updated successfully',
-        })
-        session.flash('success', 'Quiz updated successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        quizId: quiz.id,
-        error,
-        message: 'Quiz update failed',
-      })
-      throw error
-    }
-  }
-
-  /**
-   * Delete a quiz
-   */
-  async destroyQuiz({ params, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'destroyQuiz',
-      eventSlug: params.slug,
-      quizId: params.quizId,
-    }
-    logger.info({ ...context, message: 'Deleting event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-    const quiz = await EventQuiz.findOrFail(params.quizId)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz delete attempt',
-      })
-      return response.forbidden()
-    }
-
-    try {
-      await db.transaction(async (trx) => {
-        quiz.useTransaction(trx)
-        await quiz.delete()
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz deleted successfully',
-        })
-        session.flash('success', 'Quiz deleted successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        quizId: quiz.id,
-        error,
-        message: 'Quiz deletion failed',
-      })
-      throw error
-    }
-  }
 
   /**
    * Upload quiz questions from file

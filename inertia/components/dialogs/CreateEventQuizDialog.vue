@@ -27,16 +27,24 @@ const emit = defineEmits<{
 const form = useForm({
   title: '',
   description: '',
+  quizMode: 'timed_lockdown',
   durationMinutes: 120,
   lockdownMode: false,
+  timeLimit: false,
+  startTime: '',
+  endTime: '',
 })
 
 function handleSubmit() {
+  const isTimed = form.quizMode === 'timed_lockdown'
   const data = {
     ...form.data(),
-    quizMode: 'timed_lockdown',
-    hasTimer: true,
-    autoSubmit: true,
+    hasTimer: isTimed,
+    autoSubmit: isTimed,
+    durationMinutes: isTimed ? form.durationMinutes : null,
+    lockdownMode: isTimed ? form.lockdownMode : false,
+    startTime: form.timeLimit ? form.startTime : null,
+    endTime: form.timeLimit ? form.endTime : null,
   }
 
   form.post(`/manage/events/${props.event.slug}/quiz`, {
@@ -82,9 +90,24 @@ function handleSubmit() {
           </p>
         </div>
 
+        <div class="space-y-2">
+          <Label>Quiz Mode</Label>
+          <Select v-model="form.quizMode">
+            <SelectTrigger>
+              <SelectValue placeholder="Select quiz mode..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="standard"> Standard (Immediate Feedback) </SelectItem>
+              <SelectItem value="timed_lockdown"> Timed Lockdown (Exam) </SelectItem>
+            </SelectContent>
+          </Select>
+          <p class="text-sm text-muted-foreground">
+            Choose between a standard quiz or a timed, exam-style quiz.
+          </p>
+        </div>
 
         <!-- Timed Lockdown Settings -->
-        <div class="space-y-4 pt-4 border-t">
+        <div v-if="form.quizMode === 'timed_lockdown'" class="space-y-4 pt-4 border-t">
           <h4 class="font-medium text-foreground">Timed Quiz Settings</h4>
           <div class="space-y-2">
             <Label>Duration (minutes)</Label>
@@ -102,6 +125,21 @@ function handleSubmit() {
           <p class="text-sm text-muted-foreground">
             Detects tab switching and alerts students.
           </p>
+
+          <div class="flex items-center gap-2">
+            <Checkbox id="time-limit" v-model="form.timeLimit" />
+            <Label for="time-limit">Enable Time Limit</Label>
+          </div>
+          <p class="text-sm text-muted-foreground">
+            Set a window of time during which the quiz can be attempted.
+          </p>
+
+          <div v-if="form.timeLimit" class="space-y-2">
+            <Label>Start Time</Label>
+            <Input v-model="form.startTime" type="datetime-local" />
+            <Label>End Time</Label>
+            <Input v-model="form.endTime" type="datetime-local" />
+          </div>
         </div>
 
         <div class="flex flex-wrap justify-start sm:justify-end gap-3 pt-4 border-t border-gray-200">

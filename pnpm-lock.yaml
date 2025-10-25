@@ -442,7 +442,7 @@ importers:
         specifier: ^3.4.15
         version: 3.4.17
       ts-node-maintained:
-        specifier: ^10.9.4
+        specifier: ^10.9.6
         version: 10.9.6(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.18.5)(typescript@5.9.2)
       tslib:
         specifier: ^2.8.1
