@@ -643,6 +643,11 @@ router
       .get('/:slug/quiz/:quizId/leaderboard', [ManageEventsController, 'showQuizLeaderboard'])
       .as('manage.events.quiz.leaderboard')
 
+    // Quiz publish route
+    router
+      .put('/:slug/quiz/:quizId/publish', [ManageEventsController, 'publishQuiz'])
+      .as('manage.events.quiz.publish')
+
     // Event publish route
     router
       .put('/:slug/publish', [ManageEventsController, 'publishEvent'])
