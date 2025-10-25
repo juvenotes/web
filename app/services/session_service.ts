@@ -5,11 +5,11 @@ import app from '@adonisjs/core/services/app'
 // import emitter from '@adonisjs/core/services/emitter'
 import { DateTime } from 'luxon'
 import string from '@adonisjs/core/helpers/string'
-import ms from 'ms'
 import IdentityService from './identity_service.js'
 import { inject } from '@adonisjs/core'
 import { UAParser } from 'ua-parser-js'
 import logger from '@adonisjs/core/services/logger'
+import ms from 'ms'
 
 @inject()
 export default class SessionService {

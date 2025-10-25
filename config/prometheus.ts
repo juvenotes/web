@@ -16,7 +16,8 @@ export default defineConfig({
    * A prefix that will be added to all metrics
    * names
    */
-  metricsPrefix: env.get('APP_NAME'),
+  // Ensure a valid metrics prefix is provided. Prom-client rejects empty/invalid names.
+  metricsPrefix: (env.get('APP_NAME') || 'juvenotes').toString().replace(/[^a-zA-Z0-9_:]/g, '_'),
 
   /**
    * List of IPs that are allowed to access the

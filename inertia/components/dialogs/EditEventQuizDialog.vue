@@ -9,6 +9,14 @@ import { Plus, Minus, Save } from 'lucide-vue-next'
 import type EventDto from '#dtos/event'
 import type EventQuizDto from '#dtos/event_quiz'
 import { ref, watch } from 'vue'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
+import { Checkbox } from '~/components/ui/checkbox'
 
 const props = defineProps<{
   open: boolean
@@ -23,6 +31,12 @@ const emit = defineEmits<{
 const form = useForm({
   title: '',
   description: '',
+  quizMode: 'standard',
+  durationMinutes: 120,
+  lockdownMode: false,
+  timeLimit: false,
+  startTime: '',
+  endTime: '',
   mcqs: [] as Array<{
     question: string
     choices: string[]
@@ -34,18 +48,28 @@ const form = useForm({
 const errors = ref<Record<string, string>>({})
 
 // Initialize form when quiz prop changes
-watch(() => props.quiz, (quiz) => {
-  if (quiz) {
-    form.title = quiz.title
-    form.description = quiz.description || ''
-    form.mcqs = quiz.mcqs.map(mcq => ({
-      question: mcq.question,
-      choices: [...mcq.choices],
-      correctAnswer: mcq.correctAnswer,
-      explanation: mcq.explanation || '',
-    }))
-  }
-}, { immediate: true })
+watch(
+  () => props.quiz,
+  (quiz) => {
+    if (quiz) {
+      form.title = quiz.title
+      form.description = quiz.description || ''
+      form.quizMode = quiz.quizMode || 'standard'
+      form.durationMinutes = quiz.durationMinutes || 120
+      form.lockdownMode = quiz.lockdownMode || false
+      form.timeLimit = quiz.timeLimit || false
+      form.startTime = quiz.startTime || ''
+      form.endTime = quiz.endTime || ''
+      form.mcqs = quiz.mcqs.map((mcq) => ({
+        question: mcq.question,
+        choices: [...mcq.choices],
+        correctAnswer: mcq.correctAnswer,
+        explanation: mcq.explanation || '',
+      }))
+    }
+  },
+  { immediate: true }
+)
 
 function addQuestion() {
   form.mcqs.push({
@@ -73,7 +97,10 @@ function removeChoice(questionIndex: number, choiceIndex: number) {
     form.mcqs[questionIndex].choices.splice(choiceIndex, 1)
     // Adjust correct answer if necessary
     if (form.mcqs[questionIndex].correctAnswer >= choiceIndex) {
-      form.mcqs[questionIndex].correctAnswer = Math.max(0, form.mcqs[questionIndex].correctAnswer - 1)
+      form.mcqs[questionIndex].correctAnswer = Math.max(
+        0,
+        form.mcqs[questionIndex].correctAnswer - 1
+      )
     }
   }
 }
@@ -94,8 +121,8 @@ function handleSubmit() {
       errors.value[`mcq_${index}_question`] = `Question ${index + 1} is required`
       hasErrors = true
     }
-    
-    const validChoices = mcq.choices.filter(choice => choice.trim())
+
+    const validChoices = mcq.choices.filter((choice) => choice.trim())
     if (validChoices.length < 2) {
       errors.value[`mcq_${index}_choices`] = `Question ${index + 1} needs at least 2 choices`
       hasErrors = true
@@ -109,7 +136,19 @@ function handleSubmit() {
 
   if (hasErrors) return
 
+  const isTimed = form.quizMode === 'timed_lockdown'
+  const data = {
+    ...form.data(),
+    hasTimer: isTimed,
+    autoSubmit: isTimed,
+    durationMinutes: isTimed ? form.durationMinutes : null,
+    lockdownMode: isTimed ? form.lockdownMode : false,
+    startTime: form.timeLimit ? form.startTime : null,
+    endTime: form.timeLimit ? form.endTime : null,
+  }
+
   form.put(`/manage/events/${props.event.slug}/quiz/${props.quiz.id}`, {
+    ...data,
     preserveScroll: true,
     onSuccess: () => {
       emit('update:open', false)
@@ -155,6 +194,58 @@ function getChoiceLetter(index: number): string {
               placeholder="Enter quiz description..."
               rows="3"
             />
+          </div>
+
+          <div class="space-y-2">
+            <Label>Quiz Mode</Label>
+            <Select v-model="form.quizMode">
+              <SelectTrigger>
+                <SelectValue placeholder="Select quiz mode..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="standard"> Standard (Immediate Feedback) </SelectItem>
+                <SelectItem value="timed_lockdown"> Timed Lockdown (Exam) </SelectItem>
+              </SelectContent>
+            </Select>
+            <p class="text-sm text-muted-foreground">
+              Choose between a standard quiz or a timed, exam-style quiz.
+            </p>
+          </div>
+
+          <!-- Timed Lockdown Settings -->
+          <div v-if="form.quizMode === 'timed_lockdown'" class="space-y-4 pt-4 border-t">
+            <h4 class="font-medium text-foreground">Timed Quiz Settings</h4>
+            <div class="space-y-2">
+              <Label>Duration (minutes)</Label>
+              <Input
+                v-model="form.durationMinutes"
+                type="number"
+                :error="form.errors.durationMinutes"
+              />
+              <p class="text-sm text-muted-foreground">Set the quiz duration in minutes.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <Checkbox id="lockdown-mode-edit" v-model="form.lockdownMode" />
+              <Label for="lockdown-mode-edit">Enable Lockdown Mode</Label>
+            </div>
+            <p class="text-sm text-muted-foreground">
+              Detects tab switching and alerts students.
+            </p>
+
+            <div class="flex items-center gap-2">
+              <Checkbox id="time-limit-edit" v-model="form.timeLimit" />
+              <Label for="time-limit-edit">Enable Time Limit</Label>
+            </div>
+            <p class="text-sm text-muted-foreground">
+              Set a window of time during which the quiz can be attempted.
+            </p>
+
+            <div v-if="form.timeLimit" class="space-y-2">
+              <Label>Start Time</Label>
+              <Input v-model="form.startTime" type="datetime-local" />
+              <Label>End Time</Label>
+              <Input v-model="form.endTime" type="datetime-local" />
+            </div>
           </div>
         </div>
 
@@ -222,7 +313,7 @@ function getChoiceLetter(index: number): string {
                 <div
                   v-for="(choice, choiceIndex) in mcq.choices"
                   :key="choiceIndex"
-                  class="flex items-center gap-3"
+                  class="flex flex-wrap items-center gap-3"
                 >
                   <div class="flex-shrink-0 flex items-center gap-2">
                     <input
@@ -233,20 +324,20 @@ function getChoiceLetter(index: number): string {
                       :name="`correct_${questionIndex}`"
                       class="text-[#55A9C4] focus:ring-[#55A9C4]"
                     />
-                    <Label 
+                    <Label
                       :for="`correct_${questionIndex}_${choiceIndex}`"
                       class="text-sm font-medium min-w-[20px]"
                     >
                       {{ getChoiceLetter(choiceIndex) }}
                     </Label>
                   </div>
-                  
+
                   <Input
                     v-model="mcq.choices[choiceIndex]"
                     :placeholder="`Choice ${getChoiceLetter(choiceIndex)}`"
                     class="flex-1"
                   />
-                  
+
                   <Button
                     v-if="mcq.choices.length > 2"
                     type="button"
@@ -266,7 +357,7 @@ function getChoiceLetter(index: number): string {
               <p v-if="errors[`mcq_${questionIndex}_correct`]" class="text-sm text-red-600 mt-1">
                 {{ errors[`mcq_${questionIndex}_correct`] }}
               </p>
-              
+
               <p class="text-xs text-gray-500 mt-2">
                 Select the radio button next to the correct answer
               </p>
@@ -286,19 +377,11 @@ function getChoiceLetter(index: number): string {
         </div>
 
         <!-- Form Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
-          <Button
-            type="button"
-            @click="$emit('update:open', false)"
-            variant="outline"
-          >
+        <div class="flex flex-wrap justify-start sm:justify-end gap-3 pt-4 border-t border-gray-200">
+          <Button type="button" @click="$emit('update:open', false)" variant="outline">
             Cancel
           </Button>
-          <Button 
-            type="submit" 
-            :disabled="form.processing"
-            class="bg-[#55A9C4] hover:bg-[#4795af]"
-          >
+          <Button type="submit" :disabled="form.processing" class="bg-[#55A9C4] hover:bg-[#4795af]">
             <Save class="h-4 w-4 mr-2" />
             {{ form.processing ? 'Saving...' : 'Save Changes' }}
           </Button>

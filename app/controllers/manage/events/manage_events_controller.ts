@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
@@ -7,7 +8,6 @@ import EventQuiz from '#models/event_quiz'
 import Question from '#models/question'
 import UserQuizStatDto from '#dtos/user_quiz_stat'
 import { createEventValidator, updateEventValidator } from '#validators/event'
-import { createEventQuizValidator, updateEventQuizValidator } from '#validators/event_quiz'
 import { createMcqQuestionValidator, updateMcqQuestionValidator } from '#validators/question'
 import string from '@adonisjs/core/helpers/string'
 import { generateSlug } from '#utils/slug_generator'
@@ -21,27 +21,89 @@ import db from '@adonisjs/lucid/services/db'
 
 export default class ManageEventsController {
   /**
-   * Display a list of events for management
+   * Show list of events for management
    */
-  async index({ inertia, auth, bouncer, logger, response }: HttpContext) {
+  async index({ inertia, auth, bouncer, logger, request }: HttpContext) {
     const context = {
       controller: 'ManageEventsController',
       action: 'index',
+      userId: auth.user?.id,
     }
-    logger.info({ ...context, message: 'Fetching events for management' })
+    logger.info({ ...context, message: 'Listing events for management' })
 
-    if (await bouncer.with(EventPolicy).denies('view')) {
-      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access attempt' })
+    await bouncer.with(EventPolicy).authorize('view')
+
+    const page = request.input('page', 1)
+    const limit = 20
+    const search = request.input('search', '')
+
+    // Build query
+    const query = Event.query().whereNull('deletedAt').orderBy('startDate', 'desc').preload('user')
+
+    if (search) {
+      query.where((builder: ModelQueryBuilderContract<typeof Event>) => {
+        builder.whereILike('title', `%${search}%`).orWhereILike('description', `%${search}%`)
+      })
+    }
+
+    const events = await query.paginate(page, limit)
+
+    // Get total count for all non-deleted events
+    const totalCount = await db.from('events').whereNull('deleted_at').count('* as total')
+    const totalEvents = Number(totalCount[0].total || 0)
+
+    logger.info({
+      ...context,
+      eventCount: events.total,
+      currentPage: events.currentPage,
+      totalPages: events.lastPage,
+      message: 'Retrieved events list for management',
+    })
+
+    return inertia.render('manage/events/index', {
+      events: EventDto.fromArray(events.all()),
+      totalEvents,
+      meta: {
+        current_page: events.currentPage,
+        last_page: events.lastPage,
+        first_page: events.firstPage,
+        per_page: events.perPage,
+      },
+      filters: {
+        search,
+      },
+    })
+  }
+  /**
+   * Publish an event (set status to published)
+   */
+  async publishEvent({ params, response, auth, bouncer, logger, session }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'publishEvent',
+      eventSlug: params.slug,
+      userId: auth.user?.id,
+    }
+    logger.info({ ...context, message: 'Publishing event' })
+
+    const event = await Event.findByOrFail('slug', params.slug)
+
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      logger.warn({
+        ...context,
+        userId: auth.user?.id,
+        eventId: event.id,
+        message: 'Unauthorized update attempt',
+      })
       return response.forbidden()
     }
 
-    // Query for all events (not paginated, not serialized)
-    const events = await Event.query().orderBy('createdAt', 'desc')
+    event.status = 'published'
+    await event.save()
 
-    // Pass events as DTOs inside the render function, matching Concept pattern
-    return inertia.render('manage/events/index', {
-      events: events ? EventDto.fromArray(events) : [],
-    })
+    logger.info({ ...context, message: 'Event published successfully' })
+    session.flash('success', 'Event published successfully')
+    return response.redirect().back()
   }
 
   /**
@@ -135,6 +197,7 @@ export default class ManageEventsController {
             currency: data.currency || 'KES',
             maxParticipants: data.maxParticipants,
             imageUrl,
+            status: data.status || 'draft',
           },
           { client: trx }
         )
@@ -427,66 +490,6 @@ export default class ManageEventsController {
   }
 
   /**
-   * Store a new quiz for an event
-   */
-  async storeQuiz({ params, request, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'storeQuiz',
-      eventSlug: params.slug,
-    }
-    logger.info({ ...context, message: 'Creating event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz create attempt',
-      })
-      return response.forbidden()
-    }
-
-    const data = await request.validateUsing(createEventQuizValidator)
-
-    try {
-      await db.transaction(async (trx) => {
-        const quiz = await EventQuiz.create(
-          {
-            userId: auth.user!.id,
-            eventId: event.id,
-            title: data.title,
-            slug: generateSlug(),
-            description: data.description || null,
-            status: data.status || 'draft',
-          },
-          { client: trx }
-        )
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz created successfully',
-        })
-        session.flash('success', 'Quiz created successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        error,
-        message: 'Quiz creation failed',
-      })
-      throw error
-    }
-  }
-
-  /**
    * Show a specific quiz for management
    */
   async viewQuiz({ params, inertia, auth, bouncer, logger }: HttpContext) {
@@ -571,117 +574,6 @@ export default class ManageEventsController {
     })
   }
 
-  /**
-   * Update a quiz
-   */
-  async updateQuiz({ params, request, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'updateQuiz',
-      eventSlug: params.slug,
-      quizId: params.quizId,
-    }
-    logger.info({ ...context, message: 'Updating event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-    const quiz = await EventQuiz.findOrFail(params.quizId)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz update attempt',
-      })
-      return response.forbidden()
-    }
-
-    const data = await request.validateUsing(updateEventQuizValidator)
-
-    try {
-      await db.transaction(async (trx) => {
-        quiz.useTransaction(trx)
-        await quiz
-          .merge({
-            title: data.title || quiz.title,
-            description: data.description !== undefined ? data.description : quiz.description,
-            status: data.status || quiz.status,
-          })
-          .save()
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz updated successfully',
-        })
-        session.flash('success', 'Quiz updated successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        quizId: quiz.id,
-        error,
-        message: 'Quiz update failed',
-      })
-      throw error
-    }
-  }
-
-  /**
-   * Delete a quiz
-   */
-  async destroyQuiz({ params, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'destroyQuiz',
-      eventSlug: params.slug,
-      quizId: params.quizId,
-    }
-    logger.info({ ...context, message: 'Deleting event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-    const quiz = await EventQuiz.findOrFail(params.quizId)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz delete attempt',
-      })
-      return response.forbidden()
-    }
-
-    try {
-      await db.transaction(async (trx) => {
-        quiz.useTransaction(trx)
-        await quiz.delete()
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz deleted successfully',
-        })
-        session.flash('success', 'Quiz deleted successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        quizId: quiz.id,
-        error,
-        message: 'Quiz deletion failed',
-      })
-      throw error
-    }
-  }
 
   /**
    * Upload quiz questions from file
@@ -1170,14 +1062,23 @@ export default class ManageEventsController {
 
     const user = auth.getUserOrFail()
 
-    const { questionsAttempted, questionsCorrect, completionPercentage, score, additionalData } =
-      request.only([
-        'questionsAttempted',
-        'questionsCorrect',
-        'completionPercentage',
-        'score',
-        'additionalData',
-      ])
+    const {
+      questionsAttempted,
+      questionsCorrect,
+      completionPercentage,
+      score,
+      additionalData,
+      fullName,
+      school,
+    } = request.only([
+      'questionsAttempted',
+      'questionsCorrect',
+      'completionPercentage',
+      'score',
+      'additionalData',
+      'fullName',
+      'school',
+    ])
 
     try {
       // Verify event and quiz exist
@@ -1194,6 +1095,8 @@ export default class ManageEventsController {
         completionPercentage: completionPercentage || 0,
         score: score || 0,
         additionalData: additionalData || {},
+        fullName: fullName,
+        school: school,
       })
 
       logger.info({

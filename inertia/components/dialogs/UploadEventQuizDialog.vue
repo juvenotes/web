@@ -41,7 +41,7 @@ function handleFileInput(event: Event) {
 function handleDrop(event: DragEvent) {
   event.preventDefault()
   dragActive.value = false
-  
+
   const file = event.dataTransfer?.files[0]
   if (file) {
     handleFileSelect(file)
@@ -136,8 +136,8 @@ function handleSubmit() {
               </div>
               <div>
                 <p class="text-lg font-medium text-gray-900">
-                  Drop your file here, or 
-                  <button 
+                  Drop your file here, or
+                  <button
                     type="button"
                     @click="triggerFileInput"
                     class="text-primary hover:text-primary/80 underline"
@@ -157,12 +157,7 @@ function handleSubmit() {
                 <p class="text-lg font-medium text-gray-900">{{ form.file.name }}</p>
                 <p class="text-sm text-gray-500">{{ (form.file.size / 1024).toFixed(1) }} KB</p>
               </div>
-              <Button 
-                type="button" 
-                @click="removeFile" 
-                variant="outline" 
-                size="sm"
-              >
+              <Button type="button" @click="removeFile" variant="outline" size="sm">
                 Remove File
               </Button>
             </div>
@@ -174,17 +169,10 @@ function handleSubmit() {
 
           <!-- Form Actions -->
           <div class="flex justify-end gap-3 pt-4 border-t">
-            <Button
-              type="button"
-              @click="$emit('update:open', false)"
-              variant="outline"
-            >
+            <Button type="button" @click="$emit('update:open', false)" variant="outline">
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              :disabled="!form.file || form.processing"
-            >
+            <Button type="submit" :disabled="!form.file || form.processing">
               {{ form.processing ? 'Uploading...' : 'Upload Questions' }}
             </Button>
           </div>
@@ -194,18 +182,9 @@ function handleSubmit() {
         <div class="space-y-3">
           <h4 class="font-medium text-gray-900">Example Format:</h4>
           <div class="bg-gray-50 border rounded-lg p-4 text-sm font-mono whitespace-pre-line">
-{`1. What is the capital of France?
-A. London
-B. Berlin
-*C. Paris
-D. Madrid
-Explanation: Paris is the capital and largest city of France.
-
-2. Which planet is known as the Red Planet?
-A. Venus
-B. Jupiter
-*C. Mars
-D. Saturn`}
+            {`1. What is the capital of France? A. London B. Berlin *C. Paris D. Madrid Explanation:
+            Paris is the capital and largest city of France. 2. Which planet is known as the Red
+            Planet? A. Venus B. Jupiter *C. Mars D. Saturn`}
           </div>
         </div>
       </div>

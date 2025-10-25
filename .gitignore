@@ -19,7 +19,7 @@ vite.config.ts.timestamp-*.mjs
 
 # Build tools specific
 npm-debug.log
-yarn-error.log
+pnpm-debug.log
 
 # Editors specific
 .fleet
