@@ -1,5 +1,9 @@
 FROM node:22.16.0-alpine3.22 AS base
 
+# Ensure corepack is enabled and pnpm is available in the base image
+# corepack is bundled with modern Node.js releases; enable it and prepare pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # All deps stage
 FROM base AS deps
 WORKDIR /app
