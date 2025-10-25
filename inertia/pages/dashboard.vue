@@ -75,10 +75,10 @@ onMounted(() => {
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-2 gap-3 w-full sm:w-auto sm:flex">
+        <div class="stats-grid grid grid-cols-2 gap-3 w-full sm:w-auto sm:flex">
           <!-- Study Time -->
           <div
-            class="group flex items-center gap-3 bg-card hover:bg-gradient-to-r hover:from-primary/5 hover:to-primary/15 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-border"
+            class="stat-card group flex items-center gap-3 bg-card hover:bg-gradient-to-r hover:from-primary/5 hover:to-primary/15 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-border"
           >
             <div
               class="rounded-lg bg-primary/15 p-2 group-hover:scale-105 transition-transform duration-300"
@@ -126,7 +126,7 @@ onMounted(() => {
       <div
         data-tour="papers"
         @click="$inertia.visit('/papers')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
+        class="feature-card group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
@@ -184,7 +184,7 @@ onMounted(() => {
       <div
         data-tour="library"
         @click="$inertia.visit('/library')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
+        class="feature-card group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
@@ -195,7 +195,9 @@ onMounted(() => {
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900">Library</h3>
-              <p class="text-sm text-gray-600 mt-1 font-medium">Access select high yield articles</p>
+              <p class="text-sm text-gray-600 mt-1 font-medium">
+                Access select high yield articles
+              </p>
               <div
                 class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
               >
@@ -211,7 +213,7 @@ onMounted(() => {
       <div
         data-tour="osce"
         @click="$inertia.visit('/osce')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
+        class="feature-card group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
@@ -238,7 +240,7 @@ onMounted(() => {
       <div
         data-tour="spot"
         @click="$inertia.visit('/spot')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
+        class="feature-card group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
@@ -267,7 +269,7 @@ onMounted(() => {
       <div
         data-tour="events"
         @click="$inertia.visit('/events')"
-        class="group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
+        class="feature-card group relative overflow-hidden rounded-2xl bg-white p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-[#55A9C4]/30"
       >
         <div class="relative space-y-4 z-10 animate-fade-in">
           <div class="flex items-start gap-4">
@@ -366,9 +368,7 @@ onMounted(() => {
   .feature-card p {
     font-size: 0.8125rem;
   }
-}
 
-@media (max-width: 400px) {
   .stats-grid {
     grid-template-columns: 1fr;
   }

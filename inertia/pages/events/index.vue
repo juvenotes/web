@@ -7,6 +7,7 @@ import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
+import { formatDate } from '~/lib/dates'
 
 defineOptions({ layout: DashLayout })
 
@@ -20,17 +21,6 @@ const props = defineProps<Props>()
 const breadcrumbItems = [{ label: 'Events' }]
 
 const hasEvents = props.events.length > 0
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 function getEventTypeColor(type: string) {
   const colors = {
@@ -84,7 +74,7 @@ function getStatusColor(status: string) {
           </div>
 
           <!-- Manage Button -->
-          <div class="w-full sm:w-auto flex-shrink-0">
+          <div class="flex sm:flex-none justify-end">
             <Link
               v-if="props.canManage"
               href="/manage/events"
@@ -105,7 +95,7 @@ function getStatusColor(status: string) {
           v-for="event in props.events"
           :key="event.id"
           :href="`/events/${event.slug}`"
-          class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          class="group relative overflow-hidden rounded-2xl bg-white dark:bg-card p-4 sm:p-6 border border-slate-100 dark:border-border hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
         >
           <div
             class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none"

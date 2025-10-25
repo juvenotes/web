@@ -60,11 +60,25 @@ const breadcrumbItems = [{ label: 'Library' }]
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <div class="mb-6 sm:mb-10 header-animation">
         <BreadcrumbTrail :items="breadcrumbItems" class="mb-4 sm:mb-5" />
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-5 sm:mb-6"
+        >
           <div class="flex items-start gap-3 sm:gap-4 flex-1">
             <div class="flex-shrink-0 mt-0.5">
               <div class="h-10 w-10 rounded-lg bg-[#55A9C4]/10 flex items-center justify-center">
-                <svg class="h-6 w-6 text-[#55A9C4]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                <svg
+                  class="h-6 w-6 text-[#55A9C4]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
               </div>
             </div>
             <div>
@@ -87,7 +101,10 @@ const breadcrumbItems = [{ label: 'Library' }]
         </div>
         <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
       </div>
-      <div v-if="hasSubjects" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+      <div
+        v-if="hasSubjects"
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
+      >
         <Link
           v-for="(subject, index) in props.subjects"
           :key="subject"
@@ -95,12 +112,19 @@ const breadcrumbItems = [{ label: 'Library' }]
           class="concept-card group p-6 bg-white rounded-xl border border-gray-200 hover:border-[#55A9C4]/40 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col items-center text-center"
           :style="`--animation-order: ${index};`"
         >
-          <div class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-[#55A9C4]/20 text-[#55A9C4] transition-colors duration-300 group-hover:bg-[#55A9C4] group-hover:text-white mb-4" v-html="getIconForSubject(subject)"></div>
-          <h2 class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-[#55A9C4]">
+          <div
+            class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-[#55A9C4]/20 text-[#55A9C4] transition-colors duration-300 group-hover:bg-[#55A9C4] group-hover:text-white mb-4"
+            v-html="getIconForSubject(subject)"
+          ></div>
+          <h2
+            class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-[#55A9C4]"
+          >
             {{ subject }}
           </h2>
           <div class="mt-1 mb-1">
-            <span class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium">
+            <span
+              class="inline-flex px-2 py-1 rounded-md bg-[#55A9C4]/10 text-[#55A9C4] text-xs font-medium"
+            >
               {{ subjectMap[subject].count }}
               {{ subjectMap[subject].count === 1 ? 'article' : 'articles' }}
             </span>
@@ -109,8 +133,22 @@ const breadcrumbItems = [{ label: 'Library' }]
         </Link>
       </div>
       <div v-else class="text-center py-12 sm:py-16 empty-state">
-        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5">
-          <svg class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        <div
+          class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-5"
+        >
+          <svg
+            class="h-8 w-8 sm:h-10 sm:w-10 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+            />
+          </svg>
         </div>
         <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No subjects found</h3>
         <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
@@ -135,24 +173,47 @@ const breadcrumbItems = [{ label: 'Library' }]
   animation: fadeIn 0.6s ease-out forwards;
 }
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 html {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 @supports (font-variation-settings: normal) {
   html {
-    font-family: 'Inter var', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter var',
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 }
 @media (max-width: 640px) {
-  .group { min-height: 56px; }
-  .max-w-7xl { padding-left: 1rem; padding-right: 1rem; }
+  .group {
+    min-height: 56px;
+  }
+  .max-w-7xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 .line-clamp-2 {
   display: -webkit-box;
