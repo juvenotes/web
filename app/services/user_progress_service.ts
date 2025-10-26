@@ -113,11 +113,13 @@ export default class UserProgressService {
     userId: number,
     quizId: number,
     questionId: number,
-    choiceId: number,
-    isCorrect: boolean
+    choiceId: number
   ) {
     // Get the choice to store its text for historical record
     const choice = await McqChoice.findOrFail(choiceId)
+
+    // Check if the selected choice is correct
+    const isCorrect = choice.isCorrect
 
     // Check if user has already responded to this question
     const existingResponse = await UserMcqResponse.query()

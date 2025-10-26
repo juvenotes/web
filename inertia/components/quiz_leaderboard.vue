@@ -149,18 +149,6 @@ const getMedal = (rank: number) => {
             </th>
             <th
               scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell"
-            >
-              Student ID
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell"
-            >
-              School
-            </th>
-            <th
-              scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Score
@@ -177,12 +165,6 @@ const getMedal = (rank: number) => {
                 getMedal(entry.rank)
               }}</span>
               <span class="text-sm font-medium text-gray-900">{{ entry.user_name }}</span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-              <span class="text-sm text-gray-700">{{ entry.student_id || 'N/A' }}</span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-              <span class="text-sm text-gray-700">{{ entry.school || 'N/A' }}</span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="text-sm font-medium text-gray-900">{{ Math.round(entry.score) }}%</span>
