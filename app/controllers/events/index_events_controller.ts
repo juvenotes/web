@@ -183,20 +183,14 @@ export default class IndexEventsController {
       return response.unauthorized()
     }
 
-    const { quizId, questionId, choiceId, isCorrect } = request.only([
-      'quizId',
-      'questionId',
-      'choiceId',
-      'isCorrect',
-    ])
+    const { quizId, questionId, choiceId } = request.only(['quizId', 'questionId', 'choiceId'])
 
     try {
       await this.userProgressService.recordEventQuizAttempt(
         auth.user.id,
         quizId,
         questionId,
-        choiceId,
-        isCorrect
+        choiceId
       )
 
       return response.ok({ success: true })
