@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import axios from 'axios'
 
 interface LeaderboardEntry {
@@ -44,7 +44,6 @@ export function useQuizLeaderboard(eventSlug: string, quizId: number, initialDat
   const error = ref<Error | null>(null)
   const isUpdatingStats = ref(false)
   const updateStatsError = ref<Error | null>(null)
-  let pollingInterval: number | undefined
 
   // Fetch leaderboard data
   const fetchLeaderboard = async () => {
@@ -93,14 +92,6 @@ export function useQuizLeaderboard(eventSlug: string, quizId: number, initialDat
 
   // Manual refresh function
   const refetch = () => fetchLeaderboard()
-
-  onMounted(() => {
-    pollingInterval = setInterval(fetchLeaderboard, 30000)
-  })
-
-  onUnmounted(() => {
-    clearInterval(pollingInterval)
-  })
 
   return {
     data: computed(() => leaderboardData.value?.leaderboard || []),
