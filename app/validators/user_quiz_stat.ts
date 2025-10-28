@@ -9,8 +9,6 @@ export const createUserQuizStatValidator = vine.compile(
     completionPercentage: vine.number().min(0).max(100),
     score: vine.number().min(0),
     additionalData: vine.record(vine.any()).optional(),
-    fullName: vine.string().trim().optional(),
-    school: vine.string().trim().optional(),
   })
 )
 
@@ -21,7 +19,5 @@ export const updateUserQuizStatValidator = vine.compile(
     completionPercentage: vine.number().min(0).max(100).optional(),
     score: vine.number().min(0).optional(),
     additionalData: vine.record(vine.any()).optional(),
-    fullName: vine.string().trim().optional(),
-    school: vine.string().trim().optional(),
   })
 )
