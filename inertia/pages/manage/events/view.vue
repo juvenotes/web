@@ -71,20 +71,28 @@ function handleEditQuestion(question: QuestionDto) {
   }
 }
 
+const isPublishing = ref(false)
+
 function publishQuiz() {
   if (!confirm('Are you sure you want to publish this quiz?')) return
+  
+  isPublishing.value = true
   const form = useForm({})
+  
   form.put(
     `/manage/events/${props.event.slug}/quiz/${props.quiz.id}/publish`,
-    {},
     {
-      preserveScroll: true,
       onSuccess: () => {
         toast.success('Quiz published successfully')
+        isPublishing.value = false
       },
       onError: () => {
         toast.error('Failed to publish quiz')
+        isPublishing.value = false
       },
+      onFinish: () => {
+        isPublishing.value = false
+      }
     }
   )
 }
@@ -179,9 +187,11 @@ const selectedQuestion = ref<QuestionDto | null>(null)
           <Button
             v-if="quiz.status === 'draft'"
             @click="publishQuiz"
+            :disabled="isPublishing"
             class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
           >
-            Publish
+            <span v-if="isPublishing">Publishing...</span>
+            <span v-else>Publish</span>
           </Button>
         </div>
       </div>
