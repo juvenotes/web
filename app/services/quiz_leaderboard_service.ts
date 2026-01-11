@@ -171,8 +171,23 @@ export class QuizLeaderboardService {
 
     const userResponses = await query
 
-    const questionsAttempted = userResponses.length
-    const questionsCorrect = userResponses.filter((response) => response.isCorrect).length
+    // Deduplicate responses by questionId, keeping the latest one
+    // This prevents score inflation if multiple responses exist for the same question (e.g. across sessions in Standard mode)
+    const uniqueResponsesMap = new Map<number, (typeof userResponses)[0]>()
+
+    for (const response of userResponses) {
+      const existing = uniqueResponsesMap.get(response.questionId)
+      // If no existing response or current response is newer, update map
+      // Note: We prioritize the latest attempt
+      if (!existing || response.createdAt > existing.createdAt) {
+        uniqueResponsesMap.set(response.questionId, response)
+      }
+    }
+
+    const uniqueResponses = Array.from(uniqueResponsesMap.values())
+
+    const questionsAttempted = uniqueResponses.length
+    const questionsCorrect = uniqueResponses.filter((response) => response.isCorrect).length
     const completionPercentage =
       totalQuestions > 0 ? (questionsAttempted / totalQuestions) * 100 : 0
     const score = totalQuestions > 0 ? (questionsCorrect / totalQuestions) * 100 : 0

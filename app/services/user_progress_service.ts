@@ -190,15 +190,23 @@ export default class UserProgressService {
   /**
    * Get attempted question IDs for an event quiz
    */
-  async getEventQuizAttemptedQuestions(userId: number, quizId: number): Promise<number[]> {
-    const responses = await UserMcqResponse.query()
+  async getEventQuizAttemptedQuestions(
+    userId: number,
+    quizId: number,
+    sessionId?: number | null
+  ): Promise<number[]> {
+    const query = UserMcqResponse.query()
       .where('userId', userId)
       .where('source', 'event_quiz')
       .whereHas('question', (questionQuery) => {
         questionQuery.where('eventQuizId', quizId)
       })
-      .select('questionId')
-      .distinct('questionId')
+
+    if (sessionId !== null && sessionId !== undefined) {
+      query.where('sessionId', sessionId)
+    }
+
+    const responses = await query.select('questionId').distinct('questionId')
 
     return responses.map((r) => r.questionId)
   }
@@ -206,14 +214,19 @@ export default class UserProgressService {
   /**
    * Get user's responses for an event quiz with selected choices
    */
-  async getEventQuizUserResponses(userId: number, quizId: number) {
-    const responses = await UserMcqResponse.query()
+  async getEventQuizUserResponses(userId: number, quizId: number, sessionId?: number | null) {
+    const query = UserMcqResponse.query()
       .where('userId', userId)
       .where('source', 'event_quiz')
       .whereHas('question', (questionQuery) => {
         questionQuery.where('eventQuizId', quizId)
       })
-      .select('questionId', 'choiceId', 'isCorrect')
+
+    if (sessionId !== null && sessionId !== undefined) {
+      query.where('sessionId', sessionId)
+    }
+
+    const responses = await query.select('questionId', 'choiceId', 'isCorrect')
 
     const responseMap: Record<number, { choiceId: number; isCorrect: boolean }> = {}
     responses.forEach((response) => {

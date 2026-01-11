@@ -63,14 +63,20 @@ const currentUser = page.props.auth?.user
             </div>
 
             <div v-if="quiz.description">
-              <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Description</dt>
+              <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </dt>
               <dd class="mt-1 text-sm text-gray-900">{{ quiz.description }}</dd>
             </div>
 
             <div class="grid grid-cols-2 gap-4 pt-4 border-t">
               <div>
-                <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Questions</dt>
-                <dd class="mt-1 text-2xl font-bold text-gray-900">{{ quiz.questions?.length || 0 }}</dd>
+                <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Questions
+                </dt>
+                <dd class="mt-1 text-2xl font-bold text-gray-900">
+                  {{ quiz.questions?.length || 0 }}
+                </dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Created</dt>

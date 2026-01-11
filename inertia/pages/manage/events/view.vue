@@ -75,26 +75,23 @@ const isPublishing = ref(false)
 
 function publishQuiz() {
   if (!confirm('Are you sure you want to publish this quiz?')) return
-  
+
   isPublishing.value = true
   const form = useForm({})
-  
-  form.put(
-    `/manage/events/${props.event.slug}/quiz/${props.quiz.id}/publish`,
-    {
-      onSuccess: () => {
-        toast.success('Quiz published successfully')
-        isPublishing.value = false
-      },
-      onError: () => {
-        toast.error('Failed to publish quiz')
-        isPublishing.value = false
-      },
-      onFinish: () => {
-        isPublishing.value = false
-      }
-    }
-  )
+
+  form.put(`/manage/events/${props.event.slug}/quiz/${props.quiz.id}/publish`, {
+    onSuccess: () => {
+      toast.success('Quiz published successfully')
+      isPublishing.value = false
+    },
+    onError: () => {
+      toast.error('Failed to publish quiz')
+      isPublishing.value = false
+    },
+    onFinish: () => {
+      isPublishing.value = false
+    },
+  })
 }
 
 const breadcrumbItems = computed(() => [

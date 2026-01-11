@@ -139,22 +139,37 @@ export default class IndexEventsController {
     let userResponses: Record<number, { choiceId: number; isCorrect: boolean }> = {}
     let quizSession = null
     let timeRemaining = null
+    let sessionId: number | null = null
 
     if (auth.user) {
+      // Get quiz session info first to determine context
+      quizSession = await this.quizSessionService.getActiveSession(auth.user.id, quiz.id)
+
+      if (quizSession) {
+        timeRemaining = await this.quizSessionService.getSessionTimeRemaining(auth.user.id, quiz.id)
+
+        // If in a session-enforced mode (like timed_lockdown), scope responses to this session
+        // For Standard mode (sessionId null), we typically want history, so we keep sessionId null unless we want to enforce isolation there too.
+        // Based on logic, if we have a session, we should probably focus on it to match leaderboard.
+        // However, standard mode usually doesn't have a session unless we explicitly start one?
+        // Actually, startQuizSession handles session creation.
+        // If quizMode is 'timed_lockdown', session is mandatory.
+
+        if (quiz.quizMode === 'timed_lockdown') {
+          sessionId = quizSession.id
+        }
+      }
+
       attemptedQuestionIds = await this.userProgressService.getEventQuizAttemptedQuestions(
         auth.user.id,
-        quiz.id
+        quiz.id,
+        sessionId
       )
       userResponses = await this.userProgressService.getEventQuizUserResponses(
         auth.user.id,
-        quiz.id
+        quiz.id,
+        sessionId
       )
-
-      // Get quiz session info for timer
-      quizSession = await this.quizSessionService.getActiveSession(auth.user.id, quiz.id)
-      if (quizSession) {
-        timeRemaining = await this.quizSessionService.getSessionTimeRemaining(auth.user.id, quiz.id)
-      }
     }
 
     logger.info({
@@ -165,6 +180,7 @@ export default class IndexEventsController {
       questionsCount: questionsDto.length,
       attemptedQuestionIds,
       hasActiveSession: !!quizSession,
+      sessionId,
       message: 'Event quiz fetched successfully',
     })
 
