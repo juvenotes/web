@@ -228,9 +228,7 @@ function getChoiceLetter(index: number): string {
               <Checkbox id="lockdown-mode-edit" v-model="form.lockdownMode" />
               <Label for="lockdown-mode-edit">Enable Lockdown Mode</Label>
             </div>
-            <p class="text-sm text-muted-foreground">
-              Detects tab switching and alerts students.
-            </p>
+            <p class="text-sm text-muted-foreground">Detects tab switching and alerts students.</p>
 
             <div class="flex items-center gap-2">
               <Checkbox id="time-limit-edit" v-model="form.timeLimit" />
@@ -377,7 +375,9 @@ function getChoiceLetter(index: number): string {
         </div>
 
         <!-- Form Actions -->
-        <div class="flex flex-wrap justify-start sm:justify-end gap-3 pt-4 border-t border-gray-200">
+        <div
+          class="flex flex-wrap justify-start sm:justify-end gap-3 pt-4 border-t border-gray-200"
+        >
           <Button type="button" @click="$emit('update:open', false)" variant="outline">
             Cancel
           </Button>

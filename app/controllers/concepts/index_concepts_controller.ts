@@ -130,10 +130,7 @@ export default class IndexConceptsController {
    */
   private async getConceptParents(conceptId: number): Promise<ParentConceptInfo[]> {
     // First get the parent_id of the current concept
-    const currentConcept = await Concept.query()
-      .where('id', conceptId)
-      .select('parent_id')
-      .first()
+    const currentConcept = await Concept.query().where('id', conceptId).select('parent_id').first()
 
     if (!currentConcept || !currentConcept.parentId) {
       return []

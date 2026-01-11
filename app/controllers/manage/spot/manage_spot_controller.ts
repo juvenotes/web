@@ -24,7 +24,7 @@ import { inject } from '@adonisjs/core'
 
 @inject()
 export default class ManageSpotController {
-  constructor(private spotManagementService: SpotManagementService) { }
+  constructor(private spotManagementService: SpotManagementService) {}
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
     return {
       ...currentMetadata,
@@ -418,5 +418,4 @@ export default class ManageSpotController {
       imagePath: p.imagePath,
     }))
   }
-
 }

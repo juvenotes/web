@@ -26,7 +26,9 @@ export default class CloseIdleSessionsJob extends BaseJob {
               break
             }
 
-            logger.info(`[CloseIdleSessionsJob] Processing batch of ${idleSessions.length} idle sessions`)
+            logger.info(
+              `[CloseIdleSessionsJob] Processing batch of ${idleSessions.length} idle sessions`
+            )
 
             const updates: Promise<any>[] = []
             const cacheInvalidations: Promise<void>[] = []
@@ -34,7 +36,9 @@ export default class CloseIdleSessionsJob extends BaseJob {
             for (const session of idleSessions) {
               try {
                 // Calculate the session duration up to lastActivityAt (not now)
-                const diffInSeconds = session.lastActivityAt.diff(session.startedAt, 'seconds').as('seconds')
+                const diffInSeconds = session.lastActivityAt
+                  .diff(session.startedAt, 'seconds')
+                  .as('seconds')
                 const totalDurationSeconds = Math.max(0, Math.floor(diffInSeconds))
 
                 // Set session as inactive and set durationSeconds
@@ -43,13 +47,15 @@ export default class CloseIdleSessionsJob extends BaseJob {
 
                 // Queue save and validation
                 updates.push(session.save())
-                cacheInvalidations.push(StudyTimeService.invalidateTotalStudyTimeCacheStatic(session.userId))
+                cacheInvalidations.push(
+                  StudyTimeService.invalidateTotalStudyTimeCacheStatic(session.userId)
+                )
               } catch (err) {
                 logger.error({
                   job: 'CloseIdleSessionsJob',
                   error: err,
                   message: `Failed to prepare idle session ${session.id}`,
-                  userId: session.userId
+                  userId: session.userId,
                 })
               }
             }
@@ -74,4 +80,3 @@ export default class CloseIdleSessionsJob extends BaseJob {
     }
   }
 }
-

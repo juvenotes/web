@@ -25,7 +25,7 @@ import QuestionDeletionService from '#services/question_deletion_service'
 
 @inject()
 export default class ManageTodayController {
-  constructor(private questionManagementService: QuestionManagementService) { }
+  constructor(private questionManagementService: QuestionManagementService) {}
   /**
    * Display a list of today items
    */
@@ -132,7 +132,7 @@ export default class ManageTodayController {
       })
 
       session.flash('success', 'Today item created successfully')
-      return response.redirect().toPath(`/ manage / today / ${ today.slug } `)
+      return response.redirect().toPath(`/ manage / today / ${today.slug} `)
     })
   }
 
@@ -296,8 +296,6 @@ export default class ManageTodayController {
       .preload('choices') // Preload choices for MCQ questions
       .firstOrFail()
 
-
-
     try {
       if (question.type === QuestionType.MCQ) {
         const { questionText, choices } = request.only(['questionText', 'choices'])
@@ -306,14 +304,15 @@ export default class ManageTodayController {
           question,
           {
             questionText,
-            choices: choices && Array.isArray(choices)
-              ? choices.map((c: IncomingChoiceData) => ({
-                id: c.id,
-                choiceText: c.choiceText,
-                isCorrect: c.isCorrect,
-                explanation: c.explanation
-              }))
-              : undefined
+            choices:
+              choices && Array.isArray(choices)
+                ? choices.map((c: IncomingChoiceData) => ({
+                    id: c.id,
+                    choiceText: c.choiceText,
+                    isCorrect: c.isCorrect,
+                    explanation: c.explanation,
+                  }))
+                : undefined,
           },
           auth.user!
         )

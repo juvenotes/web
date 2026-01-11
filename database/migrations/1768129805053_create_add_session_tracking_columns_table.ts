@@ -7,7 +7,13 @@ export default class extends BaseSchema {
     })
 
     this.schema.alterTable('user_mcq_responses', (table) => {
-      table.integer('session_id').unsigned().nullable().references('id').inTable('quiz_sessions').onDelete('SET NULL')
+      table
+        .integer('session_id')
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('quiz_sessions')
+        .onDelete('SET NULL')
       table.index('session_id')
     })
   }

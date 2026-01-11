@@ -17,9 +17,7 @@ import { inject } from '@adonisjs/core'
 
 @inject()
 export default class ManageConceptsController {
-  constructor(
-    private questionManagementService: QuestionManagementService
-  ) { }
+  constructor(private questionManagementService: QuestionManagementService) {}
   /**
    * Show root level concepts
    */
@@ -361,7 +359,7 @@ export default class ManageConceptsController {
           choiceText: c.choiceText,
           isCorrect: c.isCorrect,
           explanation: c.explanation,
-        }))
+        })),
       },
       auth.user!
     )

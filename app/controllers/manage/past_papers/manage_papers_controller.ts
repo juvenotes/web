@@ -28,7 +28,7 @@ import fs from 'node:fs/promises'
 
 @inject()
 export default class ManagePastPapersController {
-  constructor(private questionManagementService: QuestionManagementService) { }
+  constructor(private questionManagementService: QuestionManagementService) {}
 
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
     return {
@@ -196,9 +196,7 @@ export default class ManagePastPapersController {
       const { questionId, targetQuizId } = request.only(['questionId', 'targetQuizId'])
 
       // Find the original question
-      const originalQuestion = await Question.query()
-        .where('id', questionId)
-        .firstOrFail()
+      const originalQuestion = await Question.query().where('id', questionId).firstOrFail()
 
       // Verify target quiz exists and belongs to user
       await EventQuiz.query()
@@ -272,15 +270,19 @@ export default class ManagePastPapersController {
     const data = await request.validateUsing(createMcqQuestionValidator)
 
     try {
-      await this.questionManagementService.createMcq(paper, {
-        questionText: data.questionText,
-        questionImagePath: data.questionImagePath,
-        choices: data.choices.map((c) => ({
-          choiceText: c.choiceText,
-          isCorrect: c.isCorrect,
-          explanation: c.explanation,
-        })),
-      }, auth.user!)
+      await this.questionManagementService.createMcq(
+        paper,
+        {
+          questionText: data.questionText,
+          questionImagePath: data.questionImagePath,
+          choices: data.choices.map((c) => ({
+            choiceText: c.choiceText,
+            isCorrect: c.isCorrect,
+            explanation: c.explanation,
+          })),
+        },
+        auth.user!
+      )
 
       session.flash('success', 'MCQ added successfully')
       return response.redirect().back()
@@ -295,15 +297,19 @@ export default class ManagePastPapersController {
     const data = await request.validateUsing(createSaqQuestionValidator)
 
     try {
-      await this.questionManagementService.createSaq(paper, {
-        questionText: data.questionText,
-        questionImagePath: data.questionImagePath,
-        parts: data.parts.map((p) => ({
-          partText: p.partText,
-          expectedAnswer: p.expectedAnswer,
-          marks: p.marks,
-        })),
-      }, auth.user!)
+      await this.questionManagementService.createSaq(
+        paper,
+        {
+          questionText: data.questionText,
+          questionImagePath: data.questionImagePath,
+          parts: data.parts.map((p) => ({
+            partText: p.partText,
+            expectedAnswer: p.expectedAnswer,
+            marks: p.marks,
+          })),
+        },
+        auth.user!
+      )
 
       session.flash('success', 'SAQ added successfully')
       return response.redirect().back()
@@ -321,11 +327,7 @@ export default class ManagePastPapersController {
     try {
       const content = await fs.readFile(file.tmpPath!, 'utf-8')
 
-      const count = await this.questionManagementService.uploadMcqs(
-        paper,
-        content,
-        auth.user!
-      )
+      const count = await this.questionManagementService.uploadMcqs(paper, content, auth.user!)
 
       session.flash('success', `Successfully uploaded ${count} questions`)
       return response.redirect().back()
@@ -358,12 +360,12 @@ export default class ManagePastPapersController {
         {
           questionText: data.questionText,
           questionImagePath: data.questionImagePath,
-          choices: data.choices.map(c => ({
+          choices: data.choices.map((c) => ({
             id: c.id,
             choiceText: c.choiceText,
             isCorrect: c.isCorrect,
-            explanation: c.explanation
-          }))
+            explanation: c.explanation,
+          })),
         },
         auth.user!
       )
@@ -395,12 +397,12 @@ export default class ManagePastPapersController {
         {
           questionText: data.questionText,
           questionImagePath: data.questionImagePath,
-          parts: data.parts.map(p => ({
+          parts: data.parts.map((p) => ({
             id: p.id,
             partText: p.partText,
             expectedAnswer: p.expectedAnswer,
-            marks: p.marks
-          }))
+            marks: p.marks,
+          })),
         },
         auth.user!
       )

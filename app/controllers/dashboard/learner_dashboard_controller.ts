@@ -12,7 +12,7 @@ import redis from '@adonisjs/redis/services/main'
 
 @inject()
 export default class DashboardController {
-  constructor(protected studyTimeService: StudyTimeService) { }
+  constructor(protected studyTimeService: StudyTimeService) {}
 
   async handle({ inertia, logger, auth }: HttpContext) {
     logger.info('Rendering dashboard', {
@@ -131,4 +131,3 @@ export default class DashboardController {
     return stats
   }
 }
-

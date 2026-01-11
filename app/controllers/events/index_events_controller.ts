@@ -14,7 +14,7 @@ export default class IndexEventsController {
   constructor(
     private userProgressService: UserProgressService,
     private quizSessionService: QuizSessionService
-  ) { }
+  ) {}
   /**
    * Display a list of events
    */
@@ -110,14 +110,23 @@ export default class IndexEventsController {
     logger.info({ ...context, message: 'Fetching event quiz' })
 
     const event = await Event.findByOrFail('slug', params.slug)
+
+    // Fetch quiz without status constraint first
     const quiz = await EventQuiz.query()
       .where('id', params.quizId)
       .where('eventId', event.id)
-      .where('status', 'published')
       .preload('questions', (query) => {
         query.orderBy('id', 'asc').preload('choices')
       })
       .firstOrFail()
+
+    // Check visibility
+    if (quiz.status !== 'published') {
+      if (await bouncer.denies('canManage')) {
+        // Should technically be 404 to hide existence, mimicking query behavior
+        throw { code: 'E_ROW_NOT_FOUND' }
+      }
+    }
 
     const eventDto = new EventDto(event)
     const quizDto = new EventQuizDto(quiz)
@@ -168,10 +177,10 @@ export default class IndexEventsController {
       userResponses,
       quizSession: quizSession
         ? {
-          id: quizSession.id,
-          startedAt: quizSession.startedAt?.toISO(),
-          timeRemaining,
-        }
+            id: quizSession.id,
+            startedAt: quizSession.startedAt?.toISO(),
+            timeRemaining,
+          }
         : null,
     })
   }
@@ -294,9 +303,9 @@ export default class IndexEventsController {
         autoSubmitTriggered: shouldAutoSubmit,
         session: session
           ? {
-            tabSwitches: session.tabSwitches,
-            focusLosses: session.focusLosses,
-          }
+              tabSwitches: session.tabSwitches,
+              focusLosses: session.focusLosses,
+            }
           : null,
       })
     } catch (error) {
@@ -326,10 +335,10 @@ export default class IndexEventsController {
         success: true,
         session: session
           ? {
-            id: session.id,
-            endedAt: session.endedAt?.toISO(),
-            autoSubmitted: session.autoSubmitted,
-          }
+              id: session.id,
+              endedAt: session.endedAt?.toISO(),
+              autoSubmitted: session.autoSubmitted,
+            }
           : null,
       })
     } catch (error) {

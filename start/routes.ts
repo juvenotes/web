@@ -55,8 +55,7 @@ const MedicalArticleController = () => import('#controllers/medical_articles_con
 const MediaAssetsController = () => import('#controllers/media_assets_controller')
 const IndexEventsController = () => import('#controllers/events/index_events_controller')
 const ManageEventsController = () => import('#controllers/manage/events/manage_events_controller')
-const EventQuizzesController = () =>
-  import('#controllers/manage/events/event_quizzes_controller')
+const EventQuizzesController = () => import('#controllers/manage/events/event_quizzes_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client

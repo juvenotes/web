@@ -13,8 +13,9 @@ import db from '@adonisjs/lucid/services/db'
 import redis from '#services/redis'
 
 @inject()
-export default class IndexController { // Reverted to IndexController as per original, diff seemed to indicate a different class name but only partial changes
-  constructor(private userProgressService: UserProgressService) { }
+export default class IndexController {
+  // Reverted to IndexController as per original, diff seemed to indicate a different class name but only partial changes
+  constructor(private userProgressService: UserProgressService) {}
 
   async index({ inertia, logger, auth, bouncer }: HttpContext) {
     const context = { controller: 'PapersIndexController', action: 'index' }

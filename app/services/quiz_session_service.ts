@@ -77,8 +77,6 @@ export class QuizSessionService {
     return user ? user.fullName : null
   }
 
-
-
   /**
    * Record suspicious activity (tab switch, focus loss, etc.)
    */

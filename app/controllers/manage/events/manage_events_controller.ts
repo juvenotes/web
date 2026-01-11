@@ -21,7 +21,7 @@ import fs from 'node:fs/promises'
 
 @inject()
 export default class ManageEventsController {
-  constructor(private eventQuizService: EventQuizService) { }
+  constructor(private eventQuizService: EventQuizService) {}
   /**
    * Show list of events for management
    */
@@ -575,7 +575,6 @@ export default class ManageEventsController {
       quiz: quizDto,
     })
   }
-
 
   /**
    * Upload quiz questions from file

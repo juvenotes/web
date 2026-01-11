@@ -165,7 +165,7 @@ export class QuizLeaderboardService {
       })
 
     // Filter by sessionId only when explicitly provided (handles sessionId = 0)
-    if (sessionId != null) {
+    if (sessionId !== null && sessionId !== undefined) {
       query.where('sessionId', sessionId)
     }
 
@@ -211,7 +211,7 @@ export class QuizLeaderboardService {
     const averageCompletion =
       totalParticipants > 0
         ? participantStats.reduce((sum, stat) => sum + stat.completionPercentage, 0) /
-        totalParticipants
+          totalParticipants
         : 0
 
     return {

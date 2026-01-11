@@ -122,9 +122,7 @@ function handleSubmit() {
             <Checkbox id="lockdown-mode" v-model="form.lockdownMode" />
             <Label for="lockdown-mode">Enable Lockdown Mode</Label>
           </div>
-          <p class="text-sm text-muted-foreground">
-            Detects tab switching and alerts students.
-          </p>
+          <p class="text-sm text-muted-foreground">Detects tab switching and alerts students.</p>
 
           <div class="flex items-center gap-2">
             <Checkbox id="time-limit" v-model="form.timeLimit" />
@@ -142,7 +140,9 @@ function handleSubmit() {
           </div>
         </div>
 
-        <div class="flex flex-wrap justify-start sm:justify-end gap-3 pt-4 border-t border-gray-200">
+        <div
+          class="flex flex-wrap justify-start sm:justify-end gap-3 pt-4 border-t border-gray-200"
+        >
           <Button type="button" @click="$emit('update:open', false)" variant="outline">
             Cancel
           </Button>

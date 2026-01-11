@@ -18,7 +18,7 @@ import { inject } from '@adonisjs/core'
 
 @inject()
 export default class UserProgressService {
-  constructor(private studyTimeService: StudyTimeService) { }
+  constructor(private studyTimeService: StudyTimeService) {}
   /**
    * Record user viewing a paper
    */
@@ -128,7 +128,7 @@ export default class UserProgressService {
       .where('source', 'event_quiz')
 
     // Filter by sessionId only when explicitly provided (handles sessionId = 0)
-    if (sessionId != null) {
+    if (sessionId !== null && sessionId !== undefined) {
       query.where('sessionId', sessionId)
     }
 

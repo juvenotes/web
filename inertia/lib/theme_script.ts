@@ -75,9 +75,9 @@ export function initializeTheme() {
 
     // Create a style element to force dark mode styles
     if (resolvedTheme === 'dark') {
-      const styleEl = document.createElement('style')
-      styleEl.id = 'force-dark-mode'
-      styleEl.textContent = `
+      const darkStyleEl = document.createElement('style')
+      darkStyleEl.id = 'force-dark-mode'
+      darkStyleEl.textContent = `
         /* Force background colors in dark mode - aggressively target all gray backgrounds */
         [class*="bg-white"], .bg-white, 
         [class*="bg-gray-"], .bg-gray-50, .bg-gray-100, .bg-gray-50\\/50, .bg-gray-100\\/50,
@@ -131,11 +131,11 @@ export function initializeTheme() {
           border-color: hsl(var(--border)) !important;
         }
       `
-      document.head.appendChild(styleEl)
+      document.head.appendChild(darkStyleEl)
     } else {
       // Remove the style if it exists
-      const styleEl = document.getElementById('force-dark-mode')
-      if (styleEl) styleEl.remove()
+      const existingStyleEl = document.getElementById('force-dark-mode')
+      if (existingStyleEl) existingStyleEl.remove()
     }
 
     console.log('Theme initialized to:', resolvedTheme)

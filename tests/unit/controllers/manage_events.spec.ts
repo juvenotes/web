@@ -59,7 +59,7 @@ test.group('ManageEventsController (unit)', () => {
       inertia,
       auth: { user: { id: 1 } },
       bouncer: { with: () => ({ authorize: async () => true }) },
-      logger: { info: () => { }, warn: () => { } },
+      logger: { info: () => {}, warn: () => {} },
       request: { input: (_key: string, def: any) => def },
     }
 
@@ -116,7 +116,7 @@ test.group('ManageEventsController (unit)', () => {
       inertia,
       auth: { user: { id: 1 } },
       bouncer: { with: () => ({ authorize: async () => true }) },
-      logger: { info: () => { }, warn: () => { } },
+      logger: { info: () => {}, warn: () => {} },
       request: { input: (key: string, def: any) => (key === 'page' ? 100 : def) },
     }
 
