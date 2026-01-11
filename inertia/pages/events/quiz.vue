@@ -42,6 +42,10 @@ const selectedAnswers = ref<Record<number, number>>({})
 const showResults = ref(false)
 const showAnswer = ref<Record<number, boolean>>({})
 const showAuthDialog = ref(false)
+const isSaving = ref(false)
+const lastSaved = ref<Date | null>(null)
+// Debounce timer for answer submission
+let debounceTimer: NodeJS.Timeout | null = null
 // For standard mode, quiz is always started. For timed lockdown mode, check session
 const quizStarted = ref(
   props.quiz.quizMode === 'standard' || !props.quiz.quizMode ? true : !!props.quizSession
@@ -137,9 +141,24 @@ function selectAnswer(questionIndex: number, choiceId: number) {
     return
   }
 
-  // For timed lockdown mode, allow changing answers within time limit
+  // For timed lockdown mode, allow changing answers within time limit with debounce
   if (isTimedLockdownMode.value && !showAnswer.value[questionIndex]) {
-    submitAnswerToBackend(question.id, choiceId, questionIndex)
+    // Clear existing timer if any
+    if (debounceTimer) clearTimeout(debounceTimer)
+    
+    // Update local state immediately for UI responsiveness
+    selectedAnswers.value[questionIndex] = choiceId
+    if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(question.id)) {
+      props.attemptedQuestionIds.push(question.id)
+    }
+
+    // Set saving state
+    isSaving.value = true
+
+    // Debounce the backend call (1 second)
+    debounceTimer = setTimeout(() => {
+      submitAnswerToBackend(question.id, choiceId, questionIndex)
+    }, 1000)
   } else if (isStandardMode.value) {
     submitAnswerToBackend(question.id, choiceId, questionIndex)
   }
@@ -168,11 +187,16 @@ async function submitAnswerToBackend(questionId: number, choiceId: number, quest
         props.attemptedQuestionIds.push(questionId)
       }
 
-      // Handle different behaviors based on quiz mode
-      if (isStandardMode.value) {
+      if (isTimedLockdownMode.value) {
+        // Timed lockdown mode: just record the answer
+        isSaving.value = false
+        lastSaved.value = new Date()
+        
+        // Don't show toast for every save to avoid spamming
+        // Only show if it was a manual retry or important update
+      } else {
         // Standard mode: show correct answer immediately and lock the question
         showAnswer.value[questionIndex] = true
-
         if (isCorrect) {
           const correctChoice = question.choices?.find((c) => c.isCorrect)
           toast({
@@ -188,17 +212,12 @@ async function submitAnswerToBackend(questionId: number, choiceId: number, quest
             variant: 'destructive',
           })
         }
-      } else if (isTimedLockdownMode.value) {
-        // Timed lockdown mode: just record the answer, don't show feedback immediately
-        // Only show success confirmation without revealing correct answer
-        toast({
-          title: 'Answer Recorded',
-          description: 'Your answer has been recorded. You can change it before submitting.',
-          variant: 'default',
-        })
       }
     }
   } catch (error: any) {
+    // Handle error...
+    isSaving.value = false
+    console.error('Failed to submit answer:', error)
     if (
       error.response?.status === 400 &&
       error.response?.data?.error?.includes('already answered')
@@ -454,7 +473,15 @@ onUnmounted(() => {
           {{ score }}/{{ totalQuestions }} ({{ scorePercentage }}%)
         </Badge>
       </div>
-      <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
+      <div v-if="isTimedLockdownMode && quizStarted" class="flex items-center gap-2 mt-4 text-xs">
+        <div v-if="isSaving" class="flex items-center gap-1 text-amber-600">
+           <span class="animate-spin">⏳</span> Saving...
+        </div>
+        <div v-else-if="lastSaved" class="text-green-600 flex items-center gap-1">
+          <CheckCircle class="h-3 w-3" /> Saved {{ lastSaved.toLocaleTimeString() }}
+        </div>
+      </div>
+      <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full mt-4"></div>
     </div>
 
     <!-- Start Quiz Button (for timed quizzes) -->

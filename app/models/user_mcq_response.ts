@@ -5,6 +5,7 @@ import { ResponseStatus } from '#enums/response_status'
 import User from './user.js'
 import Question from './question.js'
 import McqChoice from './mcq_choice.js'
+import QuizSession from './quiz_session.js'
 
 export default class UserMcqResponse extends BaseModel {
   @column({ isPrimary: true })
@@ -34,6 +35,9 @@ export default class UserMcqResponse extends BaseModel {
   @column()
   declare source: 'paper' | 'today' | 'event_quiz'
 
+  @column()
+  declare sessionId: number | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -47,4 +51,9 @@ export default class UserMcqResponse extends BaseModel {
     foreignKey: 'choiceId',
   })
   declare choice: BelongsTo<typeof McqChoice>
+
+  @belongsTo(() => QuizSession, {
+    foreignKey: 'sessionId',
+  })
+  declare session: BelongsTo<typeof QuizSession>
 }

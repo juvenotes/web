@@ -142,7 +142,8 @@ export class QuizLeaderboardService {
    */
   static async calculateQuizStatsFromResponses(
     userId: number,
-    quizId: number
+    quizId: number,
+    sessionId?: number | null
   ): Promise<{
     questionsAttempted: number
     questionsCorrect: number
@@ -155,12 +156,19 @@ export class QuizLeaderboardService {
     const totalQuestions = quizQuestions.length
 
     // Get user's responses for this quiz
-    const userResponses = await UserMcqResponse.query()
+    // If sessionId is provided, only count responses from that session
+    const query = UserMcqResponse.query()
       .where('userId', userId)
       .where('source', 'event_quiz')
       .whereHas('question', (questionQuery) => {
         questionQuery.where('eventQuizId', quizId)
       })
+
+    if (sessionId) {
+      query.where('sessionId', sessionId)
+    }
+
+    const userResponses = await query
 
     const questionsAttempted = userResponses.length
     const questionsCorrect = userResponses.filter((response) => response.isCorrect).length
@@ -202,7 +210,7 @@ export class QuizLeaderboardService {
     const averageCompletion =
       totalParticipants > 0
         ? participantStats.reduce((sum, stat) => sum + stat.completionPercentage, 0) /
-          totalParticipants
+        totalParticipants
         : 0
 
     return {

@@ -18,7 +18,7 @@ import { inject } from '@adonisjs/core'
 
 @inject()
 export default class UserProgressService {
-  constructor(private studyTimeService: StudyTimeService) {}
+  constructor(private studyTimeService: StudyTimeService) { }
   /**
    * Record user viewing a paper
    */
@@ -114,17 +114,24 @@ export default class UserProgressService {
     quizId: number,
     questionId: number,
     choiceId: number,
-    isCorrect: boolean
+    isCorrect: boolean,
+    sessionId?: number | null
   ) {
     // Get the choice to store its text for historical record
     const choice = await McqChoice.findOrFail(choiceId)
 
     // Check if user has already responded to this question
-    const existingResponse = await UserMcqResponse.query()
+    // If sessionId is provided, check for response in that session specifically
+    const query = UserMcqResponse.query()
       .where('userId', userId)
       .where('questionId', questionId)
       .where('source', 'event_quiz')
-      .first()
+
+    if (sessionId) {
+      query.where('sessionId', sessionId)
+    }
+
+    const existingResponse = await query.first()
 
     if (existingResponse) {
       throw new Error('You have already answered this question')
@@ -140,6 +147,7 @@ export default class UserProgressService {
       status: ResponseStatus.ACTIVE,
       originalChoiceText: choice.choiceText,
       source: 'event_quiz',
+      sessionId: sessionId || null,
     })
 
     // Update streak if first activity today
@@ -149,7 +157,8 @@ export default class UserProgressService {
     }
 
     // Update or create user quiz stats using the leaderboard service
-    const stats = await this.calculateEventQuizStats(userId, quizId)
+    // Update or create user quiz stats using the leaderboard service
+    const stats = await this.calculateEventQuizStats(userId, quizId, sessionId)
 
     return {
       isCorrect,
@@ -161,11 +170,15 @@ export default class UserProgressService {
   /**
    * Calculate event quiz statistics for a user
    */
-  private async calculateEventQuizStats(userId: number, quizId: number) {
+  private async calculateEventQuizStats(userId: number, quizId: number, sessionId?: number | null) {
     // Import here to avoid circular dependency
     const { QuizLeaderboardService } = await import('#services/quiz_leaderboard_service')
 
-    const stats = await QuizLeaderboardService.calculateQuizStatsFromResponses(userId, quizId)
+    const stats = await QuizLeaderboardService.calculateQuizStatsFromResponses(
+      userId,
+      quizId,
+      sessionId
+    )
 
     // Update the user_quiz_stats table
     await QuizLeaderboardService.updateUserQuizStats(userId, quizId, stats)

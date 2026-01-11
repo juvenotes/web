@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
@@ -13,7 +14,7 @@ export default class IndexEventsController {
   constructor(
     private userProgressService: UserProgressService,
     private quizSessionService: QuizSessionService
-  ) {}
+  ) { }
   /**
    * Display a list of events
    */
@@ -167,10 +168,10 @@ export default class IndexEventsController {
       userResponses,
       quizSession: quizSession
         ? {
-            id: quizSession.id,
-            startedAt: quizSession.startedAt?.toISO(),
-            timeRemaining,
-          }
+          id: quizSession.id,
+          startedAt: quizSession.startedAt?.toISO(),
+          timeRemaining,
+        }
         : null,
     })
   }
@@ -191,12 +192,28 @@ export default class IndexEventsController {
     ])
 
     try {
+      // Enforce time limit for timed lockdown quizzes
+      const quiz = await EventQuiz.find(quizId)
+      if (quiz && quiz.quizMode === 'timed_lockdown') {
+        const session = await this.quizSessionService.getActiveSession(auth.user.id, quizId)
+        if (!session) {
+          return response.badRequest({ error: 'No active quiz session found' })
+        }
+
+        if (session.expiresAt && session.expiresAt < DateTime.now().minus({ seconds: 10 })) {
+          return response.badRequest({ error: 'Quiz session has expired' })
+        }
+      }
+
       await this.userProgressService.recordEventQuizAttempt(
         auth.user.id,
         quizId,
         questionId,
         choiceId,
-        isCorrect
+        isCorrect,
+        quiz && quiz.quizMode === 'timed_lockdown'
+          ? (await this.quizSessionService.getActiveSession(auth.user.id, quizId))?.id
+          : null
       )
 
       return response.ok({ success: true })
@@ -271,9 +288,9 @@ export default class IndexEventsController {
         autoSubmitTriggered: shouldAutoSubmit,
         session: session
           ? {
-              tabSwitches: session.tabSwitches,
-              focusLosses: session.focusLosses,
-            }
+            tabSwitches: session.tabSwitches,
+            focusLosses: session.focusLosses,
+          }
           : null,
       })
     } catch (error) {
@@ -303,10 +320,10 @@ export default class IndexEventsController {
         success: true,
         session: session
           ? {
-              id: session.id,
-              endedAt: session.endedAt?.toISO(),
-              autoSubmitted: session.autoSubmitted,
-            }
+            id: session.id,
+            endedAt: session.endedAt?.toISO(),
+            autoSubmitted: session.autoSubmitted,
+          }
           : null,
       })
     } catch (error) {

@@ -3,6 +3,9 @@ import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from './user.js'
 import EventQuiz from './event_quiz.js'
+import { hasMany } from '@adonisjs/lucid/orm'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import UserMcqResponse from './user_mcq_response.js'
 
 export default class QuizSession extends BaseModel {
   @column({ isPrimary: true })
@@ -44,6 +47,15 @@ export default class QuizSession extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
+  @column()
+  declare studentId: string | null
+
+  @column()
+  declare school: string | null
+
+  @column()
+  declare fullName: string | null
+
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
@@ -51,4 +63,9 @@ export default class QuizSession extends BaseModel {
     foreignKey: 'quizId',
   })
   declare quiz: BelongsTo<typeof EventQuiz>
+
+  @hasMany(() => UserMcqResponse, {
+    foreignKey: 'sessionId',
+  })
+  declare responses: HasMany<typeof UserMcqResponse>
 }

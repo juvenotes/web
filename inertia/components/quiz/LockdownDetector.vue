@@ -107,11 +107,10 @@ onUnmounted(() => {
   window.removeEventListener('blur', handleWindowBlur)
 })
 
-// Expose counts for parent component
+// Expose counts for parent component (as refs for reactivity)
 defineExpose({
-  tabSwitchCount: tabSwitchCount.value,
-  focusLossCount: focusLossCount.value,
-  totalSuspiciousActivities: tabSwitchCount.value + focusLossCount.value,
+  tabSwitchCount,
+  focusLossCount,
 })
 </script>
 

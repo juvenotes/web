@@ -38,6 +38,9 @@ export class QuizSessionService {
       focusLosses: 0,
       autoSubmitted: false,
       activityLog: { started: startedAt.toISO() },
+      studentId: studentId || null,
+      school: school || null,
+      fullName: null, // We should ideally get this from user or passed in, but for now null or we can fetch it.
     })
 
     // Create or update user quiz stats with student info
