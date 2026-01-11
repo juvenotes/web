@@ -137,19 +137,24 @@ export class QuizSessionService {
   }
 
   /**
-   * Check if session has expired
+   * Check and auto-submit expired quiz sessions
+   * Uses batch update for performance (avoids N+1 queries)
    */
-  async checkExpiredSessions() {
-    const expiredSessions = await QuizSession.query()
+  async checkExpiredSessions(): Promise<number> {
+    const now = DateTime.now()
+
+    // Batch update all expired sessions in a single query
+    const affectedRows = await QuizSession.query()
       .where('status', 'active')
       .whereNotNull('expiresAt')
-      .where('expiresAt', '<', DateTime.now().toSQL())
+      .where('expiresAt', '<', now.toSQL())
+      .update({
+        status: 'submitted',
+        endedAt: now.toSQL(),
+        autoSubmitted: true,
+      })
 
-    for (const session of expiredSessions) {
-      await this.submitSession(session.userId, session.quizId, true)
-    }
-
-    return expiredSessions.length
+    return affectedRows.length ?? affectedRows
   }
 
   /**

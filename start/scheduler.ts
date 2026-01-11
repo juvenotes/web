@@ -19,7 +19,7 @@ scheduler.addJob({
 
 scheduler.addJob({
   key: 'check-expired-quiz-sessions',
-  cronExpression: '*/1 * * * *', // every minute
+  cronExpression: '*/5 * * * *', // every 5 minutes
   job: new CheckExpiredQuizSessionJob(),
 })
 

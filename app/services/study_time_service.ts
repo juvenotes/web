@@ -268,10 +268,10 @@ export default class StudyTimeService {
 
   /**
    * Invalidate cached total study time for a user
+   * Delegates to static method to avoid duplication
    */
   async invalidateTotalStudyTimeCache(userId: number) {
-    const cacheKey = `user:study_time:total:${userId}`
-    await redis.del(cacheKey)
+    await StudyTimeService.invalidateTotalStudyTimeCacheStatic(userId)
   }
 
   /**
