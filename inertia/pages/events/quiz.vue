@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/vue3'
 import type EventDto from '#dtos/event'
 import type EventQuizDto from '#dtos/event_quiz'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { Calendar, CheckCircle, Clock, BookOpen, Play, Settings } from 'lucide-vue-next'
+import { Calendar, CheckCircle, Clock, BookOpen, Play, Settings, Loader2 } from 'lucide-vue-next'
 import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
 import AppHead from '~/components/AppHead.vue'
 import { Badge } from '~/components/ui/badge'
@@ -484,7 +484,7 @@ onUnmounted(() => {
       </div>
       <div v-if="isTimedLockdownMode && quizStarted" class="flex items-center gap-2 mt-4 text-xs">
         <div v-if="isSaving" class="flex items-center gap-1 text-amber-600">
-           <span class="animate-spin">⏳</span> Saving...
+           <Loader2 class="h-3 w-3 animate-spin" /> Saving...
         </div>
         <div v-else-if="lastSaved" class="text-green-600 flex items-center gap-1">
           <CheckCircle class="h-3 w-3" /> Saved {{ lastSaved.toLocaleTimeString() }}

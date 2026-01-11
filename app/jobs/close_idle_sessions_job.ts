@@ -20,16 +20,41 @@ export default class CloseIdleSessionsJob extends BaseJob {
           logger.info(`[CloseIdleSessionsJob] Found ${idleSessions.length} idle sessions to close`)
 
           for (const session of idleSessions) {
-            // Calculate the session duration up to lastActivityAt (not now)
-            const additionalSeconds = Math.floor(
-              Math.abs(session.startedAt.diff(session.lastActivityAt, 'seconds').seconds)
-            )
-            // Set session as inactive and set durationSeconds to the time up to lastActivityAt
-            session.isActive = false
-            session.durationSeconds = additionalSeconds
-            await session.save()
-            // Invalidate study time cache for the user
-            await StudyTimeService.invalidateTotalStudyTimeCacheStatic(session.userId)
+            try {
+              // Calculate the session duration up to lastActivityAt (not now)
+              const diffInSeconds = session.lastActivityAt.diff(session.startedAt, 'seconds').seconds
+
+              if (diffInSeconds < 0) {
+                logger.warn({
+                  job: 'CloseIdleSessionsJob',
+                  message: 'Negative session duration detected',
+                  sessionId: session.id,
+                  startedAt: session.startedAt,
+                  lastActivityAt: session.lastActivityAt
+                })
+                // Skip this session or handle gracefully? 
+                // If data is corrupt, closing it might be safer to stop using it, but let's just log and skip calculation
+                // Or force 0? The request says "skip handling ... or set additionalSeconds to 0".
+                // Let's set additionalSeconds to 0 to safeguard.
+              }
+
+              const additionalSeconds = Math.max(0, Math.floor(diffInSeconds))
+
+              // Set session as inactive and set durationSeconds to the time up to lastActivityAt
+              session.isActive = false
+              session.durationSeconds = additionalSeconds
+              await session.save()
+              // Invalidate study time cache for the user
+              await StudyTimeService.invalidateTotalStudyTimeCacheStatic(session.userId)
+            } catch (err) {
+              logger.error({
+                job: 'CloseIdleSessionsJob',
+                error: err,
+                message: `Failed to process idle session ${session.id}`,
+                userId: session.userId
+              })
+              // Continue to next session
+            }
           }
         } catch (error) {
           logger.error({

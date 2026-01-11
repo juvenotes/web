@@ -431,7 +431,7 @@ export default class ManagePastPapersController {
           .save()
 
         // Use the question service for soft deletion
-        await QuestionDeletionService.delete(question.id)
+        await QuestionDeletionService.delete(question.id, trx)
       })
 
       session.flash('success', 'Question deleted successfully')

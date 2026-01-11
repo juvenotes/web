@@ -733,8 +733,8 @@ export default class ManageEventsController {
     if (!file) return response.badRequest('No file uploaded')
 
     try {
+      const content = await fs.readFile(file.tmpPath!, 'utf-8')
       const questionCount = await db.transaction(async (trx) => {
-        const content = await fs.readFile(file.tmpPath!, 'utf-8')
         return await this.eventQuizService.uploadQuestionsFromFile(
           content,
           auth.user!.id,

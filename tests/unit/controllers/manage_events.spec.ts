@@ -5,7 +5,13 @@ import Event from '#models/event'
 import { DateTime } from 'luxon'
 
 // Create a mock EventQuizService for testing
-const mockEventQuizService = {} as EventQuizService
+// Create a mock EventQuizService for testing
+// Cast to EventQuizService to satisfy type, but implement stubs as needed for specific tests
+const mockEventQuizService = {
+  // Stub methods here if controller calls them in tested endpoints
+  // e.g. deleteQuestion: async () => {},
+  // createQuiz: async () => {},
+} as unknown as EventQuizService
 
 test.group('ManageEventsController (unit)', () => {
   test('index returns paginated events and meta', async ({ assert }) => {

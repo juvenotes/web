@@ -147,14 +147,17 @@ export default class IndexConceptsController {
           .from('concepts')
           .select('id', 'title', 'slug', 'parent_id')
           .select(db.raw('1 as depth'))
+          .select(db.raw('ARRAY[id] as path'))
           .where('id', currentConcept.parentId!)
           .union((subquery) => {
             subquery
               .from('concepts as c')
               .select('c.id', 'c.title', 'c.slug', 'c.parent_id')
               .select(db.raw('concept_tree.depth + 1'))
+              .select(db.raw('array_append(concept_tree.path, c.id)'))
               .innerJoin('concept_tree', 'concept_tree.parent_id', '=', 'c.id')
-              .where('concept_tree.depth', '<', 20) // Safety limit to prevent infinite recursion
+              .where('concept_tree.depth', '<', 20) // Safety limit
+              .whereRaw('NOT c.id = ANY(concept_tree.path)') // Prevent cycles
           })
       })
       .select('id', 'title', 'slug')

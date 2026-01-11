@@ -109,10 +109,10 @@ test.group('Leaderboard Accuracy', (group) => {
 
         // Verify Stats for Session A
         let statsA = await UserQuizStat.query().where('userId', user.id).where('quizId', quiz.id).first()
-        assert.equal(statsA?.score, 50) // 1/2 questions correct = 50%? Or 1/2 attempted?
-        // calculation: score = (questionsCorrect / totalQuestions) * 100
-        // totalQuestions = 2. correct = 1. score = 50.
+        assert.equal(statsA?.score, 50)
+        // Score based on total quiz questions (1 correct / 2 total = 50%)
         assert.equal(statsA?.questionsCorrect, 1)
+        assert.equal(statsA?.questionsAttempted, 1)
 
         // End Session A (simulate abandon or submit)
         sessionA.status = 'completed'
@@ -120,9 +120,7 @@ test.group('Leaderboard Accuracy', (group) => {
 
         // --- Session B (Restart) ---
         const sessionB = await quizSessionService.startSession(user.id, quiz.id, 'STU001', 'Test School')
-        // Ensure accurate testing: create a FRESH startSession logic that creates a NEW session even if one exists?
-        // Current logic: startSession() returns existing if active.
-        // So we manually verified sessionA is completed, so startSession should create new.
+        // startSession creates a new session since the previous one was completed
 
         assert.notEqual(sessionA.id, sessionB.id)
 
@@ -145,6 +143,7 @@ test.group('Leaderboard Accuracy', (group) => {
         const statsB = await UserQuizStat.query().where('userId', user.id).where('quizId', quiz.id).first()
 
         assert.equal(statsB?.questionsCorrect, 1, 'Should only have 1 correct answer (from current session)')
+        assert.equal(statsB?.questionsAttempted, 1, 'Should only track 1 attempt in new session')
         assert.equal(statsB?.score, 50, 'Score should be 50%')
     })
 })

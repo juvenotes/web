@@ -242,8 +242,13 @@ export default class StudyTimeService {
    * Note: Active sessions are no longer closed here to avoid latency.
    * Ensure a scheduled job/process closes sessions periodically for accurate totals.
    */
+  /**
+   * Get total study time for a user (with Redis caching)
+   * Note: Active sessions are no longer closed here to avoid latency.
+   * Ensure a scheduled job/process closes sessions periodically for accurate totals.
+   */
   async getTotalStudyTime(userId: number): Promise<number> {
-    const cacheKey = `user:study_time:total:${userId}`
+    const cacheKey = StudyTimeService.studyTimeTotalCacheKey(userId)
     // Try to get from cache
     const cached = await redis.get(cacheKey)
     if (cached !== null) {
@@ -278,8 +283,15 @@ export default class StudyTimeService {
    * Static method to invalidate cached total study time for a user (for jobs)
    */
   static async invalidateTotalStudyTimeCacheStatic(userId: number) {
-    const cacheKey = `user:study_time:total:${userId}`
+    const cacheKey = StudyTimeService.studyTimeTotalCacheKey(userId)
     await redis.del(cacheKey)
+  }
+
+  /**
+   * Helper to generate consistent cache key
+   */
+  private static studyTimeTotalCacheKey(userId: number): string {
+    return `user:study_time:total:${userId}`
   }
 
   /**

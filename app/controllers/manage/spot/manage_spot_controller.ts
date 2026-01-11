@@ -241,12 +241,7 @@ export default class ManageSpotController {
         {
           questionText: data.questionText,
           questionImagePath: data.questionImagePath,
-          parts: data.parts.map((p: any) => ({
-            partText: p.partText,
-            expectedAnswer: p.expectedAnswer,
-            marks: p.marks,
-            imagePath: p.imagePath,
-          })),
+          parts: this.mapQuestionParts(data.parts),
           topicIds: data.topicIds,
           unitIds: data.unitIds,
         },
@@ -295,12 +290,7 @@ export default class ManageSpotController {
         {
           questionText: data.questionText,
           questionImagePath: data.questionImagePath,
-          parts: data.parts.map((p: any) => ({
-            partText: p.partText,
-            expectedAnswer: p.expectedAnswer,
-            marks: p.marks,
-            imagePath: p.imagePath,
-          })),
+          parts: this.mapQuestionParts(data.parts),
           topicIds: data.topicIds,
           unitIds: data.unitIds,
         },
@@ -406,4 +396,16 @@ export default class ManageSpotController {
     session.flash('success', 'SPOT paper deleted successfully')
     return response.redirect().toPath(`/manage/spot/${params.conceptSlug}`)
   }
+  /**
+   * Helper to map question parts from validator data
+   */
+  private mapQuestionParts(parts: any[]) {
+    return parts.map((p) => ({
+      partText: p.partText,
+      expectedAnswer: p.expectedAnswer,
+      marks: p.marks,
+      imagePath: p.imagePath,
+    }))
+  }
+
 }

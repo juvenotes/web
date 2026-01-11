@@ -161,9 +161,16 @@ export default class EventQuizService {
      * Delete a question and its choices
      */
     async deleteQuestion(questionId: number, trx?: TransactionClientContract): Promise<void> {
-        const client = trx || db
-        await client.from('mcq_choices').where('question_id', questionId).delete()
-        await client.from('questions').where('id', questionId).delete()
+        const execute = async (t: TransactionClientContract) => {
+            await t.from('mcq_choices').where('question_id', questionId).delete()
+            await t.from('questions').where('id', questionId).delete()
+        }
+
+        if (trx) {
+            await execute(trx)
+        } else {
+            await db.transaction(execute)
+        }
     }
 
     /**
@@ -214,15 +221,11 @@ export default class EventQuizService {
     ): Promise<{ quiz: EventQuiz; questionCount: number }> {
         const content = await fs.readFile(filePath, 'utf-8')
 
-        let quiz: EventQuiz
-        let questionCount: number
-
-        await db.transaction(async (trx) => {
-            quiz = await this.createQuiz(quizData, trx)
-            questionCount = await this.uploadQuestionsFromFile(content, quizData.userId, quiz.id, trx)
+        return await db.transaction(async (trx) => {
+            const quiz = await this.createQuiz(quizData, trx)
+            const questionCount = await this.uploadQuestionsFromFile(content, quizData.userId, quiz.id, trx)
+            return { quiz, questionCount }
         })
-
-        return { quiz: quiz!, questionCount: questionCount! }
     }
 
     /**
@@ -230,6 +233,16 @@ export default class EventQuizService {
      */
     async publishQuiz(quizId: number): Promise<void> {
         const quiz = await EventQuiz.findOrFail(quizId)
+
+        if (quiz.status === 'published') {
+            throw new Error('Quiz is already published')
+        }
+
+        const questionCount = await quiz.related('questions').query().count('* as total').first()
+        if (Number(questionCount?.$extras.total || 0) === 0) {
+            throw new Error('Cannot publish a quiz with no questions')
+        }
+
         quiz.status = 'published'
         await quiz.save()
     }

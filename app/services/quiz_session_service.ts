@@ -2,12 +2,19 @@ import { DateTime } from 'luxon'
 import QuizSession from '#models/quiz_session'
 import EventQuiz from '#models/event_quiz'
 import UserQuizStat from '#models/user_quiz_stat'
+import User from '#models/user'
 
 export class QuizSessionService {
   /**
    * Start a new quiz session for a user
    */
-  async startSession(userId: number, quizId: number, studentId?: string, school?: string) {
+  async startSession(
+    userId: number,
+    quizId: number,
+    studentId?: string,
+    school?: string,
+    fullName?: string
+  ) {
     // First check if there's an existing session
     const existingSession = await QuizSession.query()
       .where('userId', userId)
@@ -40,7 +47,7 @@ export class QuizSessionService {
       activityLog: { started: startedAt.toISO() },
       studentId: studentId || null,
       school: school || null,
-      fullName: null, // We should ideally get this from user or passed in, but for now null or we can fetch it.
+      fullName: fullName || (await this.getUserFullName(userId)) || null,
     })
 
     // Create or update user quiz stats with student info
@@ -61,6 +68,16 @@ export class QuizSessionService {
 
     return session
   }
+
+  /**
+   * Helper to fetch user full name
+   */
+  private async getUserFullName(userId: number): Promise<string | null> {
+    const user = await User.find(userId)
+    return user ? user.fullName : null
+  }
+
+
 
   /**
    * Record suspicious activity (tab switch, focus loss, etc.)

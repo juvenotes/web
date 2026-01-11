@@ -3,9 +3,6 @@ import { QuizSessionService } from '#services/quiz_session_service'
 import locks from '@adonisjs/lock/services/main'
 import logger from '@adonisjs/core/services/logger'
 
-// Singleton instance to avoid recreating per job run
-const quizSessionService = new QuizSessionService()
-
 export default class CheckExpiredQuizSessionJob extends BaseJob {
   /**
    * Job handler function to check and auto-submit expired quiz sessions
@@ -16,6 +13,7 @@ export default class CheckExpiredQuizSessionJob extends BaseJob {
       .createLock('job:check-expired-quiz-sessions', '15 minutes') // Increased timeout for potentially large workloads
       .run(async () => {
         try {
+          const quizSessionService = new QuizSessionService()
           const expiredCount = await quizSessionService.checkExpiredSessions()
 
           if (expiredCount > 0) {

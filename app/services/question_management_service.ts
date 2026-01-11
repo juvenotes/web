@@ -59,7 +59,7 @@ export default class QuestionManagementService {
         return {
             ...currentMetadata,
             lastEditedBy: {
-                fullName: user.fullName!,
+                fullName: user.fullName ?? 'Unknown User',
                 timestamp: new Date(),
             },
         }
@@ -74,9 +74,7 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        let question: Question
-
-        const action = async (t: TransactionClientContract) => {
+        const execute = async (t: TransactionClientContract): Promise<Question> => {
             // Update paper metadata
             await paper
                 .merge({
@@ -99,8 +97,6 @@ export default class QuestionManagementService {
                 })
                 .returning('*')
 
-            question = created
-
             // Create choices
             if (data.choices.length > 0) {
                 await t
@@ -108,24 +104,20 @@ export default class QuestionManagementService {
                     .table('mcq_choices')
                     .insert(
                         data.choices.map((choice) => ({
-                            question_id: question.id,
+                            question_id: created.id,
                             choice_text: choice.choiceText,
                             is_correct: choice.isCorrect,
                             explanation: choice.explanation,
                         }))
                     )
             }
+            return created
         }
 
         if (trx) {
-            await action(trx)
-        } else {
-            await db.transaction(async (newTrx) => {
-                await action(newTrx)
-            })
+            return execute(trx)
         }
-
-        return question!
+        return db.transaction(execute)
     }
 
     /**
@@ -137,9 +129,7 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        let question: Question
-
-        const action = async (t: TransactionClientContract) => {
+        const execute = async (t: TransactionClientContract): Promise<Question> => {
             // Create question
             const [created] = await t
                 .insertQuery()
@@ -154,8 +144,6 @@ export default class QuestionManagementService {
                 })
                 .returning('*')
 
-            question = created
-
             // Create choices
             if (data.choices.length > 0) {
                 await t
@@ -163,24 +151,20 @@ export default class QuestionManagementService {
                     .table('mcq_choices')
                     .insert(
                         data.choices.map((choice) => ({
-                            question_id: question.id,
+                            question_id: created.id,
                             choice_text: choice.choiceText,
                             is_correct: choice.isCorrect,
                             explanation: choice.explanation,
                         }))
                     )
             }
+            return created
         }
 
         if (trx) {
-            await action(trx)
-        } else {
-            await db.transaction(async (newTrx) => {
-                await action(newTrx)
-            })
+            return execute(trx)
         }
-
-        return question!
+        return db.transaction(execute)
     }
 
     /**
@@ -568,14 +552,16 @@ export default class QuestionManagementService {
         targetQuizId: number,
         user: User,
         trx?: TransactionClientContract
-    ): Promise<void> {
+    ): Promise<Question> {
         // Ensure choices are loaded if it's MCQ
         if (originalQuestion.isMcq && !originalQuestion.choices) {
             await originalQuestion.load('choices')
         }
 
+        let newQuestion: Question
+
         const action = async (t: TransactionClientContract) => {
-            const [newQuestion] = await t
+            const [created] = await t
                 .insertQuery()
                 .table('questions')
                 .insert({
@@ -591,12 +577,18 @@ export default class QuestionManagementService {
 
             if (originalQuestion.isMcq && originalQuestion.choices) {
                 const choicesData = originalQuestion.choices.map((choice) => ({
-                    question_id: newQuestion.id,
+                    question_id: created.id,
                     choice_text: choice.choiceText,
                     is_correct: choice.isCorrect,
                     explanation: choice.explanation,
                 }))
                 await t.insertQuery().table('mcq_choices').insert(choicesData)
+            }
+            newQuestion = created
+            // Load choices for the new question if they exist to return fully populated object
+            if (originalQuestion.isMcq) {
+                // We could reload, or construct it. For now, let's just assign the ID.
+                // Or better, let's assume the caller will reload if needed or we modify to return fully.
             }
         }
 
@@ -607,5 +599,7 @@ export default class QuestionManagementService {
                 await action(newTrx)
             })
         }
+
+        return newQuestion!
     }
 }

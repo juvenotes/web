@@ -288,6 +288,13 @@ export default class ManageTodayController {
       .preload('choices') // Preload choices for MCQ questions
       .firstOrFail()
 
+    interface IncomingChoiceData {
+      id?: number
+      choiceText: string
+      isCorrect: boolean
+      explanation?: string
+    }
+
     try {
       if (question.type === QuestionType.MCQ) {
         const { questionText, choices } = request.only(['questionText', 'choices'])
@@ -297,7 +304,7 @@ export default class ManageTodayController {
           {
             questionText,
             choices: choices && Array.isArray(choices)
-              ? choices.map((c: any) => ({
+              ? choices.map((c: IncomingChoiceData) => ({
                 id: c.id,
                 choiceText: c.choiceText,
                 isCorrect: c.isCorrect,
