@@ -4,6 +4,15 @@ import ConceptDto from '#dtos/concept'
 import QuestionDto from '#dtos/question'
 import db from '@adonisjs/lucid/services/db'
 
+/**
+ * Lightweight interface for parent concept info from CTE query
+ */
+interface ParentConceptInfo {
+  id: number
+  title: string
+  slug: string
+}
+
 export default class IndexConceptsController {
   /**
    * Show root level concepts
@@ -80,7 +89,7 @@ export default class IndexConceptsController {
       children: concept.children ? ConceptDto.fromArray(concept.children) : [],
       questions: concept.questions ? QuestionDto.fromArray(concept.questions) : [],
       content: concept.knowledgeBlock,
-      parentConcepts: ConceptDto.fromArray(parentConcepts),
+      parentConcepts: parentConcepts.map((p) => ({ id: p.id, title: p.title, slug: p.slug })),
       canManage,
     })
   }
@@ -117,8 +126,9 @@ export default class IndexConceptsController {
 
   /**
    * Get all parent concepts using a recursive CTE (single query instead of N+1)
+   * Returns lightweight objects compatible with frontend rendering
    */
-  private async getConceptParents(conceptId: number): Promise<Concept[]> {
+  private async getConceptParents(conceptId: number): Promise<ParentConceptInfo[]> {
     // First get the parent_id of the current concept
     const currentConcept = await Concept.query()
       .where('id', conceptId)
@@ -151,7 +161,6 @@ export default class IndexConceptsController {
       .from('concept_tree')
       .orderBy('depth', 'desc') // Root first, then down to immediate parent
 
-    // Convert raw results to Concept-like objects for DTO compatibility
-    return result as unknown as Concept[]
+    return result as ParentConceptInfo[]
   }
 }

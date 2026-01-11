@@ -8,27 +8,35 @@ import locks from '@adonisjs/lock/services/main'
 export default class CloseIdleSessionsJob extends BaseJob {
   async run() {
     const [executed] = await locks
-      .createLock('job:close-idle-sessions', '5 minutes')
+      .createLock('job:close-idle-sessions', '15 minutes') // Increased for large workloads
       .run(async () => {
-        const now = DateTime.now()
-        // Find all sessions idle for more than 10 minutes
-        const idleSessions = await UserStudySession.query()
-          .where('isActive', true)
-          .where('lastActivityAt', '<', now.minus({ minutes: 10 }).toSQL())
+        try {
+          const now = DateTime.now()
+          // Find all sessions idle for more than 10 minutes
+          const idleSessions = await UserStudySession.query()
+            .where('isActive', true)
+            .where('lastActivityAt', '<', now.minus({ minutes: 10 }).toSQL())
 
-        logger.info(`[CloseIdleSessionsJob] Found ${idleSessions.length} idle sessions to close`)
+          logger.info(`[CloseIdleSessionsJob] Found ${idleSessions.length} idle sessions to close`)
 
-        for (const session of idleSessions) {
-          // Calculate the session duration up to lastActivityAt (not now)
-          const additionalSeconds = Math.floor(
-            Math.abs(session.startedAt.diff(session.lastActivityAt, 'seconds').seconds)
-          )
-          // Set session as inactive and set durationSeconds to the time up to lastActivityAt
-          session.isActive = false
-          session.durationSeconds = additionalSeconds
-          await session.save()
-          // Invalidate study time cache for the user
-          await StudyTimeService.invalidateTotalStudyTimeCacheStatic(session.userId)
+          for (const session of idleSessions) {
+            // Calculate the session duration up to lastActivityAt (not now)
+            const additionalSeconds = Math.floor(
+              Math.abs(session.startedAt.diff(session.lastActivityAt, 'seconds').seconds)
+            )
+            // Set session as inactive and set durationSeconds to the time up to lastActivityAt
+            session.isActive = false
+            session.durationSeconds = additionalSeconds
+            await session.save()
+            // Invalidate study time cache for the user
+            await StudyTimeService.invalidateTotalStudyTimeCacheStatic(session.userId)
+          }
+        } catch (error) {
+          logger.error({
+            job: 'CloseIdleSessionsJob',
+            error,
+            message: 'Failed to close idle sessions',
+          })
         }
       })
 
@@ -37,3 +45,4 @@ export default class CloseIdleSessionsJob extends BaseJob {
     }
   }
 }
+

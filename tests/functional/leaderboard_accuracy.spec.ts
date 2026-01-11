@@ -6,6 +6,7 @@ import Question from '#models/question'
 import McqChoice from '#models/mcq_choice'
 import { QuizSessionService } from '#services/quiz_session_service'
 import UserProgressService from '#services/user_progress_service'
+import StudyTimeService from '#services/study_time_service'
 import UserQuizStat from '#models/user_quiz_stat'
 import { QuestionType } from '#enums/question_types'
 import { DateTime } from 'luxon'
@@ -43,7 +44,7 @@ test.group('Leaderboard Accuracy', (group) => {
             endDate: DateTime.now().plus({ days: 1 }),
         })
 
-        // Create Quiz (Timed Lockdown)
+        // Create Quiz (Timed Lockdown) - Fixed: timeLimit should be true to match hasTimer
         quiz = await EventQuiz.create({
             userId: user.id,
             eventId: event.id,
@@ -55,7 +56,7 @@ test.group('Leaderboard Accuracy', (group) => {
             hasTimer: true,
             autoSubmit: true,
             lockdownMode: true,
-            timeLimit: false,
+            timeLimit: true, // Fixed: was false, now consistent with hasTimer
         })
 
         // Create Q1
@@ -87,9 +88,11 @@ test.group('Leaderboard Accuracy', (group) => {
         })
     })
 
-    test('stats are isolated per session', async ({ assert, app }) => {
-        const quizSessionService = await app.container.make(QuizSessionService)
-        const userProgressService = await app.container.make(UserProgressService)
+    test('stats are isolated per session', async ({ assert }) => {
+        // Instantiate services directly (no DI container in functional tests)
+        const quizSessionService = new QuizSessionService()
+        const studyTimeService = new StudyTimeService()
+        const userProgressService = new UserProgressService(studyTimeService)
 
         // --- Session A ---
         const sessionA = await quizSessionService.startSession(user.id, quiz.id, 'STU001', 'Test School')
@@ -138,12 +141,11 @@ test.group('Leaderboard Accuracy', (group) => {
         // Correct = 1. Total = 2. Score = 50.
         // If bug existed (aggregation): Correct = 2. Score = 100.
 
-        let statsB = await UserQuizStat.query().where('userId', user.id).where('quizId', quiz.id).first()
+        // Re-fetch stats fresh from DB instead of using .load()
+        const statsB = await UserQuizStat.query().where('userId', user.id).where('quizId', quiz.id).first()
 
         assert.equal(statsB?.questionsCorrect, 1, 'Should only have 1 correct answer (from current session)')
         assert.equal(statsB?.score, 50, 'Score should be 50%')
-
-        // Additional Check: Verify UserMcqResponse grouping
-        await statsB?.load('user') // just triggers refresh
     })
 })
+

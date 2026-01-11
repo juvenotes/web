@@ -59,7 +59,13 @@ export default class DashboardController {
     }
 
     // Get cached or fresh dashboard stats
-    const stats = await this.getDashboardStats(logger)
+    let stats: StatsDto
+    try {
+      stats = await this.getDashboardStats(logger)
+    } catch (error) {
+      logger.error('Failed to fetch dashboard stats', { error, userId: auth.user?.id })
+      stats = new StatsDto({ concepts: 0, contentfulConcepts: 0, questions: 0, papers: 0 })
+    }
 
     return inertia.render('dashboard', {
       user: userDto,
@@ -77,14 +83,25 @@ export default class DashboardController {
   private async getDashboardStats(logger: HttpContext['logger']): Promise<StatsDto> {
     const cacheKey = 'dashboard:stats'
 
-    // Try cache first
-    const cached = await redis.get(cacheKey)
-    if (cached) {
-      logger.debug('Dashboard stats loaded from cache')
-      return JSON.parse(cached) as StatsDto
+    // Try cache first with error handling
+    try {
+      const cached = await redis.get(cacheKey)
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached) as StatsDto
+          logger.debug('Dashboard stats loaded from cache')
+          return parsed
+        } catch (parseError) {
+          logger.warn('Failed to parse cached dashboard stats', { parseError })
+          // Fall through to fetch fresh data
+        }
+      }
+    } catch (redisError) {
+      logger.warn('Redis get failed for dashboard stats', { redisError })
+      // Fall through to fetch fresh data
     }
 
-    // Cache miss - fetch fresh data
+    // Cache miss or error - fetch fresh data
     const [rootConcepts, contentfulConcepts, questionCount, paperCount] = await Promise.all([
       Concept.query().where('level', 0).count('* as total').first(),
       Concept.query()
@@ -103,10 +120,15 @@ export default class DashboardController {
       papers: Number(paperCount?.$extras.total) || 0,
     })
 
-    // Cache for 5 minutes
-    await redis.setex(cacheKey, 300, JSON.stringify(stats))
-    logger.debug('Dashboard stats cached')
+    // Cache for 5 minutes (best effort, don't fail if Redis is down)
+    try {
+      await redis.setex(cacheKey, 300, JSON.stringify(stats))
+      logger.debug('Dashboard stats cached')
+    } catch (redisError) {
+      logger.warn('Redis set failed for dashboard stats', { redisError })
+    }
 
     return stats
   }
 }
+

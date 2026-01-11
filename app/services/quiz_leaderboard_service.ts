@@ -164,7 +164,8 @@ export class QuizLeaderboardService {
         questionQuery.where('eventQuizId', quizId)
       })
 
-    if (sessionId) {
+    // Filter by sessionId only when explicitly provided (handles sessionId = 0)
+    if (sessionId != null) {
       query.where('sessionId', sessionId)
     }
 

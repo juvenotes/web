@@ -6,9 +6,17 @@ import logger from '@adonisjs/core/services/logger'
 export default class StreakJob extends BaseJob {
   async run() {
     const [executed] = await locks
-      .createLock('job:streak', '5 minutes')
+      .createLock('job:streak', '10 minutes')
       .run(async () => {
-        await StreakService.killExpiredStreaks()
+        try {
+          await StreakService.killExpiredStreaks()
+        } catch (error) {
+          logger.error({
+            job: 'StreakJob',
+            error,
+            message: 'Failed to kill expired streaks',
+          })
+        }
       })
 
     if (!executed) {
@@ -16,3 +24,4 @@ export default class StreakJob extends BaseJob {
     }
   }
 }
+

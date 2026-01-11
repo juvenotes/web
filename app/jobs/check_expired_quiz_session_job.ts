@@ -13,12 +13,21 @@ export default class CheckExpiredQuizSessionJob extends BaseJob {
    */
   async run() {
     const [executed] = await locks
-      .createLock('job:check-expired-quiz-sessions', '5 minutes')
+      .createLock('job:check-expired-quiz-sessions', '15 minutes') // Increased timeout for potentially large workloads
       .run(async () => {
-        const expiredCount = await quizSessionService.checkExpiredSessions()
+        try {
+          const expiredCount = await quizSessionService.checkExpiredSessions()
 
-        if (expiredCount > 0) {
-          logger.info(`Auto-submitted ${expiredCount} expired quiz session(s)`)
+          if (expiredCount > 0) {
+            logger.info(`Auto-submitted ${expiredCount} expired quiz session(s)`)
+          }
+        } catch (error) {
+          logger.error({
+            job: 'CheckExpiredQuizSessionJob',
+            error,
+            message: 'Failed to check expired sessions',
+          })
+          // Don't rethrow - let the job complete so lock is released
         }
       })
 
@@ -27,3 +36,4 @@ export default class CheckExpiredQuizSessionJob extends BaseJob {
     }
   }
 }
+

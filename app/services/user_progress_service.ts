@@ -127,7 +127,8 @@ export default class UserProgressService {
       .where('questionId', questionId)
       .where('source', 'event_quiz')
 
-    if (sessionId) {
+    // Filter by sessionId only when explicitly provided (handles sessionId = 0)
+    if (sessionId != null) {
       query.where('sessionId', sessionId)
     }
 
@@ -147,7 +148,7 @@ export default class UserProgressService {
       status: ResponseStatus.ACTIVE,
       originalChoiceText: choice.choiceText,
       source: 'event_quiz',
-      sessionId: sessionId || null,
+      sessionId: sessionId ?? null, // Use nullish coalescing to preserve 0
     })
 
     // Update streak if first activity today

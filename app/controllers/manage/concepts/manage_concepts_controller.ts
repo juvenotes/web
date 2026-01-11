@@ -425,7 +425,7 @@ export default class ManageConceptsController {
 
   async deleteMcq({ response, params, session }: HttpContext) {
     const question = await Question.findByOrFail('slug', params.questionSlug)
-    // Use service for soft deletion
+    // Use static service method for soft deletion
     await QuestionDeletionService.delete(question.id)
 
     session.flash('success', 'MCQ deleted successfully')

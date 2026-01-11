@@ -192,9 +192,14 @@ export default class IndexEventsController {
     ])
 
     try {
-      // Enforce time limit for timed lockdown quizzes
       const quiz = await EventQuiz.find(quizId)
-      if (quiz && quiz.quizMode === 'timed_lockdown') {
+      if (!quiz) {
+        return response.notFound({ error: 'Quiz not found' })
+      }
+
+      // For timed lockdown quizzes, enforce session and time limits
+      let sessionId: number | null = null
+      if (quiz.quizMode === 'timed_lockdown') {
         const session = await this.quizSessionService.getActiveSession(auth.user.id, quizId)
         if (!session) {
           return response.badRequest({ error: 'No active quiz session found' })
@@ -203,6 +208,9 @@ export default class IndexEventsController {
         if (session.expiresAt && session.expiresAt < DateTime.now().minus({ seconds: 10 })) {
           return response.badRequest({ error: 'Quiz session has expired' })
         }
+
+        // Reuse the session ID we already fetched (fixes TOCTOU race)
+        sessionId = session.id
       }
 
       await this.userProgressService.recordEventQuizAttempt(
@@ -211,9 +219,7 @@ export default class IndexEventsController {
         questionId,
         choiceId,
         isCorrect,
-        quiz && quiz.quizMode === 'timed_lockdown'
-          ? (await this.quizSessionService.getActiveSession(auth.user.id, quizId))?.id
-          : null
+        sessionId
       )
 
       return response.ok({ success: true })

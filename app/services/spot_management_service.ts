@@ -28,10 +28,11 @@ export default class SpotManagementService {
      * Helper to update paper metadata
      */
     private getMetadataUpdate(currentMetadata: any, user: User) {
+        const fullName = user.fullName ?? 'Unknown User'
         return {
             ...currentMetadata,
             lastEditedBy: {
-                fullName: user.fullName!,
+                fullName,
                 timestamp: new Date(),
             },
         }

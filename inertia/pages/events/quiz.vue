@@ -53,10 +53,13 @@ const quizStarted = ref(
 const timeRemaining = ref(props.quizSession?.timeRemaining || 0)
 const sessionId = ref(props.quizSession?.id || null)
 
+// Local reactive copy of attemptedQuestionIds to avoid prop mutation
+const localAttemptedQuestionIds = ref<number[]>([...(props.attemptedQuestionIds || [])])
+
 // Initialize showAnswer and selectedAnswers for already attempted questions
-if (props.attemptedQuestionIds && props.quiz.questions && props.userResponses) {
+if (props.quiz.questions && props.userResponses) {
   props.quiz.questions.forEach((question, index) => {
-    if (props.attemptedQuestionIds!.includes(question.id)) {
+    if (localAttemptedQuestionIds.value.includes(question.id)) {
       showAnswer.value[index] = true
       const userResponse = props.userResponses![question.id]
       if (userResponse) {
@@ -148,8 +151,8 @@ function selectAnswer(questionIndex: number, choiceId: number) {
     
     // Update local state immediately for UI responsiveness
     selectedAnswers.value[questionIndex] = choiceId
-    if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(question.id)) {
-      props.attemptedQuestionIds.push(question.id)
+    if (!localAttemptedQuestionIds.value.includes(question.id)) {
+      localAttemptedQuestionIds.value.push(question.id)
     }
 
     // Set saving state
@@ -183,8 +186,8 @@ async function submitAnswerToBackend(questionId: number, choiceId: number, quest
     if (response.data.success) {
       selectedAnswers.value[questionIndex] = choiceId
 
-      if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
-        props.attemptedQuestionIds.push(questionId)
+      if (!localAttemptedQuestionIds.value.includes(questionId)) {
+        localAttemptedQuestionIds.value.push(questionId)
       }
 
       if (isTimedLockdownMode.value) {
@@ -225,8 +228,8 @@ async function submitAnswerToBackend(questionId: number, choiceId: number, quest
       if (isStandardMode.value) {
         showAnswer.value[questionIndex] = true
       }
-      if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
-        props.attemptedQuestionIds.push(questionId)
+      if (!localAttemptedQuestionIds.value.includes(questionId)) {
+        localAttemptedQuestionIds.value.push(questionId)
       }
 
       toast({
@@ -363,8 +366,14 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // Clear sync interval
   if (syncInterval) {
     clearInterval(syncInterval)
+  }
+  // Clear debounce timer to prevent pending submissions after unmount
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+    debounceTimer = null
   }
 })
 </script>
