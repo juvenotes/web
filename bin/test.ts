@@ -54,10 +54,7 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
         importer: (filePath: string | URL) => {
           const filePathString = filePath.toString()
           if (filePathString.includes('inertia/')) {
-            const newPath = filePathString.replace(
-              /.*inertia/,
-              './inertia'
-            )
+            const newPath = filePathString.replace(/.*inertia/, './inertia')
             return import(new URL(newPath, APP_ROOT).href)
           }
           if (filePathString.startsWith('~/')) {

@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
 import { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
@@ -10,16 +11,17 @@ import UserQuizStatDto from '#dtos/user_quiz_stat'
 import { createEventValidator, updateEventValidator } from '#validators/event'
 import { createMcqQuestionValidator, updateMcqQuestionValidator } from '#validators/question'
 import string from '@adonisjs/core/helpers/string'
-import { generateSlug } from '#utils/slug_generator'
 import { CloudinaryService } from '#services/cloudinary_service'
-import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
+import { MCQParserError } from '#services/mcq_parser_service'
 import { QuizLeaderboardService } from '#services/quiz_leaderboard_service'
-import { QuestionType } from '#enums/question_types'
-import fs from 'node:fs/promises'
+import EventQuizService from '#services/event_quiz_service'
 import EventPolicy from '#policies/event_policy'
 import db from '@adonisjs/lucid/services/db'
+import fs from 'node:fs/promises'
 
+@inject()
 export default class ManageEventsController {
+  constructor(private eventQuizService: EventQuizService) {}
   /**
    * Show list of events for management
    */
@@ -574,7 +576,6 @@ export default class ManageEventsController {
     })
   }
 
-
   /**
    * Upload quiz questions from file
    */
@@ -606,78 +607,27 @@ export default class ManageEventsController {
     if (!title) return response.badRequest('Quiz title is required')
 
     try {
-      await db.transaction(async (trx) => {
-        const content = await fs.readFile(file.tmpPath!, 'utf-8')
-        let parsedQuestions
-        try {
-          parsedQuestions = MCQParser.parse(content)
-        } catch (error) {
-          logger.error('quiz parsing failed', { ...context, error })
-          if (error instanceof MCQParserError) throw error
-          throw new Error('Failed to parse quiz file')
-        }
-
-        logger.info('quiz questions parsed', {
-          ...context,
-          count: parsedQuestions.length,
+      const { quiz, questionCount } = await this.eventQuizService.createQuizWithQuestionsFromFile(
+        {
+          userId: auth.user!.id,
           eventId: event.id,
           title,
-        })
+          description,
+          status: 'draft',
+        },
+        file.tmpPath!
+      )
 
-        // Create the quiz first
-        const quiz = await EventQuiz.create(
-          {
-            userId: auth.user!.id,
-            eventId: event.id,
-            title,
-            slug: generateSlug(),
-            description: description || null,
-            status: 'draft', // Default to draft for uploaded quizzes
-          },
-          { client: trx }
-        )
-
-        // Create questions for the quiz
-        for (const [index, parsedQuestion] of parsedQuestions.entries()) {
-          logger.info(`processing question ${index + 1}/${parsedQuestions.length}`)
-
-          const [question] = await trx
-            .insertQuery()
-            .table('questions')
-            .insert({
-              user_id: auth.user!.id,
-              event_quiz_id: quiz.id,
-              slug: generateSlug(),
-              type: QuestionType.MCQ,
-              question_text: parsedQuestion.stem,
-            })
-            .returning('*')
-
-          const correctIndex = parsedQuestion.answer.charCodeAt(0) - 65
-          const choices = parsedQuestion.choices.map((choiceText, idx) => ({
-            question_id: question.id,
-            choice_text: choiceText,
-            is_correct: idx === correctIndex,
-            explanation: idx === correctIndex ? parsedQuestion.explanation : null,
-          }))
-
-          await trx.insertQuery().table('mcq_choices').insert(choices)
-        }
-
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          questionsCount: parsedQuestions.length,
-          message: 'Quiz uploaded successfully',
-        })
-        session.flash(
-          'success',
-          `Successfully uploaded quiz with ${parsedQuestions.length} questions`
-        )
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
+      logger.info({
+        ...context,
+        userId: auth.user?.id,
+        eventId: event.id,
+        quizId: quiz.id,
+        questionsCount: questionCount,
+        message: 'Quiz uploaded successfully',
       })
+      session.flash('success', `Successfully uploaded quiz with ${questionCount} questions`)
+      return response.redirect().toRoute('manage.events.show', { slug: event.slug })
     } catch (error) {
       if (error instanceof MCQParserError) {
         logger.error('quiz parsing failed', { ...context, error })
@@ -720,34 +670,23 @@ export default class ManageEventsController {
     }
 
     const data = await request.validateUsing(createMcqQuestionValidator)
-    const slug = generateSlug()
 
     try {
       await db.transaction(async (trx) => {
-        const [question] = await trx
-          .insertQuery()
-          .table('questions')
-          .insert({
-            user_id: auth.user!.id,
-            event_quiz_id: quiz.id,
-            slug,
-            type: QuestionType.MCQ,
-            question_text: data.questionText,
-            question_image_path: data.questionImagePath || null,
-          })
-          .returning('*')
-
-        await trx
-          .insertQuery()
-          .table('mcq_choices')
-          .insert(
-            data.choices.map((choice) => ({
-              question_id: question.id,
-              choice_text: choice.choiceText,
-              is_correct: choice.isCorrect,
+        await this.eventQuizService.createQuestion(
+          {
+            userId: auth.user!.id,
+            quizId: quiz.id,
+            questionText: data.questionText,
+            questionImagePath: data.questionImagePath,
+            choices: data.choices.map((choice) => ({
+              choiceText: choice.choiceText,
+              isCorrect: choice.isCorrect,
               explanation: choice.explanation,
-            }))
-          )
+            })),
+          },
+          trx
+        )
       })
 
       session.flash('success', 'Question added successfully')
@@ -794,41 +733,22 @@ export default class ManageEventsController {
 
     try {
       const content = await fs.readFile(file.tmpPath!, 'utf-8')
-      const parsedQuestions = MCQParser.parse(content)
+      const questionCount = await db.transaction(async (trx) => {
+        return await this.eventQuizService.uploadQuestionsFromFile(
+          content,
+          auth.user!.id,
+          quiz.id,
+          trx
+        )
+      })
 
-      logger.info('questions parsed', {
+      logger.info({
         ...context,
-        count: parsedQuestions.length,
-        first: parsedQuestions[0]?.stem,
+        count: questionCount,
+        message: 'Questions uploaded successfully',
       })
 
-      await db.transaction(async (trx) => {
-        for (const parsedQuestion of parsedQuestions) {
-          const [question] = await trx
-            .insertQuery()
-            .table('questions')
-            .insert({
-              user_id: auth.user!.id,
-              event_quiz_id: quiz.id,
-              slug: generateSlug(),
-              type: QuestionType.MCQ,
-              question_text: parsedQuestion.stem,
-            })
-            .returning('*')
-
-          const correctIndex = parsedQuestion.answer.charCodeAt(0) - 65
-          const choices = parsedQuestion.choices.map((choiceText, idx) => ({
-            question_id: question.id,
-            choice_text: choiceText,
-            is_correct: idx === correctIndex,
-            explanation: idx === correctIndex ? parsedQuestion.explanation : null,
-          }))
-
-          await trx.insertQuery().table('mcq_choices').insert(choices)
-        }
-      })
-
-      session.flash('success', `Successfully uploaded ${parsedQuestions.length} questions`)
+      session.flash('success', `Successfully uploaded ${questionCount} questions`)
       return response.redirect().back()
     } catch (error) {
       if (error instanceof MCQParserError) {

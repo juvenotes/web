@@ -114,17 +114,25 @@ export default class UserProgressService {
     quizId: number,
     questionId: number,
     choiceId: number,
-    isCorrect: boolean
+    isCorrect: boolean,
+    sessionId?: number | null
   ) {
     // Get the choice to store its text for historical record
     const choice = await McqChoice.findOrFail(choiceId)
 
     // Check if user has already responded to this question
-    const existingResponse = await UserMcqResponse.query()
+    // If sessionId is provided, check for response in that session specifically
+    const query = UserMcqResponse.query()
       .where('userId', userId)
       .where('questionId', questionId)
       .where('source', 'event_quiz')
-      .first()
+
+    // Filter by sessionId only when explicitly provided (handles sessionId = 0)
+    if (sessionId !== null && sessionId !== undefined) {
+      query.where('sessionId', sessionId)
+    }
+
+    const existingResponse = await query.first()
 
     if (existingResponse) {
       throw new Error('You have already answered this question')
@@ -140,6 +148,7 @@ export default class UserProgressService {
       status: ResponseStatus.ACTIVE,
       originalChoiceText: choice.choiceText,
       source: 'event_quiz',
+      sessionId: sessionId ?? null, // Use nullish coalescing to preserve 0
     })
 
     // Update streak if first activity today
@@ -149,7 +158,8 @@ export default class UserProgressService {
     }
 
     // Update or create user quiz stats using the leaderboard service
-    const stats = await this.calculateEventQuizStats(userId, quizId)
+    // Update or create user quiz stats using the leaderboard service
+    const stats = await this.calculateEventQuizStats(userId, quizId, sessionId)
 
     return {
       isCorrect,
@@ -161,11 +171,15 @@ export default class UserProgressService {
   /**
    * Calculate event quiz statistics for a user
    */
-  private async calculateEventQuizStats(userId: number, quizId: number) {
+  private async calculateEventQuizStats(userId: number, quizId: number, sessionId?: number | null) {
     // Import here to avoid circular dependency
     const { QuizLeaderboardService } = await import('#services/quiz_leaderboard_service')
 
-    const stats = await QuizLeaderboardService.calculateQuizStatsFromResponses(userId, quizId)
+    const stats = await QuizLeaderboardService.calculateQuizStatsFromResponses(
+      userId,
+      quizId,
+      sessionId
+    )
 
     // Update the user_quiz_stats table
     await QuizLeaderboardService.updateUserQuizStats(userId, quizId, stats)
@@ -176,15 +190,23 @@ export default class UserProgressService {
   /**
    * Get attempted question IDs for an event quiz
    */
-  async getEventQuizAttemptedQuestions(userId: number, quizId: number): Promise<number[]> {
-    const responses = await UserMcqResponse.query()
+  async getEventQuizAttemptedQuestions(
+    userId: number,
+    quizId: number,
+    sessionId?: number | null
+  ): Promise<number[]> {
+    const query = UserMcqResponse.query()
       .where('userId', userId)
       .where('source', 'event_quiz')
       .whereHas('question', (questionQuery) => {
         questionQuery.where('eventQuizId', quizId)
       })
-      .select('questionId')
-      .distinct('questionId')
+
+    if (sessionId !== null && sessionId !== undefined) {
+      query.where('sessionId', sessionId)
+    }
+
+    const responses = await query.select('questionId').distinct('questionId')
 
     return responses.map((r) => r.questionId)
   }
@@ -192,14 +214,19 @@ export default class UserProgressService {
   /**
    * Get user's responses for an event quiz with selected choices
    */
-  async getEventQuizUserResponses(userId: number, quizId: number) {
-    const responses = await UserMcqResponse.query()
+  async getEventQuizUserResponses(userId: number, quizId: number, sessionId?: number | null) {
+    const query = UserMcqResponse.query()
       .where('userId', userId)
       .where('source', 'event_quiz')
       .whereHas('question', (questionQuery) => {
         questionQuery.where('eventQuizId', quizId)
       })
-      .select('questionId', 'choiceId', 'isCorrect')
+
+    if (sessionId !== null && sessionId !== undefined) {
+      query.where('sessionId', sessionId)
+    }
+
+    const responses = await query.select('questionId', 'choiceId', 'isCorrect')
 
     const responseMap: Record<number, { choiceId: number; isCorrect: boolean }> = {}
     responses.forEach((response) => {

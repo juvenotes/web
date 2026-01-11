@@ -2,12 +2,19 @@ import { DateTime } from 'luxon'
 import QuizSession from '#models/quiz_session'
 import EventQuiz from '#models/event_quiz'
 import UserQuizStat from '#models/user_quiz_stat'
+import User from '#models/user'
 
 export class QuizSessionService {
   /**
    * Start a new quiz session for a user
    */
-  async startSession(userId: number, quizId: number, studentId?: string, school?: string) {
+  async startSession(
+    userId: number,
+    quizId: number,
+    studentId?: string,
+    school?: string,
+    fullName?: string
+  ) {
     // First check if there's an existing session
     const existingSession = await QuizSession.query()
       .where('userId', userId)
@@ -38,6 +45,9 @@ export class QuizSessionService {
       focusLosses: 0,
       autoSubmitted: false,
       activityLog: { started: startedAt.toISO() },
+      studentId: studentId || null,
+      school: school || null,
+      fullName: fullName || (await this.getUserFullName(userId)) || null,
     })
 
     // Create or update user quiz stats with student info
@@ -57,6 +67,14 @@ export class QuizSessionService {
     )
 
     return session
+  }
+
+  /**
+   * Helper to fetch user full name
+   */
+  private async getUserFullName(userId: number): Promise<string | null> {
+    const user = await User.find(userId)
+    return user ? user.fullName : null
   }
 
   /**
@@ -137,19 +155,29 @@ export class QuizSessionService {
   }
 
   /**
-   * Check if session has expired
+   * Check and auto-submit expired quiz sessions
+   * Uses batch update for performance (avoids N+1 queries)
    */
-  async checkExpiredSessions() {
-    const expiredSessions = await QuizSession.query()
+  async checkExpiredSessions(): Promise<number> {
+    const now = DateTime.now()
+
+    // Batch update all expired sessions in a single query
+    // Batch update returns array (PostgreSQL) or number (MySQL/SQLite) depending on driver/config
+    const result = (await QuizSession.query()
       .where('status', 'active')
       .whereNotNull('expiresAt')
-      .where('expiresAt', '<', DateTime.now().toSQL())
+      .where('expiresAt', '<', now.toSQL())
+      .update({
+        status: 'submitted',
+        endedAt: now.toSQL(),
+        autoSubmitted: true,
+      })) as number | number[]
 
-    for (const session of expiredSessions) {
-      await this.submitSession(session.userId, session.quizId, true)
+    // Handle both return types safely
+    if (Array.isArray(result)) {
+      return result.length
     }
-
-    return expiredSessions.length
+    return result
   }
 
   /**

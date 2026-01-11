@@ -45,43 +45,51 @@ const currentUser = page.props.auth?.user
 
     <!-- Main Content -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      <!-- Quiz Info -->
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-xl border shadow-sm p-6">
-          <h3 class="text-lg font-semibold mb-4">Quiz Details</h3>
-
-          <div class="space-y-3">
+      <!-- Quiz Info Card -->
+      <div class="lg:col-span-1 space-y-6">
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+          <div class="p-4 border-b bg-gray-50/50">
+            <h3 class="font-semibold text-gray-900">Quiz Details</h3>
+          </div>
+          <div class="p-6 space-y-4">
             <div>
-              <dt class="text-sm font-medium text-gray-500">Event</dt>
-              <dd class="text-sm text-gray-900">{{ event.title }}</dd>
+              <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Event</dt>
+              <dd class="mt-1 text-sm font-medium text-gray-900">{{ event.title }}</dd>
             </div>
 
             <div>
-              <dt class="text-sm font-medium text-gray-500">Quiz Title</dt>
-              <dd class="text-sm text-gray-900">{{ quiz.title }}</dd>
+              <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz Title</dt>
+              <dd class="mt-1 text-sm font-medium text-gray-900">{{ quiz.title }}</dd>
             </div>
 
             <div v-if="quiz.description">
-              <dt class="text-sm font-medium text-gray-500">Description</dt>
-              <dd class="text-sm text-gray-900">{{ quiz.description }}</dd>
+              <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ quiz.description }}</dd>
             </div>
 
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Total Questions</dt>
-              <dd class="text-sm text-gray-900">{{ quiz.questions?.length || 0 }}</dd>
-            </div>
-
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Created</dt>
-              <dd class="text-sm text-gray-900">
-                {{ new Date(quiz.createdAt).toLocaleDateString() }}
-              </dd>
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t">
+              <div>
+                <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Questions
+                </dt>
+                <dd class="mt-1 text-2xl font-bold text-gray-900">
+                  {{ quiz.questions?.length || 0 }}
+                </dd>
+              </div>
+              <div>
+                <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">Created</dt>
+                <dd class="mt-1 text-sm font-medium text-gray-900">
+                  {{ new Date(quiz.createdAt).toLocaleDateString() }}
+                </dd>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Leaderboard -->
+      <!-- Leaderboard Section -->
       <div class="lg:col-span-3">
         <QuizLeaderboard
           :event-slug="event.slug"

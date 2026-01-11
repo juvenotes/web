@@ -10,7 +10,7 @@ import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '~/layouts/AppLayout.vue'
 import { usePosthog } from '../composables/use_posthog'
-import { initializeTheme } from '../lib/theme-script'
+import { initializeTheme } from '../lib/theme_script'
 
 // Initialize theme before Vue mounts to prevent flickering
 // This needs to be called as early as possible

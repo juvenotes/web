@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
@@ -109,14 +110,23 @@ export default class IndexEventsController {
     logger.info({ ...context, message: 'Fetching event quiz' })
 
     const event = await Event.findByOrFail('slug', params.slug)
+
+    // Fetch quiz without status constraint first
     const quiz = await EventQuiz.query()
       .where('id', params.quizId)
       .where('eventId', event.id)
-      .where('status', 'published')
       .preload('questions', (query) => {
         query.orderBy('id', 'asc').preload('choices')
       })
       .firstOrFail()
+
+    // Check visibility
+    if (quiz.status !== 'published') {
+      if (await bouncer.denies('canManage')) {
+        // Should technically be 404 to hide existence, mimicking query behavior
+        throw { code: 'E_ROW_NOT_FOUND' }
+      }
+    }
 
     const eventDto = new EventDto(event)
     const quizDto = new EventQuizDto(quiz)
@@ -129,22 +139,37 @@ export default class IndexEventsController {
     let userResponses: Record<number, { choiceId: number; isCorrect: boolean }> = {}
     let quizSession = null
     let timeRemaining = null
+    let sessionId: number | null = null
 
     if (auth.user) {
+      // Get quiz session info first to determine context
+      quizSession = await this.quizSessionService.getActiveSession(auth.user.id, quiz.id)
+
+      if (quizSession) {
+        timeRemaining = await this.quizSessionService.getSessionTimeRemaining(auth.user.id, quiz.id)
+
+        // If in a session-enforced mode (like timed_lockdown), scope responses to this session
+        // For Standard mode (sessionId null), we typically want history, so we keep sessionId null unless we want to enforce isolation there too.
+        // Based on logic, if we have a session, we should probably focus on it to match leaderboard.
+        // However, standard mode usually doesn't have a session unless we explicitly start one?
+        // Actually, startQuizSession handles session creation.
+        // If quizMode is 'timed_lockdown', session is mandatory.
+
+        if (quiz.quizMode === 'timed_lockdown') {
+          sessionId = quizSession.id
+        }
+      }
+
       attemptedQuestionIds = await this.userProgressService.getEventQuizAttemptedQuestions(
         auth.user.id,
-        quiz.id
+        quiz.id,
+        sessionId
       )
       userResponses = await this.userProgressService.getEventQuizUserResponses(
         auth.user.id,
-        quiz.id
+        quiz.id,
+        sessionId
       )
-
-      // Get quiz session info for timer
-      quizSession = await this.quizSessionService.getActiveSession(auth.user.id, quiz.id)
-      if (quizSession) {
-        timeRemaining = await this.quizSessionService.getSessionTimeRemaining(auth.user.id, quiz.id)
-      }
     }
 
     logger.info({
@@ -155,6 +180,7 @@ export default class IndexEventsController {
       questionsCount: questionsDto.length,
       attemptedQuestionIds,
       hasActiveSession: !!quizSession,
+      sessionId,
       message: 'Event quiz fetched successfully',
     })
 
@@ -191,12 +217,34 @@ export default class IndexEventsController {
     ])
 
     try {
+      const quiz = await EventQuiz.find(quizId)
+      if (!quiz) {
+        return response.notFound({ error: 'Quiz not found' })
+      }
+
+      // For timed lockdown quizzes, enforce session and time limits
+      let sessionId: number | null = null
+      if (quiz.quizMode === 'timed_lockdown') {
+        const session = await this.quizSessionService.getActiveSession(auth.user.id, quizId)
+        if (!session) {
+          return response.badRequest({ error: 'No active quiz session found' })
+        }
+
+        if (session.expiresAt && session.expiresAt < DateTime.now().minus({ seconds: 10 })) {
+          return response.badRequest({ error: 'Quiz session has expired' })
+        }
+
+        // Reuse the session ID we already fetched (fixes TOCTOU race)
+        sessionId = session.id
+      }
+
       await this.userProgressService.recordEventQuizAttempt(
         auth.user.id,
         quizId,
         questionId,
         choiceId,
-        isCorrect
+        isCorrect,
+        sessionId
       )
 
       return response.ok({ success: true })

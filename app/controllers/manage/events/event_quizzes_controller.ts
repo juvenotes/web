@@ -105,4 +105,26 @@ export default class EventQuizzesController {
       throw error
     }
   }
+  /**
+   * Publish a quiz
+   */
+  async publish({ params, response, session, bouncer }: HttpContext) {
+    const event = await Event.findByOrFail('slug', params.slug)
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      return response.forbidden()
+    }
+    const quiz = await EventQuiz.findOrFail(params.quizId)
+
+    try {
+      await db.transaction(async (trx) => {
+        quiz.useTransaction(trx)
+        quiz.status = 'published'
+        await quiz.save()
+        session.flash('success', 'Quiz published successfully')
+        return response.redirect().back()
+      })
+    } catch (error) {
+      throw error
+    }
+  }
 }

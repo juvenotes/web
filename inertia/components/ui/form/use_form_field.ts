@@ -6,7 +6,7 @@ import {
   useIsFieldValid,
 } from 'vee-validate'
 import { inject } from 'vue'
-import { FORM_ITEM_INJECTION_KEY } from './injectionKeys'
+import { FORM_ITEM_INJECTION_KEY } from './injection_keys'
 
 export function useFormField() {
   const fieldContext = inject(FieldContextKey)

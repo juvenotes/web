@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/vue3'
 import type EventDto from '#dtos/event'
 import type EventQuizDto from '#dtos/event_quiz'
 import DashLayout from '~/layouts/DashLayout.vue'
-import { Calendar, CheckCircle, Clock, BookOpen, Play, Settings } from 'lucide-vue-next'
+import { Calendar, CheckCircle, Clock, BookOpen, Play, Settings, Loader2 } from 'lucide-vue-next'
 import BreadcrumbTrail from '~/components/BreadcrumbTrail.vue'
 import AppHead from '~/components/AppHead.vue'
 import { Badge } from '~/components/ui/badge'
@@ -42,6 +42,10 @@ const selectedAnswers = ref<Record<number, number>>({})
 const showResults = ref(false)
 const showAnswer = ref<Record<number, boolean>>({})
 const showAuthDialog = ref(false)
+const isSaving = ref(false)
+const lastSaved = ref<Date | null>(null)
+// Debounce timer for answer submission
+let debounceTimer: NodeJS.Timeout | null = null
 // For standard mode, quiz is always started. For timed lockdown mode, check session
 const quizStarted = ref(
   props.quiz.quizMode === 'standard' || !props.quiz.quizMode ? true : !!props.quizSession
@@ -49,10 +53,13 @@ const quizStarted = ref(
 const timeRemaining = ref(props.quizSession?.timeRemaining || 0)
 const sessionId = ref(props.quizSession?.id || null)
 
+// Local reactive copy of attemptedQuestionIds to avoid prop mutation
+const localAttemptedQuestionIds = ref<number[]>([...(props.attemptedQuestionIds || [])])
+
 // Initialize showAnswer and selectedAnswers for already attempted questions
-if (props.attemptedQuestionIds && props.quiz.questions && props.userResponses) {
+if (props.quiz.questions && props.userResponses) {
   props.quiz.questions.forEach((question, index) => {
-    if (props.attemptedQuestionIds!.includes(question.id)) {
+    if (localAttemptedQuestionIds.value.includes(question.id)) {
       showAnswer.value[index] = true
       const userResponse = props.userResponses![question.id]
       if (userResponse) {
@@ -137,15 +144,67 @@ function selectAnswer(questionIndex: number, choiceId: number) {
     return
   }
 
-  // For timed lockdown mode, allow changing answers within time limit
-  if (isTimedLockdownMode.value && !showAnswer.value[questionIndex]) {
-    submitAnswerToBackend(question.id, choiceId, questionIndex)
+  // For timed lockdown mode, allow changing answers within time limit with debounce
+  // Existing logic handles immediate selection update
+
+  if (isTimedLockdownMode.value) {
+    if (debounceTimer) clearTimeout(debounceTimer)
+
+    // Update local state immediately
+    selectedAnswers.value[questionIndex] = choiceId
+    if (!localAttemptedQuestionIds.value.includes(question.id)) {
+      localAttemptedQuestionIds.value.push(question.id)
+    }
+
+    isSaving.value = true
+
+    // Debounce the backend call
+    debounceTimer = setTimeout(() => {
+      submitAnswerToBackend(question.id, choiceId, questionIndex)
+    }, 1000)
   } else if (isStandardMode.value) {
-    submitAnswerToBackend(question.id, choiceId, questionIndex)
+    // STANDARD MODE: Optimistic UI
+    // 1. Update selection immediately
+    selectedAnswers.value[questionIndex] = choiceId
+
+    // 2. Show answer/feedback IMMEDIATELY (don't wait for server)
+    showAnswer.value[questionIndex] = true
+    if (!localAttemptedQuestionIds.value.includes(question.id)) {
+      localAttemptedQuestionIds.value.push(question.id)
+    }
+
+    // 3. Show Toast Immediately
+    const selectedChoice = question.choices?.find((c) => c.id === choiceId)
+    const isCorrect = selectedChoice?.isCorrect || false
+
+    if (isCorrect) {
+      toast({
+        title: 'Correct!',
+        description: selectedChoice?.explanation || 'Well done!',
+        variant: 'default',
+        duration: 2000,
+      })
+    } else {
+      const correctChoice = question.choices?.find((c) => c.isCorrect)
+      toast({
+        title: 'Incorrect',
+        description: correctChoice?.explanation || 'Try reviewing the material.',
+        variant: 'destructive',
+        duration: 3000,
+      })
+    }
+
+    // 4. Send to backend in background (fire and forget / silent sync)
+    submitAnswerToBackend(question.id, choiceId, questionIndex, true)
   }
 }
 
-async function submitAnswerToBackend(questionId: number, choiceId: number, questionIndex: number) {
+async function submitAnswerToBackend(
+  questionId: number,
+  choiceId: number,
+  questionIndex: number,
+  isSilent = false
+) {
   try {
     const question = props.quiz.questions![questionIndex]
     const selectedChoice = question.choices?.find((c) => c.id === choiceId)
@@ -162,68 +221,21 @@ async function submitAnswerToBackend(questionId: number, choiceId: number, quest
     )
 
     if (response.data.success) {
-      selectedAnswers.value[questionIndex] = choiceId
-
-      if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
-        props.attemptedQuestionIds.push(questionId)
+      if (isTimedLockdownMode.value) {
+        isSaving.value = false
+        lastSaved.value = new Date()
       }
-
-      // Handle different behaviors based on quiz mode
-      if (isStandardMode.value) {
-        // Standard mode: show correct answer immediately and lock the question
-        showAnswer.value[questionIndex] = true
-
-        if (isCorrect) {
-          const correctChoice = question.choices?.find((c) => c.isCorrect)
-          toast({
-            title: 'Correct!',
-            description: correctChoice?.explanation || 'Well done!',
-            variant: 'default',
-          })
-        } else {
-          const correctChoice = question.choices?.find((c) => c.isCorrect)
-          toast({
-            title: 'Incorrect',
-            description: correctChoice?.explanation || 'Try reviewing the material.',
-            variant: 'destructive',
-          })
-        }
-      } else if (isTimedLockdownMode.value) {
-        // Timed lockdown mode: just record the answer, don't show feedback immediately
-        // Only show success confirmation without revealing correct answer
-        toast({
-          title: 'Answer Recorded',
-          description: 'Your answer has been recorded. You can change it before submitting.',
-          variant: 'default',
-        })
-      }
+      // For Standard Mode, we already handled UI updates optimistically.
+      // We don't need to do anything else here unless there's an error sync.
     }
   } catch (error: any) {
-    if (
-      error.response?.status === 400 &&
-      error.response?.data?.error?.includes('already answered')
-    ) {
-      if (isStandardMode.value) {
-        showAnswer.value[questionIndex] = true
-      }
-      if (props.attemptedQuestionIds && !props.attemptedQuestionIds.includes(questionId)) {
-        props.attemptedQuestionIds.push(questionId)
-      }
-
-      toast({
-        title: 'Already Answered',
-        description: isStandardMode.value
-          ? 'You have already answered this question.'
-          : 'Answer updated.',
-        variant: isStandardMode.value ? 'destructive' : 'default',
-      })
-    } else {
+    isSaving.value = false
+    // Only verify/undo if specific error?
+    // For now, if it fails, we might want to alert the user if it's critical.
+    // But for "Standard Mode" practice, silent failure might be acceptable + retry,
+    // or we assume connection is stable.
+    if (!isSilent) {
       console.error('Failed to submit answer:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to submit your answer. Please try again.',
-        variant: 'destructive',
-      })
     }
   }
 }
@@ -344,8 +356,14 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // Clear sync interval
   if (syncInterval) {
     clearInterval(syncInterval)
+  }
+  // Clear debounce timer to prevent pending submissions after unmount
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+    debounceTimer = null
   }
 })
 </script>
@@ -386,6 +404,25 @@ onUnmounted(() => {
       @start-quiz="handleAuthComplete"
       @close="showAuthDialog = false"
     />
+
+    <!-- Header Section -->
+    <!-- Draft Preview Banner -->
+    <div
+      v-if="props.quiz.status === 'draft'"
+      class="bg-amber-100 border-l-4 border-amber-500 text-amber-700 p-4 rounded-md shadow-sm mb-6"
+      role="alert"
+    >
+      <div class="flex items-center">
+        <Settings class="h-6 w-6 mr-3 text-amber-500" />
+        <div>
+          <p class="font-bold">Draft Preview Mode</p>
+          <p class="text-sm">
+            This quiz is currently in <strong>Draft</strong> status and is not visible to students.
+            You are viewing it because you have management permissions.
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- Header Section -->
     <div class="mb-6 sm:mb-10 header-animation">
@@ -443,7 +480,8 @@ onUnmounted(() => {
           Lockdown Mode
         </Badge>
         <p class="text-xs text-muted-foreground">
-          <strong>Note:</strong> While this quiz monitors tab switching, it does not lock your browser.
+          <strong>Note:</strong> While this quiz monitors tab switching, it does not lock your
+          browser.
         </p>
         <Badge
           v-if="showResults"
@@ -454,7 +492,15 @@ onUnmounted(() => {
           {{ score }}/{{ totalQuestions }} ({{ scorePercentage }}%)
         </Badge>
       </div>
-      <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full"></div>
+      <div v-if="isTimedLockdownMode && quizStarted" class="flex items-center gap-2 mt-4 text-xs">
+        <div v-if="isSaving" class="flex items-center gap-1 text-amber-600">
+          <Loader2 class="h-3 w-3 animate-spin" /> Saving...
+        </div>
+        <div v-else-if="lastSaved" class="text-green-600 flex items-center gap-1">
+          <CheckCircle class="h-3 w-3" /> Saved {{ lastSaved.toLocaleTimeString() }}
+        </div>
+      </div>
+      <div class="w-12 h-1 bg-gradient-to-r from-[#55A9C4] to-[#55A9C4]/70 rounded-full mt-4"></div>
     </div>
 
     <!-- Start Quiz Button (for timed quizzes) -->
