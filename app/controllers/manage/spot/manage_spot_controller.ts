@@ -7,15 +7,16 @@ import { createPastPaperValidator, updatePastPaperValidator } from '#validators/
 import { generateSlug } from '#utils/slug_generator'
 import PastPaperPolicy from '#policies/paper_policy'
 import { PaperType } from '#enums/exam_type'
-import QuestionDto from '#dtos/question'
-import { QuestionType } from '#enums/question_types'
 import Question from '#models/question'
-import db from '@adonisjs/lucid/services/db'
+import QuestionDto from '#dtos/question'
 import { createSpotQuestionValidator, updateSpotQuestionValidator } from '#validators/question'
-import QuestionDeletionService from '#services/question_deletion_service'
 import PaperDeletionService from '#services/paper_deletion_service'
+import SpotManagementService from '#services/spot_management_service'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class ManageSpotController {
+  constructor(private spotManagementService: SpotManagementService) { }
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
     return {
       ...currentMetadata,
@@ -235,64 +236,22 @@ export default class ManageSpotController {
       const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
       const data = await request.validateUsing(createSpotQuestionValidator)
 
-      await db.transaction(async (trx) => {
-        // Create question
-        const question = await Question.create({
-          userId: auth.user!.id,
-          type: QuestionType.SPOT,
+      await this.spotManagementService.createSpotQuestion(
+        paper,
+        {
           questionText: data.questionText,
           questionImagePath: data.questionImagePath,
-          slug: generateSlug(),
-          pastPaperId: paper.id,
-        })
-
-        // Create stations
-        for (const stationData of data.parts) {
-          await trx
-            .insertQuery()
-            .table('spot_stations')
-            .insert({
-              question_id: question.id,
-              part_text: stationData.partText,
-              expected_answer: stationData.expectedAnswer,
-              marks: stationData.marks,
-              image_path: stationData.imagePath || null,
-            })
-        }
-
-        // Update paper metadata
-        await paper
-          .merge({
-            metadata: this.getMetadataUpdate(paper.metadata, auth),
-          })
-          .useTransaction(trx)
-          .save()
-
-        // Add topics and units if provided
-        if (data.topicIds && data.topicIds.length > 0) {
-          await trx
-            .insertQuery()
-            .table('question_topics')
-            .multiInsert(
-              data.topicIds.map((topicId) => ({
-                question_id: question.id,
-                topic_id: topicId,
-              }))
-            )
-        }
-
-        if (data.unitIds && data.unitIds.length > 0) {
-          await trx
-            .insertQuery()
-            .table('question_units')
-            .multiInsert(
-              data.unitIds.map((unitId) => ({
-                question_id: question.id,
-                unit_id: unitId,
-              }))
-            )
-        }
-      })
+          parts: data.parts.map((p: any) => ({
+            partText: p.partText,
+            expectedAnswer: p.expectedAnswer,
+            marks: p.marks,
+            imagePath: p.imagePath,
+          })),
+          topicIds: data.topicIds,
+          unitIds: data.unitIds,
+        },
+        auth.user!
+      )
 
       logger.info({
         ...context,
@@ -331,69 +290,22 @@ export default class ManageSpotController {
 
       const data = await request.validateUsing(updateSpotQuestionValidator)
 
-      await db.transaction(async (trx) => {
-        // Update question basic properties
-        await question
-          .merge({
-            questionText: data.questionText,
-            questionImagePath: data.questionImagePath,
-          })
-          .useTransaction(trx)
-          .save()
-
-        // Delete existing stations
-        await trx.from('spot_stations').where('question_id', question.id).delete()
-
-        // Create new stations
-        for (const stationData of data.parts) {
-          await trx
-            .insertQuery()
-            .table('spot_stations')
-            .insert({
-              question_id: question.id,
-              part_text: stationData.partText,
-              expected_answer: stationData.expectedAnswer,
-              marks: stationData.marks,
-              image_path: stationData.imagePath || null,
-            })
-        }
-
-        // Update paper metadata
-        await question.pastPaper
-          .merge({
-            metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
-          })
-          .useTransaction(trx)
-          .save()
-
-        // Update topics and units
-        await trx.from('question_topics').where('question_id', question.id).delete()
-        await trx.from('question_units').where('question_id', question.id).delete()
-
-        if (data.topicIds && data.topicIds.length > 0) {
-          await trx
-            .insertQuery()
-            .table('question_topics')
-            .multiInsert(
-              data.topicIds.map((topicId) => ({
-                question_id: question.id,
-                topic_id: topicId,
-              }))
-            )
-        }
-
-        if (data.unitIds && data.unitIds.length > 0) {
-          await trx
-            .insertQuery()
-            .table('question_units')
-            .multiInsert(
-              data.unitIds.map((unitId) => ({
-                question_id: question.id,
-                unit_id: unitId,
-              }))
-            )
-        }
-      })
+      await this.spotManagementService.updateSpotQuestion(
+        question,
+        {
+          questionText: data.questionText,
+          questionImagePath: data.questionImagePath,
+          parts: data.parts.map((p: any) => ({
+            partText: p.partText,
+            expectedAnswer: p.expectedAnswer,
+            marks: p.marks,
+            imagePath: p.imagePath,
+          })),
+          topicIds: data.topicIds,
+          unitIds: data.unitIds,
+        },
+        auth.user!
+      )
 
       logger.info({
         ...context,
@@ -428,18 +340,7 @@ export default class ManageSpotController {
         .preload('pastPaper')
         .firstOrFail()
 
-      await db.transaction(async (trx) => {
-        // Update paper metadata
-        await question.pastPaper
-          .merge({
-            metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
-          })
-          .useTransaction(trx)
-          .save()
-
-        // Use the question service for soft deletion
-        await QuestionDeletionService.delete(question.id)
-      })
+      await this.spotManagementService.deleteSpotQuestion(question, auth.user!)
 
       logger.info({
         ...context,

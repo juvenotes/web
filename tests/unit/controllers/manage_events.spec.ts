@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 import ManageEventsController from '#controllers/manage/events/manage_events_controller'
+import EventQuizService from '#services/event_quiz_service'
 import Event from '#models/event'
 import { DateTime } from 'luxon'
+
+// Create a mock EventQuizService for testing
+const mockEventQuizService = {} as EventQuizService
 
 test.group('ManageEventsController (unit)', () => {
   test('index returns paginated events and meta', async ({ assert }) => {
@@ -49,11 +53,11 @@ test.group('ManageEventsController (unit)', () => {
       inertia,
       auth: { user: { id: 1 } },
       bouncer: { with: () => ({ authorize: async () => true }) },
-      logger: { info: () => {}, warn: () => {} },
+      logger: { info: () => { }, warn: () => { } },
       request: { input: (_key: string, def: any) => def },
     }
 
-    const controller = new ManageEventsController()
+    const controller = new ManageEventsController(mockEventQuizService)
     await controller.index(ctx)
 
     assert.equal(rendered.view, 'manage/events/index')
@@ -106,11 +110,11 @@ test.group('ManageEventsController (unit)', () => {
       inertia,
       auth: { user: { id: 1 } },
       bouncer: { with: () => ({ authorize: async () => true }) },
-      logger: { info: () => {}, warn: () => {} },
+      logger: { info: () => { }, warn: () => { } },
       request: { input: (key: string, def: any) => (key === 'page' ? 100 : def) },
     }
 
-    const controller = new ManageEventsController()
+    const controller = new ManageEventsController(mockEventQuizService)
     await controller.index(ctx)
 
     assert.equal(rendered.view, 'manage/events/index')

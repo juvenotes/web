@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
 import Concept from '#models/concept'
 import PastPaper from '#models/past_paper'
 import QuestionFeedback from '#models/question_feedback'
@@ -8,11 +9,9 @@ import QuestionDto from '#dtos/question'
 import { createPastPaperValidator, updatePastPaperValidator } from '#validators/past_paper'
 import { generateSlug } from '#utils/slug_generator'
 import PastPaperPolicy from '#policies/paper_policy'
-import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
+import { MCQParserError } from '#services/mcq_parser_service'
 import db from '@adonisjs/lucid/services/db'
 import Question from '#models/question'
-import { QuestionType } from '#enums/question_types'
-import { promises as fs } from 'node:fs'
 import EventQuiz from '#models/event_quiz'
 import {
   createMcqQuestionValidator,
@@ -22,11 +21,14 @@ import {
 } from '#validators/question'
 import { PaperType } from '#enums/exam_type'
 import QuestionFeedbackDto from '#dtos/question_feedback'
-import { ResponseStatus } from '#enums/response_status'
 import QuestionDeletionService from '#services/question_deletion_service'
 import PaperDeletionService from '#services/paper_deletion_service'
+import QuestionManagementService from '#services/question_management_service'
 
+@inject()
 export default class ManagePastPapersController {
+  constructor(private questionManagementService: QuestionManagementService) { }
+
   private getMetadataUpdate(currentMetadata: any, auth: HttpContext['auth']) {
     return {
       ...currentMetadata,
@@ -192,17 +194,9 @@ export default class ManagePastPapersController {
     try {
       const { questionId, targetQuizId } = request.only(['questionId', 'targetQuizId'])
 
-      logger.info({
-        ...context,
-        questionId,
-        targetQuizId,
-        message: 'attempting to copy question to quiz',
-      })
-
-      // Find the original question with choices
+      // Find the original question
       const originalQuestion = await Question.query()
         .where('id', questionId)
-        .preload('choices')
         .firstOrFail()
 
       // Verify target quiz exists and belongs to user
@@ -211,42 +205,11 @@ export default class ManagePastPapersController {
         .where('user_id', auth.user!.id)
         .firstOrFail()
 
-      await db.transaction(async (trx) => {
-        // Create the new question
-        const [newQuestion] = await trx
-          .insertQuery()
-          .table('questions')
-          .insert({
-            user_id: auth.user!.id,
-            event_quiz_id: targetQuizId,
-            slug: generateSlug(),
-            type: originalQuestion.type,
-            question_text: originalQuestion.questionText,
-            question_image_path: originalQuestion.questionImagePath,
-            difficulty_level: originalQuestion.difficultyLevel,
-          })
-          .returning('*')
-
-        // Copy MCQ choices if available
-        if (originalQuestion.choices && originalQuestion.choices.length > 0) {
-          const choicesData = originalQuestion.choices.map((choice) => ({
-            question_id: newQuestion.id,
-            choice_text: choice.choiceText,
-            is_correct: choice.isCorrect,
-            explanation: choice.explanation,
-          }))
-
-          await trx.insertQuery().table('mcq_choices').insert(choicesData)
-        }
-      })
-
-      logger.info({
-        ...context,
-        questionId,
+      await this.questionManagementService.copyQuestionToQuiz(
+        originalQuestion,
         targetQuizId,
-        choicesCount: originalQuestion.choices.length,
-        message: 'question copied successfully',
-      })
+        auth.user!
+      )
 
       session.flash('success', 'Question copied to quiz successfully')
       return response.redirect().back()
@@ -306,44 +269,17 @@ export default class ManagePastPapersController {
   async addMcqQuestion({ request, response, params, auth, session, logger }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
     const data = await request.validateUsing(createMcqQuestionValidator)
-    const slug = generateSlug()
 
     try {
-      await db.transaction(async (trx) => {
-        // Update paper metadata
-        await paper
-          .merge({
-            metadata: this.getMetadataUpdate(paper.metadata, auth),
-          })
-          .save()
-
-        // Use raw query like seeder
-        const [question] = await trx
-          .insertQuery()
-          .table('questions')
-          .insert({
-            user_id: auth.user!.id,
-            past_paper_id: paper.id,
-            slug,
-            type: QuestionType.MCQ,
-            question_text: data.questionText,
-            question_image_path: data.questionImagePath || null,
-          })
-          .returning('*')
-
-        // Insert choices
-        await trx
-          .insertQuery()
-          .table('mcq_choices')
-          .insert(
-            data.choices.map((choice) => ({
-              question_id: question.id,
-              choice_text: choice.choiceText,
-              is_correct: choice.isCorrect,
-              explanation: choice.explanation,
-            }))
-          )
-      })
+      await this.questionManagementService.createMcq(paper, {
+        questionText: data.questionText,
+        questionImagePath: data.questionImagePath,
+        choices: data.choices.map((c) => ({
+          choiceText: c.choiceText,
+          isCorrect: c.isCorrect,
+          explanation: c.explanation,
+        })),
+      }, auth.user!)
 
       session.flash('success', 'MCQ added successfully')
       return response.redirect().back()
@@ -356,44 +292,17 @@ export default class ManagePastPapersController {
   async addSaqQuestion({ request, response, params, auth, session, logger }: HttpContext) {
     const paper = await PastPaper.findByOrFail('slug', params.paperSlug)
     const data = await request.validateUsing(createSaqQuestionValidator)
-    const slug = generateSlug()
 
     try {
-      await db.transaction(async (trx) => {
-        // Update paper metadata
-        await paper
-          .merge({
-            metadata: this.getMetadataUpdate(paper.metadata, auth),
-          })
-          .save()
-
-        // Use raw query like seeder
-        const [question] = await trx
-          .insertQuery()
-          .table('questions')
-          .insert({
-            user_id: auth.user!.id,
-            past_paper_id: paper.id,
-            slug,
-            type: QuestionType.SAQ,
-            question_text: data.questionText,
-            question_image_path: data.questionImagePath || null,
-          })
-          .returning('*')
-
-        // Insert parts
-        await trx
-          .insertQuery()
-          .table('saq_parts')
-          .insert(
-            data.parts.map((part) => ({
-              question_id: question.id,
-              part_text: part.partText,
-              expected_answer: part.expectedAnswer,
-              marks: part.marks,
-            }))
-          )
-      })
+      await this.questionManagementService.createSaq(paper, {
+        questionText: data.questionText,
+        questionImagePath: data.questionImagePath,
+        parts: data.parts.map((p) => ({
+          partText: p.partText,
+          expectedAnswer: p.expectedAnswer,
+          marks: p.marks,
+        })),
+      }, auth.user!)
 
       session.flash('success', 'SAQ added successfully')
       return response.redirect().back()
@@ -409,49 +318,16 @@ export default class ManagePastPapersController {
     if (!file) return response.badRequest('No file uploaded')
 
     try {
+      const fs = await import('node:fs/promises')
       const content = await fs.readFile(file.tmpPath!, 'utf-8')
-      const parsedQuestions = MCQParser.parse(content)
 
-      logger.info('questions parsed', {
-        count: parsedQuestions.length,
-        first: parsedQuestions[0]?.stem,
-      })
+      const count = await this.questionManagementService.uploadMcqs(
+        paper,
+        content,
+        auth.user!
+      )
 
-      await db.transaction(async (trx) => {
-        await paper
-          .merge({
-            metadata: this.getMetadataUpdate(paper.metadata, auth),
-          })
-          .save()
-
-        for (const [index, parsedQuestion] of parsedQuestions.entries()) {
-          logger.info(`processing question ${index + 1}/${parsedQuestions.length}`)
-
-          const [question] = await trx
-            .insertQuery()
-            .table('questions')
-            .insert({
-              user_id: auth.user!.id,
-              past_paper_id: paper.id,
-              slug: generateSlug(),
-              type: QuestionType.MCQ,
-              question_text: parsedQuestion.stem,
-            })
-            .returning('*')
-
-          const correctIndex = parsedQuestion.answer.charCodeAt(0) - 65
-          const choices = parsedQuestion.choices.map((choiceText, idx) => ({
-            question_id: question.id,
-            choice_text: choiceText,
-            is_correct: idx === correctIndex,
-            explanation: idx === correctIndex ? parsedQuestion.explanation : null,
-          }))
-
-          await trx.insertQuery().table('mcq_choices').insert(choices)
-        }
-      })
-
-      session.flash('success', `Successfully uploaded ${parsedQuestions.length} questions`)
+      session.flash('success', `Successfully uploaded ${count} questions`)
       return response.redirect().back()
     } catch (error) {
       if (error instanceof MCQParserError) {
@@ -477,114 +353,20 @@ export default class ManagePastPapersController {
 
       const data = await request.validateUsing(updateMcqQuestionValidator)
 
-      await db.transaction(async (trx) => {
-        // Update metadata and question text
-        await question.pastPaper
-          .merge({
-            metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
-          })
-          .useTransaction(trx)
-          .save()
-
-        await question
-          .merge({
-            questionText: data.questionText,
-            questionImagePath: data.questionImagePath || null,
-          })
-          .useTransaction(trx)
-          .save()
-
-        // Create maps for tracking changes
-        const existingChoices = new Map(question.choices.map((choice) => [choice.id, choice]))
-        const updatedChoiceIds = new Set()
-        const correctnessChanged = new Map()
-
-        // Update existing and add new choices
-        for (const choiceData of data.choices) {
-          if (choiceData.id !== undefined && existingChoices.has(choiceData.id)) {
-            // Update existing choice
-            const existingChoice = existingChoices.get(choiceData.id)!
-
-            // Track if correctness changed
-            if (existingChoice.isCorrect !== choiceData.isCorrect) {
-              correctnessChanged.set(existingChoice.id, choiceData.isCorrect)
-            }
-
-            await trx
-              .from('mcq_choices')
-              .where('id', existingChoice.id)
-              .update({
-                choice_text: choiceData.choiceText,
-                is_correct: choiceData.isCorrect,
-                explanation: choiceData.explanation ?? null,
-              })
-            updatedChoiceIds.add(existingChoice.id)
-          } else {
-            // Insert new choice
-            await trx.table('mcq_choices').insert({
-              question_id: question.id,
-              choice_text: choiceData.choiceText,
-              is_correct: choiceData.isCorrect,
-              explanation: choiceData.explanation ?? null,
-            })
-          }
-        }
-
-        // Handle deleted choices
-        const choicesToRemove = [...existingChoices.keys()].filter(
-          (id) => !updatedChoiceIds.has(id)
-        )
-
-        if (choicesToRemove.length > 0) {
-          // Check for user responses to these choices
-          const responsesExist = await trx
-            .from('user_mcq_responses')
-            .whereIn('choice_id', choicesToRemove)
-            .count('* as count')
-            .first()
-
-          if (responsesExist && Number(responsesExist.count) > 0) {
-            logger.warn('MCQ choices with user responses are being removed', {
-              questionId: question.id,
-              choicesToRemove,
-              responseCount: Number(responsesExist.count),
-            })
-
-            // Update affected responses - save choice text and mark as obsolete
-            for (const choiceId of choicesToRemove) {
-              const choice = existingChoices.get(choiceId)!
-
-              await trx.from('user_mcq_responses').where('choice_id', choiceId).update({
-                status: ResponseStatus.OBSOLETE,
-                original_choice_text: choice.choiceText,
-              })
-            }
-
-            logger.info('Updated user responses for removed choices', {
-              questionId: question.id,
-              obsoleteResponseCount: Number(responsesExist.count),
-            })
-          }
-
-          // Remove the choices
-          await trx.from('mcq_choices').whereIn('id', choicesToRemove).delete()
-        }
-
-        // Update user response correctness for choices that changed status
-        if (correctnessChanged.size > 0) {
-          for (const [choiceId, newCorrectness] of correctnessChanged.entries()) {
-            await trx
-              .from('user_mcq_responses')
-              .where('choice_id', choiceId)
-              .update({ is_correct: newCorrectness })
-          }
-
-          logger.info('Updated correctness for user responses', {
-            questionId: question.id,
-            changedChoices: [...correctnessChanged.keys()],
-          })
-        }
-      })
+      await this.questionManagementService.updateMcq(
+        question,
+        {
+          questionText: data.questionText,
+          questionImagePath: data.questionImagePath,
+          choices: data.choices.map(c => ({
+            id: c.id,
+            choiceText: c.choiceText,
+            isCorrect: c.isCorrect,
+            explanation: c.explanation
+          }))
+        },
+        auth.user!
+      )
 
       session.flash('success', 'MCQ updated successfully')
       return response.redirect().back()
@@ -608,86 +390,20 @@ export default class ManagePastPapersController {
     try {
       const data = await request.validateUsing(updateSaqQuestionValidator)
 
-      await db.transaction(async (trx) => {
-        // Update metadata and question text
-        await question.pastPaper
-          .merge({
-            metadata: this.getMetadataUpdate(question.pastPaper.metadata, auth),
-          })
-          .useTransaction(trx)
-          .save()
-
-        await question
-          .merge({
-            questionText: data.questionText,
-            questionImagePath: data.questionImagePath || null,
-          })
-          .useTransaction(trx)
-          .save()
-
-        // Create a map of existing parts by ID for quick lookup
-        const existingParts = new Map(question.parts.map((part) => [part.id, part]))
-        const updatedPartIds = new Set()
-
-        // Process each part - update existing or create new
-        for (const partData of data.parts) {
-          if (partData.id && existingParts.has(partData.id)) {
-            // Update existing part
-            await trx.from('saq_parts').where('id', partData.id).update({
-              part_text: partData.partText,
-              expected_answer: partData.expectedAnswer,
-              marks: partData.marks,
-            })
-            updatedPartIds.add(partData.id)
-          } else {
-            // Insert new part
-            await trx.table('saq_parts').insert({
-              question_id: question.id,
-              part_text: partData.partText,
-              expected_answer: partData.expectedAnswer,
-              marks: partData.marks,
-            })
-          }
-        }
-
-        // Handle deleted parts - parts that weren't included in the update
-        const partsToRemove = [...existingParts.keys()].filter((id) => !updatedPartIds.has(id))
-
-        if (partsToRemove.length > 0) {
-          // Check if user responses exist for these parts
-          const responsesExist = await trx
-            .from('user_saq_responses')
-            .whereIn('part_id', partsToRemove)
-            .count('* as count')
-            .first()
-
-          if (responsesExist && Number(responsesExist.count) > 0) {
-            logger.warn('Removing SAQ parts with user responses', {
-              questionId: question.id,
-              partsRemoved: partsToRemove,
-              responseCount: Number(responsesExist.count),
-            })
-
-            // Update affected responses - save part text and mark as obsolete
-            for (const partId of partsToRemove) {
-              const part = existingParts.get(partId)!
-
-              await trx.from('user_saq_responses').where('part_id', partId).update({
-                status: ResponseStatus.OBSOLETE,
-                original_part_text: part.partText,
-              })
-            }
-
-            logger.info('Updated user responses for removed parts', {
-              questionId: question.id,
-              obsoleteResponseCount: Number(responsesExist.count),
-            })
-          }
-
-          // Delete part from database
-          await trx.from('saq_parts').whereIn('id', partsToRemove).delete()
-        }
-      })
+      await this.questionManagementService.updateSaq(
+        question,
+        {
+          questionText: data.questionText,
+          questionImagePath: data.questionImagePath,
+          parts: data.parts.map(p => ({
+            id: p.id,
+            partText: p.partText,
+            expectedAnswer: p.expectedAnswer,
+            marks: p.marks
+          }))
+        },
+        auth.user!
+      )
 
       session.flash('success', 'SAQ updated successfully')
       return response.redirect().back()

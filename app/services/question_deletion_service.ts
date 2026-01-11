@@ -13,25 +13,27 @@ export default class QuestionService {
   /**
    * Soft delete a question and all its related data
    */
-  static async delete(questionId: number): Promise<void> {
-    await db.transaction(async (trx) => {
+  static async delete(questionId: number, trx?: TransactionClientContract): Promise<void> {
+    const client = trx || db
+    await client.transaction(async (subTrx) => {
+      const t = trx ? trx : subTrx
       // Get question with its type
       const question = await Question.findOrFail(questionId)
 
       // Handle different question types
       if (question.type === QuestionType.MCQ) {
-        await this.#handleMcqDeletion(question, trx)
+        await this.#handleMcqDeletion(question, t)
       } else if (question.type === QuestionType.SAQ) {
-        await this.#handleSaqDeletion(question, trx)
+        await this.#handleSaqDeletion(question, t)
       } else if (question.type === QuestionType.OSCE) {
-        await this.#handleOsceDeletion(question, trx)
+        await this.#handleOsceDeletion(question, t)
       } else if (question.type === QuestionType.SPOT) {
-        await this.#handleSpotDeletion(question, trx)
+        await this.#handleSpotDeletion(question, t)
       }
 
       // Mark question as deleted
       question.deletedAt = DateTime.now()
-      await question.useTransaction(trx).save()
+      await question.useTransaction(t).save()
     })
   }
 
