@@ -356,8 +356,8 @@ export default class ManageConceptsController {
       concept,
       {
         questionText: data.questionText,
-        questionImagePath: null, // Validator doesn't seem to have this field yet, defaulting to null
-        choices: data.choices.map(c => ({
+        questionImagePath: null, // questionImagePath is currently not provided via the form/validator, so we intentionally default it to null
+        choices: data.choices.map((c) => ({
           choiceText: c.choiceText,
           isCorrect: c.isCorrect,
           explanation: c.explanation,
@@ -382,7 +382,10 @@ export default class ManageConceptsController {
     logger.info({ ...context, message: 'Attempting to update MCQ' })
 
     try {
-      const question = await Question.query().where('slug', params.questionSlug).firstOrFail()
+      const question = await Question.query()
+        .where('slug', params.questionSlug)
+        .preload('choices')
+        .firstOrFail()
 
       const data = await request.validateUsing(createMcqQuestionValidator)
 
@@ -390,11 +393,12 @@ export default class ManageConceptsController {
         question,
         {
           questionText: data.questionText,
-          choices: data.choices.map(c => ({
+          questionImagePath: null, // questionImagePath is currently not provided via the form/validator, so we intentionally default it to null
+          choices: data.choices.map((c) => ({
             choiceText: c.choiceText,
             isCorrect: c.isCorrect,
             explanation: c.explanation,
-          }))
+          })),
         },
         auth.user!
       )

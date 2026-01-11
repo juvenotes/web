@@ -144,6 +144,7 @@ export default class IndexConceptsController {
               .select('c.id', 'c.title', 'c.slug', 'c.parent_id')
               .select(db.raw('concept_tree.depth + 1'))
               .innerJoin('concept_tree', 'concept_tree.parent_id', '=', 'c.id')
+              .where('concept_tree.depth', '<', 20) // Safety limit to prevent infinite recursion
           })
       })
       .select('id', 'title', 'slug')

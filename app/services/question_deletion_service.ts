@@ -14,9 +14,7 @@ export default class QuestionService {
    * Soft delete a question and all its related data
    */
   static async delete(questionId: number, trx?: TransactionClientContract): Promise<void> {
-    const client = trx || db
-    await client.transaction(async (subTrx) => {
-      const t = trx ? trx : subTrx
+    const action = async (t: TransactionClientContract) => {
       // Get question with its type
       const question = await Question.findOrFail(questionId)
 
@@ -34,7 +32,15 @@ export default class QuestionService {
       // Mark question as deleted
       question.deletedAt = DateTime.now()
       await question.useTransaction(t).save()
-    })
+    }
+
+    if (trx) {
+      await action(trx)
+    } else {
+      await db.transaction(async (newTrx) => {
+        await action(newTrx)
+      })
+    }
   }
 
   /**

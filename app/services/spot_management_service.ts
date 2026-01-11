@@ -46,13 +46,9 @@ export default class SpotManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        const client = trx || db
-
         let question: Question
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             // Create question
             const [created] = await t
                 .insertQuery()
@@ -116,7 +112,15 @@ export default class SpotManagementService {
                         }))
                     )
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
 
         return question!
     }
@@ -130,16 +134,12 @@ export default class SpotManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<void> {
-        const client = trx || db
-
         // Ensure pastPaper relation is loaded
         if (!question.pastPaper) {
             await question.load('pastPaper')
         }
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             // Update question properties
             await question
                 .merge({
@@ -203,7 +203,15 @@ export default class SpotManagementService {
                         }))
                     )
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
     }
 
 

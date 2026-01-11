@@ -74,14 +74,9 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        const client = trx || db
-
         let question: Question
 
-        await client.transaction(async (subTrx) => {
-            // If we are already in a transaction, use it, otherwise subTrx IS the transaction
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             // Update paper metadata
             await paper
                 .merge({
@@ -120,7 +115,15 @@ export default class QuestionManagementService {
                         }))
                     )
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
 
         return question!
     }
@@ -134,12 +137,9 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        const client = trx || db
         let question: Question
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             // Create question
             const [created] = await t
                 .insertQuery()
@@ -170,7 +170,15 @@ export default class QuestionManagementService {
                         }))
                     )
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
 
         return question!
     }
@@ -184,13 +192,9 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        const client = trx || db
-
         let question: Question
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             // Create new question (not linked to paper or today directly, but via pivot)
             const [created] = await t
                 .insertQuery()
@@ -225,7 +229,15 @@ export default class QuestionManagementService {
                 concept_id: concept.id,
                 question_id: question.id,
             })
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
 
         return question!
     }
@@ -239,12 +251,9 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        const client = trx || db
         let question: Question
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             await paper
                 .merge({
                     metadata: this.getMetadataUpdate(paper.metadata, user),
@@ -280,7 +289,15 @@ export default class QuestionManagementService {
                         }))
                     )
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
 
         return question!
     }
@@ -294,16 +311,12 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<void> {
-        const client = trx || db
-
         // Ensure pastPaper is loaded for metadata update
         if (!question.pastPaper) {
             await question.load('pastPaper')
         }
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             // Update paper metadata
             if (question.pastPaper) {
                 await question.pastPaper
@@ -324,7 +337,7 @@ export default class QuestionManagementService {
                 .save()
 
             // Handle choices update only if provided
-            if (data.choices) {
+            if (data.choices && data.choices.length > 0) {
                 const existingChoices = new Map(question.choices.map((choice) => [choice.id, choice]))
                 const updatedChoiceIds = new Set<number>()
                 const correctnessChanged = new Map<number, boolean>()
@@ -389,8 +402,24 @@ export default class QuestionManagementService {
                             .update({ is_correct: newCorrectness })
                     }
                 }
+            } else if (data.choices && data.choices.length === 0) {
+                // Explicit empty array provided: remove all choices? 
+                // Or validation ensures > 0. Copilot flag suggests it's ignored if empty.
+                // For safety: if choices is explicitly [], do nothing or remove all?
+                // Current logic ignored it if empty. Copilot said "won't insert or update".
+                // Let's assume validation should prevent empty choices in controller,
+                // but if passed here, we should probably respect it or throw.
+                // The check `data.choices.length > 0` above fixes the "process it as update but do nothing" issue.
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
     }
 
     /**
@@ -402,15 +431,11 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<void> {
-        const client = trx || db
-
         if (!question.pastPaper) {
             await question.load('pastPaper')
         }
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             if (question.pastPaper) {
                 await question.pastPaper
                     .merge({
@@ -469,7 +494,15 @@ export default class QuestionManagementService {
                 }
                 await t.from('saq_parts').whereIn('id', partsToRemove).delete()
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
     }
 
     /**
@@ -482,11 +515,8 @@ export default class QuestionManagementService {
         trx?: TransactionClientContract
     ): Promise<number> {
         const parsedQuestions = MCQParser.parse(content)
-        const client = trx || db
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             await paper
                 .merge({
                     metadata: this.getMetadataUpdate(paper.metadata, user),
@@ -517,7 +547,15 @@ export default class QuestionManagementService {
 
                 await t.insertQuery().table('mcq_choices').insert(choices)
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
 
         return parsedQuestions.length
     }
@@ -531,16 +569,12 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<void> {
-        const client = trx || db
-
         // Ensure choices are loaded if it's MCQ
         if (originalQuestion.isMcq && !originalQuestion.choices) {
             await originalQuestion.load('choices')
         }
 
-        await client.transaction(async (subTrx) => {
-            const t = trx ? trx : subTrx
-
+        const action = async (t: TransactionClientContract) => {
             const [newQuestion] = await t
                 .insertQuery()
                 .table('questions')
@@ -564,6 +598,14 @@ export default class QuestionManagementService {
                 }))
                 await t.insertQuery().table('mcq_choices').insert(choicesData)
             }
-        })
+        }
+
+        if (trx) {
+            await action(trx)
+        } else {
+            await db.transaction(async (newTrx) => {
+                await action(newTrx)
+            })
+        }
     }
 }

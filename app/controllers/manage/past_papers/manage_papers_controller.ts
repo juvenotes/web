@@ -24,6 +24,7 @@ import QuestionFeedbackDto from '#dtos/question_feedback'
 import QuestionDeletionService from '#services/question_deletion_service'
 import PaperDeletionService from '#services/paper_deletion_service'
 import QuestionManagementService from '#services/question_management_service'
+import fs from 'node:fs/promises'
 
 @inject()
 export default class ManagePastPapersController {
@@ -318,7 +319,6 @@ export default class ManagePastPapersController {
     if (!file) return response.badRequest('No file uploaded')
 
     try {
-      const fs = await import('node:fs/promises')
       const content = await fs.readFile(file.tmpPath!, 'utf-8')
 
       const count = await this.questionManagementService.uploadMcqs(

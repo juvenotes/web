@@ -17,6 +17,7 @@ import { QuizLeaderboardService } from '#services/quiz_leaderboard_service'
 import EventQuizService from '#services/event_quiz_service'
 import EventPolicy from '#policies/event_policy'
 import db from '@adonisjs/lucid/services/db'
+import fs from 'node:fs/promises'
 
 @inject()
 export default class ManageEventsController {
@@ -733,7 +734,6 @@ export default class ManageEventsController {
 
     try {
       const questionCount = await db.transaction(async (trx) => {
-        const fs = await import('node:fs/promises')
         const content = await fs.readFile(file.tmpPath!, 'utf-8')
         return await this.eventQuizService.uploadQuestionsFromFile(
           content,

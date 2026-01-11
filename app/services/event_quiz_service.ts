@@ -109,13 +109,16 @@ export default class EventQuizService {
         const client = trx || db
 
         // Update question text
-        await question
-            .merge({
-                questionText: data.questionText,
-                questionImagePath: data.questionImagePath || null,
-            })
-            .useTransaction(client as TransactionClientContract)
-            .save()
+        const updatedQuestion = question.merge({
+            questionText: data.questionText,
+            questionImagePath: data.questionImagePath || null,
+        })
+
+        if (trx) {
+            updatedQuestion.useTransaction(trx)
+        }
+
+        await updatedQuestion.save()
 
         // Build map of existing choices
         const existingChoices = new Map(question.choices.map((choice) => [choice.id, choice]))

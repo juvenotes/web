@@ -147,7 +147,8 @@ export class QuizSessionService {
     const now = DateTime.now()
 
     // Batch update all expired sessions in a single query
-    const affectedRows = await QuizSession.query()
+    // Batch update returns array (PostgreSQL) or number (MySQL/SQLite) depending on driver/config
+    const result = (await QuizSession.query()
       .where('status', 'active')
       .whereNotNull('expiresAt')
       .where('expiresAt', '<', now.toSQL())
@@ -155,9 +156,13 @@ export class QuizSessionService {
         status: 'submitted',
         endedAt: now.toSQL(),
         autoSubmitted: true,
-      })
+      })) as number | number[]
 
-    return affectedRows.length ?? affectedRows
+    // Handle both return types safely
+    if (Array.isArray(result)) {
+      return result.length
+    }
+    return result
   }
 
   /**

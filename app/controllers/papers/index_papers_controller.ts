@@ -154,7 +154,15 @@ export default class IndexController {
       userResponses = responses
 
       // Record paper view (fire and forget - don't block response)
-      this.userProgressService.recordPaperView(auth.user.id, paper.id).catch(() => { })
+      this.userProgressService.recordPaperView(auth.user.id, paper.id).catch((error) => {
+        logger.error({
+          ...context,
+          error,
+          message: 'Failed to record paper view',
+          userId: auth.user!.id,
+          paperId: paper.id,
+        })
+      })
     } else {
       // For non-authenticated users, just get attempt count
       const attemptCountResult = await attemptCountPromise
