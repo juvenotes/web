@@ -13,7 +13,7 @@ import db from '@adonisjs/lucid/services/db'
 import redis from '#services/redis'
 
 @inject()
-export default class IndexController {
+export default class IndexController { // Reverted to IndexController as per original, diff seemed to indicate a different class name but only partial changes
   constructor(private userProgressService: UserProgressService) { }
 
   async index({ inertia, logger, auth, bouncer }: HttpContext) {
@@ -154,12 +154,14 @@ export default class IndexController {
       userResponses = responses
 
       // Record paper view (fire and forget - don't block response)
-      this.userProgressService.recordPaperView(auth.user.id, paper.id).catch((error) => {
+      // Record paper view (fire and forget - don't block response)
+      const userId = auth.user.id
+      this.userProgressService.recordPaperView(userId, paper.id).catch((error) => {
         logger.error({
           ...context,
           error,
           message: 'Failed to record paper view',
-          userId: auth.user!.id,
+          userId,
           paperId: paper.id,
         })
       })

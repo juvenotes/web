@@ -12,48 +12,52 @@ export default class CloseIdleSessionsJob extends BaseJob {
       .run(async () => {
         try {
           const now = DateTime.now()
-          // Find all sessions idle for more than 10 minutes
-          const idleSessions = await UserStudySession.query()
-            .where('isActive', true)
-            .where('lastActivityAt', '<', now.minus({ minutes: 10 }).toSQL())
+          const BATCH_SIZE = 100
 
-          logger.info(`[CloseIdleSessionsJob] Found ${idleSessions.length} idle sessions to close`)
+          while (true) {
+            // Find batch of sessions idle for more than 10 minutes
+            // Since we modify 'isActive', the offset stays 0 effectively
+            const idleSessions = await UserStudySession.query() // @ts-ignore
+              .where('isActive', true)
+              .where('lastActivityAt', '<', now.minus({ minutes: 10 }).toSQL())
+              .limit(BATCH_SIZE)
 
-          for (const session of idleSessions) {
-            try {
-              // Calculate the session duration up to lastActivityAt (not now)
-              const diffInSeconds = session.lastActivityAt.diff(session.startedAt, 'seconds').seconds
+            if (idleSessions.length === 0) {
+              break
+            }
 
-              if (diffInSeconds < 0) {
-                logger.warn({
+            logger.info(`[CloseIdleSessionsJob] Processing batch of ${idleSessions.length} idle sessions`)
+
+            const updates: Promise<any>[] = []
+            const cacheInvalidations: Promise<void>[] = []
+
+            for (const session of idleSessions) {
+              try {
+                // Calculate the session duration up to lastActivityAt (not now)
+                const diffInSeconds = session.lastActivityAt.diff(session.startedAt, 'seconds').as('seconds')
+                const totalDurationSeconds = Math.max(0, Math.floor(diffInSeconds))
+
+                // Set session as inactive and set durationSeconds
+                session.isActive = false
+                session.durationSeconds = totalDurationSeconds
+
+                // Queue save and validation
+                updates.push(session.save())
+                cacheInvalidations.push(StudyTimeService.invalidateTotalStudyTimeCacheStatic(session.userId))
+              } catch (err) {
+                logger.error({
                   job: 'CloseIdleSessionsJob',
-                  message: 'Negative session duration detected',
-                  sessionId: session.id,
-                  startedAt: session.startedAt,
-                  lastActivityAt: session.lastActivityAt
+                  error: err,
+                  message: `Failed to prepare idle session ${session.id}`,
+                  userId: session.userId
                 })
-                // Skip this session or handle gracefully? 
-                // If data is corrupt, closing it might be safer to stop using it, but let's just log and skip calculation
-                // Or force 0? The request says "skip handling ... or set additionalSeconds to 0".
-                // Let's set additionalSeconds to 0 to safeguard.
               }
+            }
 
-              const additionalSeconds = Math.max(0, Math.floor(diffInSeconds))
-
-              // Set session as inactive and set durationSeconds to the time up to lastActivityAt
-              session.isActive = false
-              session.durationSeconds = additionalSeconds
-              await session.save()
-              // Invalidate study time cache for the user
-              await StudyTimeService.invalidateTotalStudyTimeCacheStatic(session.userId)
-            } catch (err) {
-              logger.error({
-                job: 'CloseIdleSessionsJob',
-                error: err,
-                message: `Failed to process idle session ${session.id}`,
-                userId: session.userId
-              })
-              // Continue to next session
+            // Execute batch updates
+            if (updates.length > 0) {
+              await Promise.all(updates)
+              await Promise.all(cacheInvalidations)
             }
           }
         } catch (error) {

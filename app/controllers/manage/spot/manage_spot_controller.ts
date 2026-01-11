@@ -12,6 +12,14 @@ import QuestionDto from '#dtos/question'
 import { createSpotQuestionValidator, updateSpotQuestionValidator } from '#validators/question'
 import PaperDeletionService from '#services/paper_deletion_service'
 import SpotManagementService from '#services/spot_management_service'
+
+interface QuestionPartInput {
+  partText: string
+  expectedAnswer: string
+  marks: number
+  imagePath?: string | null
+}
+
 import { inject } from '@adonisjs/core'
 
 @inject()
@@ -399,7 +407,10 @@ export default class ManageSpotController {
   /**
    * Helper to map question parts from validator data
    */
-  private mapQuestionParts(parts: any[]) {
+  /**
+   * Helper to map question parts from validator data
+   */
+  private mapQuestionParts(parts: QuestionPartInput[]) {
     return parts.map((p) => ({
       partText: p.partText,
       expectedAnswer: p.expectedAnswer,

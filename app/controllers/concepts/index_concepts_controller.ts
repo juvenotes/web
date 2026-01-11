@@ -89,7 +89,7 @@ export default class IndexConceptsController {
       children: concept.children ? ConceptDto.fromArray(concept.children) : [],
       questions: concept.questions ? QuestionDto.fromArray(concept.questions) : [],
       content: concept.knowledgeBlock,
-      parentConcepts: parentConcepts.map((p) => ({ id: p.id, title: p.title, slug: p.slug })),
+      parentConcepts: parentConcepts,
       canManage,
     })
   }

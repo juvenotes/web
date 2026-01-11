@@ -176,16 +176,13 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        let question: Question
-
-        const action = async (t: TransactionClientContract) => {
+        const execute = async (t: TransactionClientContract): Promise<Question> => {
             // Create new question (not linked to paper or today directly, but via pivot)
             const [created] = await t
                 .insertQuery()
                 .table('questions')
                 .insert({
                     user_id: user.id,
-                    // No past_paper_id or today_id
                     slug: generateSlug(),
                     type: QuestionType.MCQ,
                     question_text: data.questionText,
@@ -193,15 +190,13 @@ export default class QuestionManagementService {
                 })
                 .returning('*')
 
-            question = created
-
             // Create choices
             await t
                 .insertQuery()
                 .table('mcq_choices')
                 .insert(
                     data.choices.map((choice) => ({
-                        question_id: question.id,
+                        question_id: created.id,
                         choice_text: choice.choiceText,
                         is_correct: choice.isCorrect,
                         explanation: choice.explanation || null,
@@ -211,19 +206,16 @@ export default class QuestionManagementService {
             // Link to concept via pivot table
             await t.insertQuery().table('concept_questions').insert({
                 concept_id: concept.id,
-                question_id: question.id,
+                question_id: created.id,
             })
+
+            return created
         }
 
         if (trx) {
-            await action(trx)
-        } else {
-            await db.transaction(async (newTrx) => {
-                await action(newTrx)
-            })
+            return execute(trx)
         }
-
-        return question!
+        return db.transaction(execute)
     }
 
     /**
@@ -235,9 +227,7 @@ export default class QuestionManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        let question: Question
-
-        const action = async (t: TransactionClientContract) => {
+        const execute = async (t: TransactionClientContract): Promise<Question> => {
             await paper
                 .merge({
                     metadata: this.getMetadataUpdate(paper.metadata, user),
@@ -258,32 +248,27 @@ export default class QuestionManagementService {
                 })
                 .returning('*')
 
-            question = created
-
             if (data.parts.length > 0) {
                 await t
                     .insertQuery()
                     .table('saq_parts')
                     .insert(
                         data.parts.map((part) => ({
-                            question_id: question.id,
+                            question_id: created.id, // Use created.id directly
                             part_text: part.partText,
                             expected_answer: part.expectedAnswer,
                             marks: part.marks,
                         }))
                     )
             }
+
+            return created
         }
 
         if (trx) {
-            await action(trx)
-        } else {
-            await db.transaction(async (newTrx) => {
-                await action(newTrx)
-            })
+            return execute(trx)
         }
-
-        return question!
+        return db.transaction(execute)
     }
 
     /**

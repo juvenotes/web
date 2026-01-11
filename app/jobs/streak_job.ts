@@ -16,6 +16,7 @@ export default class StreakJob extends BaseJob {
             error,
             message: 'Failed to kill expired streaks',
           })
+          throw error
         }
       })
 
@@ -24,4 +25,5 @@ export default class StreakJob extends BaseJob {
     }
   }
 }
+
 

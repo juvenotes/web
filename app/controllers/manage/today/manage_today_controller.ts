@@ -3,6 +3,14 @@ import { inject } from '@adonisjs/core'
 import Today from '#models/today'
 import { createTodayValidator, updateTodayValidator } from '#validators/today'
 import { generateSlug } from '#utils/slug_generator'
+
+interface IncomingChoiceData {
+  id?: number
+  choiceText: string
+  isCorrect: boolean
+  explanation?: string
+}
+
 import db from '@adonisjs/lucid/services/db'
 import TodayDto from '#dtos/today'
 import Question from '#models/question'
@@ -124,7 +132,7 @@ export default class ManageTodayController {
       })
 
       session.flash('success', 'Today item created successfully')
-      return response.redirect().toPath(`/manage/today/${today.slug}`)
+      return response.redirect().toPath(`/ manage / today / ${ today.slug } `)
     })
   }
 
@@ -288,12 +296,7 @@ export default class ManageTodayController {
       .preload('choices') // Preload choices for MCQ questions
       .firstOrFail()
 
-    interface IncomingChoiceData {
-      id?: number
-      choiceText: string
-      isCorrect: boolean
-      explanation?: string
-    }
+
 
     try {
       if (question.type === QuestionType.MCQ) {

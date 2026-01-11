@@ -47,9 +47,7 @@ export default class SpotManagementService {
         user: User,
         trx?: TransactionClientContract
     ): Promise<Question> {
-        let question: Question
-
-        const action = async (t: TransactionClientContract) => {
+        const execute = async (t: TransactionClientContract): Promise<Question> => {
             // Create question
             const [created] = await t
                 .insertQuery()
@@ -64,15 +62,13 @@ export default class SpotManagementService {
                 })
                 .returning('*')
 
-            question = created
-
             // Create stations
             for (const stationData of data.parts) {
                 await t
                     .insertQuery()
                     .table('spot_stations')
                     .insert({
-                        question_id: question.id,
+                        question_id: created.id,
                         part_text: stationData.partText,
                         expected_answer: stationData.expectedAnswer,
                         marks: stationData.marks,
@@ -95,7 +91,7 @@ export default class SpotManagementService {
                     .table('question_topics')
                     .multiInsert(
                         data.topicIds.map((topicId) => ({
-                            question_id: question.id,
+                            question_id: created.id,
                             topic_id: topicId,
                         }))
                     )
@@ -108,22 +104,19 @@ export default class SpotManagementService {
                     .table('question_units')
                     .multiInsert(
                         data.unitIds.map((unitId) => ({
-                            question_id: question.id,
+                            question_id: created.id,
                             unit_id: unitId,
                         }))
                     )
             }
+
+            return created
         }
 
         if (trx) {
-            await action(trx)
-        } else {
-            await db.transaction(async (newTrx) => {
-                await action(newTrx)
-            })
+            return execute(trx)
         }
-
-        return question!
+        return db.transaction(execute)
     }
 
     /**

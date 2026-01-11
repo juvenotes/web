@@ -88,9 +88,9 @@ export default class DashboardController {
       const cached = await redis.get(cacheKey)
       if (cached) {
         try {
-          const parsed = JSON.parse(cached) as StatsDto
+          const parsed = JSON.parse(cached)
           logger.debug('Dashboard stats loaded from cache')
-          return parsed
+          return new StatsDto(parsed)
         } catch (parseError) {
           logger.warn('Failed to parse cached dashboard stats', { parseError })
           // Fall through to fetch fresh data
