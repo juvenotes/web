@@ -8,10 +8,11 @@ import StatsDto from '#dtos/stats'
 import User from '#models/user'
 import UserDto from '#dtos/user'
 import UserStreakDto from '#dtos/user_streak'
+import redis from '@adonisjs/redis/services/main'
 
 @inject()
 export default class DashboardController {
-  constructor(protected studyTimeService: StudyTimeService) {}
+  constructor(protected studyTimeService: StudyTimeService) { }
 
   async handle({ inertia, logger, auth }: HttpContext) {
     logger.info('Rendering dashboard', {
@@ -57,6 +58,33 @@ export default class DashboardController {
       userDto = new UserDto(user ?? undefined, streak)
     }
 
+    // Get cached or fresh dashboard stats
+    const stats = await this.getDashboardStats(logger)
+
+    return inertia.render('dashboard', {
+      user: userDto,
+      stats,
+      totalStudyTime,
+      formattedStudyTime,
+      todayStudyTime,
+      formattedTodayStudyTime,
+    })
+  }
+
+  /**
+   * Get dashboard stats with Redis caching (5 minute TTL)
+   */
+  private async getDashboardStats(logger: HttpContext['logger']): Promise<StatsDto> {
+    const cacheKey = 'dashboard:stats'
+
+    // Try cache first
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      logger.debug('Dashboard stats loaded from cache')
+      return JSON.parse(cached) as StatsDto
+    }
+
+    // Cache miss - fetch fresh data
     const [rootConcepts, contentfulConcepts, questionCount, paperCount] = await Promise.all([
       Concept.query().where('level', 0).count('* as total').first(),
       Concept.query()
@@ -75,13 +103,10 @@ export default class DashboardController {
       papers: Number(paperCount?.$extras.total) || 0,
     })
 
-    return inertia.render('dashboard', {
-      user: userDto,
-      stats,
-      totalStudyTime,
-      formattedStudyTime,
-      todayStudyTime,
-      formattedTodayStudyTime,
-    })
+    // Cache for 5 minutes
+    await redis.setex(cacheKey, 300, JSON.stringify(stats))
+    logger.debug('Dashboard stats cached')
+
+    return stats
   }
 }

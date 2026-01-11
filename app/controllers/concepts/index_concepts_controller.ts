@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Concept from '#models/concept'
 import ConceptDto from '#dtos/concept'
 import QuestionDto from '#dtos/question'
+import db from '@adonisjs/lucid/services/db'
 
 export default class IndexConceptsController {
   /**
@@ -114,115 +115,42 @@ export default class IndexConceptsController {
     return response.json(results)
   }
 
-  // async search({ request, response, logger, auth }: HttpContext) {
-  //   const context = {
-  //     controller: 'ConceptsIndexController',
-  //     action: 'search',
-  //     query: request.input('q', ''),
-  //   }
-
-  //   if (!context.query || context.query.length < 2) {
-  //     logger.info({
-  //       ...context,
-  //       message: 'Search skipped - query too short',
-  //       userId: auth.user?.id,
-  //     })
-  //     return response.json([])
-  //   }
-
-  //   logger.info({ ...context, message: 'Searching concepts' })
-
-  //   let results
-  //   const userId = auth.user?.id ?? 0
-
-  //   // Try to get cached results
-  //   results = await this.searchCacheService.getCachedResults(context.query)
-
-  //   // If no cached results, perform the database query
-  //   if (!results) {
-  //     results = await Concept.searchConceptByTitle(context.query)
-
-  //     // Cache the results
-  //     await this.searchCacheService.cacheResults(context.query, results)
-
-  //     logger.info({
-  //       ...context,
-  //       resultsCount: results.length,
-  //       message: 'DB search completed and cached',
-  //       userId,
-  //     })
-  //   } else {
-  //     logger.info({
-  //       ...context,
-  //       resultsCount: results.length,
-  //       message: 'Search returned from cache',
-  //       userId,
-  //     })
-  //   }
-
-  //   // Store this as a recent search for logged-in users
-  //   if (auth.user) {
-  //     await this.searchCacheService.storeRecentSearch(userId, context.query)
-  //   }
-
-  //   return response.json(results)
-  // }
-
-  // async recentSearches({ response, auth }: HttpContext) {
-  //   if (!auth.user) {
-  //     return response.unauthorized()
-  //   }
-
-  //   const recentSearches = await this.searchCacheService.getRecentSearches(auth.user.id)
-  //   return response.json(recentSearches)
-  // }
-
-  // async storeSelectedConcept({ request, response, auth }: HttpContext) {
-  //   if (!auth.user) {
-  //     return response.unauthorized()
-  //   }
-
-  //   const { title } = request.only(['title'])
-
-  //   if (!title) {
-  //     return response.badRequest({ message: 'Concept title is required' })
-  //   }
-
-  //   await this.searchCacheService.storeRecentSearch(auth.user.id, title)
-
-  //   return response.noContent()
-  // }
-
-  private async getConceptParents(conceptId: number) {
-    const parents: Concept[] = []
-    let currentConcept = await Concept.query()
+  /**
+   * Get all parent concepts using a recursive CTE (single query instead of N+1)
+   */
+  private async getConceptParents(conceptId: number): Promise<Concept[]> {
+    // First get the parent_id of the current concept
+    const currentConcept = await Concept.query()
       .where('id', conceptId)
-      .select(['id', 'title', 'slug', 'parent_id'])
+      .select('parent_id')
       .first()
 
-    // If no parent_id, return empty array
-    if (!currentConcept || currentConcept.parentId === null) {
-      return parents
+    if (!currentConcept || !currentConcept.parentId) {
+      return []
     }
 
-    // Use a simplified approach to minimize database queries
-    while (currentConcept && currentConcept.parentId !== null) {
-      // Get the parent concept
-      const parent = await Concept.query()
-        .where('id', currentConcept.parentId)
-        .select(['id', 'title', 'slug', 'parent_id'])
-        .first()
+    // Use recursive CTE to get all parents in a single query
+    const result = await db
+      .query()
+      .withRecursive('concept_tree', (query) => {
+        query
+          .from('concepts')
+          .select('id', 'title', 'slug', 'parent_id')
+          .select(db.raw('1 as depth'))
+          .where('id', currentConcept.parentId!)
+          .union((subquery) => {
+            subquery
+              .from('concepts as c')
+              .select('c.id', 'c.title', 'c.slug', 'c.parent_id')
+              .select(db.raw('concept_tree.depth + 1'))
+              .innerJoin('concept_tree', 'concept_tree.parent_id', '=', 'c.id')
+          })
+      })
+      .select('id', 'title', 'slug')
+      .from('concept_tree')
+      .orderBy('depth', 'desc') // Root first, then down to immediate parent
 
-      if (parent) {
-        // Add to start to maintain root->leaf order
-        parents.unshift(parent)
-        currentConcept = parent
-      } else {
-        // Break if parent not found (shouldn't happen with proper data integrity)
-        break
-      }
-    }
-
-    return parents
+    // Convert raw results to Concept-like objects for DTO compatibility
+    return result as unknown as Concept[]
   }
 }
