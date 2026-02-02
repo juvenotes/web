@@ -5,6 +5,14 @@ export const createEventQuizValidator = vine.compile(
     title: vine.string().trim().minLength(3).maxLength(255),
     description: vine.string().trim().optional(),
     status: vine.enum(['draft', 'published']).optional(),
+    durationMinutes: vine.number().optional(),
+    hasTimer: vine.boolean().optional(),
+    autoSubmit: vine.boolean().optional(),
+    lockdownMode: vine.boolean().optional(),
+    quizMode: vine.enum(['standard', 'timed_lockdown']).optional(),
+    timeLimit: vine.boolean().optional(),
+    startTime: vine.date().optional(),
+    endTime: vine.date().optional(),
   })
 )
 
@@ -13,5 +21,13 @@ export const updateEventQuizValidator = vine.compile(
     title: vine.string().trim().minLength(3).maxLength(255).optional(),
     description: vine.string().trim().optional(),
     status: vine.enum(['draft', 'published']).optional(),
+    durationMinutes: vine.number().optional(),
+    hasTimer: vine.boolean().optional(),
+    autoSubmit: vine.boolean().optional(),
+    lockdownMode: vine.boolean().optional(),
+    quizMode: vine.enum(['standard', 'timed_lockdown']).optional(),
+    timeLimit: vine.boolean().optional(),
+    startTime: vine.date().optional(),
+    endTime: vine.date().optional(),
   })
 )

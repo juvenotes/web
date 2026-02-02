@@ -18,7 +18,41 @@ import {
   ArrowRight,
 } from 'lucide-vue-next'
 import { computed, ref, onMounted, reactive } from 'vue'
-import axios from 'axios'
+import { toast } from '~/components/ui/toast'
+
+// ... (existing imports)
+
+const handleChoiceSelect = (questionId: number, choiceId: number) => {
+  selectedAnswers[questionId] = choiceId
+  showAnswer[questionId] = true
+
+  const question = props.questions.find((q) => q.id === questionId)
+  const choice = question?.choices.find((c) => c.id === choiceId)
+
+  if (question && choice) {
+    // Show Toast Feedback (Optimistic)
+    if (choice.isCorrect) {
+      toast({
+        title: 'Correct!',
+        description: choice.explanation || 'Well done!',
+        variant: 'default',
+        duration: 2000,
+      })
+    } else {
+      const correctChoice = question.choices.find((c) => c.isCorrect)
+      toast({
+        title: 'Incorrect',
+        description: correctChoice?.explanation || 'Try reviewing the material.',
+        variant: 'destructive',
+        duration: 3000,
+      })
+    }
+
+    recordMcqResponse(questionId, choiceId, choice.isCorrect).then(() => {
+      updateProgress()
+    })
+  }
+}
 
 defineOptions({ layout: DashLayout })
 
@@ -108,20 +142,6 @@ const closeFeedbackDialog = () => {
   feedbackDialog.value = {
     isOpen: false,
     question: null,
-  }
-}
-
-const handleChoiceSelect = (questionId: number, choiceId: number) => {
-  selectedAnswers[questionId] = choiceId
-  showAnswer[questionId] = true
-
-  const question = props.questions.find((q) => q.id === questionId)
-  const choice = question?.choices.find((c) => c.id === choiceId)
-
-  if (question && choice) {
-    recordMcqResponse(questionId, choiceId, choice.isCorrect).then(() => {
-      updateProgress()
-    })
   }
 }
 

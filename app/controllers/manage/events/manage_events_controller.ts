@@ -1,4 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
+import { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import Event from '#models/event'
 import EventDto from '#dtos/event'
 import EventQuizDto from '#dtos/event_quiz'
@@ -7,41 +9,103 @@ import EventQuiz from '#models/event_quiz'
 import Question from '#models/question'
 import UserQuizStatDto from '#dtos/user_quiz_stat'
 import { createEventValidator, updateEventValidator } from '#validators/event'
-import { createEventQuizValidator, updateEventQuizValidator } from '#validators/event_quiz'
 import { createMcqQuestionValidator, updateMcqQuestionValidator } from '#validators/question'
 import string from '@adonisjs/core/helpers/string'
-import { generateSlug } from '#utils/slug_generator'
 import { CloudinaryService } from '#services/cloudinary_service'
-import { MCQParser, MCQParserError } from '#services/mcq_parser_service'
+import { MCQParserError } from '#services/mcq_parser_service'
 import { QuizLeaderboardService } from '#services/quiz_leaderboard_service'
-import { QuestionType } from '#enums/question_types'
-import fs from 'node:fs/promises'
+import EventQuizService from '#services/event_quiz_service'
 import EventPolicy from '#policies/event_policy'
 import db from '@adonisjs/lucid/services/db'
+import fs from 'node:fs/promises'
 
+@inject()
 export default class ManageEventsController {
+  constructor(private eventQuizService: EventQuizService) {}
   /**
-   * Display a list of events for management
+   * Show list of events for management
    */
-  async index({ inertia, auth, bouncer, logger, response }: HttpContext) {
+  async index({ inertia, auth, bouncer, logger, request }: HttpContext) {
     const context = {
       controller: 'ManageEventsController',
       action: 'index',
+      userId: auth.user?.id,
     }
-    logger.info({ ...context, message: 'Fetching events for management' })
+    logger.info({ ...context, message: 'Listing events for management' })
 
-    if (await bouncer.with(EventPolicy).denies('view')) {
-      logger.warn({ ...context, userId: auth.user?.id, message: 'Unauthorized access attempt' })
+    await bouncer.with(EventPolicy).authorize('view')
+
+    const page = request.input('page', 1)
+    const limit = 20
+    const search = request.input('search', '')
+
+    // Build query
+    const query = Event.query().whereNull('deletedAt').orderBy('startDate', 'desc').preload('user')
+
+    if (search) {
+      query.where((builder: ModelQueryBuilderContract<typeof Event>) => {
+        builder.whereILike('title', `%${search}%`).orWhereILike('description', `%${search}%`)
+      })
+    }
+
+    const events = await query.paginate(page, limit)
+
+    // Get total count for all non-deleted events
+    const totalCount = await db.from('events').whereNull('deleted_at').count('* as total')
+    const totalEvents = Number(totalCount[0].total || 0)
+
+    logger.info({
+      ...context,
+      eventCount: events.total,
+      currentPage: events.currentPage,
+      totalPages: events.lastPage,
+      message: 'Retrieved events list for management',
+    })
+
+    return inertia.render('manage/events/index', {
+      events: EventDto.fromArray(events.all()),
+      totalEvents,
+      meta: {
+        current_page: events.currentPage,
+        last_page: events.lastPage,
+        first_page: events.firstPage,
+        per_page: events.perPage,
+      },
+      filters: {
+        search,
+      },
+    })
+  }
+  /**
+   * Publish an event (set status to published)
+   */
+  async publishEvent({ params, response, auth, bouncer, logger, session }: HttpContext) {
+    const context = {
+      controller: 'ManageEventsController',
+      action: 'publishEvent',
+      eventSlug: params.slug,
+      userId: auth.user?.id,
+    }
+    logger.info({ ...context, message: 'Publishing event' })
+
+    const event = await Event.findByOrFail('slug', params.slug)
+
+    if (await bouncer.with(EventPolicy).denies('update', event)) {
+      logger.warn({
+        ...context,
+        userId: auth.user?.id,
+        eventId: event.id,
+        message: 'Unauthorized update attempt',
+      })
       return response.forbidden()
     }
 
-    // Query for all events (not paginated, not serialized)
-    const events = await Event.query().orderBy('createdAt', 'desc')
+    event.status = 'published'
+    await event.save()
 
-    // Pass events as DTOs inside the render function, matching Concept pattern
-    return inertia.render('manage/events/index', {
-      events: events ? EventDto.fromArray(events) : [],
-    })
+    logger.info({ ...context, message: 'Event published successfully' })
+    session.flash('success', 'Event published successfully')
+    return response.redirect().back()
   }
 
   /**
@@ -135,6 +199,7 @@ export default class ManageEventsController {
             currency: data.currency || 'KES',
             maxParticipants: data.maxParticipants,
             imageUrl,
+            status: data.status || 'draft',
           },
           { client: trx }
         )
@@ -427,66 +492,6 @@ export default class ManageEventsController {
   }
 
   /**
-   * Store a new quiz for an event
-   */
-  async storeQuiz({ params, request, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'storeQuiz',
-      eventSlug: params.slug,
-    }
-    logger.info({ ...context, message: 'Creating event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz create attempt',
-      })
-      return response.forbidden()
-    }
-
-    const data = await request.validateUsing(createEventQuizValidator)
-
-    try {
-      await db.transaction(async (trx) => {
-        const quiz = await EventQuiz.create(
-          {
-            userId: auth.user!.id,
-            eventId: event.id,
-            title: data.title,
-            slug: generateSlug(),
-            description: data.description || null,
-            status: data.status || 'draft',
-          },
-          { client: trx }
-        )
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz created successfully',
-        })
-        session.flash('success', 'Quiz created successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        error,
-        message: 'Quiz creation failed',
-      })
-      throw error
-    }
-  }
-
-  /**
    * Show a specific quiz for management
    */
   async viewQuiz({ params, inertia, auth, bouncer, logger }: HttpContext) {
@@ -572,118 +577,6 @@ export default class ManageEventsController {
   }
 
   /**
-   * Update a quiz
-   */
-  async updateQuiz({ params, request, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'updateQuiz',
-      eventSlug: params.slug,
-      quizId: params.quizId,
-    }
-    logger.info({ ...context, message: 'Updating event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-    const quiz = await EventQuiz.findOrFail(params.quizId)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz update attempt',
-      })
-      return response.forbidden()
-    }
-
-    const data = await request.validateUsing(updateEventQuizValidator)
-
-    try {
-      await db.transaction(async (trx) => {
-        quiz.useTransaction(trx)
-        await quiz
-          .merge({
-            title: data.title || quiz.title,
-            description: data.description !== undefined ? data.description : quiz.description,
-            status: data.status || quiz.status,
-          })
-          .save()
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz updated successfully',
-        })
-        session.flash('success', 'Quiz updated successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        quizId: quiz.id,
-        error,
-        message: 'Quiz update failed',
-      })
-      throw error
-    }
-  }
-
-  /**
-   * Delete a quiz
-   */
-  async destroyQuiz({ params, response, session, auth, bouncer, logger }: HttpContext) {
-    const context = {
-      controller: 'ManageEventsController',
-      action: 'destroyQuiz',
-      eventSlug: params.slug,
-      quizId: params.quizId,
-    }
-    logger.info({ ...context, message: 'Deleting event quiz' })
-
-    const event = await Event.findByOrFail('slug', params.slug)
-    const quiz = await EventQuiz.findOrFail(params.quizId)
-
-    if (await bouncer.with(EventPolicy).denies('update', event)) {
-      logger.warn({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        message: 'Unauthorized quiz delete attempt',
-      })
-      return response.forbidden()
-    }
-
-    try {
-      await db.transaction(async (trx) => {
-        quiz.useTransaction(trx)
-        await quiz.delete()
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          message: 'Event quiz deleted successfully',
-        })
-        session.flash('success', 'Quiz deleted successfully')
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
-      })
-    } catch (error) {
-      logger.error({
-        ...context,
-        userId: auth.user?.id,
-        eventId: event.id,
-        quizId: quiz.id,
-        error,
-        message: 'Quiz deletion failed',
-      })
-      throw error
-    }
-  }
-
-  /**
    * Upload quiz questions from file
    */
   async uploadQuiz({ request, response, params, session, logger, auth, bouncer }: HttpContext) {
@@ -714,78 +607,27 @@ export default class ManageEventsController {
     if (!title) return response.badRequest('Quiz title is required')
 
     try {
-      await db.transaction(async (trx) => {
-        const content = await fs.readFile(file.tmpPath!, 'utf-8')
-        let parsedQuestions
-        try {
-          parsedQuestions = MCQParser.parse(content)
-        } catch (error) {
-          logger.error('quiz parsing failed', { ...context, error })
-          if (error instanceof MCQParserError) throw error
-          throw new Error('Failed to parse quiz file')
-        }
-
-        logger.info('quiz questions parsed', {
-          ...context,
-          count: parsedQuestions.length,
+      const { quiz, questionCount } = await this.eventQuizService.createQuizWithQuestionsFromFile(
+        {
+          userId: auth.user!.id,
           eventId: event.id,
           title,
-        })
+          description,
+          status: 'draft',
+        },
+        file.tmpPath!
+      )
 
-        // Create the quiz first
-        const quiz = await EventQuiz.create(
-          {
-            userId: auth.user!.id,
-            eventId: event.id,
-            title,
-            slug: generateSlug(),
-            description: description || null,
-            status: 'draft', // Default to draft for uploaded quizzes
-          },
-          { client: trx }
-        )
-
-        // Create questions for the quiz
-        for (const [index, parsedQuestion] of parsedQuestions.entries()) {
-          logger.info(`processing question ${index + 1}/${parsedQuestions.length}`)
-
-          const [question] = await trx
-            .insertQuery()
-            .table('questions')
-            .insert({
-              user_id: auth.user!.id,
-              event_quiz_id: quiz.id,
-              slug: generateSlug(),
-              type: QuestionType.MCQ,
-              question_text: parsedQuestion.stem,
-            })
-            .returning('*')
-
-          const correctIndex = parsedQuestion.answer.charCodeAt(0) - 65
-          const choices = parsedQuestion.choices.map((choiceText, idx) => ({
-            question_id: question.id,
-            choice_text: choiceText,
-            is_correct: idx === correctIndex,
-            explanation: idx === correctIndex ? parsedQuestion.explanation : null,
-          }))
-
-          await trx.insertQuery().table('mcq_choices').insert(choices)
-        }
-
-        logger.info({
-          ...context,
-          userId: auth.user?.id,
-          eventId: event.id,
-          quizId: quiz.id,
-          questionsCount: parsedQuestions.length,
-          message: 'Quiz uploaded successfully',
-        })
-        session.flash(
-          'success',
-          `Successfully uploaded quiz with ${parsedQuestions.length} questions`
-        )
-        return response.redirect().toRoute('manage.events.show', { slug: event.slug })
+      logger.info({
+        ...context,
+        userId: auth.user?.id,
+        eventId: event.id,
+        quizId: quiz.id,
+        questionsCount: questionCount,
+        message: 'Quiz uploaded successfully',
       })
+      session.flash('success', `Successfully uploaded quiz with ${questionCount} questions`)
+      return response.redirect().toRoute('manage.events.show', { slug: event.slug })
     } catch (error) {
       if (error instanceof MCQParserError) {
         logger.error('quiz parsing failed', { ...context, error })
@@ -828,34 +670,23 @@ export default class ManageEventsController {
     }
 
     const data = await request.validateUsing(createMcqQuestionValidator)
-    const slug = generateSlug()
 
     try {
       await db.transaction(async (trx) => {
-        const [question] = await trx
-          .insertQuery()
-          .table('questions')
-          .insert({
-            user_id: auth.user!.id,
-            event_quiz_id: quiz.id,
-            slug,
-            type: QuestionType.MCQ,
-            question_text: data.questionText,
-            question_image_path: data.questionImagePath || null,
-          })
-          .returning('*')
-
-        await trx
-          .insertQuery()
-          .table('mcq_choices')
-          .insert(
-            data.choices.map((choice) => ({
-              question_id: question.id,
-              choice_text: choice.choiceText,
-              is_correct: choice.isCorrect,
+        await this.eventQuizService.createQuestion(
+          {
+            userId: auth.user!.id,
+            quizId: quiz.id,
+            questionText: data.questionText,
+            questionImagePath: data.questionImagePath,
+            choices: data.choices.map((choice) => ({
+              choiceText: choice.choiceText,
+              isCorrect: choice.isCorrect,
               explanation: choice.explanation,
-            }))
-          )
+            })),
+          },
+          trx
+        )
       })
 
       session.flash('success', 'Question added successfully')
@@ -902,41 +733,22 @@ export default class ManageEventsController {
 
     try {
       const content = await fs.readFile(file.tmpPath!, 'utf-8')
-      const parsedQuestions = MCQParser.parse(content)
+      const questionCount = await db.transaction(async (trx) => {
+        return await this.eventQuizService.uploadQuestionsFromFile(
+          content,
+          auth.user!.id,
+          quiz.id,
+          trx
+        )
+      })
 
-      logger.info('questions parsed', {
+      logger.info({
         ...context,
-        count: parsedQuestions.length,
-        first: parsedQuestions[0]?.stem,
+        count: questionCount,
+        message: 'Questions uploaded successfully',
       })
 
-      await db.transaction(async (trx) => {
-        for (const parsedQuestion of parsedQuestions) {
-          const [question] = await trx
-            .insertQuery()
-            .table('questions')
-            .insert({
-              user_id: auth.user!.id,
-              event_quiz_id: quiz.id,
-              slug: generateSlug(),
-              type: QuestionType.MCQ,
-              question_text: parsedQuestion.stem,
-            })
-            .returning('*')
-
-          const correctIndex = parsedQuestion.answer.charCodeAt(0) - 65
-          const choices = parsedQuestion.choices.map((choiceText, idx) => ({
-            question_id: question.id,
-            choice_text: choiceText,
-            is_correct: idx === correctIndex,
-            explanation: idx === correctIndex ? parsedQuestion.explanation : null,
-          }))
-
-          await trx.insertQuery().table('mcq_choices').insert(choices)
-        }
-      })
-
-      session.flash('success', `Successfully uploaded ${parsedQuestions.length} questions`)
+      session.flash('success', `Successfully uploaded ${questionCount} questions`)
       return response.redirect().back()
     } catch (error) {
       if (error instanceof MCQParserError) {
@@ -1170,14 +982,23 @@ export default class ManageEventsController {
 
     const user = auth.getUserOrFail()
 
-    const { questionsAttempted, questionsCorrect, completionPercentage, score, additionalData } =
-      request.only([
-        'questionsAttempted',
-        'questionsCorrect',
-        'completionPercentage',
-        'score',
-        'additionalData',
-      ])
+    const {
+      questionsAttempted,
+      questionsCorrect,
+      completionPercentage,
+      score,
+      additionalData,
+      fullName,
+      school,
+    } = request.only([
+      'questionsAttempted',
+      'questionsCorrect',
+      'completionPercentage',
+      'score',
+      'additionalData',
+      'fullName',
+      'school',
+    ])
 
     try {
       // Verify event and quiz exist
@@ -1194,6 +1015,8 @@ export default class ManageEventsController {
         completionPercentage: completionPercentage || 0,
         score: score || 0,
         additionalData: additionalData || {},
+        fullName: fullName,
+        school: school,
       })
 
       logger.info({

@@ -3,6 +3,14 @@ import { inject } from '@adonisjs/core'
 import Today from '#models/today'
 import { createTodayValidator, updateTodayValidator } from '#validators/today'
 import { generateSlug } from '#utils/slug_generator'
+
+interface IncomingChoiceData {
+  id?: number
+  choiceText: string
+  isCorrect: boolean
+  explanation?: string
+}
+
 import db from '@adonisjs/lucid/services/db'
 import TodayDto from '#dtos/today'
 import Question from '#models/question'
@@ -12,9 +20,12 @@ import { createMcqQuestionValidator } from '#validators/question'
 import { QuestionType } from '#enums/question_types'
 import { DateTime } from 'luxon'
 import ArchiveOutdatedTodayJob from '#jobs/archive_outdated_today_job'
+import QuestionManagementService from '#services/question_management_service'
+import QuestionDeletionService from '#services/question_deletion_service'
 
 @inject()
 export default class ManageTodayController {
+  constructor(private questionManagementService: QuestionManagementService) {}
   /**
    * Display a list of today items
    */
@@ -121,7 +132,7 @@ export default class ManageTodayController {
       })
 
       session.flash('success', 'Today item created successfully')
-      return response.redirect().toPath(`/manage/today/${today.slug}`)
+      return response.redirect().toPath(`/ manage / today / ${today.slug} `)
     })
   }
 
@@ -231,36 +242,21 @@ export default class ManageTodayController {
       .firstOrFail()
 
     const data = await request.validateUsing(createMcqQuestionValidator)
-    const slug = generateSlug()
 
     try {
-      await db.transaction(async (trx) => {
-        // Create new question with today_id
-        const [question] = await trx
-          .insertQuery()
-          .table('questions')
-          .insert({
-            user_id: auth.user!.id,
-            today_id: today.id,
-            slug,
-            type: QuestionType.MCQ,
-            question_text: data.questionText,
-          })
-          .returning('*')
-
-        // Insert choices
-        await trx
-          .insertQuery()
-          .table('mcq_choices')
-          .insert(
-            data.choices.map((choice) => ({
-              question_id: question.id,
-              choice_text: choice.choiceText,
-              is_correct: choice.isCorrect,
-              explanation: choice.explanation || null,
-            }))
-          )
-      })
+      await this.questionManagementService.createMcqForToday(
+        today,
+        {
+          questionText: data.questionText,
+          questionImagePath: data.questionImagePath,
+          choices: data.choices.map((c) => ({
+            choiceText: c.choiceText,
+            isCorrect: c.isCorrect,
+            explanation: c.explanation,
+          })),
+        },
+        auth.user!
+      )
 
       logger.info({
         ...context,
@@ -301,53 +297,30 @@ export default class ManageTodayController {
       .firstOrFail()
 
     try {
-      await db.transaction(async (trx) => {
-        // Handle basic question properties
+      if (question.type === QuestionType.MCQ) {
+        const { questionText, choices } = request.only(['questionText', 'choices'])
+
+        await this.questionManagementService.updateMcq(
+          question,
+          {
+            questionText,
+            choices:
+              choices && Array.isArray(choices)
+                ? choices.map((c: IncomingChoiceData) => ({
+                    id: c.id,
+                    choiceText: c.choiceText,
+                    isCorrect: c.isCorrect,
+                    explanation: c.explanation,
+                  }))
+                : undefined,
+          },
+          auth.user!
+        )
+      } else {
+        // Fallback for non-MCQ (just text update)
         const { questionText } = request.only(['questionText'])
-        await question.merge({ questionText }).useTransaction(trx).save()
-
-        // If it's an MCQ question and has choices data, update the choices
-        if (question.type === QuestionType.MCQ) {
-          const data = request.only(['choices'])
-
-          if (data.choices && Array.isArray(data.choices)) {
-            const existingChoices = new Map(question.choices.map((choice) => [choice.id, choice]))
-            const updatedChoiceIds = new Set()
-
-            // Update existing choices or add new ones
-            for (const choiceData of data.choices) {
-              if (choiceData.id && existingChoices.has(choiceData.id)) {
-                // Update existing choice
-                await trx
-                  .from('mcq_choices')
-                  .where('id', choiceData.id)
-                  .update({
-                    choice_text: choiceData.choiceText,
-                    is_correct: choiceData.isCorrect,
-                    explanation: choiceData.explanation || null,
-                  })
-                updatedChoiceIds.add(choiceData.id)
-              } else {
-                // Insert new choice
-                await trx.table('mcq_choices').insert({
-                  question_id: question.id,
-                  choice_text: choiceData.choiceText,
-                  is_correct: choiceData.isCorrect,
-                  explanation: choiceData.explanation || null,
-                })
-              }
-            }
-
-            // Remove choices that weren't included in the update
-            const choicesToRemove = [...existingChoices.keys()].filter(
-              (id) => !updatedChoiceIds.has(id)
-            )
-            if (choicesToRemove.length > 0) {
-              await trx.from('mcq_choices').whereIn('id', choicesToRemove).delete()
-            }
-          }
-        }
-      })
+        await question.merge({ questionText }).save()
+      }
 
       logger.info({
         ...context,
@@ -378,13 +351,19 @@ export default class ManageTodayController {
     logger.info({ ...context, message: 'Deleting question from today item' })
 
     try {
-      // Load question by ID instead of slug
-      const question = await Question.query().where('id', params.questionId).firstOrFail()
+      const today = await Today.query()
+        .where('slug', params.slug)
+        .where('user_id', auth.user!.id)
+        .firstOrFail()
 
-      await db.transaction(async (trx) => {
-        // Delete the question
-        await question.useTransaction(trx).delete()
-      })
+      // Validate question belongs to this today item
+      const question = await Question.query()
+        .where('id', params.questionId)
+        .where('today_id', today.id)
+        .firstOrFail()
+
+      // Use deletion service
+      await QuestionDeletionService.delete(question.id)
 
       logger.info({
         ...context,

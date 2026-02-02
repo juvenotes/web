@@ -5,6 +5,8 @@
     "jsx": "preserve",
     "module": "ESNext",
     "jsxImportSource": "vue",
+    "strict": true,
+    "skipLibCheck": true,
     "paths": {
       "~/*": ["./*"]
     }

@@ -11,10 +11,13 @@ import QuestionDto from '#dtos/question'
 import { generateSlug } from '#utils/slug_generator'
 import ConceptPolicy from '#policies/concept_policy'
 import { createMcqQuestionValidator } from '#validators/question'
-import { QuestionType } from '#enums/question_types'
-import db from '@adonisjs/lucid/services/db'
+import QuestionManagementService from '#services/question_management_service'
+import QuestionDeletionService from '#services/question_deletion_service'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class ManageConceptsController {
+  constructor(private questionManagementService: QuestionManagementService) {}
   /**
    * Show root level concepts
    */
@@ -346,37 +349,20 @@ export default class ManageConceptsController {
   async addMcq({ request, response, params, auth, session }: HttpContext) {
     const concept = await Concept.findByOrFail('slug', params.slug)
     const data = await request.validateUsing(createMcqQuestionValidator)
-    const slug = generateSlug()
 
-    await db.transaction(async (trx) => {
-      const [question] = await trx
-        .insertQuery()
-        .table('questions')
-        .insert({
-          user_id: auth.user!.id,
-          slug,
-          type: QuestionType.MCQ,
-          question_text: data.questionText,
-        })
-        .returning('*')
-
-      await trx
-        .insertQuery()
-        .table('mcq_choices')
-        .insert(
-          data.choices.map((choice) => ({
-            question_id: question.id,
-            choice_text: choice.choiceText,
-            is_correct: choice.isCorrect,
-            explanation: choice.explanation,
-          }))
-        )
-
-      await trx.insertQuery().table('concept_questions').insert({
-        concept_id: concept.id,
-        question_id: question.id,
-      })
-    })
+    await this.questionManagementService.createMcqForConcept(
+      concept,
+      {
+        questionText: data.questionText,
+        questionImagePath: null, // questionImagePath is currently not provided via the form/validator, so we intentionally default it to null
+        choices: data.choices.map((c) => ({
+          choiceText: c.choiceText,
+          isCorrect: c.isCorrect,
+          explanation: c.explanation,
+        })),
+      },
+      auth.user!
+    )
 
     session.flash('success', 'MCQ added successfully')
     return response.redirect().back()
@@ -394,30 +380,26 @@ export default class ManageConceptsController {
     logger.info({ ...context, message: 'Attempting to update MCQ' })
 
     try {
-      const question = await Question.query().where('slug', params.questionSlug).firstOrFail()
+      const question = await Question.query()
+        .where('slug', params.questionSlug)
+        .preload('choices')
+        .firstOrFail()
 
       const data = await request.validateUsing(createMcqQuestionValidator)
 
-      await db.transaction(async (trx) => {
-        // Update question text
-        await question.merge({ questionText: data.questionText }).useTransaction(trx).save()
-
-        // Delete existing choices
-        await trx.from('mcq_choices').where('question_id', question.id).delete()
-
-        // Insert new choices
-        await trx
-          .insertQuery()
-          .table('mcq_choices')
-          .insert(
-            data.choices.map((choice) => ({
-              question_id: question.id,
-              choice_text: choice.choiceText,
-              is_correct: choice.isCorrect,
-              explanation: choice.explanation || null,
-            }))
-          )
-      })
+      await this.questionManagementService.updateMcq(
+        question,
+        {
+          questionText: data.questionText,
+          questionImagePath: null, // questionImagePath is currently not provided via the form/validator, so we intentionally default it to null
+          choices: data.choices.map((c) => ({
+            choiceText: c.choiceText,
+            isCorrect: c.isCorrect,
+            explanation: c.explanation,
+          })),
+        },
+        auth.user!
+      )
 
       logger.info({
         ...context,
@@ -441,7 +423,8 @@ export default class ManageConceptsController {
 
   async deleteMcq({ response, params, session }: HttpContext) {
     const question = await Question.findByOrFail('slug', params.questionSlug)
-    await question.delete()
+    // Use static service method for soft deletion
+    await QuestionDeletionService.delete(question.id)
 
     session.flash('success', 'MCQ deleted successfully')
     return response.redirect().back()

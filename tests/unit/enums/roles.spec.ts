@@ -17,13 +17,13 @@ test.group('Enums - Roles', () => {
 
   test('should include all expected roles', ({ assert }) => {
     const expectedRoles = ['USER', 'CURATOR', 'EDITOR', 'ADMIN']
-    const actualRoles = Object.keys(Role).filter((key) => isNaN(Number(key)))
+    const actualRoles = Object.keys(Role).filter((key) => Number.isNaN(Number(key)))
 
     assert.sameMembers(actualRoles, expectedRoles)
   })
 
   test('should have 4 roles total', ({ assert }) => {
-    const roleCount = Object.keys(Role).filter((key) => isNaN(Number(key))).length
+    const roleCount = Object.keys(Role).filter((key) => Number.isNaN(Number(key))).length
     assert.equal(roleCount, 4)
   })
 

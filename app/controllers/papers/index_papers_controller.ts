@@ -14,6 +14,7 @@ import redis from '#services/redis'
 
 @inject()
 export default class IndexController {
+  // Reverted to IndexController as per original, diff seemed to indicate a different class name but only partial changes
   constructor(private userProgressService: UserProgressService) {}
 
   async index({ inertia, logger, auth, bouncer }: HttpContext) {
@@ -123,38 +124,52 @@ export default class IndexController {
       })
       .firstOrFail()
 
-    // Get attempt count
-    const attemptCountResult = await UserPaperProgress.query()
+    // Get attempt count (can run in parallel with user-specific queries)
+    const attemptCountPromise = UserPaperProgress.query()
       .where('paper_id', paper.id)
       .countDistinct('user_id')
 
-    const attemptCount = Number(attemptCountResult[0]?.$extras.count || 0)
-
     let progress = null
     let completionPercentage = 0
-    let userResponses: string | any[] = []
+    let userResponses: any[] = []
+    let attemptCount = 0
 
     if (auth.user) {
-      // Record paper view
-      await this.userProgressService.recordPaperView(auth.user.id, paper.id)
+      // Run all user-specific queries in parallel
+      const [attemptCountResult, paperProgress, percentage, responses] = await Promise.all([
+        attemptCountPromise,
+        this.userProgressService.getPaperProgress(auth.user.id, paper.id),
+        this.userProgressService.getCompletionPercentage(auth.user.id, paper.id),
+        UserMcqResponse.query()
+          .where('user_id', auth.user.id)
+          .whereIn(
+            'question_id',
+            paper.questions.map((q) => q.id)
+          )
+          .select(['question_id', 'choice_id', 'is_correct']),
+      ])
 
-      // Get existing progress
-      progress = await this.userProgressService.getPaperProgress(auth.user.id, paper.id)
+      attemptCount = Number(attemptCountResult[0]?.$extras.count || 0)
+      progress = paperProgress
+      completionPercentage = percentage
+      userResponses = responses
 
-      // Get completion percentage
-      completionPercentage = await this.userProgressService.getCompletionPercentage(
-        auth.user.id,
-        paper.id
-      )
-
-      // Fetch user's previous responses
-      userResponses = await UserMcqResponse.query()
-        .where('user_id', auth.user.id)
-        .whereIn(
-          'question_id',
-          paper.questions.map((q) => q.id)
-        )
-        .select(['question_id', 'choice_id', 'is_correct'])
+      // Record paper view (fire and forget - don't block response)
+      // Record paper view (fire and forget - don't block response)
+      const userId = auth.user.id
+      this.userProgressService.recordPaperView(userId, paper.id).catch((error) => {
+        logger.error({
+          ...context,
+          error,
+          message: 'Failed to record paper view',
+          userId,
+          paperId: paper.id,
+        })
+      })
+    } else {
+      // For non-authenticated users, just get attempt count
+      const attemptCountResult = await attemptCountPromise
+      attemptCount = Number(attemptCountResult[0]?.$extras.count || 0)
     }
 
     logger.info({

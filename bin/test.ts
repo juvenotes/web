@@ -15,6 +15,7 @@ process.env.NODE_ENV = 'test'
 import 'reflect-metadata'
 import { Ignitor, prettyPrintError } from '@adonisjs/core'
 import { configure, processCLIArgs, run } from '@japa/runner'
+import { pathToFileURL } from 'node:url'
 
 /**
  * URL to the application root. AdonisJS need it to resolve
@@ -50,6 +51,18 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
       ...app.rcFile.tests,
       ...config,
       ...{
+        importer: (filePath: string | URL) => {
+          const filePathString = filePath.toString()
+          if (filePathString.includes('inertia/')) {
+            const newPath = filePathString.replace(/.*inertia/, './inertia')
+            return import(new URL(newPath, APP_ROOT).href)
+          }
+          if (filePathString.startsWith('~/')) {
+            const newPath = `inertia/${filePathString.substring(2)}`
+            return import(pathToFileURL(new URL(newPath, APP_ROOT).href).href)
+          }
+          return IMPORTER(filePathString)
+        },
         setup: runnerHooks.setup,
         teardown: runnerHooks.teardown.concat([() => app.terminate()]),
       },

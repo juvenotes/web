@@ -1,9 +1,8 @@
+@import './override-dark.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Dark mode overrides must come after Tailwind loads but before our theme variables */
-@import './override-dark.css';
 
 @layer base {
   :root {

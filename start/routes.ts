@@ -55,6 +55,7 @@ const MedicalArticleController = () => import('#controllers/medical_articles_con
 const MediaAssetsController = () => import('#controllers/media_assets_controller')
 const IndexEventsController = () => import('#controllers/events/index_events_controller')
 const ManageEventsController = () => import('#controllers/manage/events/manage_events_controller')
+const EventQuizzesController = () => import('#controllers/manage/events/event_quizzes_controller')
 
 transmit.registerRoutes((route) => {
   // Ensure you are authenticated to register your client
@@ -415,7 +416,7 @@ router.patch('/api/manage/spot-stations/:id', [ManageFeedbackController, 'update
 // Question Stem
 router.patch('/api/manage/questions/:id', [ManageFeedbackController, 'updateQuestionStem'])
 
-// Quiz Leaderboard API routes
+// Quiz API routes
 router
   .get('/api/events/:slug/quiz/:quizId/leaderboard', [
     ManageEventsController,
@@ -427,6 +428,29 @@ router
   .use(middleware.auth())
 router
   .post('/api/events/:slug/quiz/:quizId/answer', [IndexEventsController, 'submitQuizAnswer'])
+  .use(middleware.auth())
+
+// Quiz Session API routes
+router
+  .post('/api/events/:slug/quiz/:quizId/session/start', [IndexEventsController, 'startQuizSession'])
+  .use(middleware.auth())
+router
+  .post('/api/events/:slug/quiz/:quizId/session/activity', [
+    IndexEventsController,
+    'recordSuspiciousActivity',
+  ])
+  .use(middleware.auth())
+router
+  .post('/api/events/:slug/quiz/:quizId/session/submit', [
+    IndexEventsController,
+    'submitQuizSession',
+  ])
+  .use(middleware.auth())
+router
+  .get('/api/events/:slug/quiz/:quizId/session/time', [
+    IndexEventsController,
+    'getSessionTimeRemaining',
+  ])
   .use(middleware.auth())
 
 // Today routes
@@ -579,7 +603,7 @@ router
     router
       .get('/:slug/quiz/create', [ManageEventsController, 'createQuiz'])
       .as('manage.events.quiz.create')
-    router.post('/:slug/quiz', [ManageEventsController, 'storeQuiz']).as('manage.events.quiz.store')
+    router.post('/:slug/quiz', [EventQuizzesController, 'store']).as('manage.events.quiz.store')
     router
       .get('/:slug/quiz/:quizId', [ManageEventsController, 'viewQuiz'])
       .as('manage.events.quiz.view')
@@ -587,10 +611,10 @@ router
       .get('/:slug/quiz/:quizId/edit', [ManageEventsController, 'editQuiz'])
       .as('manage.events.quiz.edit')
     router
-      .put('/:slug/quiz/:quizId', [ManageEventsController, 'updateQuiz'])
+      .put('/:slug/quiz/:quizId', [EventQuizzesController, 'update'])
       .as('manage.events.quiz.update')
     router
-      .delete('/:slug/quiz/:quizId', [ManageEventsController, 'destroyQuiz'])
+      .delete('/:slug/quiz/:quizId', [EventQuizzesController, 'destroy'])
       .as('manage.events.quiz.destroy')
 
     // Quiz question management routes
@@ -617,9 +641,16 @@ router
     router
       .get('/:slug/quiz/:quizId/leaderboard', [ManageEventsController, 'showQuizLeaderboard'])
       .as('manage.events.quiz.leaderboard')
+
+    // Quiz publish route
     router
-      .put('/:slug/quiz/:quizId/publish', [ManageEventsController, 'publishQuiz'])
+      .put('/:slug/quiz/:quizId/publish', [EventQuizzesController, 'publish'])
       .as('manage.events.quiz.publish')
+
+    // Event publish route
+    router
+      .put('/:slug/publish', [ManageEventsController, 'publishEvent'])
+      .as('manage.events.publish')
   })
   .prefix('/manage/events')
   .use(middleware.auth())

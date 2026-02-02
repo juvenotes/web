@@ -7,6 +7,8 @@ interface LeaderboardEntry {
   rank: number
   user_id: number
   user_name: string
+  student_id: string | null
+  school: string | null
   score: number
   questions_attempted: number
   questions_correct: number
@@ -71,6 +73,8 @@ export class QuizLeaderboardService {
         rank: index + 1,
         user_id: stat.userId,
         user_name: stat.user?.fullName || 'Unknown User',
+        student_id: stat.studentId,
+        school: stat.school,
         score: stat.score,
         questions_attempted: stat.questionsAttempted,
         questions_correct: stat.questionsCorrect,
@@ -100,6 +104,8 @@ export class QuizLeaderboardService {
       completionPercentage: number
       score: number
       additionalData?: any
+      fullName?: string
+      school?: string
     }
   ): Promise<UserQuizStat> {
     const userQuizStat = await UserQuizStat.updateOrCreate(
@@ -110,6 +116,8 @@ export class QuizLeaderboardService {
         completionPercentage: data.completionPercentage,
         score: data.score,
         additionalData: data.additionalData || {},
+        fullName: data.fullName,
+        school: data.school,
       }
     )
 
@@ -134,7 +142,8 @@ export class QuizLeaderboardService {
    */
   static async calculateQuizStatsFromResponses(
     userId: number,
-    quizId: number
+    quizId: number,
+    sessionId?: number | null
   ): Promise<{
     questionsAttempted: number
     questionsCorrect: number
@@ -147,15 +156,38 @@ export class QuizLeaderboardService {
     const totalQuestions = quizQuestions.length
 
     // Get user's responses for this quiz
-    const userResponses = await UserMcqResponse.query()
+    // If sessionId is provided, only count responses from that session
+    const query = UserMcqResponse.query()
       .where('userId', userId)
       .where('source', 'event_quiz')
       .whereHas('question', (questionQuery) => {
         questionQuery.where('eventQuizId', quizId)
       })
 
-    const questionsAttempted = userResponses.length
-    const questionsCorrect = userResponses.filter((response) => response.isCorrect).length
+    // Filter by sessionId only when explicitly provided (handles sessionId = 0)
+    if (sessionId !== null && sessionId !== undefined) {
+      query.where('sessionId', sessionId)
+    }
+
+    const userResponses = await query
+
+    // Deduplicate responses by questionId, keeping the latest one
+    // This prevents score inflation if multiple responses exist for the same question (e.g. across sessions in Standard mode)
+    const uniqueResponsesMap = new Map<number, (typeof userResponses)[0]>()
+
+    for (const response of userResponses) {
+      const existing = uniqueResponsesMap.get(response.questionId)
+      // If no existing response or current response is newer, update map
+      // Note: We prioritize the latest attempt
+      if (!existing || response.createdAt > existing.createdAt) {
+        uniqueResponsesMap.set(response.questionId, response)
+      }
+    }
+
+    const uniqueResponses = Array.from(uniqueResponsesMap.values())
+
+    const questionsAttempted = uniqueResponses.length
+    const questionsCorrect = uniqueResponses.filter((response) => response.isCorrect).length
     const completionPercentage =
       totalQuestions > 0 ? (questionsAttempted / totalQuestions) * 100 : 0
     const score = totalQuestions > 0 ? (questionsCorrect / totalQuestions) * 100 : 0

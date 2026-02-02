@@ -156,7 +156,7 @@ const updateTheme = (newTheme: Theme) => {
 onMounted(() => {
   try {
     // Theme initialization
-    
+
     // Check if we're in a browser environment
     if (typeof window === 'undefined') {
       // Not in browser environment, skip theme initialization

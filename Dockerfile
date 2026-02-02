@@ -1,16 +1,20 @@
 FROM node:22.16.0-alpine3.22 AS base
 
+# Ensure corepack is enabled and pnpm is available in the base image
+# corepack is bundled with modern Node.js releases; enable it and prepare pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # All deps stage
 FROM base AS deps
 WORKDIR /app
-ADD package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+ADD package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 # Production only deps stage
 FROM base AS production-deps
 WORKDIR /app
-ADD package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production
+ADD package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod
 
 # Build stage
 FROM base AS build

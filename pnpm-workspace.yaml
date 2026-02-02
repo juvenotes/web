@@ -1,0 +1,9 @@
+onlyBuiltDependencies:
+  - '@newrelic/fn-inspect'
+  - '@newrelic/native-metrics'
+  - '@swc/core'
+  - core-js
+  - esbuild
+  - protobufjs
+  - sharp
+  - vue-demi

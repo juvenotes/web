@@ -1,5 +1,9 @@
 /**
  * Queue configuration file, all queue config variables are in here
+ *
+ * NOTE: @cavai/adonis-queue only supports database driver.
+ * For better performance with high-volume jobs, consider migrating to
+ * @rlanz/bull-queue which uses Redis.
  */
 import { defineConfig } from '@cavai/adonis-queue'
 

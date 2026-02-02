@@ -8,6 +8,7 @@ import StatsDto from '#dtos/stats'
 import User from '#models/user'
 import UserDto from '#dtos/user'
 import UserStreakDto from '#dtos/user_streak'
+import redis from '@adonisjs/redis/services/main'
 
 @inject()
 export default class DashboardController {
@@ -57,6 +58,50 @@ export default class DashboardController {
       userDto = new UserDto(user ?? undefined, streak)
     }
 
+    // Get cached or fresh dashboard stats
+    let stats: StatsDto
+    try {
+      stats = await this.getDashboardStats(logger)
+    } catch (error) {
+      logger.error('Failed to fetch dashboard stats', { error, userId: auth.user?.id })
+      stats = new StatsDto({ concepts: 0, contentfulConcepts: 0, questions: 0, papers: 0 })
+    }
+
+    return inertia.render('dashboard', {
+      user: userDto,
+      stats,
+      totalStudyTime,
+      formattedStudyTime,
+      todayStudyTime,
+      formattedTodayStudyTime,
+    })
+  }
+
+  /**
+   * Get dashboard stats with Redis caching (5 minute TTL)
+   */
+  private async getDashboardStats(logger: HttpContext['logger']): Promise<StatsDto> {
+    const cacheKey = 'dashboard:stats'
+
+    // Try cache first with error handling
+    try {
+      const cached = await redis.get(cacheKey)
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached)
+          logger.debug('Dashboard stats loaded from cache')
+          return new StatsDto(parsed)
+        } catch (parseError) {
+          logger.warn('Failed to parse cached dashboard stats', { parseError })
+          // Fall through to fetch fresh data
+        }
+      }
+    } catch (redisError) {
+      logger.warn('Redis get failed for dashboard stats', { redisError })
+      // Fall through to fetch fresh data
+    }
+
+    // Cache miss or error - fetch fresh data
     const [rootConcepts, contentfulConcepts, questionCount, paperCount] = await Promise.all([
       Concept.query().where('level', 0).count('* as total').first(),
       Concept.query()
@@ -75,13 +120,14 @@ export default class DashboardController {
       papers: Number(paperCount?.$extras.total) || 0,
     })
 
-    return inertia.render('dashboard', {
-      user: userDto,
-      stats,
-      totalStudyTime,
-      formattedStudyTime,
-      todayStudyTime,
-      formattedTodayStudyTime,
-    })
+    // Cache for 5 minutes (best effort, don't fail if Redis is down)
+    try {
+      await redis.setex(cacheKey, 300, JSON.stringify(stats))
+      logger.debug('Dashboard stats cached')
+    } catch (redisError) {
+      logger.warn('Redis set failed for dashboard stats', { redisError })
+    }
+
+    return stats
   }
 }
