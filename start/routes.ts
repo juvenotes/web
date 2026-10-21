@@ -66,7 +66,7 @@ transmit.registerRoutes((route) => {
   }
 })
 
-//* METRICS
+//* METRICS (/manage/metrics, see config/prometheus.ts)
 // The /metrics route is registered by the prometheus provider before this
 // file runs. Guard it here so only admins can read it, and refuse to boot
 // if it can't be found rather than leaving it exposed.
