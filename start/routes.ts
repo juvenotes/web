@@ -8,6 +8,7 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import { Route } from '@adonisjs/core/http'
 import { middleware } from './kernel.js'
 import transmit from '@adonisjs/transmit/services/main'
 
@@ -64,6 +65,18 @@ transmit.registerRoutes((route) => {
     return
   }
 })
+
+//* METRICS (/manage/metrics, see config/prometheus.ts)
+// The /metrics route is registered by the prometheus provider before this
+// file runs. Guard it here so only admins can read it, and refuse to boot
+// if it can't be found rather than leaving it exposed.
+const metricsRoute = router.routes.find(
+  (route): route is Route => route instanceof Route && route.getName() === 'prometheus.metrics'
+)
+if (!metricsRoute) {
+  throw new Error('prometheus.metrics route not found; refusing to boot with an unguarded endpoint')
+}
+metricsRoute.use([middleware.auth(), middleware.admin()])
 
 // test crash route
 router.get('/crash', () => {
