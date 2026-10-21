@@ -8,7 +8,9 @@ export const UserFactory = factory
       email: faker.internet.email(),
       password: 'password123',
       fullName: faker.person.fullName(),
-      username: generateUsername(), // Adding username field to fix the NOT NULL constraint
+      // Suffix keeps usernames unique; generateUsername() alone has ~660 combinations
+      // without a number and collides across test runs.
+      username: `${generateUsername({ useNumber: false })}-${faker.string.alphanumeric({ length: 8, casing: 'lower' })}`,
     }
   })
   .build()
