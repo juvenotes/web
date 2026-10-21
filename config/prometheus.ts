@@ -23,6 +23,9 @@ export default defineConfig({
    * List of IPs that are allowed to access the
    * metrics endpoint. If empty, then everyone
    * can access the endpoint
+   *
+   * Access is restricted to admins in start/routes.ts
+   * (auth + admin middleware), not via this list.
    */
   ipsWhitelist: [],
 
