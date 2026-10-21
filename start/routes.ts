@@ -78,10 +78,12 @@ if (!metricsRoute) {
 }
 metricsRoute.use([middleware.auth(), middleware.admin()])
 
-// test crash route
-router.get('/crash', () => {
-  throw new Error('Test 500 error')
-})
+// test crash route (admin only) for verifying error reporting
+router
+  .get('/crash', () => {
+    throw new Error('Test 500 error')
+  })
+  .use([middleware.auth(), middleware.admin()])
 
 //* HOME
 router.get('/', [HomeController, 'index']).as('home')

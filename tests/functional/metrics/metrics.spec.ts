@@ -1,8 +1,11 @@
 import { test } from '@japa/runner'
 import { UserFactory } from '#database/factories/user_factory'
 import { Role } from '#enums/roles'
+import testUtils from '@adonisjs/core/services/test_utils'
 
-test.group('Metrics endpoint (functional)', () => {
+test.group('Metrics endpoint (functional)', (group) => {
+  group.each.setup(() => testUtils.db().withGlobalTransaction())
+
   test('guest is redirected to login', async ({ client }) => {
     const response = await client.get('/manage/metrics').redirects(0)
     response.assertStatus(302)
